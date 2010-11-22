@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jnbt.ByteTag;
 import org.jnbt.CompoundTag;
 import org.jnbt.ListTag;
 
@@ -25,6 +24,6 @@ public class ChestData extends TileEntityData
 			InventoryItemData id = (InventoryItemData)i.next();
 			itemTags.add( id.toTag("") );
 		}
-		m.add(new ListTag("Items", ByteTag.class, itemTags));
+		m.add(new ListTag("Items", CompoundTag.class, itemTags));
 	}
 }

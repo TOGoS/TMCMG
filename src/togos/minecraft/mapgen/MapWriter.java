@@ -44,39 +44,52 @@ public class MapWriter
 			HashMap levelRootTags = new HashMap();
 			levelRootTags.put("Level",cd.toTag());
 			CompoundTag fileRootTag = new CompoundTag("",levelRootTags);
+			
+			System.out.println(fileRootTag);
+			
 			nbtos.writeTag(fileRootTag);
 			nbtos.close();
 		} finally {
 			os.close();
 		}
+		System.err.println("Wrote "+fullPath);
 	}
 	
 	public static void main(String[] args) {
+		String mapDir = ".";
+		for( int i=0; i<args.length; ++i ) {
+			if( "-map-dir".equals(args[i]) ) {
+				mapDir = args[++i];
+			}
+		}
+		
 		try {
 			ChunkData cd = new ChunkData();
 			for( int z=0; z<16; ++z ) {
 				for( int x=0; x<16; ++x ) {
 					for( int y=0; y<128; ++y ) {
 						if( y < 64+x+z ) {
-							cd.setBlock(x, y, z, (byte)1, (byte)0 );
+							cd.setBlock(x, y, z, (byte)17, (byte)0 );
 						} else {
 							cd.setBlock(x, y, z, (byte)0, (byte)0 );
 						}
 					}
 				}
 			}
+			cd.x = 23; 
+			cd.z = -6;
 			InventoryItemData item = new InventoryItemData();
 			item.itemTypeId = 278;
 			item.count = 64;
 			ChestData chest = new ChestData();
-			chest.x = 2;
-			chest.y = 66;
-			chest.z = 0;
-			//chest.inventoryItems.add( item );
+			chest.x = cd.x*cd.width+0;
+			chest.y = 64;
+			chest.z = cd.z*cd.depth+0;
+			chest.inventoryItems.add( item );
 			cd.tileEntityData.add( chest );
+			cd.setBlock(0,64,0, (byte)54);
 			ChunkUtil.calculateLighting(cd, 15);
-			System.out.println(cd.toTag());
-			new MapWriter().writeChunkToFile(cd, ".");
+			new MapWriter().writeChunkToFile(cd, mapDir);
 		} catch( IOException e ) {
 			throw new RuntimeException(e);
 		}

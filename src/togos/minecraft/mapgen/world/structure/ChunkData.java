@@ -91,7 +91,7 @@ public class ChunkData
 		}
 		levelTags.add(new ListTag("TileEntities", CompoundTag.class, tileEntityTags));
 		
-		levelTags.add(new LongTag("LastUpdate", System.currentTimeMillis()));
+		levelTags.add(new LongTag("LastUpdate", 23392));//System.currentTimeMillis()));
 		levelTags.add(new IntTag("xPos", x));
 		levelTags.add(new IntTag("zPos", z));
 		levelTags.add(new ByteTag("TerrainPopulated", (byte)1));
