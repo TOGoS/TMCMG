@@ -18,9 +18,12 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
 import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
+import togos.minecraft.mapgen.noise.Constant;
+import togos.minecraft.mapgen.noise.LayerMapper;
 import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
 import togos.minecraft.mapgen.noise.ScaleInDaDaDa_Da;
 import togos.minecraft.mapgen.noise.ScaleOutDaDaDa_Da;
+import togos.minecraft.mapgen.noise.TerrainScaleDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 
@@ -154,7 +157,7 @@ public class NoiseCanvas extends Canvas
 	
 	double wx, wy, zoom;
 	
-	FunctionDaDa_Ia colorFunc = new RandomColorFunction();
+	FunctionDaDa_Ia colorFunc;
 	NoiseRenderer cnr;
 	
 	public NoiseCanvas() {
@@ -211,6 +214,15 @@ public class NoiseCanvas extends Canvas
 	}
 	
 	public void setPos( double wx, double wy, double zoom ) {
+		if( zoom == 0 ) {
+			throw new RuntimeException("Zoom cannot be zero!");
+		}
+		if( Double.isInfinite(zoom) ) {
+			throw new RuntimeException("Zoom cannot be infinite!");
+		}
+		if( Double.isNaN(zoom) ) {
+			throw new RuntimeException("Zoom must be a number!");
+		}
 		this.wx = wx;
 		this.wy = wy;
 		this.zoom = zoom;
@@ -251,9 +263,63 @@ public class NoiseCanvas extends Canvas
 		this.cnr.start();
 	}
 	
+	public static FunctionDaDa_Ia getDefaultColorFunction() {
+		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
+		AddOutDaDaDa_Da dirtLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
+			new Constant(56),
+			new TerrainScaleDaDaDa_Da( perlin, 8192, 24 ),
+			new TerrainScaleDaDaDa_Da( perlin, 4096, 16 ),
+			new TerrainScaleDaDaDa_Da( perlin, 1024, 12 ),
+			new TerrainScaleDaDaDa_Da( perlin,  256,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin,   64,  8 ),
+		});
+		AddOutDaDaDa_Da stoneLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
+			dirtLevel,
+			new Constant(-4),
+			new TerrainScaleDaDaDa_Da( perlin,  128,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin,    8,  8 ),
+		});
+		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
+			new Constant(36),
+			new TerrainScaleDaDaDa_Da( perlin, 2048, 32 ),
+			new TerrainScaleDaDaDa_Da( perlin,  512, 16 ),
+		});
+		
+		LayerMapper lm = new LayerMapper();
+		lm.layers.add( new LayerMapper.Layer(
+			LayerMapper.Material.WATER,
+			new Constant(32),
+			new Constant(64)
+		));
+		lm.layers.add( new LayerMapper.Layer(
+			LayerMapper.Material.SAND,
+			new Constant(-10),
+			sandLevel
+		));
+		lm.layers.add( new LayerMapper.Layer(
+			LayerMapper.Material.STONE,
+			new Constant(1),
+			stoneLevel
+		));
+		lm.layers.add( new LayerMapper.Layer(
+			LayerMapper.Material.DIRT,
+			new Constant(0),
+			dirtLevel
+		));
+		lm.layers.add( new LayerMapper.Layer(
+			LayerMapper.Material.BEDROCK,
+			new Constant(0),
+			new Constant(1)
+		));
+		return lm.getLayerColorFunction();
+	}
+	
 	public static void main( String[] args ) {
 		final Frame f = new Frame("Noise canvas");
 		final NoiseCanvas nc = new NoiseCanvas();
+		
+		nc.colorFunc = getDefaultColorFunction();
+		
 		nc.setPreferredSize(new Dimension(512,384));
 		f.add(nc);
 		f.pack();
