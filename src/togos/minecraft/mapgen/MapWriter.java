@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
+import togos.minecraft.mapgen.world.BlockIDs;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
@@ -78,16 +79,17 @@ public class MapWriter
 			}
 			cd.x = 23; 
 			cd.z = -6;
-			InventoryItemData item = new InventoryItemData();
-			item.itemTypeId = 278;
-			item.count = 64;
 			ChestData chest = new ChestData();
 			chest.x = cd.x*cd.width+0;
 			chest.y = 64;
 			chest.z = cd.z*cd.depth+0;
-			chest.inventoryItems.add( item );
-			cd.tileEntityData.add( chest );
-			cd.setBlock(0,64,0, (byte)54);
+			chest.inventoryItems.add( new InventoryItemData( BlockIDs.DIAMOND_AXE, 10, 1) );
+			chest.inventoryItems.add( new InventoryItemData( BlockIDs.DIAMOND_PICKAXE, 10, 2) );
+			chest.inventoryItems.add( new InventoryItemData( BlockIDs.DIAMOND_SPADE, 10, 3) );
+			chest.inventoryItems.add( new InventoryItemData( BlockIDs.DIAMOND_SWORD, 10, 4) );
+			//cd.tileEntityData.add( chest );
+			//cd.setBlock(0,64,0, (byte)54);
+			ChunkUtil.addTileEntity(chest, cd);
 			ChunkUtil.calculateLighting(cd, 15);
 			new MapWriter().writeChunkToFile(cd, mapDir);
 		} catch( IOException e ) {

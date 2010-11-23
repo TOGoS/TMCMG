@@ -8,6 +8,7 @@ import org.jnbt.CompoundTag;
 import org.jnbt.ListTag;
 
 import togos.minecraft.mapgen.TagMap;
+import togos.minecraft.mapgen.world.BlockIDs;
 
 public class ChestData extends TileEntityData
 {
@@ -15,6 +16,10 @@ public class ChestData extends TileEntityData
 	
 	public String getTypeId() {
 		return "Chest";
+	}
+	
+	public byte getBlockId() {
+		return BlockIDs.CHEST;
 	}
 	
 	public void toTag( TagMap m ) {

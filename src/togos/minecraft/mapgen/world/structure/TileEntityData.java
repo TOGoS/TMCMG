@@ -13,6 +13,8 @@ public abstract class TileEntityData
 	
 	public abstract String getTypeId();
 	
+	public abstract byte getBlockId();
+	
 	protected void toTag( TagMap m ) {
 		m.add(new StringTag("id", getTypeId()));
 		m.add(new IntTag("x", x));

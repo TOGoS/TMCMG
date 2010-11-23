@@ -14,6 +14,14 @@ public class InventoryItemData
 	public int count;
 	public int slotNumber;
 	
+	public InventoryItemData() { }
+	
+	public InventoryItemData(short blockId, int count, int slot) {
+		this.itemTypeId = blockId;
+		this.count = count;
+		this.slotNumber = slot;
+	}
+	
 	public Tag toTag(String name) {
 		TagMap m = new TagMap();
 		m.add(new ShortTag("id",(short)itemTypeId));

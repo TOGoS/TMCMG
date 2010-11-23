@@ -1,6 +1,7 @@
 package togos.minecraft.mapgen.world;
 
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.minecraft.mapgen.world.structure.TileEntityData;
 
 public class ChunkUtil
 {
@@ -24,5 +25,17 @@ public class ChunkUtil
 				cd.setLightHeight(x, z, groundHeight);
 			}
 		}
+	}
+	
+	public static void addTileEntity( TileEntityData ted, ChunkData cd ) {
+		int blockX = ted.x % cd.width;
+		int blockY = ted.y;
+		int blockZ = ted.z % cd.depth;
+		if( blockX < 0 || blockX >= cd.width || blockZ < 0 || blockZ >= cd.depth || blockY < 0 || blockY >= cd.height ) {
+			throw new RuntimeException("TileEntity "+ted.x+","+ted.z+" out of bounds of chunk "+
+				cd.x+","+cd.z );
+		}
+		cd.setBlock(blockX, ted.y, blockZ, ted.getBlockId());
+		cd.tileEntityData.add(ted);
 	}
 }
