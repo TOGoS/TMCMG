@@ -9,6 +9,10 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -23,8 +27,6 @@ import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 public class NoiseCanvas extends Canvas
 {
     private static final long serialVersionUID = 1L;
-    
-
     
 	static class RandomColorFunction implements FunctionDaDa_Ia {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
@@ -155,15 +157,68 @@ public class NoiseCanvas extends Canvas
 	FunctionDaDa_Ia colorFunc = new RandomColorFunction();
 	NoiseRenderer cnr;
 	
-	public void update(Graphics g) {
-		paint(g);
-	}
+	public NoiseCanvas() {
+		addComponentListener(new ComponentListener() {
+			public void componentShown( ComponentEvent arg0 ) {
+				updateRenderer();
+			}
+			public void componentResized( ComponentEvent arg0 ) {
+				updateRenderer();
+			}
+			public void componentMoved( ComponentEvent arg0 ) {
+			}
+			public void componentHidden( ComponentEvent arg0 ) {
+			}
+		});
+		addKeyListener(new KeyListener() {
+			public void keyTyped( KeyEvent evt ) {
+			}
+			public void keyReleased( KeyEvent evt ) {
+			}
+			public void keyPressed( KeyEvent evt ) {
+				switch( evt.getKeyCode() ) {
+				case(KeyEvent.VK_MINUS): case(KeyEvent.VK_UNDERSCORE):
+					setPos(wx,wy,zoom/2);
+					break;
+				case(KeyEvent.VK_PLUS): case(KeyEvent.VK_EQUALS):
+					setPos(wx,wy,zoom*2);
+					break;
+				case(KeyEvent.VK_UP):
+					setPos(wx,wy-getHeight()/(4*zoom),zoom);
+					break;
+				case(KeyEvent.VK_DOWN):
+					setPos(wx,wy+getHeight()/(4*zoom),zoom);
+					break;
+				case(KeyEvent.VK_LEFT):
+					setPos(wx-getWidth()/(4*zoom),wy,zoom);
+					break;
+				case(KeyEvent.VK_RIGHT):
+					setPos(wx+getWidth()/(4*zoom),wy,zoom);
+					break;
+				}
+			}
+		});
+    }
 	
-	public void setPos( double wx, double wy, double zoom ) {
+	protected void updateRenderer() {
 		double mpp = 1/zoom;
 		double leftX = wx-mpp*getWidth()/2;
 		double topY = wy-mpp*getHeight()/2;
-		startRenderer(new NoiseRenderer(colorFunc,getWidth(),getHeight(),leftX,topY,mpp,mpp));
+		stopRenderer();
+		if( colorFunc != null ) {
+			startRenderer(new NoiseRenderer(colorFunc,getWidth(),getHeight(),leftX,topY,mpp,mpp));
+		}
+	}
+	
+	public void setPos( double wx, double wy, double zoom ) {
+		this.wx = wx;
+		this.wy = wy;
+		this.zoom = zoom;
+		this.updateRenderer();
+	}
+		
+	public void update(Graphics g) {
+		paint(g);
 	}
 	
 	/*
@@ -171,8 +226,9 @@ public class NoiseCanvas extends Canvas
 	 * -Dsun.java2d.d3d=false -Dsun.java2d.noddraw=true
 	 */
 	public void paint(Graphics g) {
-		BufferedImage buf; 
-		if( cnr != null && (buf = cnr.buffer) != null ) {
+		BufferedImage buf;
+		NoiseRenderer nr = cnr;
+		if( nr != null && (buf = nr.buffer) != null ) {
 			synchronized( buf ) {
 				g.drawImage(buf, 0, 0, null);
 			}
@@ -183,7 +239,10 @@ public class NoiseCanvas extends Canvas
 	}
 	
 	public void stopRenderer() {
-		if( cnr != null ) {  cnr.halt();  }
+		if( cnr != null ) {
+			cnr.halt();
+			cnr = null;
+		}
 	}
 	
 	public void startRenderer( NoiseRenderer nr ) {
