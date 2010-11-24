@@ -7,7 +7,7 @@ import org.jnbt.Tag;
 
 import togos.minecraft.mapgen.TagMap;
 
-public abstract class TileEntityData
+public abstract class TileEntityData implements Cloneable
 {
 	public int x, y, z;
 	
@@ -26,5 +26,17 @@ public abstract class TileEntityData
 		TagMap m = new TagMap();
 		toTag(m);
 		return new CompoundTag("", m);
+	}
+	
+	public TileEntityData duplicate(int x, int y, int z) {
+		try {
+			TileEntityData ted = (TileEntityData) clone();
+			ted.x = x;
+			ted.y = y;
+			ted.z = z;
+			return ted;
+		} catch( CloneNotSupportedException e ) {
+			throw new RuntimeException(e);
+		}
 	}
 }

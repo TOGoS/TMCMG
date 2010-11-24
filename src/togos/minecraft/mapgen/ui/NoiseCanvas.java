@@ -27,6 +27,7 @@ import togos.minecraft.mapgen.noise.TerrainScaleDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 import togos.minecraft.mapgen.world.gen.LayerMapper;
+import togos.minecraft.mapgen.world.gen.Material;
 
 public class NoiseCanvas extends Canvas
 {
@@ -295,27 +296,27 @@ public class NoiseCanvas extends Canvas
 		
 		LayerMapper lm = new LayerMapper();
 		lm.layers.add( new LayerMapper.Layer(
-			LayerMapper.Material.WATER,
+			Material.WATER,
 			new Constant(32),
 			new Constant(64)
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			LayerMapper.Material.SAND,
+			Material.SAND,
 			new Constant(-10),
 			sandLevel
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			LayerMapper.Material.DIRT,
+			Material.DIRT,
 			new Constant(0),
 			dirtLevel
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			LayerMapper.Material.STONE,
+			Material.STONE,
 			new Constant(1),
 			stoneLevel
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			LayerMapper.Material.BEDROCK,
+			Material.BEDROCK,
 			new Constant(0),
 			new Constant(1)
 		));

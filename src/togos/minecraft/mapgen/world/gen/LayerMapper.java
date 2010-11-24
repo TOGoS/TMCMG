@@ -6,29 +6,10 @@ import java.util.List;
 
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
-import togos.minecraft.mapgen.world.BlockIDs;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class LayerMapper
 {
-	public static class Material {
-		public int color;
-		public int blockId;
-		
-		public Material( int color, int blockId ) {
-			this.color = color;
-			this.blockId = blockId;
-		}
-		
-		public static Material AIR = new Material( 0, BlockIDs.AIR );
-		public static Material STONE = new Material( 0xFF888888, BlockIDs.STONE );
-		public static Material DIRT = new Material( 0xFF664400, BlockIDs.DIRT );
-		public static Material SAND = new Material( 0xFF888844, BlockIDs.SAND );
-		public static Material GRASS = new Material( 0xFF00AA00, BlockIDs.GRASS );
-		public static Material WATER = new Material( 0xFF000055, BlockIDs.WATER );
-		public static Material BEDROCK = new Material( 0xFF333333, BlockIDs.BEDROCK );
-	}
-	
 	public static class Layer {
 		Material material;
 		FunctionDaDaDa_Da floorHeightFunction;
@@ -114,10 +95,9 @@ public class LayerMapper
 		}
 		
 		public ChunkData getChunk( int cx, int cz ) {
-			ChunkData cd = new ChunkData();
-			cd.x = cx; cd.z = cz;
-			int cwx = cd.x*cd.width;
-			int cwz = cd.z*cd.depth;
+			ChunkData cd = new ChunkData( cx, cz );
+			int cwx = cx*cd.width;
+			int cwz = cz*cd.depth;
 			int count = cd.width*cd.depth;
 			double[] x = new double[count];
 			double[] z = new double[count];
@@ -147,7 +127,7 @@ public class LayerMapper
 						double cei = ceiling[i];
 						if( cei > cd.height ) cei = cd.height; 
 						for( int ty=(int)flo; ty<cei; ++ty ) {
-							cd.setBlock(tx, ty, tz, (byte)l.material.blockId);
+							cd.setBlock(tx, ty, tz, (byte)l.material.blockNum);
 						}
 					}
 				}

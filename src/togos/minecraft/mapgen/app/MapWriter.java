@@ -9,9 +9,14 @@ import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
 import togos.minecraft.mapgen.ui.NoiseCanvas;
+import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkFunction;
+import togos.minecraft.mapgen.world.gen.Material;
+import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.minecraft.mapgen.world.structure.InventoryItemData;
+import togos.minecraft.mapgen.world.structure.Stamp;
 
 public class MapWriter
 {
@@ -33,7 +38,7 @@ public class MapWriter
 	}
 	
 	public void writeChunkToFile( ChunkData cd, String baseDir ) throws IOException {
-		String fullPath = baseDir + "/" + chunkPath( cd.x, cd.z );
+		String fullPath = baseDir + "/" + chunkPath( cd.getChunkX(), cd.getChunkZ() );
 		File f = new File(fullPath);
 		File dir = f.getParentFile();
 		if( dir != null && !dir.exists() ) dir.mkdirs();
@@ -109,12 +114,241 @@ public class MapWriter
 			new MapWriter().writeChunkToFile(cd, mapDir);
 			*/
 			
+			HashMap stampMaterials = new HashMap();
+			stampMaterials.put(Character.valueOf('#'), Material.BEDROCK);
+			stampMaterials.put(Character.valueOf('X'), Material.STONE);
+			stampMaterials.put(Character.valueOf('D'), Material.DIRT);
+			stampMaterials.put(Character.valueOf('C'), Material.COBBLESTONE);
+			stampMaterials.put(Character.valueOf('M'), Material.MOSSY_COBBLESTONE);
+			stampMaterials.put(Character.valueOf('w'), Material.WORKBENCH);
+			stampMaterials.put(Character.valueOf('S'), Material.SAND);
+			stampMaterials.put(Character.valueOf('t'),
+				new Material(0xFFFFFF00, Blocks.TORCH, (byte)0x05));
+			stampMaterials.put(Character.valueOf('.'), Material.AIR);
+			
+			Stamp s = new Stamp(8,64,8,4,0,4);
+			{
+				String diagram =
+					"CC  CC  "+
+					"C...... "+
+					" ......C"+
+					" ......C"+
+					"C...... "+
+					"C...... "+
+					" ......C"+
+					"  CC  CC"+
+					
+					"CCCCCCCC"+
+					"C......C"+
+					"C......C"+
+					"C......C"+
+					"C......C"+
+					"C......C"+
+					"C......C"+
+					"CCCCCCCC"+
+					
+					"CCCCCCCC"+
+					"CCCCCCCC"+
+					"CCDDDSCC"+
+					"CCSSDSCC"+
+					"CCSDDDCC"+
+					"CCSDSSCC"+
+					"CCCCCCCC"+
+					"CCCCCCCC";
+				s.populate(0,59,0, 8, 3, 8, diagram, stampMaterials);
+			}
+			for( int sy=54; sy<59; ++sy ) {
+				String diagram =
+					" CCCCCC "+
+					"CCCCCCCC"+
+					"CCCCCCCC"+
+					"CCCCCCCC"+
+					"CCCCCCCC"+
+					"CCCCCCCC"+
+					"CCCCCCCC"+
+					" CCCCCC ";
+				s.populate(0,sy,0, 8, 1, 8, diagram, stampMaterials);
+			}
+			{
+				String diagram =
+					" XXXXXX "+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					" XXXXXX "+
+					
+					" XXXXXX "+
+					"XCCCCCCX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XCCCCCCX"+
+					" XXXXXX "+
+
+					"XXXXXXXX"+
+					"XCCCCCCX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XCCCCCCX"+
+					"XXXXXXXX"+
+
+					" XXXXXX "+
+					"XCCCCCCX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XC....CX"+
+					"XCCCCCCX"+
+					" XXXXXX "+
+					
+					" XXXXXX "+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					"XCCCCCCX"+
+					" XXXXXX "+
+
+					" XXXXXX "+
+					"XXXXXXXX"+
+					"XXXXXXXX"+
+					"XXXXXXXX"+
+					"XXXXXXXX"+
+					"XXXXXXXX"+
+					"XXXXXXXX"+
+					" XXXXXX ";
+				s.populate(0,48,0, 8, 6, 8, diagram, stampMaterials);
+			}
+			for( int sy=0; sy<48; ++sy ) {
+				String diagram =
+					"XXXXXXXX"+
+					"X######X"+
+					"X######X"+
+					"X######X"+
+					"X######X"+
+					"X######M"+
+					"X######X"+
+					"XXXXXXXX";
+				s.populate(0,sy,0, 8, 1, 8, diagram, stampMaterials);
+			}
+			{
+				String diagram =
+					"XXXXXXXX"+
+					"X######X"+
+					"X#C...#X"+
+					"X#C...#X"+
+					"X#C...#X"+
+					"X#C...#X"+
+					"X######X"+
+					"XXXXXXXX"+
+					
+					"XXXXXXXX"+
+					"X######X"+
+					"X#t...#X"+
+					"X#....#X"+
+					"X#....#X"+
+					"X#....#X"+
+					"X######X"+
+					"XXXXXXXX"+
+					
+					"XXXXXXXX"+
+					"X######X"+
+					"X#C...#X"+
+					"X#....#X"+
+					"X#w...#X"+
+					"X#C...#X"+
+					"X######X"+
+					"XXXXXXXX"+
+					
+					"XXXXXXXX"+
+					"X######X"+
+					"X#MMMM#X"+
+					"X#MMMM#X"+
+					"X#MMMM#X"+
+					"X#MMMM#X"+
+					"X######X"+
+					"XXXXXXXX"+
+					
+					"XXXXXXXX"+
+					"X######X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X######X"+
+					"XXXXXXXX"+
+					
+					"XXXXXXXX"+
+					"X######X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXXXX"+
+					"X######X"+
+					"XXXXXXXX"+
+					
+					" XXXXXX "+
+					"X######X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXXXX"+
+					"X######X"+
+					"XXXXXXXX";
+				s.populate(0,6,0, 8, 7, 8, diagram, stampMaterials);
+			}
+			
+			ChestData chest = new ChestData();
+			chest.x = 2;
+			chest.y = 10;
+			chest.z = 3;
+			chest.inventoryItems.add( new InventoryItemData( Blocks.DIAMOND_AXE, 10, 0) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.DIAMOND_PICKAXE, 10, 1) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.DIAMOND_SPADE, 10, 2) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.DIAMOND_SWORD, 10, 3) );
+			
+			chest.inventoryItems.add( new InventoryItemData( Blocks.LOG, 64, 9) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.COAL, 64, 10) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.SAPLING, 64, 11) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.GRILLED_PORK, 64, 12) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.FLINT, 64, 13) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.IRON_INGOT, 64, 14) );
+			
+			chest.inventoryItems.add( new InventoryItemData( Blocks.DIRT, 64, 18) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.STONE, 64, 19) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.COBBLESTONE, 64, 20) );
+			chest.inventoryItems.add( new InventoryItemData( Blocks.OBSIDIAN, 64, 21) );
+			ChunkUtil.addTileEntityAndBlock(chest, s);
+			
 			MapWriter mapWriter = new MapWriter();
 			ChunkFunction cfunc = NoiseCanvas.getDefaultLayerMapper().getLayerChunkFunction();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = cfunc.getChunk(boundsX+x, boundsZ+z);
 					ChunkUtil.calculateLighting(cd, 15);
+					if( x == 0 ) {
+						ChunkUtil.stamp(cd, s,  4, 32,  4);
+						ChunkUtil.stamp(cd, s,  4, 32, 12);
+					}
+					if( x == boundsWidth-1 ) {
+						ChunkUtil.stamp(cd, s, 12, 32,  4);
+						ChunkUtil.stamp(cd, s, 12, 32, 12);
+					}
+					if( z == 0 ) {
+						ChunkUtil.stamp(cd, s,  4, 32,  4);
+						ChunkUtil.stamp(cd, s, 12, 32,  4);
+					}
+					if( z == boundsDepth-1 ) {
+						ChunkUtil.stamp(cd, s,  4, 32, 12);
+						ChunkUtil.stamp(cd, s, 12, 32, 12);
+					}
 					mapWriter.writeChunkToFile(cd, mapDir);
 				}
 			}
