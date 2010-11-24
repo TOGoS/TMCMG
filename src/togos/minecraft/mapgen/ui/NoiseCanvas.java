@@ -18,14 +18,15 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
 import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
+import togos.minecraft.mapgen.noise.MultiplyOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.Constant;
-import togos.minecraft.mapgen.noise.LayerMapper;
 import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
 import togos.minecraft.mapgen.noise.ScaleInDaDaDa_Da;
 import togos.minecraft.mapgen.noise.ScaleOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.TerrainScaleDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
+import togos.minecraft.mapgen.world.gen.LayerMapper;
 
 public class NoiseCanvas extends Canvas
 {
@@ -263,26 +264,33 @@ public class NoiseCanvas extends Canvas
 		this.cnr.start();
 	}
 	
-	public static FunctionDaDa_Ia getDefaultColorFunction() {
+	public static LayerMapper getDefaultLayerMapper() {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
-		AddOutDaDaDa_Da dirtLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
+		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
 			new Constant(56),
-			new TerrainScaleDaDaDa_Da( perlin, 8192, 24 ),
-			new TerrainScaleDaDaDa_Da( perlin, 4096, 16 ),
-			new TerrainScaleDaDaDa_Da( perlin, 1024, 12 ),
-			new TerrainScaleDaDaDa_Da( perlin,  256,  8 ),
-			new TerrainScaleDaDaDa_Da( perlin,   64,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin, 16384, 16 ),
+			new TerrainScaleDaDaDa_Da( perlin,  8192, 16 ),
+			new TerrainScaleDaDaDa_Da( perlin,  4096, 16 ),
+			new TerrainScaleDaDaDa_Da( perlin,   512, 12 ),
+		});
+		AddOutDaDaDa_Da dirtLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
+			sandLevel,
+			new TerrainScaleDaDaDa_Da( perlin,  2048, 32  ),
+			new TerrainScaleDaDaDa_Da( perlin,  1024, 12 ),
+			new TerrainScaleDaDaDa_Da( perlin,   256,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin,    64,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin,    32,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin,    16,  8 ),
+			new TerrainScaleDaDaDa_Da( perlin,     4,  2 ),
 		});
 		AddOutDaDaDa_Da stoneLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
 			dirtLevel,
 			new Constant(-4),
 			new TerrainScaleDaDaDa_Da( perlin,  128,  8 ),
-			new TerrainScaleDaDaDa_Da( perlin,    8,  8 ),
-		});
-		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
-			new Constant(36),
-			new TerrainScaleDaDaDa_Da( perlin, 2048, 32 ),
-			new TerrainScaleDaDaDa_Da( perlin,  512, 16 ),
+			new MultiplyOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
+				new TerrainScaleDaDaDa_Da( perlin, 1024,  2 ),
+				new TerrainScaleDaDaDa_Da( perlin,    8,  8 ),
+			}),
 		});
 		
 		LayerMapper lm = new LayerMapper();
@@ -297,21 +305,25 @@ public class NoiseCanvas extends Canvas
 			sandLevel
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			LayerMapper.Material.STONE,
-			new Constant(1),
-			stoneLevel
-		));
-		lm.layers.add( new LayerMapper.Layer(
 			LayerMapper.Material.DIRT,
 			new Constant(0),
 			dirtLevel
+		));
+		lm.layers.add( new LayerMapper.Layer(
+			LayerMapper.Material.STONE,
+			new Constant(1),
+			stoneLevel
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			LayerMapper.Material.BEDROCK,
 			new Constant(0),
 			new Constant(1)
 		));
-		return lm.getLayerColorFunction();
+		return lm;
+	}
+	
+	public static FunctionDaDa_Ia getDefaultColorFunction() {
+		return getDefaultLayerMapper().getLayerColorFunction();
 	}
 	
 	public static void main( String[] args ) {

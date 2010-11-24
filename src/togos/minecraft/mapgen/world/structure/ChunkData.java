@@ -23,6 +23,15 @@ public class ChunkData
 	public final int depth  =  16; // Z/+west/-east
 	public final int width  =  16; // X/+south/-north
 	
+	/*
+	 0---------(-z)
+	 |
+	 |
+	 |
+	 |
+	(+x)
+	*/
+	
 	public byte[] blockData      = new byte[height*depth*width];
 	public byte[] blockExtraBits = new byte[height*depth*width/2];
 	public byte[] skyLightData   = new byte[height*depth*width/2];

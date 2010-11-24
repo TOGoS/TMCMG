@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen;
+package togos.minecraft.mapgen.app;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,11 +8,10 @@ import java.util.HashMap;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
-import togos.minecraft.mapgen.world.BlockIDs;
+import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.world.ChunkUtil;
-import togos.minecraft.mapgen.world.structure.ChestData;
+import togos.minecraft.mapgen.world.gen.ChunkFunction;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.minecraft.mapgen.world.structure.InventoryItemData;
 
 public class MapWriter
 {
@@ -46,25 +45,41 @@ public class MapWriter
 			levelRootTags.put("Level",cd.toTag());
 			CompoundTag fileRootTag = new CompoundTag("",levelRootTags);
 			
-			System.out.println(fileRootTag);
+			// System.out.println(fileRootTag);
 			
 			nbtos.writeTag(fileRootTag);
 			nbtos.close();
 		} finally {
 			os.close();
 		}
-		System.err.println("Wrote "+fullPath);
+		// System.err.println("Wrote "+fullPath);
 	}
 	
 	public static void main(String[] args) {
+		int boundsX = 0;
+		int boundsZ = 0;
+		int boundsWidth = 1;
+		int boundsDepth = 1;
 		String mapDir = ".";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-map-dir".equals(args[i]) ) {
 				mapDir = args[++i];
+			} else if( "-x".equals(args[i]) ) {
+				boundsX = Integer.parseInt(args[++i]);
+			} else if( "-z".equals(args[i]) ) {
+				boundsZ = Integer.parseInt(args[++i]);
+			} else if( "-width".equals(args[i]) ) {
+				boundsWidth = Integer.parseInt(args[++i]);
+			} else if( "-depth".equals(args[i]) ) {
+				boundsDepth = Integer.parseInt(args[++i]);
+			} else {
+				System.err.println("Unrecognised argument: "+args[i]);
+				System.exit(1);
 			}
 		}
 		
 		try {
+			/*
 			ChunkData cd = new ChunkData();
 			for( int z=0; z<16; ++z ) {
 				for( int x=0; x<16; ++x ) {
@@ -92,6 +107,17 @@ public class MapWriter
 			ChunkUtil.addTileEntity(chest, cd);
 			ChunkUtil.calculateLighting(cd, 15);
 			new MapWriter().writeChunkToFile(cd, mapDir);
+			*/
+			
+			MapWriter mapWriter = new MapWriter();
+			ChunkFunction cfunc = NoiseCanvas.getDefaultLayerMapper().getLayerChunkFunction();
+			for( int z=0; z<boundsDepth; ++z ) {
+				for( int x=0; x<boundsWidth; ++x ) {
+					ChunkData cd = cfunc.getChunk(boundsX+x, boundsZ+z);
+					ChunkUtil.calculateLighting(cd, 15);
+					mapWriter.writeChunkToFile(cd, mapDir);
+				}
+			}
 		} catch( IOException e ) {
 			throw new RuntimeException(e);
 		}

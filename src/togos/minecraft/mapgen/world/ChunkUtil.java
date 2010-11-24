@@ -14,8 +14,12 @@ public class ChunkUtil
 				for( y = 127; y>=0; --y ) {
 					byte block = cd.getBlock(x,y,z);
 					switch( block ) {
-					case(0): case(8): case(9):
+					case(BlockIDs.AIR):
 						groundHeight = y;
+						break;
+					case(BlockIDs.WATER): case(BlockIDs.MOVING_WATER):
+						--light;
+						if( light < 0 ) light = 0;
 						break;
 					default:
 						light = 0;
