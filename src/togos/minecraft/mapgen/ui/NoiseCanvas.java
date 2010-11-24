@@ -337,5 +337,6 @@ public class NoiseCanvas extends Canvas
 		});
 		f.setVisible(true);
 		nc.setPos(0,0,1);
+		nc.requestFocus();
 	}
 }
