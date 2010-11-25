@@ -60,6 +60,14 @@ public class MapWriter
 		// System.err.println("Wrote "+fullPath);
 	}
 	
+	
+	public static String USAGE =
+		"Usage: mapwriter [options]\n" +
+		"\n" +
+		"Options:\n" +
+		"  -map-dir <dir>  ; directory under which to store chunk data\n" +
+		"  -x, -z, -width, -depth  ; bounds of area to generate";
+	
 	public static void main(String[] args) {
 		int boundsX = 0;
 		int boundsZ = 0;
@@ -79,6 +87,7 @@ public class MapWriter
 				boundsDepth = Integer.parseInt(args[++i]);
 			} else {
 				System.err.println("Unrecognised argument: "+args[i]);
+				System.err.println(USAGE);
 				System.exit(1);
 			}
 		}
