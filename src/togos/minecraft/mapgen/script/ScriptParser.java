@@ -1,6 +1,7 @@
 package togos.minecraft.mapgen.script;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,25 +9,6 @@ import java.util.List;
 
 public class ScriptParser
 {
-	static class ScriptNode {
-		String macroName;
-		List arguments;
-		
-		public ScriptNode( String macroName, List arguments ) {
-			this.macroName = macroName;
-			this.arguments = arguments;
-		}
-		
-		public boolean equals( Object o ) {
-			if( o instanceof ScriptNode ) {
-				ScriptNode osn = (ScriptNode)o;
-				return macroName.equals( osn.macroName ) &&
-					arguments.equals( osn.arguments );
-			}
-			return false;
-		}
-	}
-	
 	static HashMap operatorPrecedence = new HashMap();
 	static {
 		operatorPrecedence.put("**", new Integer(50));
@@ -39,6 +21,10 @@ public class ScriptParser
 	
 	protected ScriptTokenizer tokenizer;
 	
+	public ScriptParser( Reader r ) {
+		this.tokenizer = new ScriptTokenizer(r);
+	}
+	
 	protected String lastToken = null;
 	
 	protected String readToken() throws IOException {
@@ -46,7 +32,7 @@ public class ScriptParser
 			return tokenizer.readToken();
 		}
 		String t = lastToken;
-		lastToken = t;
+		lastToken = null;
 		return t;
 	}
 	
@@ -103,13 +89,32 @@ public class ScriptParser
 		if( oPrec == null ) {
 			throw new ParseException("Invalid operator '"+op+"'", 0);
 		}
-		while( oPrec.intValue() >= gtPrecedence ) {
-			if( oPrec.intValue() > gtPrecedence ) {
-				first = readNode( first, oPrec.intValue() );
+		if( oPrec.intValue() < gtPrecedence ) {
+			unreadToken(op);
+			return first;
+		} else if( oPrec.intValue() == gtPrecedence ) {
+			ArrayList arguments = new ArrayList();
+			arguments.add(first);
+			String fop = op;
+			while( oPrec.intValue() == gtPrecedence ) {
+				arguments.add( readNode( gtPrecedence+1 ) );
+				fop = readToken();
+				if( ")".equals(fop) || fop == null ) {
+					oPrec = new Integer(0);
+				} else {
+					oPrec = (Integer)operatorPrecedence.get(fop);
+					if( oPrec == null ) {
+						throw new ParseException("Invalid operator '"+fop+"'", 0);
+					}
+				}
 			}
-			// todo: yaddah yaddah not sure
+			unreadToken(fop);
+			first = new ScriptNode(op, arguments);
+		} else {
+			unreadToken(op);
+			first = readNode( first, oPrec.intValue() );
+			first = readNode( first, gtPrecedence );
 		}
-		unreadToken(op);
 		return first;
 	}
 	

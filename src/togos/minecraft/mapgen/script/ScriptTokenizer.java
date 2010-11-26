@@ -25,7 +25,7 @@ public class ScriptTokenizer
 		lastChar = c;
 	}
 	
-	protected boolean isDelimiter( char c ) {
+	protected boolean isDelimiter( int c ) {
 		switch( c ) {
 		case('('): case(')'): case('['): case(']'): case(','):
 			return true;
@@ -34,7 +34,7 @@ public class ScriptTokenizer
 		}
 	}
 	
-	protected boolean isWhitespace( char c ) {
+	protected boolean isWhitespace( int c ) {
 		switch( c ) {
 		case(' '): case('\t'): case('\n'): case('\r'):
 			return true;
@@ -43,7 +43,7 @@ public class ScriptTokenizer
 		}
 	}
 	
-	protected boolean isWordChar( char c ) {
+	protected boolean isWordChar( int c ) {
 		return !isWhitespace(c) && !isDelimiter(c) && c != -1;
 	}
 	
@@ -58,7 +58,7 @@ public class ScriptTokenizer
 				return String.valueOf((char)c);
 			} else {
 				String word = "";
-				while( isWordChar((char)c) ) {
+				while( isWordChar(c) ) {
 					word += (char)c;
 					c = readChar();
 				}
