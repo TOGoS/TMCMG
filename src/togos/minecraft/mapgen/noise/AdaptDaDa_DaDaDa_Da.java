@@ -12,7 +12,7 @@ public class AdaptDaDa_DaDaDa_Da implements FunctionDaDa_Da
 		this.next = next;
 	}
 	public AdaptDaDa_DaDaDa_Da( FunctionDaDaDa_Da next ) {
-		this( Constant.ZERO, next );
+		this( Constant_Da.ZERO, next );
 	}
 	
 	public void apply( int count, double[] inX, double[] inY, double[] out ) {

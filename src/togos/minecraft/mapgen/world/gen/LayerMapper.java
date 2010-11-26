@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
+import togos.minecraft.mapgen.noise.api.FunctionDaDa_DaIa;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
+import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class LayerMapper
@@ -36,8 +38,8 @@ public class LayerMapper
 	}
 	
 	public static class LayerColorFunction implements FunctionDaDa_Ia {
-		Layer[] layers;
-		public LayerColorFunction( Layer[] layers ) {
+		List layers;
+		public LayerColorFunction( List layers ) {
 			this.layers = layers;
 		}
 		
@@ -60,16 +62,16 @@ public class LayerMapper
 	    		highest[j] = Double.NEGATIVE_INFINITY;
 	    		out[j] = 0xFF000000;
 	    	}
-		    for( int i=0; i<layers.length; ++i ) {
-		    	Layer l = layers[i];
+		    for( Iterator li=layers.iterator(); li.hasNext(); ) {
+		    	Layer l = (Layer)li.next();
 		    	l.ceilingHeightFunction.apply(count, inX, inY, lCeil);
 		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
 		    	for( int j=0; j<count; ++j ) {
 		    		if( Double.isNaN(lCeil[j]) ) {
-		    			throw new RuntimeException("Ceiling height is NaN for layer "+i);
+		    			throw new RuntimeException("Ceiling height is NaN for layer "+l);
 		    		}
 		    		if( Double.isNaN(lFloor[j]) ) {
-		    			throw new RuntimeException("Floor height is NaN for layer "+i);
+		    			throw new RuntimeException("Floor height is NaN for layer "+l);
 		    		}
 		    		if( lCeil[j] < highest[j] ) continue;
 		    		if( lCeil[j] < lFloor[j] ) continue;
@@ -87,9 +89,9 @@ public class LayerMapper
 		static final int CHUNK_HEIGHT = 128;
 		*/
 		
-		protected Layer[] layers;
+		protected List layers;
 		
-		public LayerChunkMunger( Layer[] layers ) {
+		public LayerChunkMunger( List layers ) {
 			this.layers = layers;
 		}
 		
@@ -111,9 +113,9 @@ public class LayerMapper
 					++i;
 				}
 			}
-			for( int li=0; li<layers.length; ++li ) {
+			for( Iterator li=layers.iterator(); li.hasNext();  ) {
 				i=0;
-				Layer l = layers[li];
+				Layer l = (Layer)li.next();
 				// mix up z and y:
 				l.ceilingHeightFunction.apply(z.length, x, z, ceiling);
 				l.floorHeightFunction.apply(z.length, x, z, floor);
@@ -132,11 +134,51 @@ public class LayerMapper
 		}
 	}
 	
+	// TODO: should share everything but material.color with color function
+	public static class LayerGroundFunction implements FunctionDaDa_DaIa {
+		List layers;
+		public LayerGroundFunction( List layers ) {
+			this.layers = layers;
+		}
+		
+		public void apply( int count, double[] inX, double[] inY, double[] outZ, int[] outT ) {
+	    	double[] lCeil = new double[count];
+	    	double[] lFloor = new double[count];
+	    	double[] highest = outZ;
+	    	for( int j=0; j<count; ++j ) {
+	    		highest[j] = Double.NEGATIVE_INFINITY;
+	    		outT[j] = Blocks.AIR;
+	    	}
+		    for( Iterator li=layers.iterator(); li.hasNext(); ) {
+		    	Layer l = (Layer)li.next();
+		    	l.ceilingHeightFunction.apply(count, inX, inY, lCeil);
+		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
+		    	for( int j=0; j<count; ++j ) {
+		    		if( Double.isNaN(lCeil[j]) ) {
+		    			throw new RuntimeException("Ceiling height is NaN for layer "+l);
+		    		}
+		    		if( Double.isNaN(lFloor[j]) ) {
+		    			throw new RuntimeException("Floor height is NaN for layer "+l);
+		    		}
+		    		if( lCeil[j] < highest[j] ) continue;
+		    		if( lCeil[j] < lFloor[j] ) continue;
+		    		
+		    		outT[j] = l.material.blockNum;
+		    		highest[j] = lCeil[j];
+		    	}
+		    }
+		}
+	}
+	
 	public LayerColorFunction getLayerColorFunction() {
-		return new LayerColorFunction(layerArray(layers));
+		return new LayerColorFunction(layers);
 	}
 	
 	public LayerChunkMunger getLayerChunkMunger() {
-		return new LayerChunkMunger(layerArray(layers));
+		return new LayerChunkMunger(layers);
+	}
+	
+	public FunctionDaDa_DaIa getGroundFunction() {
+		return new LayerGroundFunction(layers);
 	}
 }

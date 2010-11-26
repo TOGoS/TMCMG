@@ -3,21 +3,21 @@ package togos.minecraft.mapgen.noise;
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
 
-public class Constant implements FunctionDaDaDa_Da, FunctionDaDa_Da
+public class Constant_Da implements FunctionDaDaDa_Da, FunctionDaDa_Da
 {
-	public static final Constant ZERO = new Constant(0);
+	public static final Constant_Da ZERO = new Constant_Da(0);
 	
-	public static Constant forValue( double v ) {
+	public static Constant_Da forValue( double v ) {
 		if( v == 0 ) {
 			return ZERO;
 		} else {
-			return new Constant(v);
+			return new Constant_Da(v);
 		}
 	}
 	
 	double value; // this sale is for a limited time only!
 	
-	public Constant( double value ) {
+	public Constant_Da( double value ) {
 		this.value = value;
 	}
 	

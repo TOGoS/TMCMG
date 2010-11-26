@@ -21,7 +21,11 @@ public class ChunkUtil
 					case(Blocks.AIR):
 						groundHeight = y;
 						break;
+					case(Blocks.LEAVES):
+						if( light > 13 ) light = 13;
+						break;
 					case(Blocks.WATER): case(Blocks.MOVING_WATER):
+						if( light > 12 ) light = 12;
 						--light;
 						if( light < 0 ) light = 0;
 						break;
@@ -62,6 +66,13 @@ public class ChunkUtil
 	}
 	
 	public static void stamp( MiniChunkData dest, Stamp s, int sx, int sy, int sz ) {
+		if( sx-s.originX+s.width < 0 ) return;
+		if( sx-s.originX >= dest.width ) return;
+		if( sy-s.originY+s.height < 0 ) return;
+		if( sy-s.originY >= dest.height ) return;
+		if( sz-s.originZ+s.depth < 0 ) return;
+		if( sz-s.originZ >= dest.depth ) return;
+		
 		for( int z=0; z<s.depth; ++z ) {
 			int dz = sz+z-s.originZ;
 			if( dz < 0 || dz >= dest.depth ) continue;

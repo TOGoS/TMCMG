@@ -8,11 +8,11 @@ import java.util.HashMap;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
-import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.Material;
+import togos.minecraft.mapgen.world.gen.WorldMapper;
 import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.InventoryItemData;
@@ -337,7 +337,7 @@ public class MapWriter
 			ChunkUtil.addTileEntityAndBlock(chest, s);
 			
 			MapWriter mapWriter = new MapWriter();
-			ChunkMunger cfunc = NoiseCanvas.getDefaultLayerMapper().getLayerChunkMunger();
+			ChunkMunger cfunc = WorldMapper.DEFAULT.getChunkMunger();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);
