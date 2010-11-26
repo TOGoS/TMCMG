@@ -11,7 +11,7 @@ import org.jnbt.NBTOutputStream;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
-import togos.minecraft.mapgen.world.gen.ChunkFunction;
+import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.Material;
 import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
@@ -337,10 +337,11 @@ public class MapWriter
 			ChunkUtil.addTileEntityAndBlock(chest, s);
 			
 			MapWriter mapWriter = new MapWriter();
-			ChunkFunction cfunc = NoiseCanvas.getDefaultLayerMapper().getLayerChunkFunction();
+			ChunkMunger cfunc = NoiseCanvas.getDefaultLayerMapper().getLayerChunkMunger();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
-					ChunkData cd = cfunc.getChunk(boundsX+x, boundsZ+z);
+					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);
+					cfunc.mungeChunk(cd);
 					ChunkUtil.calculateLighting(cd, 15);
 					if( x == 0 ) {
 						ChunkUtil.stamp(cd, s,  4, 32,  4);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
+import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
@@ -12,12 +12,12 @@ public class LayerMapper
 {
 	public static class Layer {
 		Material material;
-		FunctionDaDaDa_Da floorHeightFunction;
-		FunctionDaDaDa_Da ceilingHeightFunction;
+		FunctionDaDa_Da floorHeightFunction;
+		FunctionDaDa_Da ceilingHeightFunction;
 		
 		public Layer( Material material,
-			FunctionDaDaDa_Da floorHeightFunction,
-			FunctionDaDaDa_Da ceilingHeightFunction
+			FunctionDaDa_Da floorHeightFunction,
+			FunctionDaDa_Da ceilingHeightFunction
 		) {
 			this.material = material;
 			this.floorHeightFunction = floorHeightFunction;
@@ -55,7 +55,6 @@ public class LayerMapper
 		public void apply( int count, double[] inX, double[] inY, int[] out ) {
 	    	double[] lCeil = new double[count];
 	    	double[] lFloor = new double[count];
-	    	double[] inZ = new double[count];
 	    	double[] highest = new double[count];
 	    	for( int j=0; j<count; ++j ) {
 	    		highest[j] = Double.NEGATIVE_INFINITY;
@@ -63,8 +62,8 @@ public class LayerMapper
 	    	}
 		    for( int i=0; i<layers.length; ++i ) {
 		    	Layer l = layers[i];
-		    	l.ceilingHeightFunction.apply(count, inX, inY, inZ, lCeil);
-		    	l.floorHeightFunction.apply(count, inX, inY, inZ, lFloor);
+		    	l.ceilingHeightFunction.apply(count, inX, inY, lCeil);
+		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
 		    	for( int j=0; j<count; ++j ) {
 		    		if( Double.isNaN(lCeil[j]) ) {
 		    			throw new RuntimeException("Ceiling height is NaN for layer "+i);
@@ -81,7 +80,7 @@ public class LayerMapper
 		}
 	}
 	
-	class LayerChunkFunction implements ChunkFunction {
+	class LayerChunkMunger implements ChunkMunger {
 		/*
 		static final int CHUNK_WIDTH = 16;
 		static final int CHUNK_DEPTH = 16;
@@ -90,18 +89,16 @@ public class LayerMapper
 		
 		protected Layer[] layers;
 		
-		public LayerChunkFunction( Layer[] layers ) {
+		public LayerChunkMunger( Layer[] layers ) {
 			this.layers = layers;
 		}
 		
-		public ChunkData getChunk( int cx, int cz ) {
-			ChunkData cd = new ChunkData( cx, cz );
-			int cwx = cx*cd.width;
-			int cwz = cz*cd.depth;
+		public void mungeChunk( ChunkData cd ) {
+			int cwx = cd.x*cd.width;
+			int cwz = cd.z*cd.depth;
 			int count = cd.width*cd.depth;
 			double[] x = new double[count];
 			double[] z = new double[count];
-			double[] y = new double[count]; // zero!
 			double[] ceiling = new double[count];
 			double[] floor = new double[count];
 			int i=0;
@@ -118,8 +115,8 @@ public class LayerMapper
 				i=0;
 				Layer l = layers[li];
 				// mix up z and y:
-				l.ceilingHeightFunction.apply(z.length, x, z, y, ceiling);
-				l.floorHeightFunction.apply(z.length, x, z, y, floor);
+				l.ceilingHeightFunction.apply(z.length, x, z, ceiling);
+				l.floorHeightFunction.apply(z.length, x, z, floor);
 				for( int tx=0; tx<cd.width; ++tx ) {
 					for( int tz=0; tz<cd.depth; ++tz, ++i ) {
 						double flo = floor[i];
@@ -132,7 +129,6 @@ public class LayerMapper
 					}
 				}
 			}
-			return cd;
 		}
 	}
 	
@@ -140,7 +136,7 @@ public class LayerMapper
 		return new LayerColorFunction(layerArray(layers));
 	}
 	
-	public LayerChunkFunction getLayerChunkFunction() {
-		return new LayerChunkFunction(layerArray(layers));
+	public LayerChunkMunger getLayerChunkMunger() {
+		return new LayerChunkMunger(layerArray(layers));
 	}
 }

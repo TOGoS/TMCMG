@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
+import togos.minecraft.mapgen.noise.AdaptDaDa_DaDaDa_Da;
 import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.MultiplyOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.Constant;
@@ -303,17 +304,17 @@ public class NoiseCanvas extends Canvas
 		lm.layers.add( new LayerMapper.Layer(
 			Material.SAND,
 			new Constant(-10),
-			sandLevel
+			new AdaptDaDa_DaDaDa_Da(sandLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			Material.DIRT,
 			new Constant(0),
-			dirtLevel
+			new AdaptDaDa_DaDaDa_Da(dirtLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			Material.STONE,
 			new Constant(1),
-			stoneLevel
+			new AdaptDaDa_DaDaDa_Da(stoneLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			Material.BEDROCK,

@@ -14,9 +14,11 @@ public class ScriptParser
 		operatorPrecedence.put("**", new Integer(50));
 		operatorPrecedence.put("*",  new Integer(40));
 		operatorPrecedence.put("/",  new Integer(30));
-		operatorPrecedence.put("-",  new Integer(20));
-		operatorPrecedence.put("+",  new Integer(10));
-		operatorPrecedence.put(",",  new Integer( 5));
+		operatorPrecedence.put("-",  new Integer(25));
+		operatorPrecedence.put("+",  new Integer(20));
+		operatorPrecedence.put("=",  new Integer(15));
+		operatorPrecedence.put(",",  new Integer(10));
+		operatorPrecedence.put(";",  new Integer( 5));
 	}
 	
 	protected ScriptTokenizer tokenizer;

@@ -17,10 +17,13 @@ import togos.minecraft.mapgen.TagMap;
 
 public class ChunkData extends MiniChunkData
 {
+	public static int CHUNK_WIDTH  = 16;
+	public static int CHUNK_HEIGHT = 128;
+	public static int CHUNK_DEPTH  = 16;
 	public static int HEIGHT_MASK  = 0x7F;
 	
 	public ChunkData( int x, int z ) {
-		super(16,128,16);
+		super(CHUNK_WIDTH,CHUNK_HEIGHT,CHUNK_DEPTH);
 		this.x = x;
 		this.z = z;
 	}
@@ -41,7 +44,7 @@ public class ChunkData extends MiniChunkData
 	public byte[] skyLightData   = new byte[(height*depth*width+1)/2];
 	public byte[] blockLightData = new byte[(height*depth*width+1)/2];
 	public byte[] lightHeightData = new byte[depth*width];
-	protected int x,z;
+	public final int x,z;
 	
 	public int getChunkX() { return x; }
 	public int getChunkZ() { return z; }
