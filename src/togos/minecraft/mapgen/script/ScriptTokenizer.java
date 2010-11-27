@@ -25,9 +25,10 @@ public class ScriptTokenizer
 		lastChar = c;
 	}
 	
+	// Characters that force a new token, even if they are not surrounded by whitespace
 	protected boolean isDelimiter( int c ) {
 		switch( c ) {
-		case('('): case(')'): case('['): case(']'): case(','):
+		case('('): case(')'): case('['): case(']'): case(','): case(';'):
 			return true;
 		default:
 			return false;

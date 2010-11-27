@@ -3,7 +3,11 @@ package togos.minecraft.mapgen.script;
 import java.util.Collections;
 import java.util.List;
 
-class ScriptNode {
+class ScriptNode implements SourceLocation
+{
+	public String sourceFilename;
+	public int sourceLine, sourceColumn;
+	
 	public String macroName;
 	public List arguments;
 	
@@ -38,5 +42,15 @@ class ScriptNode {
 			str += " )";
 		}
 		return str;
+	}
+	
+	public String getSourceFilename() {
+		return sourceFilename;
+	}
+	public int getSourceLineNumber() {
+		return sourceLine;
+	}
+	public int getSourceColumnNumber() {
+		return sourceColumn;
 	}
 }

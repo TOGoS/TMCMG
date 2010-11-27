@@ -10,6 +10,7 @@ import java.util.List;
 public class ScriptParser
 {
 	static HashMap operatorPrecedence = new HashMap();
+	static int COMMA_PRECEDENCE = 10;
 	static {
 		operatorPrecedence.put("**", new Integer(50));
 		operatorPrecedence.put("*",  new Integer(40));
@@ -17,7 +18,7 @@ public class ScriptParser
 		operatorPrecedence.put("-",  new Integer(25));
 		operatorPrecedence.put("+",  new Integer(20));
 		operatorPrecedence.put("=",  new Integer(15));
-		operatorPrecedence.put(",",  new Integer(10));
+		operatorPrecedence.put(",",  new Integer(COMMA_PRECEDENCE));
 		operatorPrecedence.put(";",  new Integer( 5));
 	}
 	
@@ -51,11 +52,14 @@ public class ScriptParser
 			t = readToken();
 			while( !")".equals(t) ) {
 				unreadToken(t);
-				arguments.add(readNode(5));
+				arguments.add(readNode(COMMA_PRECEDENCE+1));
+				System.err.println("Read argument "+arguments.get(arguments.size()-1));
 				t = readToken();
+				System.err.println("Next token = "+t);
 				if( !",".equals(t) ) {
 					unreadToken(t);
 				}
+				t = readToken(); // next token after the comma
 			}
 			if( !")".equals(t) ) {
 				throw new ParseException("Expected ')', but got '"+t+"'", 0);

@@ -34,6 +34,14 @@ public class ScriptParserTest extends TestCase
 		assertEquals( expected, parse("foo( bar )") );
 	}
 	
+	public void testParseMultiArguments() {
+		ArrayList expectedArguments = new ArrayList();
+		expectedArguments.add( new ScriptNode("bar") );
+		expectedArguments.add( new ScriptNode("baz") );
+		ScriptNode expected = new ScriptNode("foo", expectedArguments);
+		assertEquals( expected, parse("foo( bar, baz )") );
+	}
+	
 	public void testParseOperator() {
 		ArrayList expectedArguments = new ArrayList();
 		expectedArguments.add( new ScriptNode("foo") );
@@ -80,5 +88,40 @@ public class ScriptParserTest extends TestCase
 		ScriptNode e3 = new ScriptNode("/", ea3);
 
 		assertEquals( e3, parse("foo ** bar / baz * quux * grawr / thing") );
+	}
+	
+	public void testParseEquals() {
+		ArrayList ea1 = new ArrayList();
+		ea1.add( new ScriptNode("cow") );
+		ea1.add( new ScriptNode("pig") );
+		ScriptNode e1 = new ScriptNode("=", ea1);
+		
+		assertEquals( e1, parse("cow = pig") );
+	}
+	
+	public void testParseEqualsAndSemiColinz() {
+		ArrayList ea1 = new ArrayList();
+		ea1.add( new ScriptNode("cow") );
+		ea1.add( new ScriptNode("pig") );
+		ScriptNode e1 = new ScriptNode("=", ea1);
+		
+		ArrayList ea2 = new ArrayList();
+		ea2.add( new ScriptNode("horse") );
+		ea2.add( new ScriptNode("rabbit") );
+		ScriptNode e2 = new ScriptNode("=", ea2);
+		
+		ArrayList ea3 = new ArrayList();
+		ea3.add(e1);
+		ea3.add(e2);
+		ScriptNode e3 = new ScriptNode(";",ea3);
+		
+		assertEquals( e3, parse("cow = pig; horse = rabbit") );
+	}
+	
+	public void testDifferentSyntax() {
+		assertEquals(
+			parse("peace = war; freedom = slavery; strength = ignorance"),
+			parse(";(=(peace,war), =(freedom,slavery), =(strength,ignorance))")
+		);
 	}
 }
