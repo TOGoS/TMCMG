@@ -342,7 +342,6 @@ public class MapWriter
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);
 					cfunc.mungeChunk(cd);
-					ChunkUtil.calculateLighting(cd, 15);
 					if( x == 0 ) {
 						ChunkUtil.stamp(cd, s,  4, 32,  4);
 						ChunkUtil.stamp(cd, s,  4, 32, 12);
@@ -359,6 +358,7 @@ public class MapWriter
 						ChunkUtil.stamp(cd, s,  4, 32, 12);
 						ChunkUtil.stamp(cd, s, 12, 32, 12);
 					}
+					ChunkUtil.calculateLighting(cd, 15);
 					mapWriter.writeChunkToFile(cd, mapDir);
 				}
 			}
