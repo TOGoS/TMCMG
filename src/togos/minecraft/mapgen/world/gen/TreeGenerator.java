@@ -9,7 +9,7 @@ public class TreeGenerator
 {
 	public Stamp generate( int seed ) {
 		Random r = new Random(seed);
-		Stamp s = new Stamp( 7, 14, 7, 7, 0, 7 );
+		Stamp s = new Stamp( 7, 14, 7, 3, 0, 3 );
 		for( int y=0; y<8; ++y ) {
 			s.setBlock(3,y,3, Blocks.LOG);
 		}

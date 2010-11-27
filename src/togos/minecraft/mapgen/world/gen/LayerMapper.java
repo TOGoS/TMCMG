@@ -106,10 +106,8 @@ public class LayerMapper
 			int i=0;
 			for( int tx=0; tx<cd.width; ++tx ) {
 				for( int tz=0; tz<cd.depth; ++tz ) {
-					// See diagram in ChunkData to see why
-					// z = x and x = -z
-					z[i] = cwx+tx;
-					x[i] = -cwz-tz;
+					x[i] = cwx+tx;
+					z[i] = cwz+tz;
 					++i;
 				}
 			}

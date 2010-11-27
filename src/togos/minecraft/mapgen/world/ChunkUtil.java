@@ -65,6 +65,9 @@ public class ChunkUtil
 		cd.setBlock(blockX, ted.y, blockZ, ted.getBlockId());
 	}
 	
+	/*
+	 * @param sx,sy,sz in-chunk (not world) coordinates at which to place the stamp's origin
+	 */
 	public static void stamp( MiniChunkData dest, Stamp s, int sx, int sy, int sz ) {
 		if( sx-s.originX+s.width < 0 ) return;
 		if( sx-s.originX >= dest.width ) return;

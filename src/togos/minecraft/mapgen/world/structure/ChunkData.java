@@ -33,12 +33,17 @@ public class ChunkData extends MiniChunkData
 	public final int depth  =  16; // Z/+west/-east
 	public final int width  =  16; // X/+south/-north
 	
-	 0---------(-z)
-	 |
-	 |
-	 |
-	 |
-	(+x)
+	            (N, -x)
+	               |
+	               |
+	               |
+	               |
+	(W, +z)--------0---------(E, -z) 
+	               |
+	               |
+	               |
+   	               |
+	            (S, +x)
 	*/
 	
 	public byte[] skyLightData   = new byte[(height*depth*width+1)/2];
