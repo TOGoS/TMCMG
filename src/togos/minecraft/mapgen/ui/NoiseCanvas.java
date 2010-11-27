@@ -32,10 +32,10 @@ public class NoiseCanvas extends Canvas
 	static class RandomColorFunction implements FunctionDaDa_Ia {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
 		AddOutDaDaDa_Da summed = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
-				new ScaleOutDaDaDa_Da( new ScaleInDaDaDa_Da(perlin,0.001,0.001,0.001), 0.03 ),
-				new ScaleOutDaDaDa_Da( new ScaleInDaDaDa_Da(perlin,0.01,0.01,0.01), 0.01 ),
-				new ScaleOutDaDaDa_Da( new ScaleInDaDaDa_Da(perlin,0.1,0.1,0.1), 0.01 ),
-				new ScaleOutDaDaDa_Da( new ScaleInDaDaDa_Da(perlin,1,1,1), 0.001 ),
+			new ScaleOutDaDaDa_Da( 0.03 , new ScaleInDaDaDa_Da(0.001,0.001,0.001, perlin) ),
+			new ScaleOutDaDaDa_Da( 0.01 , new ScaleInDaDaDa_Da(0.01,0.01,0.01, perlin) ),
+			new ScaleOutDaDaDa_Da( 0.01 , new ScaleInDaDaDa_Da(0.1,0.1,0.1, perlin) ),
+			new ScaleOutDaDaDa_Da( 0.001, new ScaleInDaDaDa_Da(1,1,1, perlin) ),
 		});
 		
 		public void apply( int count, double[] inX, double[] inY, int[] out ) {

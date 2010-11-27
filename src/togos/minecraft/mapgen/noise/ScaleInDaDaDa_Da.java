@@ -6,11 +6,11 @@ public class ScaleInDaDaDa_Da implements FunctionDaDaDa_Da
 {
 	FunctionDaDaDa_Da next;
 	double scaleX, scaleY, scaleZ;
-	public ScaleInDaDaDa_Da( FunctionDaDaDa_Da next, double scaleX, double scaleY, double scaleZ ) {
-		this.next = next;
+	public ScaleInDaDaDa_Da( double scaleX, double scaleY, double scaleZ, FunctionDaDaDa_Da next ) {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
+		this.next = next;
 	}
 	
 	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {

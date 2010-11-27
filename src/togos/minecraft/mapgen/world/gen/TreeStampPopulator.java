@@ -15,7 +15,16 @@ public class TreeStampPopulator implements StampPopulator
 	FunctionDaDa_Da densityFunction;
 	FunctionDaDa_DaIa groundFunction;
 	
-	Stamp treeStamp = new TreeGenerator().generate(100);
+	long hashMultiplier = -573845504;
+	TreeGenerator treeGenerator = new TreeGenerator();
+	
+	Stamp[] stamps = new Stamp[20];
+	protected Stamp getStamp(long wx, long wy) {
+		int seed = (int)((wx*hashMultiplier + wy)%stamps.length);
+		if( seed < 0 ) seed = -seed;
+		if( stamps[seed] == null ) stamps[seed] = treeGenerator.generate(seed);
+		return stamps[seed];
+	}
 	
 	protected void collect( Collection instances, int cx, int cz ) {
 		Random r = new Random(cx*1234+cz);
@@ -43,7 +52,7 @@ public class TreeStampPopulator implements StampPopulator
 			if( groundType[i] == Blocks.DIRT || groundType[i] == Blocks.GRASS ) {
 				long wx = (long)x[i];
 				long wz = (long)z[i];
-				instances.add(new StampInstance( treeStamp, wx, (int)groundHeight[i], wz ));
+				instances.add(new StampInstance( getStamp(wx,wz), wx, (int)groundHeight[i], wz ));
 				//System.err.println("Tree at "+wx+","+(int)groundHeight[i]+","+wz);
 			}
 		}

@@ -6,7 +6,7 @@ public class ScaleOutDaDaDa_Da implements FunctionDaDaDa_Da
 {
 	FunctionDaDaDa_Da next;
 	double scale;
-	public ScaleOutDaDaDa_Da( FunctionDaDaDa_Da next, double scale ) {
+	public ScaleOutDaDaDa_Da( double scale, FunctionDaDaDa_Da next ) {
 		this.next = next;
 		this.scale = scale;
 	}
