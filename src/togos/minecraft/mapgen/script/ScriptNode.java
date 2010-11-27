@@ -5,7 +5,7 @@ import java.util.List;
 
 class ScriptNode implements SourceLocation
 {
-	public String sourceFilename;
+	public String sourceFilename = "(unknown)";
 	public int sourceLine, sourceColumn;
 	
 	public String macroName;

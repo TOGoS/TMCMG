@@ -34,4 +34,13 @@ public class Constant_Da implements FunctionDaDaDa_Da, FunctionDaDa_Da
 	public void apply( int count, double[] inX, double[] inY, double[] out ) {
 		apply( count, out );
 	}
+	
+	public boolean equals( Object oth ) {
+		if( !(oth instanceof Constant_Da) ) return false;
+		return value == ((Constant_Da)oth).value;
+	}
+	
+	public String toString() {
+		return "const-double("+value+")";
+	}
 }

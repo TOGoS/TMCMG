@@ -19,4 +19,42 @@ public abstract class ReduceOutDaDaDa_Da implements FunctionDaDaDa_Da
 			reduce( count, subOut, out );
 		}
 	}
+	
+	public boolean equals( Object oth ) {
+		if( oth.getClass() != getClass() ) return false;
+		
+		if( ((ReduceOutDaDaDa_Da)oth).components.length != components.length ) return false;
+			
+		for( int i=0; i<components.length; ++i ) {
+			if( !components[i].equals( ((ReduceOutDaDaDa_Da)oth).components[i] ) ) return false;
+		}
+		return true;
+	}
+	
+	protected String getOperatorSymbol() { return null; }
+	protected String getMacroName() { return null; }
+	
+	public String toString() {
+		String macroName = getMacroName();
+		String opSymbol = getOperatorSymbol();
+		String separator;
+		String s;
+		if( macroName != null ) {
+			s = macroName + "(";
+			separator = ", ";
+		} else if( opSymbol != null ) {
+			s = "(";
+			separator = " "+opSymbol+" ";
+		} else {
+			return super.toString();
+		}
+		boolean first = true;
+		for( int i=0; i<components.length; ++i ) {
+			if( !first ) s += separator;
+			s += components[i].toString();
+			first = false;
+		}
+		s += ")";
+		return s;
+	}
 }

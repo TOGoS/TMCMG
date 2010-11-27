@@ -29,4 +29,9 @@ public class Constant_Ia implements FunctionDaDa_Ia
 	public void apply( int count, double[] inX, double[] inY, int[] out ) {
 		apply( count, out );
 	}
+	
+	public boolean equals( Object oth ) {
+		if( !(oth instanceof Constant_Ia) ) return false;
+		return value == ((Constant_Ia)oth).value;
+	}
 }

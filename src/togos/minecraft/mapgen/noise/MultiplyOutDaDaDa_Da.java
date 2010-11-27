@@ -13,4 +13,8 @@ public class MultiplyOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 			out[j] *= subOut[j];
 		}
 	}
+	
+	protected String getOperatorSymbol() {
+		return "*";
+	}
 }

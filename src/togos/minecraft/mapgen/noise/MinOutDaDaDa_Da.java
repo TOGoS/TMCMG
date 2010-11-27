@@ -13,4 +13,8 @@ public class MinOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 			out[j] = Math.min(out[j],subOut[j]);
 		}
 	}
+	
+	protected String getMacroName() {
+		return "min";
+	}
 }

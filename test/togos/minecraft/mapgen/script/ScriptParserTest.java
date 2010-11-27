@@ -2,12 +2,10 @@ package togos.minecraft.mapgen.script;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import junit.framework.TestCase;
-import togos.minecraft.mapgen.script.ScriptParser;
 
 public class ScriptParserTest extends TestCase
 {
@@ -16,8 +14,6 @@ public class ScriptParserTest extends TestCase
 			StringReader sr = new StringReader(str);
 			return new ScriptParser(sr).readNode(0);
 		} catch( IOException e ) {
-			throw new RuntimeException(e);
-		} catch( ParseException e ) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -2,7 +2,6 @@ package togos.minecraft.mapgen.script;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +42,7 @@ public class ScriptParser
 		this.lastToken = t;
 	}
 	
-	protected ScriptNode readMacro() throws IOException, ParseException {
+	protected ScriptNode readMacro() throws IOException {
 		String t = readToken();
 		String macroName = t;
 		List arguments = new ArrayList();
@@ -53,16 +52,14 @@ public class ScriptParser
 			while( !")".equals(t) ) {
 				unreadToken(t);
 				arguments.add(readNode(COMMA_PRECEDENCE+1));
-				System.err.println("Read argument "+arguments.get(arguments.size()-1));
 				t = readToken();
-				System.err.println("Next token = "+t);
 				if( !",".equals(t) ) {
 					unreadToken(t);
 				}
 				t = readToken(); // next token after the comma
 			}
 			if( !")".equals(t) ) {
-				throw new ParseException("Expected ')', but got '"+t+"'", 0);
+				throw new ParseError("Expected ')', but got '"+t+"'", new Token("","",0,0));
 			}
 		} else {
 			unreadToken(t);
@@ -70,14 +67,14 @@ public class ScriptParser
 		return new ScriptNode(macroName, arguments);
 	}
 	
-	protected ScriptNode readAtomicNode() throws IOException, ParseException {
+	protected ScriptNode readAtomicNode() throws IOException {
 		String t = readToken();
 		if( t == null ) return null;
 		if( "(".equals(t) ) {
 			ScriptNode sn = readNode(0);
 			t = readToken();
 			if( !")".equals(t) ) {
-				throw new ParseException("Expected ')', but got '"+t+"'", 0);
+				throw new ParseError("Expected ')', but got '"+t+"'", null);
 			}
 			return sn;
 		}
@@ -85,7 +82,7 @@ public class ScriptParser
 		return readMacro();
 	}
 	
-	public ScriptNode readNode( ScriptNode first, int gtPrecedence ) throws IOException, ParseException {
+	public ScriptNode readNode( ScriptNode first, int gtPrecedence ) throws IOException {
 		String op = readToken();
 		if( ")".equals(op) || op == null ) {
 			unreadToken(op);
@@ -93,7 +90,7 @@ public class ScriptParser
 		}
 		Integer oPrec = (Integer)operatorPrecedence.get(op);
 		if( oPrec == null ) {
-			throw new ParseException("Invalid operator '"+op+"'", 0);
+			throw new ParseError("Invalid operator '"+op+"'", new Token(op,op,0,0)); // TODO: fix token
 		}
 		if( oPrec.intValue() < gtPrecedence ) {
 			unreadToken(op);
@@ -110,7 +107,7 @@ public class ScriptParser
 				} else {
 					oPrec = (Integer)operatorPrecedence.get(fop);
 					if( oPrec == null ) {
-						throw new ParseException("Invalid operator '"+fop+"'", 0);
+						throw new ParseError("Invalid operator '"+fop+"'", new Token(op,op,0,0));
 					}
 				}
 			}
@@ -124,7 +121,7 @@ public class ScriptParser
 		return first;
 	}
 	
-	public ScriptNode readNode( int gtPrecedence ) throws IOException, ParseException {
+	public ScriptNode readNode( int gtPrecedence ) throws IOException {
 		ScriptNode first = readAtomicNode();
 		return readNode( first, gtPrecedence );
 	}

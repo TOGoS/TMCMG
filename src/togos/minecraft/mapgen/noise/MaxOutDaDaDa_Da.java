@@ -13,4 +13,8 @@ public class MaxOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 			out[j] = Math.max(out[j],subOut[j]);
 		}
 	}
+	
+	protected String getMacroName() {
+		return "max";
+	}
 }
