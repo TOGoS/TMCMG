@@ -7,9 +7,15 @@ public class TNLTokenizer
 {
 	Reader r;
 	int lastChar = -2;
+	String filename;
+	int lineNumber;
+	int columnNumber;
 	
-	public TNLTokenizer( Reader r ) {
+	public TNLTokenizer( Reader r, String filename, int lineNumber, int columnNumber ) {
 		this.r = r;
+		this.filename = filename;
+		this.columnNumber = columnNumber;
+		this.lineNumber = lineNumber;
 	}
 	
 	protected int readChar() throws IOException {
@@ -48,15 +54,26 @@ public class TNLTokenizer
 		return !isWhitespace(c) && !isDelimiter(c) && c != -1;
 	}
 	
-	public String readToken() throws IOException {
+	public Token readToken() throws IOException {
 		int c = readChar();
 		while( true ) {
 			if( c == -1 ) {
 				return null;
+			} else if( c == '\n' ) {
+				++lineNumber;
+				columnNumber = 1;
+				c = readChar();
+			} else if( c == '\t' ) {
+				++columnNumber;
+				while( (columnNumber-1) % 8 == 0 ) {
+					++columnNumber;
+				}
+				c = readChar();
 			} else if( isWhitespace((char)c) ) {
+				++columnNumber;
 				c = readChar();
 			} else if( isDelimiter((char)c) ) {
-				return String.valueOf((char)c);
+				return new Token(String.valueOf((char)c),filename,lineNumber,columnNumber++);
 			} else {
 				String word = "";
 				while( isWordChar(c) ) {
@@ -64,7 +81,9 @@ public class TNLTokenizer
 					c = readChar();
 				}
 				unreadChar(c);
-				return word;
+				Token t = new Token(word,filename,lineNumber,columnNumber);
+				columnNumber += word.length();
+				return t;
 			}
 		}
 	}

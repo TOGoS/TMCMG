@@ -1,7 +1,6 @@
 package togos.noise2.lang;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,58 +22,62 @@ public class TNLParser
 	
 	protected TNLTokenizer tokenizer;
 	
-	public TNLParser( Reader r ) {
-		this.tokenizer = new TNLTokenizer(r);
+	public TNLParser( TNLTokenizer t ) {
+		this.tokenizer = t;
 	}
 	
-	protected String lastToken = null;
+	protected Token lastToken = null;
 	
-	protected String readToken() throws IOException {
+	protected Token readToken() throws IOException {
 		if( lastToken == null ) {
 			return tokenizer.readToken();
 		}
-		String t = lastToken;
+		Token t = lastToken;
 		lastToken = null;
 		return t;
 	}
 	
-	protected void unreadToken( String t ) {
+	protected void unreadToken( Token t ) {
 		this.lastToken = t;
 	}
 	
 	protected ASTNode readMacro() throws IOException {
-		String t = readToken();
-		String macroName = t;
+		Token t0 = readToken();
+		String macroName = t0.value;
 		List arguments = new ArrayList();
-		t = readToken();
-		if( "(".equals(t) ) {
+		Token t = readToken();
+		if( t != null && "(".equals(t.value) ) {
 			t = readToken();
-			while( !")".equals(t) ) {
+			while( t != null && !")".equals(t.value) ) {
 				unreadToken(t);
 				arguments.add(readNode(COMMA_PRECEDENCE+1));
 				t = readToken();
-				if( !",".equals(t) ) {
+				if( t != null && !",".equals(t.value) ) {
 					unreadToken(t);
 				}
 				t = readToken(); // next token after the comma
 			}
-			if( !")".equals(t) ) {
-				throw new ParseError("Expected ')', but got '"+t+"'", new Token("","",0,0));
+			if( t == null ) {
+				throw new ParseError("Expected ')', but reached end of source.", t);
+			} else if( !")".equals(t.value) ) {
+				throw new ParseError("Expected ')', but got '"+t+"'.", t);
 			}
 		} else {
 			unreadToken(t);
 		}
-		return new ASTNode(macroName, arguments);
+		return new ASTNode(macroName, arguments, t0);
 	}
 	
 	protected ASTNode readAtomicNode() throws IOException {
-		String t = readToken();
+		Token t = readToken();
 		if( t == null ) return null;
-		if( "(".equals(t) ) {
+		if( "(".equals(t.value) ) {
 			ASTNode sn = readNode(0);
 			t = readToken();
-			if( !")".equals(t) ) {
-				throw new ParseError("Expected ')', but got '"+t+"'", null);
+			if( t == null ) {
+				throw new ParseError("Expected ')', but reached end of source.", null);
+			} else if( !")".equals(t.value) ) {
+				throw new ParseError("Expected ')', but got '"+t.value+"'", t);
 			}
 			return sn;
 		}
@@ -83,14 +86,14 @@ public class TNLParser
 	}
 	
 	public ASTNode readNode( ASTNode first, int gtPrecedence ) throws IOException {
-		String op = readToken();
-		if( ")".equals(op) || op == null ) {
+		Token op = readToken();
+		if( op == null || ")".equals(op.value) ) {
 			unreadToken(op);
 			return first;
 		}
-		Integer oPrec = (Integer)operatorPrecedence.get(op);
+		Integer oPrec = (Integer)operatorPrecedence.get(op.value);
 		if( oPrec == null ) {
-			throw new ParseError("Invalid operator '"+op+"'", new Token(op,op,0,0)); // TODO: fix token
+			throw new ParseError("Invalid operator '"+op.value+"'", op);
 		}
 		if( oPrec.intValue() < gtPrecedence ) {
 			unreadToken(op);
@@ -98,21 +101,21 @@ public class TNLParser
 		} else if( oPrec.intValue() == gtPrecedence ) {
 			ArrayList arguments = new ArrayList();
 			arguments.add(first);
-			String fop = op;
+			Token fop = op;
 			while( oPrec.intValue() == gtPrecedence ) {
 				arguments.add( readNode( gtPrecedence+1 ) );
 				fop = readToken();
-				if( ")".equals(fop) || fop == null ) {
+				if( fop == null || ")".equals(fop.value) ) {
 					oPrec = new Integer(0);
 				} else {
-					oPrec = (Integer)operatorPrecedence.get(fop);
+					oPrec = (Integer)operatorPrecedence.get(fop.value);
 					if( oPrec == null ) {
-						throw new ParseError("Invalid operator '"+fop+"'", new Token(op,op,0,0));
+						throw new ParseError("Invalid operator '"+fop.value+"'", fop);
 					}
 				}
 			}
 			unreadToken(fop);
-			first = new ASTNode(op, arguments);
+			first = new ASTNode(op.value, arguments, op);
 		} else {
 			unreadToken(op);
 			first = readNode( first, oPrec.intValue() );

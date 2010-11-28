@@ -11,13 +11,16 @@ public class ASTNode implements SourceLocation
 	public String macroName;
 	public List arguments;
 	
-	public ASTNode( String macroName, List arguments ) {
+	public ASTNode( String macroName, List arguments, SourceLocation sloc ) {
 		this.macroName = macroName;
 		this.arguments = arguments;
+		this.sourceFilename = sloc.getSourceFilename();
+		this.sourceLine = sloc.getSourceLineNumber();
+		this.sourceColumn = sloc.getSourceColumnNumber();
 	}
 	
-	public ASTNode( String macroName ) {
-		this( macroName, Collections.EMPTY_LIST );
+	public ASTNode( String macroName, SourceLocation sloc ) {
+		this( macroName, Collections.EMPTY_LIST, sloc );
 	}
 	
 	public boolean equals( Object o ) {

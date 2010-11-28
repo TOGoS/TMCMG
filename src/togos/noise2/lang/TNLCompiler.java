@@ -57,13 +57,17 @@ public class TNLCompiler
 		}
 	}
 	
-	public Object compile( String source ) {
-		TNLParser parser = new TNLParser(new StringReader(source));
+	public Object compile( String source, String sourceName ) {
+		TNLParser parser = new TNLParser(new TNLTokenizer(new StringReader(source), sourceName, 1, 1));
 		try {
 			ASTNode sn = parser.readNode(TNLParser.COMMA_PRECEDENCE);
 			return compile(sn);
 		} catch( IOException e ) {
 			throw new CompileError(e, new Token("","(inline)",1,1));
 		}
+	}
+
+	public Object compile( String source ) {
+		return compile( source, "(unnamed)" );
 	}
 }
