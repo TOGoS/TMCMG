@@ -69,11 +69,8 @@ public final class D5_2Perlin
 		double u = fade(x), // COMPUTE FADE CURVES
 		       v = fade(y), // FOR EACH OF X,Y,Z.
 		       w = fade(z);
-		final int A = p[X] + Y, AAA = p[A] + Z, AAB = p[p[X] + Y1] + Z,   // HASH
-		                                                                  // COORDINATES
-                                                                          // OF
-		          B = p[X1] + Y, ABA = p[B] + Z, ABB = p[p[X1] + Y1] + Z, // THE 8 CUBE
-                                                                          // CORNERS,
+		final int A = p[X] + Y, AAA = p[A] + Z, AAB = p[p[X] + Y1] + Z,   // HASH COORDINATES OF
+		          B = p[X1] + Y, ABA = p[B] + Z, ABB = p[p[X1] + Y1] + Z, // THE 8 CUBE CORNERS,
 		          BAA = p[A] + Z1, BAB = p[p[X] + Y1] + Z1, BBA = p[B] + Z1, BBB = p[p[X1] + Y1] + Z1;
 
 		return lerp(w, lerp(v, lerp(u, grad(p[AAA], x, y, z), // AND ADD
@@ -95,7 +92,7 @@ public final class D5_2Perlin
 	}
 
 	static double grad(int hash, double x, double y, double z) {
-		int h = hash & 15; // CONVERT LO 4 BITS OF HASH CODE
+		int h = hash & 15;        // CONVERT LO 4 BITS OF HASH CODE
 		double u = h < 8 ? x : y, // INTO 12 GRADIENT DIRECTIONS.
 		       v = h < 4 ? y : h == 12 || h == 14 ? x : z;
 		return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
