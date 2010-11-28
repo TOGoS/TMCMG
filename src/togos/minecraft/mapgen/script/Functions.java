@@ -1,7 +1,7 @@
 package togos.minecraft.mapgen.script;
 
-import togos.minecraft.mapgen.noise.AdaptDaDa_DaDaDa_Da;
-import togos.minecraft.mapgen.noise.AdaptDaDa_Da_Ia;
+import togos.minecraft.mapgen.noise.AdaptInDaDa_DaDaDa_Da;
+import togos.minecraft.mapgen.noise.AdaptOutDaDa_Da_Ia;
 import togos.minecraft.mapgen.noise.Constant_Da;
 import togos.minecraft.mapgen.noise.Constant_Ia;
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
@@ -24,7 +24,7 @@ public class Functions
 		if( r instanceof FunctionDaDa_Da ) {
 			return (FunctionDaDa_Da)r;
 		} else if( r instanceof FunctionDaDaDa_Da ) {
-			return new AdaptDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
+			return new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
@@ -34,13 +34,13 @@ public class Functions
 
 	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) {
 		if( r instanceof FunctionDaDaDa_Da ) {
-			r = new AdaptDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
+			r = new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
 		}
 		
 		if( r instanceof FunctionDaDa_Ia ) {
 			return (FunctionDaDa_Ia)r;
 		} else if( r instanceof FunctionDaDa_Da ) {
-			return new AdaptDaDa_Da_Ia( (FunctionDaDa_Da)r );
+			return new AdaptOutDaDa_Da_Ia( (FunctionDaDa_Da)r );
 		} else if( r instanceof Number ) {
 			return new Constant_Ia( ((Number)r).intValue() );
 		} else {

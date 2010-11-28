@@ -3,10 +3,10 @@ package togos.minecraft.mapgen.noise;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 
-public class AdaptDaDa_Da_Ia implements FunctionDaDa_Ia
+public class AdaptOutDaDa_Da_Ia implements FunctionDaDa_Ia
 {
 	FunctionDaDa_Da next;
-	public AdaptDaDa_Da_Ia( FunctionDaDa_Da next ) {
+	public AdaptOutDaDa_Da_Ia( FunctionDaDa_Da next ) {
 		this.next = next;
 	}
 	
