@@ -1,17 +1,17 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.minecraft.mapgen.noise.AdaptInDaDa_DaDaDa_Da;
-import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.Constant_Da;
-import togos.minecraft.mapgen.noise.Constant_Ia;
-import togos.minecraft.mapgen.noise.MultiplyOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
-import togos.minecraft.mapgen.noise.ScaleInDaDaDa_Da;
-import togos.minecraft.mapgen.noise.ScaleOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.TerrainScaleDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 import togos.minecraft.mapgen.world.Blocks;
+import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
+import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.Constant_Da;
+import togos.noise2.function.Constant_Ia;
+import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.FunctionDaDa_Ia;
+import togos.noise2.function.MultiplyOutDaDaDa_Da;
+import togos.noise2.function.PerlinDaDaDa_Da;
+import togos.noise2.function.ScaleInDaDaDa_Da;
+import togos.noise2.function.ScaleOutDaDaDa_Da;
+import togos.noise2.function.TerrainScaleDaDaDa_Da;
 
 public class WorldMapper
 {

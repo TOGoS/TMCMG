@@ -37,5 +37,4 @@ public class Blocks
 	public static final short DIAMOND_AXE = 0x0117;
 	public static final short FLINT = 0x013E;
 	public static final short GRILLED_PORK = 0x0140;
-
 }

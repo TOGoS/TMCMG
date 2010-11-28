@@ -124,16 +124,16 @@ public class MapWriter
 			*/
 			
 			HashMap stampMaterials = new HashMap();
-			stampMaterials.put(Character.valueOf('#'), Material.BEDROCK);
-			stampMaterials.put(Character.valueOf('X'), Material.STONE);
-			stampMaterials.put(Character.valueOf('D'), Material.DIRT);
-			stampMaterials.put(Character.valueOf('C'), Material.COBBLESTONE);
-			stampMaterials.put(Character.valueOf('M'), Material.MOSSY_COBBLESTONE);
-			stampMaterials.put(Character.valueOf('w'), Material.WORKBENCH);
-			stampMaterials.put(Character.valueOf('S'), Material.SAND);
+			stampMaterials.put(Character.valueOf('#'), Material.forBlockType(Blocks.BEDROCK));
+			stampMaterials.put(Character.valueOf('X'), Material.forBlockType(Blocks.STONE));
+			stampMaterials.put(Character.valueOf('D'), Material.forBlockType(Blocks.DIRT));
+			stampMaterials.put(Character.valueOf('C'), Material.forBlockType(Blocks.COBBLESTONE));
+			stampMaterials.put(Character.valueOf('M'), Material.forBlockType(Blocks.MOSSY_COBBLESTONE));
+			stampMaterials.put(Character.valueOf('w'), Material.forBlockType(Blocks.WORKBENCH));
+			stampMaterials.put(Character.valueOf('S'), Material.forBlockType(Blocks.SAND));
 			stampMaterials.put(Character.valueOf('t'),
 				new Material(0xFFFFFF00, Blocks.TORCH, (byte)0x05));
-			stampMaterials.put(Character.valueOf('.'), Material.AIR);
+			stampMaterials.put(Character.valueOf('.'), Material.forBlockType(Blocks.AIR));
 			
 			Stamp s = new Stamp(8,64,8,4,0,4);
 			{

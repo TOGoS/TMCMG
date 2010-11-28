@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_DaIa;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.noise2.function.FunctionDaDa_Da;
+import togos.noise2.function.FunctionDaDa_DaIa;
+import togos.noise2.function.FunctionDaDa_Ia;
 
 public class LayerMapper
 {	

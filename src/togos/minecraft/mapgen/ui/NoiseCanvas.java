@@ -17,13 +17,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
-import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
-import togos.minecraft.mapgen.noise.ScaleInDaDaDa_Da;
-import togos.minecraft.mapgen.noise.ScaleOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 import togos.minecraft.mapgen.world.gen.WorldMapper;
+import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.FunctionDaDa_Ia;
+import togos.noise2.function.PerlinDaDaDa_Da;
+import togos.noise2.function.ScaleInDaDaDa_Da;
+import togos.noise2.function.ScaleOutDaDaDa_Da;
 
 public class NoiseCanvas extends Canvas
 {

@@ -2,17 +2,22 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.Random;
 
-import togos.minecraft.mapgen.noise.*;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.Stamp;
+import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.DistanceDaDaDa_Da;
+import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.PerlinDaDaDa_Da;
+import togos.noise2.function.ScaleInDaDaDa_Da;
+import togos.noise2.function.ScaleOutDaDaDa_Da;
+import togos.noise2.function.TranslateInDaDaDa_Da;
 
-public class TreeGenerator
+public class TreeGenerator implements StampGenerator
 {
 	int minHeight = 3;
 	int maxHeight = 7;
 	
-	public Stamp generate( int seed ) {
+	public Stamp generateStamp( int seed ) {
 		Random r = new Random(seed);
 		int trunkHeight = minHeight+r.nextInt(maxHeight-minHeight);
 		int girth = trunkHeight/2;
@@ -26,7 +31,7 @@ public class TreeGenerator
 				new TranslateInDaDaDa_Da(r.nextDouble()*10, r.nextDouble()*10, r.nextDouble()*10,
 					new ScaleInDaDaDa_Da(0.2, 0.2, 0.2, new PerlinDaDaDa_Da()))),
 			new TranslateInDaDaDa_Da(-w/2d, -trunkHeight, -d/2d,
-				new ScaleInDaDaDa_Da(1d/2.5, 3d/(2d*trunkHeight), 1d/2.5,
+				new ScaleInDaDaDa_Da(1d/2.5, 2d/(1d*trunkHeight), 1d/2.5,
 					new DistanceDaDaDa_Da()))
 		});
 		
