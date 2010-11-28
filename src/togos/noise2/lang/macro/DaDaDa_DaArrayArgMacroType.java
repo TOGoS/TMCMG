@@ -1,6 +1,9 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang.macro;
 
 import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.lang.ASTNode;
+import togos.noise2.lang.FunctionUtil;
+import togos.noise2.lang.TNLCompiler;
 
 public class DaDaDa_DaArrayArgMacroType extends ArrayArgMacroType
 {
@@ -8,8 +11,8 @@ public class DaDaDa_DaArrayArgMacroType extends ArrayArgMacroType
 		super( functionClass, FunctionDaDaDa_Da.class );
 	}
 	
-	protected Object compileArgument(ScriptCompiler c, ScriptNode sn) {
+	protected Object compileArgument(TNLCompiler c, ASTNode sn) {
 		Object r = c.compile(sn);
-		return Functions.toDaDaDa_Da(r, sn);
+		return FunctionUtil.toDaDaDa_Da(r, sn);
 	}
 }

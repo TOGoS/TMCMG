@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
 import togos.noise2.function.AdaptOutDaDa_Da_Ia;
@@ -8,7 +8,7 @@ import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
 
-public class Functions
+public class FunctionUtil
 {
 	public static FunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) {
 		if( r instanceof FunctionDaDaDa_Da ) {

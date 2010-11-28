@@ -1,9 +1,9 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 import java.util.Collections;
 import java.util.List;
 
-class ScriptNode implements SourceLocation
+public class ASTNode implements SourceLocation
 {
 	public String sourceFilename = "(unknown)";
 	public int sourceLine, sourceColumn;
@@ -11,18 +11,18 @@ class ScriptNode implements SourceLocation
 	public String macroName;
 	public List arguments;
 	
-	public ScriptNode( String macroName, List arguments ) {
+	public ASTNode( String macroName, List arguments ) {
 		this.macroName = macroName;
 		this.arguments = arguments;
 	}
 	
-	public ScriptNode( String macroName ) {
+	public ASTNode( String macroName ) {
 		this( macroName, Collections.EMPTY_LIST );
 	}
 	
 	public boolean equals( Object o ) {
-		if( o instanceof ScriptNode ) {
-			ScriptNode osn = (ScriptNode)o;
+		if( o instanceof ASTNode ) {
+			ASTNode osn = (ASTNode)o;
 			return macroName.equals( osn.macroName ) &&
 				arguments.equals( osn.arguments );
 		}

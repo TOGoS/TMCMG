@@ -1,7 +1,12 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang.macro;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+
+import togos.noise2.lang.ASTNode;
+import togos.noise2.lang.CompileError;
+import togos.noise2.lang.MacroType;
+import togos.noise2.lang.TNLCompiler;
 
 public abstract class ArrayArgMacroType implements MacroType
 {
@@ -13,13 +18,13 @@ public abstract class ArrayArgMacroType implements MacroType
 		this.argClass = argClass;
 	}
 	
-	protected abstract Object compileArgument( ScriptCompiler c, ScriptNode sn );	
+	protected abstract Object compileArgument( TNLCompiler c, ASTNode sn );	
 	
-	public Object instantiate(ScriptCompiler c, ScriptNode sn) {
+	public Object instantiate(TNLCompiler c, ASTNode sn) {
 		int count = sn.arguments.size();
 		Object fargs = Array.newInstance(argClass, count);
 		for( int i=0; i<count; ++i  ) {
-			Array.set(fargs, i, compileArgument(c, (ScriptNode)sn.arguments.get(i)));
+			Array.set(fargs, i, compileArgument(c, (ASTNode)sn.arguments.get(i)));
 		}
 		try {
 			return compiledClass.getConstructor(new Class[]{fargs.getClass()}).newInstance(new Object[]{fargs});

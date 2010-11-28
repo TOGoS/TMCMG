@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 public class CompileError extends RuntimeException
 {

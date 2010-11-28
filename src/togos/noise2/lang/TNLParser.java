@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ScriptParser
+public class TNLParser
 {
 	static HashMap operatorPrecedence = new HashMap();
 	static int COMMA_PRECEDENCE = 10;
@@ -21,10 +21,10 @@ public class ScriptParser
 		operatorPrecedence.put(";",  new Integer( 5));
 	}
 	
-	protected ScriptTokenizer tokenizer;
+	protected TNLTokenizer tokenizer;
 	
-	public ScriptParser( Reader r ) {
-		this.tokenizer = new ScriptTokenizer(r);
+	public TNLParser( Reader r ) {
+		this.tokenizer = new TNLTokenizer(r);
 	}
 	
 	protected String lastToken = null;
@@ -42,7 +42,7 @@ public class ScriptParser
 		this.lastToken = t;
 	}
 	
-	protected ScriptNode readMacro() throws IOException {
+	protected ASTNode readMacro() throws IOException {
 		String t = readToken();
 		String macroName = t;
 		List arguments = new ArrayList();
@@ -64,14 +64,14 @@ public class ScriptParser
 		} else {
 			unreadToken(t);
 		}
-		return new ScriptNode(macroName, arguments);
+		return new ASTNode(macroName, arguments);
 	}
 	
-	protected ScriptNode readAtomicNode() throws IOException {
+	protected ASTNode readAtomicNode() throws IOException {
 		String t = readToken();
 		if( t == null ) return null;
 		if( "(".equals(t) ) {
-			ScriptNode sn = readNode(0);
+			ASTNode sn = readNode(0);
 			t = readToken();
 			if( !")".equals(t) ) {
 				throw new ParseError("Expected ')', but got '"+t+"'", null);
@@ -82,7 +82,7 @@ public class ScriptParser
 		return readMacro();
 	}
 	
-	public ScriptNode readNode( ScriptNode first, int gtPrecedence ) throws IOException {
+	public ASTNode readNode( ASTNode first, int gtPrecedence ) throws IOException {
 		String op = readToken();
 		if( ")".equals(op) || op == null ) {
 			unreadToken(op);
@@ -112,7 +112,7 @@ public class ScriptParser
 				}
 			}
 			unreadToken(fop);
-			first = new ScriptNode(op, arguments);
+			first = new ASTNode(op, arguments);
 		} else {
 			unreadToken(op);
 			first = readNode( first, oPrec.intValue() );
@@ -121,8 +121,8 @@ public class ScriptParser
 		return first;
 	}
 	
-	public ScriptNode readNode( int gtPrecedence ) throws IOException {
-		ScriptNode first = readAtomicNode();
+	public ASTNode readNode( int gtPrecedence ) throws IOException {
+		ASTNode first = readAtomicNode();
 		return readNode( first, gtPrecedence );
 	}
 }

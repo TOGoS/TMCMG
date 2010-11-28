@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -7,13 +7,13 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScriptCompiler
+public class TNLCompiler
 {
 	HashMap macroTypes = new HashMap();
 	HashSet compilingMacroTypes = new HashSet();
 	HashMap macroDefs = new HashMap();
 	
-	public void addMacroDef( String name, ScriptNode node ) {
+	public void addMacroDef( String name, ASTNode node ) {
 		if( macroTypes.containsKey(name) ) {
 			throw new CompileError("Attempt to redefine macro '"+name+"'", node);
 		}
@@ -22,7 +22,7 @@ public class ScriptCompiler
 	
 	protected MacroType getMacroType( String name, SourceLocation sloc ) {
 		if( !macroTypes.containsKey(name) ) {
-			ScriptNode def = (ScriptNode)macroDefs.get(name);
+			ASTNode def = (ASTNode)macroDefs.get(name);
 			if( def == null ) {
 				throw new CompileError("Reference to undefined macro "+name, sloc);
 			}
@@ -43,7 +43,7 @@ public class ScriptCompiler
 	Pattern intPat = Pattern.compile("[+-]?\\d+");
 	Pattern floatPat = Pattern.compile("[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?");
 	
-	public Object compile( ScriptNode node ) {
+	public Object compile( ASTNode node ) {
 		Matcher m;
 		if( (m = hexIntPat.matcher(node.macroName)).matches() ) {
 			return Integer.valueOf((m.group(1) == null ? "" : m.group(1))+m.group(2),16);
@@ -58,9 +58,9 @@ public class ScriptCompiler
 	}
 	
 	public Object compile( String source ) {
-		ScriptParser parser = new ScriptParser(new StringReader(source));
+		TNLParser parser = new TNLParser(new StringReader(source));
 		try {
-			ScriptNode sn = parser.readNode(ScriptParser.COMMA_PRECEDENCE);
+			ASTNode sn = parser.readNode(TNLParser.COMMA_PRECEDENCE);
 			return compile(sn);
 		} catch( IOException e ) {
 			throw new CompileError(e, new Token("","(inline)",1,1));

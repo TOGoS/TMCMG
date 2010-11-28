@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 import junit.framework.TestCase;
 import togos.noise2.function.AddOutDaDaDa_Da;
@@ -7,11 +7,14 @@ import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
+import togos.noise2.lang.TNLCompiler;
+import togos.noise2.lang.macro.ConstantMacroType;
+import togos.noise2.lang.macro.DaDaDa_DaArrayArgMacroType;
 
-public class ScriptCompilerTest extends TestCase
+public class TNLCompilerTest extends TestCase
 {
 	public void testCompileInt() {
-		ScriptCompiler comp = new ScriptCompiler();
+		TNLCompiler comp = new TNLCompiler();
 		assertEquals( new Integer(0), comp.compile("0") );
 		assertEquals( new Integer(-123), comp.compile("-123") );
 		assertEquals( new Integer(0x4040), comp.compile("0x4040") );
@@ -19,14 +22,14 @@ public class ScriptCompilerTest extends TestCase
 	}
 
 	public void testCompileDouble() {
-		ScriptCompiler comp = new ScriptCompiler();
+		TNLCompiler comp = new TNLCompiler();
 		assertEquals( new Double(0.125), comp.compile("0.125") );
 		assertEquals( new Double(-100.25), comp.compile("-100.25") );
 		assertEquals( new Double(1.5e-5), comp.compile("+1.5e-5") );
 	}
 
 	public void testCompileFunction() {
-		ScriptCompiler comp = new ScriptCompiler();
+		TNLCompiler comp = new TNLCompiler();
 		comp.macroTypes.put("*", new DaDaDa_DaArrayArgMacroType(MultiplyOutDaDaDa_Da.class));
 		assertEquals( new MultiplyOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
 			new Constant_Da(2), new Constant_Da(3)
@@ -35,7 +38,7 @@ public class ScriptCompilerTest extends TestCase
 
 	public void testCompileFunction2() {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
-		ScriptCompiler comp = new ScriptCompiler();
+		TNLCompiler comp = new TNLCompiler();
 		comp.macroTypes.put("*", new DaDaDa_DaArrayArgMacroType(MultiplyOutDaDaDa_Da.class));
 		comp.macroTypes.put("+", new DaDaDa_DaArrayArgMacroType(AddOutDaDaDa_Da.class));
 		comp.macroTypes.put("max", new DaDaDa_DaArrayArgMacroType(MaxOutDaDaDa_Da.class));

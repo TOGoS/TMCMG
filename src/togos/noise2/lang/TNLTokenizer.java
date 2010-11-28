@@ -1,14 +1,14 @@
-package togos.minecraft.mapgen.script;
+package togos.noise2.lang;
 
 import java.io.IOException;
 import java.io.Reader;
 
-public class ScriptTokenizer
+public class TNLTokenizer
 {
 	Reader r;
 	int lastChar = -2;
 	
-	public ScriptTokenizer( Reader r ) {
+	public TNLTokenizer( Reader r ) {
 		this.r = r;
 	}
 	
