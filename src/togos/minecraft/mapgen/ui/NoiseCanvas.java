@@ -17,7 +17,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
-import togos.minecraft.mapgen.world.gen.WorldMapper;
+import togos.minecraft.mapgen.world.gen.GroundColorFunction;
+import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
@@ -265,9 +266,9 @@ public class NoiseCanvas extends Canvas
 		final Frame f = new Frame("Noise canvas");
 		final NoiseCanvas nc = new NoiseCanvas();
 		
-		WorldMapper worldMapper = WorldMapper.DEFAULT;
+		SimpleWorldGenerator worldMapper = SimpleWorldGenerator.DEFAULT;
 		
-		nc.colorFunc = worldMapper.colorFunction;
+		nc.colorFunc = new GroundColorFunction( worldMapper.getGroundFunction() );
 		
 		nc.setPreferredSize(new Dimension(512,384));
 		f.add(nc);

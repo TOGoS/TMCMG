@@ -6,19 +6,19 @@ import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
 import togos.noise2.function.FunctionDaDaDa_Da;
-import togos.noise2.function.FunctionDaDa_Ia;
+import togos.noise2.function.FunctionDaDa_DaIa;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.ScaleOutDaDaDa_Da;
 import togos.noise2.function.TerrainScaleDaDaDa_Da;
 
-public class WorldMapper
+public class SimpleWorldGenerator implements WorldGenerator
 {
-	public FunctionDaDa_Ia colorFunction;
+	public FunctionDaDa_DaIa groundFunction;
 	public ChunkMunger chunkMunger;
 	
-	public static WorldMapper DEFAULT;
+	public static SimpleWorldGenerator DEFAULT;
 	static {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
 		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
@@ -48,28 +48,28 @@ public class WorldMapper
 			}),
 		});
 		
-		LayerMapper lm = new LayerMapper();
-		lm.layers.add( new LayerMapper.Layer(
+		LayerTerrainGenerator lm = new LayerTerrainGenerator();
+		lm.layers.add( new LayerTerrainGenerator.Layer(
 			new Constant_Ia(Blocks.WATER),
 			new Constant_Da(32),
 			new Constant_Da(64)
 		));
-		lm.layers.add( new LayerMapper.Layer(
+		lm.layers.add( new LayerTerrainGenerator.Layer(
 			new Constant_Ia(Blocks.SAND),
 			new Constant_Da(-10),
 			new AdaptInDaDa_DaDaDa_Da(sandLevel)
 		));
-		lm.layers.add( new LayerMapper.Layer(
+		lm.layers.add( new LayerTerrainGenerator.Layer(
 			new Constant_Ia(Blocks.DIRT),
 			new Constant_Da(0),
 			new AdaptInDaDa_DaDaDa_Da(dirtLevel)
 		));
-		lm.layers.add( new LayerMapper.Layer(
+		lm.layers.add( new LayerTerrainGenerator.Layer(
 			new Constant_Ia(Blocks.STONE),
 			new Constant_Da(1),
 			new AdaptInDaDa_DaDaDa_Da(stoneLevel)
 		));
-		lm.layers.add( new LayerMapper.Layer(
+		lm.layers.add( new LayerTerrainGenerator.Layer(
 			new Constant_Ia(Blocks.BEDROCK),
 			new Constant_Da(0),
 			new Constant_Da(1)
@@ -85,21 +85,16 @@ public class WorldMapper
 		);
 		cmList.addMunger( new StampPopulatorChunkMunger(tsp) );
 		
-		DEFAULT = new WorldMapper();
-		DEFAULT.chunkMunger = cmList; 
-		DEFAULT.colorFunction = lm.getLayerColorFunction();
+		DEFAULT = new SimpleWorldGenerator(cmList, lm.getGroundFunction());
 	}
 	
-	public WorldMapper( ChunkMunger chunkMunger, FunctionDaDa_Ia colorFunction ) {
+	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction ) {
 		this.chunkMunger = chunkMunger;
-		this.colorFunction = colorFunction;
-	}
-	public WorldMapper() {
-		this( new ChunkMungeList(), new Constant_Ia(0) );
+		this.groundFunction = groundFunction;
 	}
 	
-	public FunctionDaDa_Ia getLayerColorFunction() {
-		return colorFunction;
+	public FunctionDaDa_DaIa getGroundFunction() {
+		return groundFunction;
 	}
 	
 	public ChunkMunger getChunkMunger() {

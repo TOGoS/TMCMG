@@ -5,13 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import togos.minecraft.mapgen.world.Blocks;
-import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
 import togos.noise2.function.FunctionDaDa_Ia;
 
-public class LayerMapper
+public class LayerTerrainGenerator implements WorldGenerator
 {	
 	public static class Layer {
 		FunctionDaDa_Ia typeFunction;
@@ -37,21 +36,6 @@ public class LayerMapper
 			larr[n++] = (Layer)i.next();
 		}
 		return larr;
-	}
-	
-	public static class GroundColorFunction implements FunctionDaDa_Ia {
-		FunctionDaDa_DaIa groundFunction;
-		public GroundColorFunction( FunctionDaDa_DaIa groundFunction ) {
-			this.groundFunction = groundFunction;
-		}
-		
-		public void apply( int count, double[] inX, double[] inY, int[] out ) {
-			double[] height = new double[count];
-			groundFunction.apply(count, inX, inY, height, out);
-			for( int i=0; i<count; ++i ) {
-				out[i] = Materials.getByBlockType(out[i]).color;
-			}
-		}
 	}
 	
 	class LayerChunkMunger implements ChunkMunger {
@@ -135,10 +119,6 @@ public class LayerMapper
 		    	}
 		    }
 		}
-	}
-	
-	public GroundColorFunction getLayerColorFunction() {
-		return new GroundColorFunction(getGroundFunction());
 	}
 	
 	public LayerChunkMunger getLayerChunkMunger() {

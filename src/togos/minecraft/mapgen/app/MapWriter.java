@@ -11,7 +11,7 @@ import org.jnbt.NBTOutputStream;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
-import togos.minecraft.mapgen.world.gen.WorldMapper;
+import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.InventoryItemData;
@@ -327,7 +327,7 @@ public class MapWriter
 			ChunkUtil.addTileEntityAndBlock(chest, s);
 			
 			MapWriter mapWriter = new MapWriter();
-			ChunkMunger cfunc = WorldMapper.DEFAULT.getChunkMunger();
+			ChunkMunger cfunc = SimpleWorldGenerator.DEFAULT.getChunkMunger();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);

@@ -11,9 +11,9 @@ import togos.noise2.lang.macro.MacroType;
 
 public class TNLCompiler
 {
-	HashMap macroTypes = new HashMap();
-	HashSet compilingMacroTypes = new HashSet();
-	HashMap macroDefs = new HashMap();
+	public HashMap macroTypes = new HashMap();
+	private HashSet compilingMacroTypes = new HashSet();
+	public HashMap macroDefs = new HashMap();
 	
 	public void addMacroDef( String name, ASTNode node ) {
 		if( macroTypes.containsKey(name) ) {
