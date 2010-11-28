@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import togos.minecraft.mapgen.world.Blocks;
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
@@ -48,7 +49,7 @@ public class LayerMapper
 			double[] height = new double[count];
 			groundFunction.apply(count, inX, inY, height, out);
 			for( int i=0; i<count; ++i ) {
-				out[i] = Material.forBlockType(out[i]).color;
+				out[i] = Materials.getByBlockType(out[i]).color;
 			}
 		}
 	}
@@ -99,7 +100,6 @@ public class LayerMapper
 		}
 	}
 	
-	// TODO: should share everything but material.color with color function
 	public static class LayerGroundFunction implements FunctionDaDa_DaIa {
 		List layers;
 		public LayerGroundFunction( List layers ) {

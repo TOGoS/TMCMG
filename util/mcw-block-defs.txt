@@ -1,0 +1,194 @@
+{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
+! Icon !! Dec !! Hex !! Block type
+|-
+| height="27px" | ||  0 || 00 || [[Air]]
+|-
+|[[File:Stone2.png|25px]] ||  1 || 01 || [[Stone]]
+|-
+|[[File:Grass2.png|25px]] ||  2 || 02 || [[Grass]]
+|-
+|[[File:Dirt2.png|25px]] ||  3 || 03 || [[Dirt]]
+|-
+|[[File:Cobblestone.png|25px]] ||  4 || 04 || [[Cobblestone]]
+|-
+|[[File:Wood2.png|25px]] ||  5 || 05 || [[Wood]]
+|-
+|[[File:Sapling.png|25px]] ||  6 || 06 || [[Sapling]]  <sup>[[#Saplings|D]]</sup>
+|-
+|[[File:Bedrock.png|25px]] ||  7 || 07 || [[Bedrock]]
+|-
+|[[File:Water2.png|25px]] ||  8 || 08 || [[Water]]  <sup>[[#Water and Lava|D]]</sup>
+|-
+|[[File:Water2.png|25px]] ||  9 || 09 || Stationary water  <sup>[[#Water and Lava|D]]</sup>
+|-
+|[[File:Lava2.png|25px]] || 10 || 0A || [[Lava]]  <sup>[[#Water and Lava|D]]</sup>
+|-
+|[[File:Lava2.png|25px]] || 11 || 0B || Stationary lava <sup>[[#Water and Lava|D]]</sup>
+|-
+|[[File:Sand2.png|25px]] || 12 || 0C || [[Sand]]
+|-
+|[[File:Gravel2.png|25px]] || 13 || 0D || [[Gravel]]
+|-
+|[[File:Goldore.png|25px]] || 14 || 0E || [[Gold (ore)|Gold ore]]
+|-
+|[[File:Ironore2.png|25px]] || 15 || 0F || [[Iron (ore)|Iron ore]]
+|-
+|[[File:Coalore.png|25px]] || 16 || 10 || [[Coal (ore)|Coal ore]]
+|-
+|[[File:Tree.png|25px]] || 17 || 11 || [[Log]]
+|-
+|[[File:Leaves.png|25px]] || 18 || 12 || [[Leaves]]
+|-
+|[[File:Sponge2.png|25px]] || 19 || 13 || [[Sponge]]
+|-
+|[[File:Glass2.png|25px]] || 20 || 14 || [[Glass]]
+|-
+|[[File:redcloth.png|25px]] || 21 || 15 || '''Red [[Cloth]]'''
+|-                
+|[[File:orangecloth.png|25px]] || 22 || 16 || '''Orange Cloth'''
+|-
+|[[File:yellowcloth.png|25px]] || 23 || 17 || '''Yellow Cloth'''
+|-
+|[[File:limecloth.png|25px]] || 24 || 18 || '''Lime Cloth'''
+|-
+|[[File:greencloth.png|25px]] || 25 || 19 || '''Green Cloth'''
+|-
+|[[File:aquagreencloth.png|25px]] || 26 || 1A || '''Aqua green Cloth'''
+|-
+|[[File:cyancloth.png|25px]] || 27 || 1B || '''Cyan Cloth'''
+|-
+|[[File:bluecloth.png|25px]] || 28 || 1C || '''Blue Cloth'''
+|-
+|[[File:purplecloth.png|25px]] || 29 || 1D || '''Purple Cloth'''
+|-
+|[[File:indigocloth.png|25px]] || 30 || 1E || '''Indigo Cloth'''
+|-
+|[[File:violetcloth.png|25px]] || 31 || 1F || '''Violet Cloth'''
+|}
+{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
+! Icon !! Dec !! Hex !! Block type
+|-
+|[[File:magentacloth.png|25px]] || 32 || 20 || '''Magenta Cloth'''
+|-
+|[[File:pinkcloth.png|25px]] || 33 || 21 || '''Pink Cloth'''
+|-
+|[[File:blackcloth.png|25px]] || 34 || 22 || '''Black Cloth'''
+|-
+|[[File:greycloth.png|25px]] || 35 || 23 || '''Gray Cloth''' / ''White Cloth''
+|-
+|[[File:Cloth2.png|25px]] || 36 || 24 || '''White Cloth'''
+|-
+|[[File:yellowflower.png|25px]] || 37 || 25 || Yellow flower
+|-
+|[[File:redrose.png|25px]] || 38 || 26 || Red rose
+|-
+|[[File:Brownmushroom.png|25px]] || 39 || 27 || Brown [[Mushroom]]
+|-
+|[[File:Redmushroom.png|25px]] || 40 || 28 || Red Mushroom
+|-
+|[[File:Gold2.png|25px]] || 41 || 29 || [[Gold (block)|Gold Block]]
+|-
+|[[File:Iron2.png|25px]] || 42 || 2A || [[Iron (block)|Iron Block]]
+|-
+|[[File:Doublestep.png|25px]] || 43 || 2B || Double [[Step]]
+|-
+|[[File:Step.png|25px]] || 44 || 2C || Step
+|-
+|[[File:Brick.png|25px]] || 45 || 2D || [[Brick]]
+|-
+|[[File:Tnt.png|25px]] || 46 || 2E || [[TNT]]
+|-
+|[[File:Bookshelf.png|25px]] || 47 || 2F || [[Bookshelf]]
+|-
+|[[File:Mossycobblestone.png|25px]] || 48 || 30 || [[Mossy Cobblestone]]
+|-
+|[[File:Obsidian.png|25px]] || 49 || 31 || [[Obsidian]]
+|-
+|[[File:Torch.png|25px]] || 50 || 32 || ''[[Torch]]'' <sup>[[#Torches and Redstone Torches|D]]</sup>
+|-
+|[[File:Fire.png|25px]] || 51 || 33 || ''[[Fire]]''
+|-
+|[[File:Mobspawner.png|25px]] || 52 || 34 || ''[[Mob Spawner]]''
+|-
+|[[File:woodenstairs.png|25px]] || 53 || 35 || ''Wooden [[Stair]]s'' <sup>[[#Stairs|D]]</sup>
+|-
+|[[File:Chest2.png|25px]] || 54 || 36 || ''[[Chest]]''
+|-
+|[[File:Redstonewire.png|25px]] || 55 || 37 || ''[[Redstone (wire)|Redstone Wire]]'' <sup>[[#Data|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+|-
+|[[File:Diamondore2.png|25px]] || 56 || 38 || ''[[Diamond (ore)|Diamond Ore]]''
+|-
+|[[File:Diamond2.png|25px]] || 57 || 39 || ''[[Diamond (block)|Diamond Block]]''
+|-
+|[[File:Workbench.png|25px]] || 58 || 3A || ''[[Workbench]]''
+|-
+|[[File:crops2.png|25px]] || 59 || 3B || ''[[Crops]]'' <sup>[[#Crops|D]]</sup>
+|-
+|[[File:Field.png|25px]] || 60 || 3C || ''[[Farming|Soil]]'' <sup>[[#Soil|D]]</sup>
+|-
+|[[File:Furnace.png|25px]] || 61 || 3D || ''[[Furnace]]''
+|-
+|[[File:Furnaceactive.png|25px]] || 62 || 3E || ''Burning Furnace''
+|-
+|[[File:Sign.png|25px]] || 63 || 3F || ''[[Sign]] Post'' <sup>[[#Sign Posts|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+|}
+{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
+! Icon !! Dec !! Hex !! Block type
+|-
+|[[File:woodendoor.png|25px]] || 64 || 40 || ''Wooden [[Door]]'' <sup>[[#Doors|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+|-
+|[[File:Ladder flat.png|25px]] || 65 || 41 || ''[[Ladder]]'' <sup>[[#Ladders|D]]</sup>
+|-
+|[[File:Rail track.png|25px]] || 66 || 42 || ''[[Minecart Tracks]]'' <sup>[[#Minecart Tracks|D]]</sup>
+|-
+|[[File:cobblestonestairs.png|25px]] || 67 || 43 || ''Cobblestone [[Stairs]]'' <sup>[[#Stairs|D]]</sup>
+|-
+|[[File:wallsign.png|25px]] || 68 || 44 || ''Wall Sign'' <sup>[[#Wall Signs|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+|-
+|[[File:Lever.png|25px]] || 69 || 45 || ''[[Lever]]'' <sup>[[#Levers|D]]</sup>
+|-
+|[[File:StonePressurePlate.png|25px]] || 70 || 46 || ''Stone [[Pressure Plate]]'' <sup>[[#Pressure Plates|D]]</sup> 
+|-
+|[[File:irondoor.png|25px]] || 71 || 47 || ''Iron [[Door]]'' <sup>[[#Doors|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+|-
+|[[File:WoodPressurePlate.png|25px]] || 72 || 48 || ''Wooden Pressure Plate'' <sup>[[#Pressure Plates|D]]</sup> 
+|-
+|[[File:Red.PNG|25px]] || 73 || 49 || ''[[Redstone (ore)|Redstone Ore]]''
+|-
+|[[File:Red.PNG|25px]] || 74 || 4A || ''Glowing Redstone Ore''
+|-
+|[[File:redstonetorchoff.png|25px]] || 75 || 4B || ''[[Redstone (Torch)|Redstone torch]] ("off" state)'' <sup>[[#Torches and Redstone Torches|D]]</sup>
+|-
+|[[File:Redstone Torch.png|25px]] || 76 || 4C || ''Redstone torch ("on" state)'' <sup>[[#Torches and Redstone Torches|D]]</sup>
+|-
+|[[File:stonebutton.png|25px]] || 77 || 4D || ''[[Stone Button]]'' <sup>[[#Buttons|D]]</sup>
+|-
+|[[File:Snowblock96.png|25px]] || 78 || 4E || ''[[Snow]]''
+|-
+|[[File:Ice.png|25px]] || 79 || 4F || ''[[Ice]]''
+|-
+|[[File:SnowBlockImage.png|25px]] || 80 || 50 || ''[[Snow (Block)|Snow Block]]''
+|-
+|[[File:Cactus.png|25px]] || 81 || 51 || ''[[Cactus]]''
+|-
+|[[File:ClayBlock.png|25px]] || 82 || 52 || ''[[Clay]]''
+|-
+|[[File:Bamboo.png|25px]] || 83 || 53 || ''[[Reed]]''
+|-
+|[[File:Jukebox.png|25px]] || 84 || 54 || ''[[Jukebox]]''
+|-
+|[[File:FencePair.png|25px]] || 85 || 55 || ''[[Fence]]''
+|-
+|[[File:Pumpkin.png|25px]] || 86 || 56 || ''[[Pumpkin]]''
+|-
+|[[File:Bloodstone.png|25px]] || 87 || 57 || ''[[Netherstone]]''
+|-
+|[[File:Slowsand.png|25px]] || 88 || 58 || ''[[Slow Sand]]''
+|-
+|[[File:Lightstone.png|25px]] || 89 || 59 || ''[[Lightstone]]''
+|-
+|[[File:Portal.png|25px]] || 90 || 5A || ''[[Portal]]''
+|-
+|[[File:Pumpkin-on.png|25px]] || 91 || 5B || ''[[Jack-O-Lantern]]''
+|-
+|}

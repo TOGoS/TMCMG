@@ -11,7 +11,6 @@ import org.jnbt.NBTOutputStream;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
-import togos.minecraft.mapgen.world.gen.Material;
 import togos.minecraft.mapgen.world.gen.WorldMapper;
 import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
@@ -123,19 +122,9 @@ public class MapWriter
 			new MapWriter().writeChunkToFile(cd, mapDir);
 			*/
 			
-			HashMap stampMaterials = new HashMap();
-			stampMaterials.put(Character.valueOf('#'), Material.forBlockType(Blocks.BEDROCK));
-			stampMaterials.put(Character.valueOf('X'), Material.forBlockType(Blocks.STONE));
-			stampMaterials.put(Character.valueOf('D'), Material.forBlockType(Blocks.DIRT));
-			stampMaterials.put(Character.valueOf('C'), Material.forBlockType(Blocks.COBBLESTONE));
-			stampMaterials.put(Character.valueOf('M'), Material.forBlockType(Blocks.MOSSY_COBBLESTONE));
-			stampMaterials.put(Character.valueOf('w'), Material.forBlockType(Blocks.WORKBENCH));
-			stampMaterials.put(Character.valueOf('S'), Material.forBlockType(Blocks.SAND));
-			stampMaterials.put(Character.valueOf('t'),
-				new Material(0xFFFFFF00, Blocks.TORCH, (byte)0x05));
-			stampMaterials.put(Character.valueOf('.'), Material.forBlockType(Blocks.AIR));
-			
 			Stamp s = new Stamp(8,64,8,4,0,4);
+			
+			/*
 			{
 				String diagram =
 					"CC  CC  "+
@@ -164,7 +153,7 @@ public class MapWriter
 					"CCSDSSCC"+
 					"CCCCCCCC"+
 					"CCCCCCCC";
-				s.populate(0,59,0, 8, 3, 8, diagram, stampMaterials);
+				s.populate(0,59,0, 8, 3, 8, diagram);
 			}
 			for( int sy=54; sy<59; ++sy ) {
 				String diagram =
@@ -176,7 +165,7 @@ public class MapWriter
 					"CCCCCCCC"+
 					"CCCCCCCC"+
 					" CCCCCC ";
-				s.populate(0,sy,0, 8, 1, 8, diagram, stampMaterials);
+				s.populate(0,sy,0, 8, 1, 8, diagram);
 			}
 			{
 				String diagram =
@@ -233,7 +222,7 @@ public class MapWriter
 					"XXXXXXXX"+
 					"XXXXXXXX"+
 					" XXXXXX ";
-				s.populate(0,48,0, 8, 6, 8, diagram, stampMaterials);
+				s.populate(0,48,0, 8, 6, 8, diagram);
 			}
 			for( int sy=0; sy<48; ++sy ) {
 				String diagram =
@@ -245,7 +234,7 @@ public class MapWriter
 					"X######M"+
 					"X######X"+
 					"XXXXXXXX";
-				s.populate(0,sy,0, 8, 1, 8, diagram, stampMaterials);
+				s.populate(0,sy,0, 8, 1, 8, diagram);
 			}
 			{
 				String diagram =
@@ -294,25 +283,26 @@ public class MapWriter
 					"X######X"+
 					"XXXXXXXX"+
 					
-					"XXXXXXXX"+
-					"X######X"+
-					"X#XXXX#X"+
-					"X#XXXX#X"+
-					"X#XXXX#X"+
-					"X#XXXXXX"+
-					"X######X"+
-					"XXXXXXXX"+
+					"XXXXXXXXXXXX"+
+					"XX#########X"+
+					"XX##XXXXXX#X"+
+					"XX##XXXXXX#X"+
+					"XX##XXXXXX#X"+
+					"XX##XXXXXXXX"+
+					"XX#########X"+
+					"XXXXXXXXXXXX"+
 					
-					" XXXXXX "+
-					"X######X"+
-					"X#XXXX#X"+
-					"X#XXXX#X"+
-					"X#XXXX#X"+
-					"X#XXXXXX"+
-					"X######X"+
-					"XXXXXXXX";
-				s.populate(0,6,0, 8, 7, 8, diagram, stampMaterials);
+					"XXXXXXXXXXXXXXXX"+
+					"XX############XX"+
+					"XX##XXXXXXXX##XX"+
+					"XX##XXXXXXXX##XX"+
+					"XX##XXXXXXXX##XX"+
+					"XX##XXXXXXXXXXXX"+
+					"XX############XX"+
+					"XXXXXXXXXXXXXXXX";
+				s.populate(0,6,0, 8, 7, 8, diagram);
 			}
+			*/
 			
 			ChestData chest = new ChestData();
 			chest.x = 2;

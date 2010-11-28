@@ -1,7 +1,6 @@
 package togos.minecraft.mapgen.world.structure;
 
-import java.util.Map;
-
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.Material;
 
 public class Stamp extends MiniChunkData
@@ -32,21 +31,21 @@ public class Stamp extends MiniChunkData
 	}
 	
 	
-	public void populate( int x, int y, int z, int width, int height, int depth, String diagram, Map charMaterials ) {
-		if( diagram.length() < width*height*depth ) {
-			throw new RuntimeException("Diagram should be w*h*d ("+(width*height*depth)+" characters, but was only "+diagram.length());
+	public void populate( int x, int y, int z, int width, int height, int depth, String diagram ) {
+		if( diagram.length() < width*height*depth*2 ) {
+			throw new RuntimeException("Diagram should be w*h*d*2 ("+(width*height*depth)+" characters, but was only "+diagram.length());
 		}
 		int i=0;
 		for( int ty=height-1; ty>=0; --ty ) {
 			for( int tz=0; tz<depth; ++tz ) {
 				for( int tx=0; tx<width; ++tx, ++i ) {
-					char c = diagram.charAt(i);
-					if( c != ' ' ) {
-						Material m = (Material)charMaterials.get(Character.valueOf(c));
+					String icon = diagram.substring(i*2,i*2+2);
+					if( icon != "  " ) {
+						Material m = Materials.getByIcon(icon);
 						if( m == null ) {
-							throw new RuntimeException("No material specified for character: '"+c+"'");
+							throw new RuntimeException("No material specified for icon: '"+icon+"'");
 						}
-						setBlock( x+tx, y+ty, z+tz, m.blockNum );
+						setBlock( x+tx, y+ty, z+tz, m.blockType );
 					}
 				}
 			}
