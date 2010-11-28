@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.noise.api;
+package togos.noise2.function;
 
 public interface FunctionDaDa_DaIa
 {

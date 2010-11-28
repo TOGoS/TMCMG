@@ -1,12 +1,12 @@
 package togos.minecraft.mapgen.script;
 
 import junit.framework.TestCase;
-import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.Constant_Da;
-import togos.minecraft.mapgen.noise.MaxOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.MultiplyOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
+import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.Constant_Da;
+import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.MaxOutDaDaDa_Da;
+import togos.noise2.function.MultiplyOutDaDaDa_Da;
+import togos.noise2.function.PerlinDaDaDa_Da;
 
 public class ScriptCompilerTest extends TestCase
 {

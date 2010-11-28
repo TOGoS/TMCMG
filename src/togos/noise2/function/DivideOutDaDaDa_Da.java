@@ -1,6 +1,5 @@
-package togos.minecraft.mapgen.noise;
+package togos.noise2.function;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 
 public class DivideOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 {

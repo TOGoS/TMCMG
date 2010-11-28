@@ -1,6 +1,5 @@
-package togos.minecraft.mapgen.noise;
+package togos.noise2.function;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
 
 public class Constant_Ia implements FunctionDaDa_Ia
 {

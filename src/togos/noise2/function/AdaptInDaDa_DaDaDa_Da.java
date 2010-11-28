@@ -1,7 +1,5 @@
-package togos.minecraft.mapgen.noise;
+package togos.noise2.function;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 
 public class AdaptInDaDa_DaDaDa_Da implements FunctionDaDa_Da
 {

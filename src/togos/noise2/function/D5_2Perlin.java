@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.noise;
+package togos.noise2.function;
 
 public final class D5_2Perlin
 {

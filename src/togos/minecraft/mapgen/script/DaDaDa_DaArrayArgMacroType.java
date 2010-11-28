@@ -1,6 +1,6 @@
 package togos.minecraft.mapgen.script;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
+import togos.noise2.function.FunctionDaDaDa_Da;
 
 public class DaDaDa_DaArrayArgMacroType extends ArrayArgMacroType
 {

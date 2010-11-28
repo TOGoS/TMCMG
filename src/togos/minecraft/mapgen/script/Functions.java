@@ -1,12 +1,12 @@
 package togos.minecraft.mapgen.script;
 
-import togos.minecraft.mapgen.noise.AdaptInDaDa_DaDaDa_Da;
-import togos.minecraft.mapgen.noise.AdaptOutDaDa_Da_Ia;
-import togos.minecraft.mapgen.noise.Constant_Da;
-import togos.minecraft.mapgen.noise.Constant_Ia;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
+import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
+import togos.noise2.function.AdaptOutDaDa_Da_Ia;
+import togos.noise2.function.Constant_Da;
+import togos.noise2.function.Constant_Ia;
+import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.FunctionDaDa_Da;
+import togos.noise2.function.FunctionDaDa_Ia;
 
 public class Functions
 {

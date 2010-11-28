@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_DaIa;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
+import togos.noise2.function.FunctionDaDa_Da;
+import togos.noise2.function.FunctionDaDa_DaIa;
+
 
 public class TreeStampPopulator implements StampPopulator
 {

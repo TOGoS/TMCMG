@@ -1,14 +1,6 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.minecraft.mapgen.noise.AdaptDaDa_DaDaDa_Da;
-import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.Constant_Da;
-import togos.minecraft.mapgen.noise.Constant_Ia;
-import togos.minecraft.mapgen.noise.MultiplyOutDaDaDa_Da;
-import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
-import togos.minecraft.mapgen.noise.TerrainScaleDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
-import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
+import togos.noise2.function.*;
 
 public class WorldMapper
 {
@@ -54,17 +46,17 @@ public class WorldMapper
 		lm.layers.add( new LayerMapper.Layer(
 			Material.SAND,
 			new Constant_Da(-10),
-			new AdaptDaDa_DaDaDa_Da(sandLevel)
+			new AdaptInDaDa_DaDaDa_Da(sandLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			Material.DIRT,
 			new Constant_Da(0),
-			new AdaptDaDa_DaDaDa_Da(dirtLevel)
+			new AdaptInDaDa_DaDaDa_Da(dirtLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			Material.STONE,
 			new Constant_Da(1),
-			new AdaptDaDa_DaDaDa_Da(stoneLevel)
+			new AdaptInDaDa_DaDaDa_Da(stoneLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
 			Material.BEDROCK,
