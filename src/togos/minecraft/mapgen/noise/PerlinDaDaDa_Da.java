@@ -4,6 +4,8 @@ import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 
 public class PerlinDaDaDa_Da implements FunctionDaDaDa_Da
 {
+	public static PerlinDaDaDa_Da instance = new PerlinDaDaDa_Da();
+	
 	public D5_2Perlin perlin = new D5_2Perlin();
 
 	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
