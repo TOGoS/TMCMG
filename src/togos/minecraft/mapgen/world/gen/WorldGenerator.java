@@ -6,6 +6,5 @@ public interface WorldGenerator
 {
 	/** Used to color in overhead preview */
 	public FunctionDaDa_DaIa getGroundFunction();
-	
-	
+	public ChunkMunger getChunkMunger();
 }

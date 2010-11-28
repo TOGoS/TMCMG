@@ -76,7 +76,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 		));
 		
 		ChunkMungeList cmList = new ChunkMungeList(); 
-		cmList.addMunger( lm.getLayerChunkMunger() );
+		cmList.addMunger( lm.getChunkMunger() );
 		cmList.addMunger( new Grassifier() );
 		GroundStampPopulator tsp = new GroundStampPopulator(
 			new TreeGenerator(), 20,

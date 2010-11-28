@@ -8,10 +8,12 @@ import java.util.HashMap;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
+import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
-import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
+import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
+import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.InventoryItemData;
@@ -327,7 +329,16 @@ public class MapWriter
 			ChunkUtil.addTileEntityAndBlock(chest, s);
 			
 			MapWriter mapWriter = new MapWriter();
-			ChunkMunger cfunc = SimpleWorldGenerator.DEFAULT.getChunkMunger();
+			
+			String source = "layered-terrain(" +
+				"layer( materials.sand, 0, 64 + 5 * scale-in(0.1,0.1,0.1,perlin) + 10 * scale-in(0.01,0.01,0.01,perlin) ), " +
+				"layer( materials.dirt, 0, 64 + 5 * scale-in(0.15,0.1,0.1,perlin) + 10 * scale-in(0.001,0.001,0.001,translate-in(0,0,-10,perlin)) ), " +
+			")";
+			
+			WorldGenerator worldMapper = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), source, "test source", 1);
+
+			
+			ChunkMunger cfunc = worldMapper.getChunkMunger();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);

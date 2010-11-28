@@ -9,7 +9,7 @@ import togos.noise2.lang.FunctionUtil;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.macro.MacroType;
 
-public class MGMacros
+public class WorldGeneratorMacros
 {
 	static HashMap wgMacros = new HashMap();
 	static {
@@ -19,9 +19,9 @@ public class MGMacros
 					throw new CompileError( sn.macroName + " requires 3 arguments for type, floor, ceiling; given "+sn.arguments.size(), sn );
 				}
 				return new LayerTerrainGenerator.Layer(
-					FunctionUtil.toDaDa_Ia(sn.arguments.get(0), sn),
-					FunctionUtil.toDaDa_Da(sn.arguments.get(1), sn),
-					FunctionUtil.toDaDa_Da(sn.arguments.get(2), sn)
+					FunctionUtil.toDaDa_Ia(c.compile((ASTNode)sn.arguments.get(0)), sn),
+					FunctionUtil.toDaDa_Da(c.compile((ASTNode)sn.arguments.get(1)), sn),
+					FunctionUtil.toDaDa_Da(c.compile((ASTNode)sn.arguments.get(2)), sn)
 				);
 			}
 		});

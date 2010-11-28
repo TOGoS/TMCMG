@@ -1,0 +1,21 @@
+package togos.minecraft.mapgen.world.gen;
+
+import togos.minecraft.mapgen.world.Materials;
+import togos.noise2.lang.TNLCompiler;
+import togos.noise2.lang.macro.ConstantMacroType;
+import togos.noise2.lang.macro.NoiseMacros;
+
+public class TNLWorldGeneratorCompiler extends TNLCompiler
+{
+	protected void initBuiltins() {
+		macroTypes.putAll( NoiseMacros.stdNoiseMacros );
+		macroTypes.putAll( WorldGeneratorMacros.wgMacros );
+		for( int i=0; i<128; ++i ) {
+			Material m = Materials.getByBlockType(i);
+			if( m != null ) {
+				String nn = "materials." + m.name.replace(' ', '-').toLowerCase();
+				macroTypes.put(nn, new ConstantMacroType(new Integer(i)));
+			}
+		}
+	}
+}

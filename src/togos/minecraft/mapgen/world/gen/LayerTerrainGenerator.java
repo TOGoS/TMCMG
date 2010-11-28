@@ -121,7 +121,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 		}
 	}
 	
-	public LayerChunkMunger getLayerChunkMunger() {
+	public ChunkMunger getChunkMunger() {
 		return new LayerChunkMunger(layers);
 	}
 	

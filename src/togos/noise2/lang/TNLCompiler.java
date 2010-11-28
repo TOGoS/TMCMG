@@ -15,6 +15,14 @@ public class TNLCompiler
 	private HashSet compilingMacroTypes = new HashSet();
 	public HashMap macroDefs = new HashMap();
 	
+	public TNLCompiler() {
+		initBuiltins();
+	}
+	
+	protected void initBuiltins() {
+		// Here so you can override it
+	}
+	
 	public void addMacroDef( String name, ASTNode node ) {
 		if( macroTypes.containsKey(name) ) {
 			throw new CompileError("Attempt to redefine macro '"+name+"'", node);

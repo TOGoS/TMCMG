@@ -47,4 +47,12 @@ public class FunctionUtil
 			throw new CompileError("Can't convert "+r.getClass()+" to FunctionDaDaDa_Da", sloc);
 		}		
 	}
+	
+	public static double toDouble( Object r, SourceLocation sloc ) {
+		if( r instanceof Number ) {
+			return ((Number)r).doubleValue();
+		} else {
+			throw new CompileError("Can't convert "+r.getClass()+" to double", sloc);
+		}
+	}
 }

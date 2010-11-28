@@ -17,8 +17,10 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
+import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
-import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
+import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
+import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
@@ -266,7 +268,13 @@ public class NoiseCanvas extends Canvas
 		final Frame f = new Frame("Noise canvas");
 		final NoiseCanvas nc = new NoiseCanvas();
 		
-		SimpleWorldGenerator worldMapper = SimpleWorldGenerator.DEFAULT;
+		//SimpleWorldGenerator worldMapper = SimpleWorldGenerator.DEFAULT;
+		String source = "layered-terrain(" +
+			"layer( materials.sand, 64, 64 + scale-in(0.1,0.1,0.1,perlin) + 2 * scale-in(0.01,0.01,0.01,perlin) ), " +
+			"layer( materials.dirt, 64, 64 + scale-in(0.15,0.1,0.1,perlin) + 2 * scale-in(0.001,0.001,0.001,translate-in(0,0,-10,perlin)) ), " +
+		")";
+		
+		WorldGenerator worldMapper = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), source, "test source", 1);
 		
 		nc.colorFunc = new GroundColorFunction( worldMapper.getGroundFunction() );
 		
