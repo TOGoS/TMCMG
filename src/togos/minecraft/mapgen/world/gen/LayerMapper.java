@@ -11,17 +11,18 @@ import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class LayerMapper
-{
+{	
 	public static class Layer {
-		Material material;
+		FunctionDaDa_Ia typeFunction;
 		FunctionDaDa_Da floorHeightFunction;
 		FunctionDaDa_Da ceilingHeightFunction;
 		
-		public Layer( Material material,
+		public Layer(
+			FunctionDaDa_Ia typeFunction,
 			FunctionDaDa_Da floorHeightFunction,
 			FunctionDaDa_Da ceilingHeightFunction
 		) {
-			this.material = material;
+			this.typeFunction = typeFunction;
 			this.floorHeightFunction = floorHeightFunction;
 			this.ceilingHeightFunction = ceilingHeightFunction;
 		}
@@ -37,58 +38,22 @@ public class LayerMapper
 		return larr;
 	}
 	
-	public static class LayerColorFunction implements FunctionDaDa_Ia {
-		List layers;
-		public LayerColorFunction( List layers ) {
-			this.layers = layers;
-		}
-		
-		protected int mix( int oldColor, int newColor ) {
-			return newColor;
-			/*
-			if( (newColor & 0xFF000000) != 0 ) {
-				return newColor;
-			} else {
-				return oldColor;
-			}
-			*/
+	public static class GroundColorFunction implements FunctionDaDa_Ia {
+		FunctionDaDa_DaIa groundFunction;
+		public GroundColorFunction( FunctionDaDa_DaIa groundFunction ) {
+			this.groundFunction = groundFunction;
 		}
 		
 		public void apply( int count, double[] inX, double[] inY, int[] out ) {
-	    	double[] lCeil = new double[count];
-	    	double[] lFloor = new double[count];
-	    	double[] highest = new double[count];
-	    	for( int j=0; j<count; ++j ) {
-	    		highest[j] = Double.NEGATIVE_INFINITY;
-	    		out[j] = 0xFF000000;
-	    	}
-		    for( Iterator li=layers.iterator(); li.hasNext(); ) {
-		    	Layer l = (Layer)li.next();
-		    	l.ceilingHeightFunction.apply(count, inX, inY, lCeil);
-		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
-		    	for( int j=0; j<count; ++j ) {
-		    		if( Double.isNaN(lCeil[j]) ) {
-		    			throw new RuntimeException("Ceiling height is NaN for layer "+l);
-		    		}
-		    		if( Double.isNaN(lFloor[j]) ) {
-		    			throw new RuntimeException("Floor height is NaN for layer "+l);
-		    		}
-		    		if( lCeil[j] < highest[j] ) continue;
-		    		if( lCeil[j] < lFloor[j] ) continue;
-		    		out[j] = mix(out[j],l.material.color);
-		    		highest[j] = lCeil[j];
-		    	}
-		    }
+			double[] height = new double[count];
+			groundFunction.apply(count, inX, inY, height, out);
+			for( int i=0; i<count; ++i ) {
+				out[i] = Material.forBlockType(out[i]).color;
+			}
 		}
 	}
 	
 	class LayerChunkMunger implements ChunkMunger {
-		/*
-		static final int CHUNK_WIDTH = 16;
-		static final int CHUNK_DEPTH = 16;
-		static final int CHUNK_HEIGHT = 128;
-		*/
-		
 		protected List layers;
 		
 		public LayerChunkMunger( List layers ) {
@@ -103,6 +68,7 @@ public class LayerMapper
 			double[] z = new double[count];
 			double[] ceiling = new double[count];
 			double[] floor = new double[count];
+			int[] type = new int[count];
 			int i=0;
 			for( int tx=0; tx<cd.width; ++tx ) {
 				for( int tz=0; tz<cd.depth; ++tz ) {
@@ -117,6 +83,7 @@ public class LayerMapper
 				// mix up z and y:
 				l.ceilingHeightFunction.apply(z.length, x, z, ceiling);
 				l.floorHeightFunction.apply(z.length, x, z, floor);
+				l.typeFunction.apply(z.length, x, z, type);
 				for( int tx=0; tx<cd.width; ++tx ) {
 					for( int tz=0; tz<cd.depth; ++tz, ++i ) {
 						double flo = floor[i];
@@ -124,7 +91,7 @@ public class LayerMapper
 						double cei = ceiling[i];
 						if( cei > cd.height ) cei = cd.height; 
 						for( int ty=(int)flo; ty<cei; ++ty ) {
-							cd.setBlock(tx, ty, tz, (byte)l.material.blockNum);
+							cd.setBlock(tx, ty, tz, (byte)type[i]);
 						}
 					}
 				}
@@ -142,6 +109,7 @@ public class LayerMapper
 		public void apply( int count, double[] inX, double[] inY, double[] outZ, int[] outT ) {
 	    	double[] lCeil = new double[count];
 	    	double[] lFloor = new double[count];
+	    	int[] lType = new int[count];
 	    	double[] highest = outZ;
 	    	for( int j=0; j<count; ++j ) {
 	    		highest[j] = Double.NEGATIVE_INFINITY;
@@ -151,6 +119,7 @@ public class LayerMapper
 		    	Layer l = (Layer)li.next();
 		    	l.ceilingHeightFunction.apply(count, inX, inY, lCeil);
 		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
+		    	l.typeFunction.apply(count, inX, inY, lType);
 		    	for( int j=0; j<count; ++j ) {
 		    		if( Double.isNaN(lCeil[j]) ) {
 		    			throw new RuntimeException("Ceiling height is NaN for layer "+l);
@@ -161,15 +130,15 @@ public class LayerMapper
 		    		if( lCeil[j] < highest[j] ) continue;
 		    		if( lCeil[j] < lFloor[j] ) continue;
 		    		
-		    		outT[j] = l.material.blockNum;
+		    		outT[j] = lType[j];
 		    		highest[j] = lCeil[j];
 		    	}
 		    }
 		}
 	}
 	
-	public LayerColorFunction getLayerColorFunction() {
-		return new LayerColorFunction(layers);
+	public GroundColorFunction getLayerColorFunction() {
+		return new GroundColorFunction(getGroundFunction());
 	}
 	
 	public LayerChunkMunger getLayerChunkMunger() {

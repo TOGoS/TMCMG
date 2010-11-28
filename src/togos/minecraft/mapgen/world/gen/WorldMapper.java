@@ -1,14 +1,17 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.minecraft.mapgen.noise.AdaptDaDa_DaDaDa_Da;
+import togos.minecraft.mapgen.noise.AdaptInDaDa_DaDaDa_Da;
 import togos.minecraft.mapgen.noise.AddOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.Constant_Da;
 import togos.minecraft.mapgen.noise.Constant_Ia;
 import togos.minecraft.mapgen.noise.MultiplyOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.PerlinDaDaDa_Da;
+import togos.minecraft.mapgen.noise.ScaleInDaDaDa_Da;
+import togos.minecraft.mapgen.noise.ScaleOutDaDaDa_Da;
 import togos.minecraft.mapgen.noise.TerrainScaleDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDaDa_Da;
 import togos.minecraft.mapgen.noise.api.FunctionDaDa_Ia;
+import togos.minecraft.mapgen.world.Blocks;
 
 public class WorldMapper
 {
@@ -47,27 +50,27 @@ public class WorldMapper
 		
 		LayerMapper lm = new LayerMapper();
 		lm.layers.add( new LayerMapper.Layer(
-			Material.WATER,
+			new Constant_Ia(Blocks.WATER),
 			new Constant_Da(32),
 			new Constant_Da(64)
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			Material.SAND,
+			new Constant_Ia(Blocks.SAND),
 			new Constant_Da(-10),
-			new AdaptDaDa_DaDaDa_Da(sandLevel)
+			new AdaptInDaDa_DaDaDa_Da(sandLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			Material.DIRT,
+			new Constant_Ia(Blocks.DIRT),
 			new Constant_Da(0),
-			new AdaptDaDa_DaDaDa_Da(dirtLevel)
+			new AdaptInDaDa_DaDaDa_Da(dirtLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			Material.STONE,
+			new Constant_Ia(Blocks.STONE),
 			new Constant_Da(1),
-			new AdaptDaDa_DaDaDa_Da(stoneLevel)
+			new AdaptInDaDa_DaDaDa_Da(stoneLevel)
 		));
 		lm.layers.add( new LayerMapper.Layer(
-			Material.BEDROCK,
+			new Constant_Ia(Blocks.BEDROCK),
 			new Constant_Da(0),
 			new Constant_Da(1)
 		));
@@ -75,9 +78,11 @@ public class WorldMapper
 		ChunkMungeList cmList = new ChunkMungeList(); 
 		cmList.addMunger( lm.getLayerChunkMunger() );
 		cmList.addMunger( new Grassifier() );
-		TreeStampPopulator tsp = new TreeStampPopulator();
-		tsp.groundFunction = lm.getGroundFunction();
-		tsp.densityFunction = Constant_Da.forValue(1d/64);
+		GroundStampPopulator tsp = new GroundStampPopulator(
+			new TreeGenerator(), 20,
+			new AdaptInDaDa_DaDaDa_Da(new ScaleOutDaDaDa_Da(1d/16, new ScaleInDaDaDa_Da(1d/64, 1d/64, 1d/64, new PerlinDaDaDa_Da()))),
+			lm.getGroundFunction(), new int[]{Blocks.DIRT, Blocks.GRASS}
+		);
 		cmList.addMunger( new StampPopulatorChunkMunger(tsp) );
 		
 		DEFAULT = new WorldMapper();
