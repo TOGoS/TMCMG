@@ -1,4 +1,6 @@
 layered-terrain(
-	layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -0.4, 0.4, perlin ) ) ),
+	layer( materials.sand, 0, 56 + fractal( 7, 10, 10, 5, 1.6, 11, ridge( -0.4, 0.4, perlin ) * scale-in( 0.1, 0.1, 0.1, perlin ) ) ),
+	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -0.4, 0.4, perlin ) ) ),
+	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -1, 1, perlin ) ) ),
 	layer( materials.water, 0, 64 ),
 )
