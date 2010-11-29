@@ -1,6 +1,7 @@
 package togos.minecraft.mapgen.app;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
+import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChestData;
@@ -75,6 +77,7 @@ public class MapWriter
 		int boundsWidth = 1;
 		int boundsDepth = 1;
 		String mapDir = ".";
+		String scriptFile = null;
 		for( int i=0; i<args.length; ++i ) {
 			if( "-map-dir".equals(args[i]) ) {
 				mapDir = args[++i];
@@ -86,6 +89,8 @@ public class MapWriter
 				boundsWidth = Integer.parseInt(args[++i]);
 			} else if( "-depth".equals(args[i]) ) {
 				boundsDepth = Integer.parseInt(args[++i]);
+			} else if( !args[i].startsWith("-") ) {
+				scriptFile = args[i];
 			} else {
 				System.err.println("Unrecognised argument: "+args[i]);
 				System.err.println(USAGE);
@@ -285,23 +290,23 @@ public class MapWriter
 					"X######X"+
 					"XXXXXXXX"+
 					
-					"XXXXXXXXXXXX"+
-					"XX#########X"+
-					"XX##XXXXXX#X"+
-					"XX##XXXXXX#X"+
-					"XX##XXXXXX#X"+
-					"XX##XXXXXXXX"+
-					"XX#########X"+
-					"XXXXXXXXXXXX"+
+					"XXXXXXXX"+
+					"X######X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXXXX"+
+					"X######X"+
+					"XXXXXXXX"+
 					
-					"XXXXXXXXXXXXXXXX"+
-					"XX############XX"+
-					"XX##XXXXXXXX##XX"+
-					"XX##XXXXXXXX##XX"+
-					"XX##XXXXXXXX##XX"+
-					"XX##XXXXXXXXXXXX"+
-					"XX############XX"+
-					"XXXXXXXXXXXXXXXX";
+					"XXXXXXXX"+
+					"X######X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXX#X"+
+					"X#XXXXXX"+
+					"X######X"+
+					"XXXXXXXX";
 				s.populate(0,6,0, 8, 7, 8, diagram);
 			}
 			*/
@@ -330,15 +335,22 @@ public class MapWriter
 			
 			MapWriter mapWriter = new MapWriter();
 			
-			String source = "layered-terrain(" +
-				"layer( materials.sand, 0, 64 + 5 * scale-in(0.1,0.1,0.1,perlin) + 10 * scale-in(0.01,0.01,0.01,perlin) ), " +
-				"layer( materials.dirt, 0, 64 + 5 * scale-in(0.15,0.1,0.1,perlin) + 10 * scale-in(0.001,0.001,0.001,translate-in(0,0,-10,perlin)) ), " +
-			")";
+			WorldGenerator worldGenerator;
+			if( scriptFile != null ) {
+				try {
+					worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), new File(scriptFile) );
+				} catch( FileNotFoundException e ) {
+					System.err.println(e.getMessage());
+					System.exit(1);
+					return;
+				} catch( IOException e ) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				worldGenerator = SimpleWorldGenerator.DEFAULT;
+			}
 			
-			WorldGenerator worldMapper = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), source, "test source", 1);
-
-			
-			ChunkMunger cfunc = worldMapper.getChunkMunger();
+			ChunkMunger cfunc = worldGenerator.getChunkMunger();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);

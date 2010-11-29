@@ -1,6 +1,7 @@
 package togos.minecraft.mapgen.ui;
 
 import java.awt.Canvas;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -16,10 +17,14 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
+import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Da;
@@ -265,18 +270,35 @@ public class NoiseCanvas extends Canvas
 	}
 	
 	public static void main( String[] args ) {
+		String scriptFile = null;
+		for( int i=0; i<args.length; ++i ) {
+			if( !args[i].startsWith("-") ) {
+				scriptFile = args[i];
+			} else {
+				System.err.println("Usage: NoiseCanvas <path/to/script.tnl>");
+				System.exit(1);
+			}
+		}
+		
 		final Frame f = new Frame("Noise canvas");
 		final NoiseCanvas nc = new NoiseCanvas();
 		
-		//SimpleWorldGenerator worldMapper = SimpleWorldGenerator.DEFAULT;
-		String source = "layered-terrain(" +
-			"layer( materials.sand, 64, 64 + scale-in(0.1,0.1,0.1,perlin) + 2 * scale-in(0.01,0.01,0.01,perlin) ), " +
-			"layer( materials.dirt, 64, 64 + scale-in(0.15,0.1,0.1,perlin) + 2 * scale-in(0.001,0.001,0.001,translate-in(0,0,-10,perlin)) ), " +
-		")";
+		WorldGenerator worldGenerator;
+		if( scriptFile != null ) {
+			try {
+				worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), new File(scriptFile) );
+			} catch( FileNotFoundException e ) {
+				System.err.println(e.getMessage());
+				System.exit(1);
+				return;
+			} catch( IOException e ) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			worldGenerator = SimpleWorldGenerator.DEFAULT;
+		}
 		
-		WorldGenerator worldMapper = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), source, "test source", 1);
-		
-		nc.colorFunc = new GroundColorFunction( worldMapper.getGroundFunction() );
+		nc.colorFunc = new GroundColorFunction( worldGenerator.getGroundFunction() );
 		
 		nc.setPreferredSize(new Dimension(512,384));
 		f.add(nc);
