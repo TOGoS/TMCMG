@@ -11,13 +11,13 @@ import togos.noise2.lang.TNLCompiler;
 public class NoiseMacros
 {
 	static abstract class BaseMacroType implements MacroType {
-		protected int requiredArgCount = -1;
+		protected abstract int getRequiredArgCount();
 		
 		protected abstract Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs );
 		
 		public Object instantiate( TNLCompiler c, ASTNode sn ) {
-			if( requiredArgCount >= 0 && sn.arguments.size() != requiredArgCount ) {
-				throw new CompileError( sn.macroName + "requires "+requiredArgCount+" arguments, given "+sn.arguments.size()+".", sn );
+			if( getRequiredArgCount() >= 0 && sn.arguments.size() != getRequiredArgCount() ) {
+				throw new CompileError( sn.macroName + "requires "+getRequiredArgCount()+" arguments, given "+sn.arguments.size()+".", sn );
 			}
 			Object[] compiledArgs = new Object[sn.arguments.size()];
 			ASTNode[] argNodes = new ASTNode[sn.arguments.size()];
@@ -32,7 +32,7 @@ public class NoiseMacros
 	static abstract class DcDcDcDfMacroType extends BaseMacroType {
 		protected abstract Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next );
 		
-		protected int requiredArgCount = 4; 
+		protected int getRequiredArgCount() { return 4; } 
 		
 		public Object instantiate( ASTNode n, ASTNode[] argNodes, Object[] compiledArgs ) {
 			return instantiate(
@@ -58,18 +58,30 @@ public class NoiseMacros
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
 		add("min", dddaamt(MinOutDaDaDa_Da.class));
 		add("max", dddaamt(MaxOutDaDaDa_Da.class));
+		add("ridge", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 3; }
+			
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
+				return new RidgeOutDaDaDa_Da(
+					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[2], argNodes[2])
+				);
+			}
+		});
+
 		add("scale-in", new DcDcDcDfMacroType() {
 			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new ScaleInDaDaDa_Da(x,y,z,next);
 			}
 		});
-		add("translate", new DcDcDcDfMacroType() {
+		add("translate-in", new DcDcDcDfMacroType() {
 			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new TranslateInDaDaDa_Da(x,y,z,next);
 			}
 		});
 		add("xf", new BaseMacroType() {
-			protected int requiredArgCount = 4;
+			protected int getRequiredArgCount() { return 4; }
 			
 			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
 				return new TransformInDaDaDa_Da(

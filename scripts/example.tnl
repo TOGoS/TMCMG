@@ -1,4 +1,4 @@
 layered-terrain(
-	layer( materials.sand, 0, 64 + 8 * xf( x * 0.05, y * 0.05, 100, perlin ) ),
+	layer( materials.sand, 0, 64 + ridge( -2, 2, 8 * xf( x * 0.05, y * 0.05, 0, perlin ) ) ),
 	layer( materials.water, 0, 64 ),
 )
