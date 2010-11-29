@@ -1,4 +1,4 @@
 layered-terrain(
-	layer( materials.sand, 0, 64 + 8 * scale-in( 0.05, 0.05, 0.05, perlin ) ),
-	layer( materials.dirt, 0, 64 + 16 * scale-in( 0.02, 0.02, 0.02, perlin ) ),
+	layer( materials.sand, 0, 64 + 8 * xf( x * 0.05, y * 0.05, 100, perlin ) ),
+	layer( materials.water, 0, 64 ),
 )

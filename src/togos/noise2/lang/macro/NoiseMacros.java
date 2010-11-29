@@ -2,14 +2,7 @@ package togos.noise2.lang.macro;
 
 import java.util.HashMap;
 
-import togos.noise2.function.AddOutDaDaDa_Da;
-import togos.noise2.function.DivideOutDaDaDa_Da;
-import togos.noise2.function.FunctionDaDaDa_Da;
-import togos.noise2.function.MultiplyOutDaDaDa_Da;
-import togos.noise2.function.PerlinDaDaDa_Da;
-import togos.noise2.function.ScaleInDaDaDa_Da;
-import togos.noise2.function.SubtractOutDaDaDa_Da;
-import togos.noise2.function.TranslateInDaDaDa_Da;
+import togos.noise2.function.*;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.FunctionUtil;
@@ -63,16 +56,33 @@ public class NoiseMacros
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
 		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
+		add("min", dddaamt(MinOutDaDaDa_Da.class));
+		add("max", dddaamt(MaxOutDaDaDa_Da.class));
 		add("scale-in", new DcDcDcDfMacroType() {
 			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new ScaleInDaDaDa_Da(x,y,z,next);
 			}
 		});
-		add("translate-in", new DcDcDcDfMacroType() {
+		add("translate", new DcDcDcDfMacroType() {
 			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new TranslateInDaDaDa_Da(x,y,z,next);
 			}
 		});
+		add("xf", new BaseMacroType() {
+			protected int requiredArgCount = 4;
+			
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
+				return new TransformInDaDaDa_Da(
+					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[2], argNodes[2]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[3], argNodes[3])
+				);
+			}
+		});
+		add("x", new ConstantMacroType(X.instance));
+		add("y", new ConstantMacroType(Y.instance));
+		add("z", new ConstantMacroType(Z.instance));
 		add("perlin", new ConstantMacroType(PerlinDaDaDa_Da.instance));
 	}
 }
