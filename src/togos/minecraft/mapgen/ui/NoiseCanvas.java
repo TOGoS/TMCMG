@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -161,6 +162,7 @@ public class NoiseCanvas extends Canvas
 		}
 	}
 	
+	boolean showZoom = true;
 	double wx, wy, zoom;
 	
 	FunctionDaDa_Ia colorFunc;
@@ -209,12 +211,8 @@ public class NoiseCanvas extends Canvas
 		});
     }
 	
-	protected void setTitle(String t) {
-	}
-	
 	protected void updateRenderer() {
 		double mpp = 1/zoom;
-		setTitle(mpp+" mpp");
 		double leftX = wx-mpp*getWidth()/2;
 		double topY = wy-mpp*getHeight()/2;
 		stopRenderer();
@@ -236,6 +234,7 @@ public class NoiseCanvas extends Canvas
 		this.wx = wx;
 		this.wy = wy;
 		this.zoom = zoom;
+		// this.positionUpdated( wx, wy, zoom );
 		this.updateRenderer();
 	}
 		
@@ -257,6 +256,20 @@ public class NoiseCanvas extends Canvas
 		} else {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+		if( showZoom ) {
+			String zoomText = "MPP: "+(1/zoom)+",    ("+wx+", "+wy+")";
+			
+			int textX = 16;
+			int textY = getHeight()-16;
+			
+			Rectangle2D b = g.getFontMetrics().getStringBounds(zoomText, g);
+			g.setColor(Color.BLACK);
+			g.fillRect( textX+(int)b.getMinX()-8, textY+(int)b.getMinY()-4,
+				(int)b.getWidth()+16, (int)b.getHeight()+8 );
+			
+			g.setColor(Color.GREEN);
+			g.drawString( zoomText, textX, textY );
 		}
 	}
 	
@@ -286,9 +299,7 @@ public class NoiseCanvas extends Canvas
 		
 		final Frame f = new Frame("Noise Canvas");
 		// TODO: probably want to set up some listener instead of overriding
-		final NoiseCanvas nc = new NoiseCanvas() {
-			protected void setTitle(String t) {  f.setTitle("Noise Canvas ("+t+")");  }
-		};
+		final NoiseCanvas nc = new NoiseCanvas();
 		
 		WorldGenerator worldGenerator;
 		if( scriptFile != null ) {
