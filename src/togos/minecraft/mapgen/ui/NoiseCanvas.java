@@ -209,8 +209,12 @@ public class NoiseCanvas extends Canvas
 		});
     }
 	
+	protected void setTitle(String t) {
+	}
+	
 	protected void updateRenderer() {
 		double mpp = 1/zoom;
+		setTitle(mpp+" mpp");
 		double leftX = wx-mpp*getWidth()/2;
 		double topY = wy-mpp*getHeight()/2;
 		stopRenderer();
@@ -280,8 +284,11 @@ public class NoiseCanvas extends Canvas
 			}
 		}
 		
-		final Frame f = new Frame("Noise canvas");
-		final NoiseCanvas nc = new NoiseCanvas();
+		final Frame f = new Frame("Noise Canvas");
+		// TODO: probably want to set up some listener instead of overriding
+		final NoiseCanvas nc = new NoiseCanvas() {
+			protected void setTitle(String t) {  f.setTitle("Noise Canvas ("+t+")");  }
+		};
 		
 		WorldGenerator worldGenerator;
 		if( scriptFile != null ) {

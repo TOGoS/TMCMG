@@ -48,6 +48,14 @@ public class FunctionUtil
 		}		
 	}
 	
+	public static int toInt( Object r, SourceLocation sloc ) {
+		if( r instanceof Number ) {
+			return ((Number)r).intValue();
+		} else {
+			throw new CompileError("Can't convert "+r.getClass()+" to double", sloc);
+		}
+	}
+	
 	public static double toDouble( Object r, SourceLocation sloc ) {
 		if( r instanceof Number ) {
 			return ((Number)r).doubleValue();

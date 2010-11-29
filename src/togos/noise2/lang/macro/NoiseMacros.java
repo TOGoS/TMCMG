@@ -69,7 +69,21 @@ public class NoiseMacros
 				);
 			}
 		});
-
+		add("fractal", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 7; }
+			
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
+				return new FractalDaDaDa_Da(
+					FunctionUtil.toInt(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDouble(compiledArgs[1], argNodes[1]),
+					FunctionUtil.toDouble(compiledArgs[2], argNodes[2]),
+					FunctionUtil.toDouble(compiledArgs[3], argNodes[3]),
+					FunctionUtil.toDouble(compiledArgs[4], argNodes[4]),
+					FunctionUtil.toDouble(compiledArgs[5], argNodes[5]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[6], argNodes[6])
+				);
+			}
+		});
 		add("scale-in", new DcDcDcDfMacroType() {
 			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new ScaleInDaDaDa_Da(x,y,z,next);
