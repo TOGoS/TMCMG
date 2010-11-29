@@ -59,6 +59,8 @@ public class TNLTokenizer
 		while( true ) {
 			if( c == -1 ) {
 				return null;
+			} else if( c == '#' ) {
+				while( c != '\n' && c != -1 ) c = readChar();
 			} else if( c == '\n' ) {
 				++lineNumber;
 				columnNumber = 1;

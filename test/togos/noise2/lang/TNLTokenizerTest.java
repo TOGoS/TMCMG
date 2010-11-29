@@ -13,7 +13,9 @@ public class TNLTokenizerTest extends TestCase
 {
 	public void testTokenize() {
 		String tokenizeThis = "foo(bar) + queue **\n"
-		                    + "  baz(quux ( radish,() ))";
+			                + "  # this is a comment\n"
+		                    + "  baz(quux ( radish,() )) # this is another comment\n"
+			                + "# and another";
 		List tokens = new ArrayList();
 		Token token;
 		StringReader sr = new StringReader(tokenizeThis);
@@ -34,16 +36,16 @@ public class TNLTokenizerTest extends TestCase
 		expectedTokens.add(new Token("+","test-script",1,10));
 		expectedTokens.add(new Token("queue","test-script",1,12));
 		expectedTokens.add(new Token("**","test-script",1,18));
-		expectedTokens.add(new Token("baz","test-script",2,3));
-		expectedTokens.add(new Token("(","test-script",2,6));
-		expectedTokens.add(new Token("quux","test-script",2,7));
-		expectedTokens.add(new Token("(","test-script",2,12));
-		expectedTokens.add(new Token("radish","test-script",2,14));
-		expectedTokens.add(new Token(",","test-script",2,20));
-		expectedTokens.add(new Token("(","test-script",2,21));
-		expectedTokens.add(new Token(")","test-script",2,22));
-		expectedTokens.add(new Token(")","test-script",2,24));
-		expectedTokens.add(new Token(")","test-script",2,25));
+		expectedTokens.add(new Token("baz","test-script",3,3));
+		expectedTokens.add(new Token("(","test-script",3,6));
+		expectedTokens.add(new Token("quux","test-script",3,7));
+		expectedTokens.add(new Token("(","test-script",3,12));
+		expectedTokens.add(new Token("radish","test-script",3,14));
+		expectedTokens.add(new Token(",","test-script",3,20));
+		expectedTokens.add(new Token("(","test-script",3,21));
+		expectedTokens.add(new Token(")","test-script",3,22));
+		expectedTokens.add(new Token(")","test-script",3,24));
+		expectedTokens.add(new Token(")","test-script",3,25));
 		assertEquals(expectedTokens, tokens);
 	}
 }
