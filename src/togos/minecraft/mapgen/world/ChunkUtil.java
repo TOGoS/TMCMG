@@ -25,7 +25,7 @@ public class ChunkUtil
 						if( light > 13 ) light = 13;
 						break;
 					case(Blocks.WATER): case(Blocks.MOVING_WATER):
-						if( light > 12 ) light = 12;
+						if( light > 13 ) light = 13;
 						--light;
 						if( light < 0 ) light = 0;
 						break;

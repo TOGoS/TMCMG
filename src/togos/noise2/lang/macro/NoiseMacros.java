@@ -19,6 +19,7 @@ import togos.noise2.function.X;
 import togos.noise2.function.Y;
 import togos.noise2.function.Z;
 import togos.noise2.lang.ASTNode;
+import togos.noise2.lang.CompileError;
 import togos.noise2.lang.FunctionUtil;
 
 public class NoiseMacros
@@ -28,7 +29,7 @@ public class NoiseMacros
 		
 		protected int getRequiredArgCount() { return 4; } 
 		
-		public Object instantiate( ASTNode n, ASTNode[] argNodes, Object[] compiledArgs ) {
+		public Object instantiate( ASTNode n, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
 			return instantiate(
 				FunctionUtil.toDouble(compiledArgs[0], argNodes[0]),
 				FunctionUtil.toDouble(compiledArgs[1], argNodes[1]),
@@ -55,7 +56,7 @@ public class NoiseMacros
 		add("ridge", new BaseMacroType() {
 			protected int getRequiredArgCount() { return 3; }
 			
-			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
 				return new RidgeOutDaDaDa_Da(
 					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
 					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1]),
@@ -66,7 +67,7 @@ public class NoiseMacros
 		add("fractal", new BaseMacroType() {
 			protected int getRequiredArgCount() { return 7; }
 			
-			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
 				return new FractalDaDaDa_Da(
 					FunctionUtil.toInt(compiledArgs[0], argNodes[0]),
 					FunctionUtil.toDouble(compiledArgs[1], argNodes[1]),
@@ -91,7 +92,7 @@ public class NoiseMacros
 		add("xf", new BaseMacroType() {
 			protected int getRequiredArgCount() { return 4; }
 			
-			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) {
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
 				return new TransformInDaDaDa_Da(
 					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
 					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1]),

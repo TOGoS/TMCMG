@@ -1,17 +1,14 @@
 package togos.noise2.lang;
 
-public class CompileError extends RuntimeException
+public class CompileError extends ScriptError
 {
 	private static final long serialVersionUID = 1L;
 	
-	public final SourceLocation sourceLocation;
 	public CompileError( String message, SourceLocation sloc ) {
-		super(message + " at "+sloc );
-		this.sourceLocation = sloc;
+		super( message, sloc );
 	}
 	
 	public CompileError( Exception cause, SourceLocation sloc ) {
-		super(cause);
-		this.sourceLocation = sloc;
+		super( cause, sloc );
 	}
 }

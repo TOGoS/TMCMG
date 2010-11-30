@@ -10,7 +10,7 @@ public class ConstantMacroType implements MacroType
 	public ConstantMacroType( Object value ) {
 		this.value = value;
 	}
-	public Object instantiate(TNLCompiler c, ASTNode sn) {
+	public Object instantiate(TNLCompiler c, ASTNode sn) throws CompileError {
 		if( sn.arguments.size() > 0 ) {
 			throw new CompileError(sn.macroName + " takes no arguments, "+sn.arguments.size()+" given", sn);
 		}

@@ -21,12 +21,12 @@ public class LanguageMacros
 	
 	static {
 		add("=", new MacroType() {
-			public Object instantiate( TNLCompiler c, ASTNode sn ) {
+			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				throw new CompileError("Unexpected '=' (must only occur at top level of program and with exactly one 'main' (non-'=') statement)", sn);
 			}
 		});
 		add(";", new MacroType() {
-			public Object instantiate( TNLCompiler c, ASTNode sn ) {
+			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				ASTNode mainNode = null;
 				int mainCount = 0;
 				for( Iterator i=sn.arguments.iterator(); i.hasNext(); ) {

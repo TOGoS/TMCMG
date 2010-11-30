@@ -8,6 +8,8 @@ import java.io.StringReader;
 
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
+import togos.noise2.lang.ParseError;
+import togos.noise2.lang.ScriptError;
 import togos.noise2.lang.SourceLocation;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.TNLParser;
@@ -15,7 +17,7 @@ import togos.noise2.lang.TNLTokenizer;
 
 public class ScriptUtil
 {
-	public static String formatCompileError( CompileError e ) {
+	public static String formatScriptError( ScriptError e ) {
 		SourceLocation sloc = e.sourceLocation;
 		return "Compile error: "+e.getMessage() + "\n" +
 			"At "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
@@ -25,17 +27,19 @@ public class ScriptUtil
 		try {
 			return c.compile(n);
 		} catch( CompileError e ) {
-			System.err.println(formatCompileError(e));
+			System.err.println(formatScriptError(e));
 			System.exit(1);
 			return null;
 		}
 	}
 	
-	public static Object compile( TNLCompiler c, Reader r, String sourceFilename, int sourceLineNumber ) throws IOException {
+	public static Object compile( TNLCompiler c, Reader r, String sourceFilename, int sourceLineNumber ) throws IOException, ParseError, CompileError {
 		return c.compile( new TNLParser(new TNLTokenizer(r, sourceFilename, sourceLineNumber, 1)).readNode(0) );		
 	}
 	
-	public static Object compile( TNLCompiler c, String source, String sourceFilename, int sourceLineNumber ) {
+	public static Object compile( TNLCompiler c, String source, String sourceFilename, int sourceLineNumber )
+		throws ParseError, CompileError
+	{
 		try {
 			return compile( c, new StringReader(source), sourceFilename, sourceLineNumber );
 		} catch( IOException e ) {
@@ -43,7 +47,7 @@ public class ScriptUtil
 		}
 	}
 	
-	public static Object compile( TNLCompiler c, File f ) throws IOException {
+	public static Object compile( TNLCompiler c, File f ) throws IOException, ParseError, CompileError {
 		Reader r = new FileReader(f);
 		try {
 			return compile( c, r, f.getName(), 1 );

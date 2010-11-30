@@ -1,8 +1,26 @@
 coolbase = ridge( -0.4, 0.4, perlin ) * scale-in( 0.1, 0.1, 0.1, perlin );
 
+# continental-height = min(+32,max(-32, translate-in( -2200, 200, 0, fractal( 2, 1024, 32, 2, 2, 1, coolbase ) ))); # + fractal( 4, 20, 20, 10, 2, 11, coolbase ) ))) - 8;
+# beach-height = min(4, continental-height + 4);
+
+continental-height = translate-in( 10000, 10000, 0, fractal( 3, 100000, 64, 2, 0.8, 5, perlin - 0.1 ) );
+
+hill-height = beach-height + max(0,min(1,beach-height)) * max(0,fractal( 3, 16, 16, 2, 2, 2, coolbase ));
+
+beach-height = continental-height * 0.9 + 4 + fractal( 6, 80, 16, 2, 1, 2, coolbase );
+
+dirt-height = beach-height * 2 - 2 + fractal( 2, 8, 8, 2, 2, 2, coolbase );
+
+ground-origin = 64;
+
 layered-terrain(
-	layer( materials.sand, 0, 56 + fractal( 7, 10, 10, 5, 1.6, 11, coolbase ) ),
+	layer( materials.water, 0, 64 ),
+	layer( materials.sand, 0, ground-origin + beach-height ),
+	layer( materials.dirt, 0, ground-origin + hill-height - 2),
+	layer( materials.stone, 0, ground-origin + hill-height - 6),
+	layer( materials.bedrock, 0, 1 ),
 	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -0.4, 0.4, perlin ) ) ),
 	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -1, 1, perlin ) ) ),
-	layer( materials.water, 0, 64 ),
+	tree-populator( tree-types.round, fractal( 4, 100, 0.005, 2, 2, 1, perlin ) ), 
+	grassifier,
 )

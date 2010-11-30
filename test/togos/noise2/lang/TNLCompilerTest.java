@@ -13,7 +13,7 @@ import togos.noise2.lang.macro.DaDaDa_DaArrayArgMacroType;
 
 public class TNLCompilerTest extends TestCase
 {
-	public void testCompileInt() {
+	public void testCompileInt() throws ScriptError {
 		TNLCompiler comp = new TNLCompiler();
 		assertEquals( new Integer(0), comp.compile("0") );
 		assertEquals( new Integer(-123), comp.compile("-123") );
@@ -21,14 +21,14 @@ public class TNLCompilerTest extends TestCase
 		assertEquals( new Integer(-0x345), comp.compile("-0x345") );
 	}
 
-	public void testCompileDouble() {
+	public void testCompileDouble() throws ScriptError {
 		TNLCompiler comp = new TNLCompiler();
 		assertEquals( new Double(0.125), comp.compile("0.125") );
 		assertEquals( new Double(-100.25), comp.compile("-100.25") );
 		assertEquals( new Double(1.5e-5), comp.compile("+1.5e-5") );
 	}
 
-	public void testCompileFunction() {
+	public void testCompileFunction() throws ScriptError {
 		TNLCompiler comp = new TNLCompiler();
 		comp.macroTypes.put("*", new DaDaDa_DaArrayArgMacroType(MultiplyOutDaDaDa_Da.class));
 		assertEquals( new MultiplyOutDaDaDa_Da(new FunctionDaDaDa_Da[] {
@@ -36,7 +36,7 @@ public class TNLCompilerTest extends TestCase
 		}), comp.compile("2 * 3") );
 	}
 
-	public void testCompileFunction2() {
+	public void testCompileFunction2() throws ScriptError {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
 		TNLCompiler comp = new TNLCompiler();
 		comp.macroTypes.put("*", new DaDaDa_DaArrayArgMacroType(MultiplyOutDaDaDa_Da.class));

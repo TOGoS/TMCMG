@@ -8,7 +8,15 @@ import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class ChunkMungeList implements ChunkMunger
 {
-	protected List chunkMungers = new ArrayList();
+	protected List chunkMungers;
+	
+	public ChunkMungeList( List mungers ) {
+		this.chunkMungers = mungers;
+	}
+	
+	public ChunkMungeList() {
+		this( new ArrayList() );
+	}
 	
 	public void addMunger( ChunkMunger m ) {
 		chunkMungers.add(m);

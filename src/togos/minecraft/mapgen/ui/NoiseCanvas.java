@@ -36,6 +36,8 @@ import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.ScaleOutDaDaDa_Da;
 import togos.noise2.lang.CompileError;
+import togos.noise2.lang.ScriptError;
+import togos.noise2.lang.ParseError;
 
 public class NoiseCanvas extends Canvas
 {
@@ -327,8 +329,8 @@ public class NoiseCanvas extends Canvas
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
 					gul.generatorUpdated( worldGenerator );
-				} catch( CompileError e ) {
-					System.err.println(ScriptUtil.formatCompileError(e));
+				} catch( ScriptError e ) {
+					System.err.println(ScriptUtil.formatScriptError(e));
 				} catch( FileNotFoundException e ) {
 					System.err.println(e.getMessage());
 					System.exit(1);

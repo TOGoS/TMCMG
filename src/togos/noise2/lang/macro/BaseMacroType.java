@@ -7,9 +7,9 @@ import togos.noise2.lang.TNLCompiler;
 public abstract class BaseMacroType implements MacroType {
 	protected abstract int getRequiredArgCount();
 	
-	protected abstract Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs );
+	protected abstract Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError;
 	
-	public Object instantiate( TNLCompiler c, ASTNode sn ) {
+	public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 		if( getRequiredArgCount() >= 0 && sn.arguments.size() != getRequiredArgCount() ) {
 			throw new CompileError( sn.macroName + "requires "+getRequiredArgCount()+" arguments, given "+sn.arguments.size()+".", sn );
 		}

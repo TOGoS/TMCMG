@@ -17,9 +17,9 @@ public abstract class ArrayArgMacroType implements MacroType
 		this.argClass = argClass;
 	}
 	
-	protected abstract Object compileArgument( TNLCompiler c, ASTNode sn );	
+	protected abstract Object compileArgument( TNLCompiler c, ASTNode sn ) throws CompileError;	
 	
-	public Object instantiate(TNLCompiler c, ASTNode sn) {
+	public Object instantiate(TNLCompiler c, ASTNode sn) throws CompileError {
 		int count = sn.arguments.size();
 		Object fargs = Array.newInstance(argClass, count);
 		for( int i=0; i<count; ++i  ) {

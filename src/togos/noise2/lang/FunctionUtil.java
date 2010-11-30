@@ -10,7 +10,7 @@ import togos.noise2.function.FunctionDaDa_Ia;
 
 public class FunctionUtil
 {
-	public static FunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) {
+	public static FunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDaDa_Da ) {
 			return (FunctionDaDaDa_Da)r;
 		} else if( r instanceof Number ) {
@@ -20,7 +20,7 @@ public class FunctionUtil
 		}
 	}
 	
-	public static FunctionDaDa_Da toDaDa_Da( Object r, SourceLocation sloc ) {
+	public static FunctionDaDa_Da toDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDa_Da ) {
 			return (FunctionDaDa_Da)r;
 		} else if( r instanceof FunctionDaDaDa_Da ) {
@@ -32,7 +32,7 @@ public class FunctionUtil
 		}		
 	}
 
-	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) {
+	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDaDa_Da ) {
 			r = new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
 		}
@@ -48,7 +48,7 @@ public class FunctionUtil
 		}		
 	}
 	
-	public static int toInt( Object r, SourceLocation sloc ) {
+	public static int toInt( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof Number ) {
 			return ((Number)r).intValue();
 		} else {
@@ -56,7 +56,7 @@ public class FunctionUtil
 		}
 	}
 	
-	public static double toDouble( Object r, SourceLocation sloc ) {
+	public static double toDouble( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof Number ) {
 			return ((Number)r).doubleValue();
 		} else {

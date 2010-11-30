@@ -41,7 +41,7 @@ public class TNLParser
 		this.lastToken = t;
 	}
 	
-	protected ASTNode readMacro() throws IOException {
+	protected ASTNode readMacro() throws IOException, ParseError {
 		Token t0 = readToken();
 		String macroName = t0.value;
 		List arguments = new ArrayList();
@@ -68,7 +68,7 @@ public class TNLParser
 		return new ASTNode(macroName, arguments, t0);
 	}
 	
-	protected ASTNode readAtomicNode() throws IOException {
+	protected ASTNode readAtomicNode() throws IOException, ParseError {
 		Token t = readToken();
 		if( t == null ) return null;
 		if( "(".equals(t.value) ) {
@@ -85,7 +85,7 @@ public class TNLParser
 		return readMacro();
 	}
 	
-	public ASTNode readNode( ASTNode first, int gtPrecedence ) throws IOException {
+	public ASTNode readNode( ASTNode first, int gtPrecedence ) throws IOException, ParseError {
 		Token op = readToken();
 		if( op == null || ")".equals(op.value) ) {
 			unreadToken(op);
@@ -124,7 +124,7 @@ public class TNLParser
 		return first;
 	}
 	
-	public ASTNode readNode( int gtPrecedence ) throws IOException {
+	public ASTNode readNode( int gtPrecedence ) throws IOException, ParseError {
 		ASTNode first = readAtomicNode();
 		return readNode( first, gtPrecedence );
 	}

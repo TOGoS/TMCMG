@@ -20,6 +20,7 @@ import togos.minecraft.mapgen.world.structure.ChestData;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.InventoryItemData;
 import togos.minecraft.mapgen.world.structure.Stamp;
+import togos.noise2.lang.ScriptError;
 
 public class MapWriter
 {
@@ -339,6 +340,10 @@ public class MapWriter
 			if( scriptFile != null ) {
 				try {
 					worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), new File(scriptFile) );
+				} catch( ScriptError e ) {
+					System.err.println(ScriptUtil.formatScriptError(e));
+					System.exit(1);
+					return;
 				} catch( FileNotFoundException e ) {
 					System.err.println(e.getMessage());
 					System.exit(1);

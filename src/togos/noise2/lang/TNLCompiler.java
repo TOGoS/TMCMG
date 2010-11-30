@@ -24,14 +24,14 @@ public class TNLCompiler
 		// Here so you can override it
 	}
 	
-	public void addMacroDef( String name, ASTNode node ) {
+	public void addMacroDef( String name, ASTNode node ) throws CompileError {
 		if( macroTypes.containsKey(name) ) {
 			throw new CompileError("Attempt to redefine macro '"+name+"'", node);
 		}
 		macroDefs.put(name, node);
 	}
 	
-	protected MacroType getMacroType( String name, SourceLocation sloc ) {
+	protected MacroType getMacroType( String name, SourceLocation sloc ) throws CompileError {
 		if( !macroTypes.containsKey(name) ) {
 			ASTNode def = (ASTNode)macroDefs.get(name);
 			if( def == null ) {
@@ -61,7 +61,7 @@ public class TNLCompiler
 		return numStr;
 	}
 	
-	public Object compile( ASTNode node ) {
+	public Object compile( ASTNode node ) throws CompileError {
 		Matcher m;
 		if( (m = hexIntPat.matcher(node.macroName)).matches() ) {
 			return Integer.valueOf((m.group(1) == null ? "" : m.group(1))+m.group(2),16);
@@ -75,7 +75,7 @@ public class TNLCompiler
 		}
 	}
 	
-	public Object compile( String source, String sourceName ) {
+	public Object compile( String source, String sourceName ) throws ParseError, CompileError {
 		TNLParser parser = new TNLParser(new TNLTokenizer(new StringReader(source), sourceName, 1, 1));
 		try {
 			ASTNode sn = parser.readNode(TNLParser.COMMA_PRECEDENCE);
@@ -85,7 +85,7 @@ public class TNLCompiler
 		}
 	}
 
-	public Object compile( String source ) {
+	public Object compile( String source ) throws ParseError, CompileError {
 		return compile( source, "(unnamed)" );
 	}
 }

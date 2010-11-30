@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 
 public class TNLParserTest extends TestCase
 {
-	protected ASTNode parse(String str) {
+	protected ASTNode parse(String str) throws ParseError {
 		try {
 			StringReader sr = new StringReader(str);
 			return new TNLParser(new TNLTokenizer(sr,"parser-test",1,1)).readNode(0);
@@ -23,19 +23,19 @@ public class TNLParserTest extends TestCase
 	
 	static SourceLocation NSL = new Token("","",0,0);
 	
-	public void testParseAtom() {
+	public void testParseAtom() throws ParseError {
 		ASTNode expected = new ASTNode("foo", Collections.EMPTY_LIST, NSL);
 		assertEquals( expected, parse("foo") );
 	}
 	
-	public void testParseSingleArgument() {
+	public void testParseSingleArgument() throws ParseError {
 		ArrayList expectedArguments = new ArrayList();
 		expectedArguments.add( new ASTNode("bar",NSL) );
 		ASTNode expected = new ASTNode("foo", expectedArguments, NSL);
 		assertEquals( expected, parse("foo( bar )") );
 	}
 	
-	public void testParseMultiArguments() {
+	public void testParseMultiArguments() throws ParseError {
 		ArrayList expectedArguments = new ArrayList();
 		expectedArguments.add( new ASTNode("bar",NSL) );
 		expectedArguments.add( new ASTNode("baz",NSL) );
@@ -43,7 +43,7 @@ public class TNLParserTest extends TestCase
 		assertEquals( expected, parse("foo( bar, baz )") );
 	}
 	
-	public void testParseOperator() {
+	public void testParseOperator() throws ParseError {
 		ArrayList expectedArguments = new ArrayList();
 		expectedArguments.add( new ASTNode("foo",NSL) );
 		expectedArguments.add( new ASTNode("bar",NSL) );
@@ -51,7 +51,7 @@ public class TNLParserTest extends TestCase
 		assertEquals( expected, parse("foo + bar") );
 	}
 	
-	public void testParseMultiPrecedence() {
+	public void testParseMultiPrecedence() throws ParseError {
 		ArrayList ea1 = new ArrayList();
 		ea1.add( new ASTNode("foo",NSL) );
 		ea1.add( new ASTNode("bar",NSL) );
@@ -70,7 +70,7 @@ public class TNLParserTest extends TestCase
 		assertEquals( e3, parse("(foo + bar) / baz * quux") );
 	}
 
-	public void testParseMultiPrecedence2() {
+	public void testParseMultiPrecedence2() throws ParseError {
 		ArrayList ea1 = new ArrayList();
 		ea1.add( new ASTNode("foo", NSL) );
 		ea1.add( new ASTNode("bar", NSL) );
@@ -91,7 +91,7 @@ public class TNLParserTest extends TestCase
 		assertEquals( e3, parse("foo ** bar / baz * quux * grawr / thing") );
 	}
 	
-	public void testParseEquals() {
+	public void testParseEquals() throws ParseError {
 		ArrayList ea1 = new ArrayList();
 		ea1.add( new ASTNode("cow", NSL) );
 		ea1.add( new ASTNode("pig", NSL) );
@@ -100,7 +100,7 @@ public class TNLParserTest extends TestCase
 		assertEquals( e1, parse("cow = pig") );
 	}
 	
-	public void testParseEqualsAndSemiColinz() {
+	public void testParseEqualsAndSemiColinz() throws ParseError {
 		ArrayList ea1 = new ArrayList();
 		ea1.add( new ASTNode("cow", NSL) );
 		ea1.add( new ASTNode("pig", NSL) );
@@ -119,7 +119,7 @@ public class TNLParserTest extends TestCase
 		assertEquals( e3, parse("cow = pig; horse = rabbit") );
 	}
 	
-	public void testDifferentSyntax() {
+	public void testDifferentSyntax() throws ParseError {
 		assertEquals(
 			parse("peace = war; freedom = slavery; strength = ignorance"),
 			parse(";(=(peace,war), =(freedom,slavery), =(strength,ignorance))")
