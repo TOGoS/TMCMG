@@ -15,20 +15,24 @@ import togos.noise2.lang.TNLTokenizer;
 
 public class ScriptUtil
 {
-	public static Object compile( TNLCompiler c, ASTNode n ) {
+	public static String formatCompileError( CompileError e ) {
+		SourceLocation sloc = e.sourceLocation;
+		return "Compile error: "+e.getMessage() + "\n" +
+			"At "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
+	}
+	
+	public static Object compileOrExit( TNLCompiler c, ASTNode n ) {
 		try {
 			return c.compile(n);
 		} catch( CompileError e ) {
-			System.err.println("Compile error: "+e.getMessage());
-			SourceLocation sloc = e.sourceLocation;
-			System.err.println("At "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber());
+			System.err.println(formatCompileError(e));
 			System.exit(1);
 			return null;
 		}
 	}
 	
 	public static Object compile( TNLCompiler c, Reader r, String sourceFilename, int sourceLineNumber ) throws IOException {
-		return compile( c, new TNLParser(new TNLTokenizer(r, sourceFilename, sourceLineNumber, 1)).readNode(0) );		
+		return c.compile( new TNLParser(new TNLTokenizer(r, sourceFilename, sourceLineNumber, 1)).readNode(0) );		
 	}
 	
 	public static Object compile( TNLCompiler c, String source, String sourceFilename, int sourceLineNumber ) {

@@ -1,7 +1,6 @@
 package togos.minecraft.mapgen.ui;
 
 import java.awt.Canvas;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -22,10 +21,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import togos.minecraft.mapgen.FileWatcher;
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.util.Service;
+import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
-import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
+import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Da;
@@ -33,6 +35,7 @@ import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.ScaleOutDaDaDa_Da;
+import togos.noise2.lang.CompileError;
 
 public class NoiseCanvas extends Canvas
 {
@@ -56,7 +59,7 @@ public class NoiseCanvas extends Canvas
 		}
 	}
 	
-	class NoiseRenderer implements Runnable {
+	class NoiseRenderer implements Runnable, Service {
 		FunctionDaDa_Ia colorFunction;
 		int width, height;
 		double worldX, worldY, worldXPerPixel, worldYPerPixel;
@@ -106,7 +109,7 @@ public class NoiseCanvas extends Canvas
 						sub = true;
 					}
 					if( currentScale == 0 ) {
-						++i;
+						//++i;
 						break;
 					}
 					if( sub && (currentX / currentScale) % 2 == 0 && (currentY / currentScale) % 2 == 0 ) {
@@ -124,6 +127,8 @@ public class NoiseCanvas extends Canvas
 		CoordPopulator cpop = new CoordPopulator();
 		
 		public void run() {
+			if( width == 0 || height == 0 ) return;
+			
 			buffer = createBuffer();
 			Graphics g = buffer.getGraphics();
 			
@@ -138,6 +143,7 @@ public class NoiseCanvas extends Canvas
 			while( !stop ) {
 				int coordCount = cpop.nextCoords(px, py, scale);
 				if( coordCount == 0 ) return;
+				
 				for( int i=0; i<coordCount; ++i ) {
 					wx[i] = worldX + px[i]*worldXPerPixel;
 					wy[i] = worldY + py[i]*worldYPerPixel;
@@ -286,37 +292,64 @@ public class NoiseCanvas extends Canvas
 		this.cnr.start();
 	}
 	
+	interface GeneratorUpdateListener {
+		public void generatorUpdated( WorldGenerator wg );
+	}
+	
 	public static void main( String[] args ) {
-		String scriptFile = null;
+		String scriptFilename = null;
+		boolean autoReload = false;
 		for( int i=0; i<args.length; ++i ) {
-			if( !args[i].startsWith("-") ) {
-				scriptFile = args[i];
+			if( "-auto-reload".equals(args[i]) ) {
+				autoReload = true;
+			} else if( !args[i].startsWith("-") ) {
+				scriptFilename = args[i];
 			} else {
 				System.err.println("Usage: NoiseCanvas <path/to/script.tnl>");
 				System.exit(1);
 			}
 		}
 		
+		final ServiceManager sm = new ServiceManager();
 		final Frame f = new Frame("Noise Canvas");
 		// TODO: probably want to set up some listener instead of overriding
 		final NoiseCanvas nc = new NoiseCanvas();
 		
-		WorldGenerator worldGenerator;
-		if( scriptFile != null ) {
-			try {
-				worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), new File(scriptFile) );
-			} catch( FileNotFoundException e ) {
-				System.err.println(e.getMessage());
-				System.exit(1);
-				return;
-			} catch( IOException e ) {
-				throw new RuntimeException(e);
+		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
+			public void generatorUpdated( WorldGenerator wg ) {
+				nc.colorFunc = new GroundColorFunction( wg.getGroundFunction() );
+				nc.updateRenderer();
+			}
+		};
+		
+		final FileWatcher.FileUpdateListener ful = new FileWatcher.FileUpdateListener() {
+			public void fileUpdated( File scriptFile ) {
+				try {
+					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
+					gul.generatorUpdated( worldGenerator );
+				} catch( CompileError e ) {
+					System.err.println(ScriptUtil.formatCompileError(e));
+				} catch( FileNotFoundException e ) {
+					System.err.println(e.getMessage());
+					System.exit(1);
+					return;
+				} catch( IOException e ) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		
+		if( scriptFilename != null ) {
+			File scriptFile = new File(scriptFilename);
+			ful.fileUpdated( scriptFile );
+			if( autoReload ) {
+				FileWatcher fw = new FileWatcher( scriptFile );
+				fw.addUpdateListener(ful);
+				sm.add(fw);
 			}
 		} else {
-			worldGenerator = SimpleWorldGenerator.DEFAULT;
+			gul.generatorUpdated( SimpleWorldGenerator.DEFAULT );
 		}
-		
-		nc.colorFunc = new GroundColorFunction( worldGenerator.getGroundFunction() );
 		
 		nc.setPreferredSize(new Dimension(512,384));
 		f.add(nc);
@@ -329,10 +362,12 @@ public class NoiseCanvas extends Canvas
 			public void windowClosing( WindowEvent arg0 ) {
 				nc.stopRenderer();
 				f.dispose();
+				sm.halt();
 			}
 			public void windowClosed( WindowEvent arg0 ) {}
 			public void windowActivated( WindowEvent arg0 ) {}
 		});
+		sm.start();
 		f.setVisible(true);
 		nc.setPos(0,0,1);
 		nc.requestFocus();
