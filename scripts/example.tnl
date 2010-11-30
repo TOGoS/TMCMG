@@ -7,7 +7,7 @@ continental-height = translate-in( 10000, 10000, 0, fractal( 3, 100000, 64, 2, 0
 
 hill-height = beach-height + max(0,min(1,beach-height)) * max(0,fractal( 3, 16, 16, 2, 2, 2, coolbase ));
 
-beach-height = continental-height * 0.9 + 4 + fractal( 6, 80, 16, 2, 1, 2, coolbase );
+beach-height = continental-height + 4 + 2 * fractal( 6, 80, 16, 2, 1, 2, coolbase );
 
 dirt-height = beach-height * 2 - 2 + fractal( 2, 8, 8, 2, 2, 2, coolbase );
 

@@ -1,6 +1,5 @@
 package togos.minecraft.mapgen.ui;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -9,20 +8,16 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import togos.minecraft.mapgen.FileWatcher;
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.util.FileUpdateListener;
+import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
@@ -32,7 +27,7 @@ import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ScriptError;
 
-public class NoiseCanvas extends Canvas
+public class NoiseCanvas extends WorldExplorerViewCanvas
 {
     private static final long serialVersionUID = 1L;
     
@@ -145,56 +140,15 @@ public class NoiseCanvas extends Canvas
 		}
 	}
 	
-	boolean showZoom = true;
-	double wx, wy, zoom;
-	
-	FunctionDaDa_Ia colorFunc;
+	public FunctionDaDa_Ia colorFunc;
 	NoiseRenderer cnr;
 	
 	public NoiseCanvas() {
-		addComponentListener(new ComponentListener() {
-			public void componentShown( ComponentEvent arg0 ) {
-				updateRenderer();
-			}
-			public void componentResized( ComponentEvent arg0 ) {
-				updateRenderer();
-			}
-			public void componentMoved( ComponentEvent arg0 ) {
-			}
-			public void componentHidden( ComponentEvent arg0 ) {
-			}
-		});
-		addKeyListener(new KeyListener() {
-			public void keyTyped( KeyEvent evt ) {
-			}
-			public void keyReleased( KeyEvent evt ) {
-			}
-			public void keyPressed( KeyEvent evt ) {
-				switch( evt.getKeyCode() ) {
-				case(KeyEvent.VK_MINUS): case(KeyEvent.VK_UNDERSCORE):
-					setPos(wx,wy,zoom/2);
-					break;
-				case(KeyEvent.VK_PLUS): case(KeyEvent.VK_EQUALS):
-					setPos(wx,wy,zoom*2);
-					break;
-				case(KeyEvent.VK_UP):
-					setPos(wx,wy-getHeight()/(4*zoom),zoom);
-					break;
-				case(KeyEvent.VK_DOWN):
-					setPos(wx,wy+getHeight()/(4*zoom),zoom);
-					break;
-				case(KeyEvent.VK_LEFT):
-					setPos(wx-getWidth()/(4*zoom),wy,zoom);
-					break;
-				case(KeyEvent.VK_RIGHT):
-					setPos(wx+getWidth()/(4*zoom),wy,zoom);
-					break;
-				}
-			}
-		});
+		super();
     }
 	
-	protected void updateRenderer() {
+	public void stateUpdated() {
+		colorFunc = wg == null ? null : new GroundColorFunction( wg.getGroundFunction() );
 		double mpp = 1/zoom;
 		double leftX = wx-mpp*getWidth()/2;
 		double topY = wy-mpp*getHeight()/2;
@@ -204,23 +158,6 @@ public class NoiseCanvas extends Canvas
 		}
 	}
 	
-	public void setPos( double wx, double wy, double zoom ) {
-		if( zoom == 0 ) {
-			throw new RuntimeException("Zoom cannot be zero!");
-		}
-		if( Double.isInfinite(zoom) ) {
-			throw new RuntimeException("Zoom cannot be infinite!");
-		}
-		if( Double.isNaN(zoom) ) {
-			throw new RuntimeException("Zoom must be a number!");
-		}
-		this.wx = wx;
-		this.wy = wy;
-		this.zoom = zoom;
-		// this.positionUpdated( wx, wy, zoom );
-		this.updateRenderer();
-	}
-		
 	public void update(Graphics g) {
 		paint(g);
 	}
@@ -240,20 +177,7 @@ public class NoiseCanvas extends Canvas
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, getWidth(), getHeight());
 		}
-		if( showZoom ) {
-			String zoomText = "MPP: "+(1/zoom)+",    ("+wx+", "+wy+")";
-			
-			int textX = 16;
-			int textY = getHeight()-16;
-			
-			Rectangle2D b = g.getFontMetrics().getStringBounds(zoomText, g);
-			g.setColor(Color.BLACK);
-			g.fillRect( textX+(int)b.getMinX()-8, textY+(int)b.getMinY()-4,
-				(int)b.getWidth()+16, (int)b.getHeight()+8 );
-			
-			g.setColor(Color.GREEN);
-			g.drawString( zoomText, textX, textY );
-		}
+		paintOverlays(g);
 	}
 	
 	public void stopRenderer() {
@@ -289,17 +213,15 @@ public class NoiseCanvas extends Canvas
 		
 		final ServiceManager sm = new ServiceManager();
 		final Frame f = new Frame("Noise Canvas");
-		// TODO: probably want to set up some listener instead of overriding
 		final NoiseCanvas nc = new NoiseCanvas();
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
 			public void generatorUpdated( WorldGenerator wg ) {
-				nc.colorFunc = new GroundColorFunction( wg.getGroundFunction() );
-				nc.updateRenderer();
+				nc.setWorldGenerator( wg );
 			}
 		};
 		
-		final FileWatcher.FileUpdateListener ful = new FileWatcher.FileUpdateListener() {
+		final FileUpdateListener ful = new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
@@ -346,7 +268,7 @@ public class NoiseCanvas extends Canvas
 		});
 		sm.start();
 		f.setVisible(true);
-		nc.setPos(0,0,1);
+		nc.addKeyListener(new WorldExploreKeyListener(nc));
 		nc.requestFocus();
 	}
 }

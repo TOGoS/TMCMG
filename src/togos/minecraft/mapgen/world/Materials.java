@@ -48,7 +48,7 @@ public class Materials
 		add(new Material( (byte)0x04, (byte)0x00, 0xFF666666, "CC", "Cobblestone" ));
 		add(new Material( (byte)0x05, (byte)0x00, 0xFFFF00FF, "? ", "Wood" ));
 		add(new Material( (byte)0x06, (byte)0x00, 0xFFFF00FF, "? ", "Sapling" ));
-		add(new Material( (byte)0x07, (byte)0x00, 0xFFFF00FF, "##", "Bedrock" ));
+		add(new Material( (byte)0x07, (byte)0x00, 0xFF333333, "##", "Bedrock" ));
 		add(new Material( (byte)0x08, (byte)0x00, 0xFFFF00FF, "? ", "Moving water" ));
 		add(new Material( (byte)0x09, (byte)0x00, 0xFF000088, "WW", "Water" ));
 		add(new Material( (byte)0x0A, (byte)0x00, 0xFFFF00FF, "? ", "Moving lava" ));

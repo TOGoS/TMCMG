@@ -1,17 +1,12 @@
-package togos.minecraft.mapgen;
+package togos.minecraft.mapgen.util;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import togos.minecraft.mapgen.util.Service;
 
 public class FileWatcher implements Runnable, Service
 {
-	public interface FileUpdateListener {
-		public void fileUpdated( File f );
-	}
-	
 	HashSet updateListeners = new HashSet();
 	File file;
 	Thread thread;
@@ -41,16 +36,12 @@ public class FileWatcher implements Runnable, Service
 				Thread.sleep(500);
 			}
         } catch( InterruptedException e ) {
-        	System.err.println("Intarrupted!");
-        }
-        synchronized( this ) {
-        	thread = null;
         }
 	}
 	
 	public synchronized void start() {
 		if( thread == null ) {
-			thread = new Thread(this);
+			thread = new Thread(this, "File Watcher");
 			thread.start();
 		}
 	}
@@ -58,6 +49,7 @@ public class FileWatcher implements Runnable, Service
 	public synchronized void halt() {
 		if( thread != null ) {
 			thread.interrupt();
+        	thread = null;
 		}
 	}
 }
