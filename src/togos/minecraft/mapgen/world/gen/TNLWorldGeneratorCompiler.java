@@ -3,11 +3,13 @@ package togos.minecraft.mapgen.world.gen;
 import togos.minecraft.mapgen.world.Materials;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.macro.ConstantMacroType;
+import togos.noise2.lang.macro.LanguageMacros;
 import togos.noise2.lang.macro.NoiseMacros;
 
 public class TNLWorldGeneratorCompiler extends TNLCompiler
 {
 	protected void initBuiltins() {
+		macroTypes.putAll( LanguageMacros.stdLanguageMacros );
 		macroTypes.putAll( NoiseMacros.stdNoiseMacros );
 		macroTypes.putAll( WorldGeneratorMacros.wgMacros );
 		for( int i=0; i<128; ++i ) {

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.MacroType;
 
 public class TNLCompiler
@@ -41,7 +42,7 @@ public class TNLCompiler
 			}
 			compilingMacroTypes.add(name);
 			try {
-				macroTypes.put(name, compile(def));
+				macroTypes.put(name, new ConstantMacroType(compile(def)));
 			} finally {
 				compilingMacroTypes.remove(name);
 			}

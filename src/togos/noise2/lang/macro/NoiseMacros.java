@@ -2,33 +2,27 @@ package togos.noise2.lang.macro;
 
 import java.util.HashMap;
 
-import togos.noise2.function.*;
+import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.DivideOutDaDaDa_Da;
+import togos.noise2.function.FractalDaDaDa_Da;
+import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.MaxOutDaDaDa_Da;
+import togos.noise2.function.MinOutDaDaDa_Da;
+import togos.noise2.function.MultiplyOutDaDaDa_Da;
+import togos.noise2.function.PerlinDaDaDa_Da;
+import togos.noise2.function.RidgeOutDaDaDa_Da;
+import togos.noise2.function.ScaleInDaDaDa_Da;
+import togos.noise2.function.SubtractOutDaDaDa_Da;
+import togos.noise2.function.TransformInDaDaDa_Da;
+import togos.noise2.function.TranslateInDaDaDa_Da;
+import togos.noise2.function.X;
+import togos.noise2.function.Y;
+import togos.noise2.function.Z;
 import togos.noise2.lang.ASTNode;
-import togos.noise2.lang.CompileError;
 import togos.noise2.lang.FunctionUtil;
-import togos.noise2.lang.TNLCompiler;
 
 public class NoiseMacros
 {
-	static abstract class BaseMacroType implements MacroType {
-		protected abstract int getRequiredArgCount();
-		
-		protected abstract Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs );
-		
-		public Object instantiate( TNLCompiler c, ASTNode sn ) {
-			if( getRequiredArgCount() >= 0 && sn.arguments.size() != getRequiredArgCount() ) {
-				throw new CompileError( sn.macroName + "requires "+getRequiredArgCount()+" arguments, given "+sn.arguments.size()+".", sn );
-			}
-			Object[] compiledArgs = new Object[sn.arguments.size()];
-			ASTNode[] argNodes = new ASTNode[sn.arguments.size()];
-			for( int i=0; i<compiledArgs.length; ++i ) {
-				argNodes[i] = (ASTNode)sn.arguments.get(i);
-				compiledArgs[i] = c.compile(argNodes[i]);
-			}
-			return instantiate( sn, argNodes, compiledArgs );
-		}
-	}
-	
 	static abstract class DcDcDcDfMacroType extends BaseMacroType {
 		protected abstract Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next );
 		
@@ -45,7 +39,7 @@ public class NoiseMacros
 	}
 	
 	public static HashMap stdNoiseMacros = new HashMap();
-	public static void add( String name, MacroType mt ) {
+	protected static void add( String name, MacroType mt ) {
 		stdNoiseMacros.put(name,mt);
 	}
 	static MacroType dddaamt(Class functionClass) {
