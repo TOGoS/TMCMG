@@ -25,6 +25,9 @@ public class FractalDaDaDa_Da implements FunctionDaDaDa_Da
 		double[] subOut = new double[count];
 		double hs = this.inithscale;
 		double vs = this.initvscale;
+		for( int j=0; j<count; ++j ) {
+			out[j] = 0;
+		}
 		for( int i=0; i<iterations; ++i ) {
 			for( int j=0; j<count; ++j ) {
 				xfX[j] = inX[j]/hs;
