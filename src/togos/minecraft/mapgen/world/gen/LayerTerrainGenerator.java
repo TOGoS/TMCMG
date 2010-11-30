@@ -13,9 +13,9 @@ import togos.noise2.function.FunctionDaDa_Ia;
 public class LayerTerrainGenerator implements WorldGenerator
 {	
 	public static class Layer {
-		FunctionDaDa_Ia typeFunction;
-		FunctionDaDa_Da floorHeightFunction;
-		FunctionDaDa_Da ceilingHeightFunction;
+		public FunctionDaDa_Ia typeFunction;
+		public FunctionDaDa_Da floorHeightFunction;
+		public FunctionDaDa_Da ceilingHeightFunction;
 		
 		public Layer(
 			FunctionDaDa_Ia typeFunction,
@@ -85,7 +85,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 	}
 	
 	public static class LayerGroundFunction implements FunctionDaDa_DaIa {
-		List layers;
+		public List layers;
 		public LayerGroundFunction( List layers ) {
 			this.layers = layers;
 		}

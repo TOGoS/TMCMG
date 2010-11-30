@@ -20,40 +20,43 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import togos.minecraft.mapgen.FileWatcher;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
-import togos.minecraft.mapgen.world.gen.GroundColorFunction;
+import togos.minecraft.mapgen.world.Blocks;
+import togos.minecraft.mapgen.world.Materials;
+import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ScriptError;
 
-public class NoiseCanvas extends Canvas
+public class LayerSideCanvas extends Canvas
 {
     private static final long serialVersionUID = 1L;
-    
-	class NoiseRenderer implements Runnable, Service {
-		FunctionDaDa_Ia colorFunction;
+	
+	class LayerSideRenderer implements Runnable, Service {
+		List layers;
 		int width, height;
-		double worldX, worldY, worldXPerPixel, worldYPerPixel;
+		double worldX, worldZ, worldXPerPixel;
+		final double worldFloor = 0, worldCeiling = 128;
 		
 		public volatile BufferedImage buffer;
 		protected volatile boolean stop = false;		
 		
-		public NoiseRenderer( FunctionDaDa_Ia colorFunction, int width, int height,
-			double worldX, double worldY, double worldXPerPixel, double worldYPerPixel
+		public LayerSideRenderer( List layers, int width, int height,
+			double worldX, double worldZ, double worldXPerPixel
 		) {
-			this.colorFunction = colorFunction;
+			this.layers = layers;
 			this.width = width;
 			this.height = height;
 			this.worldX = worldX;
-			this.worldY = worldY;
+			this.worldZ = worldZ;
 			this.worldXPerPixel = worldXPerPixel;
-			this.worldYPerPixel = worldYPerPixel;
 		}
 		
 		protected BufferedImage createBuffer() {
@@ -69,71 +72,56 @@ public class NoiseCanvas extends Canvas
 			return new Color(argb);
 		}
 		
-		class CoordPopulator {
-			int currentX, currentY, currentScale = 32;
-			boolean sub = false;
-			protected int nextCoords( int[] px, int[] py, int[] scale ) {
-				int i;
-				for( i=0; i<px.length; currentX += currentScale ) {
-					if( currentX >= width ) {
-						currentX = 0;
-						currentY += currentScale;
-					}
-					if( currentY >= height ) {
-						currentScale /= 2;
-						currentX = 0;
-						currentY = 0;
-						sub = true;
-					}
-					if( currentScale == 0 ) {
-						//++i;
-						break;
-					}
-					if( sub && (currentX / currentScale) % 2 == 0 && (currentY / currentScale) % 2 == 0 ) {
-						continue;
-					}
-					px[i] = currentX;
-					py[i] = currentY;
-					scale[i] = currentScale;
-					++i;
-				}
-				return i;
-			}
-		}
-		
-		CoordPopulator cpop = new CoordPopulator();
-		
 		public void run() {
 			if( width == 0 || height == 0 ) return;
 			
 			buffer = createBuffer();
 			Graphics g = buffer.getGraphics();
 			
-			int[] px = new int[256];
-			int[] py = new int[256];
-			int[] scale = new int[256];
+			int[] px = new int[width];
 			
-			double[] wx = new double[256];
-			double[] wy = new double[256];
-			int[] color = new int[256];
+			double[] wx = new double[width];
+			double[] wy = new double[width];
+			double[] floor = new double[width];
+			double[] ceil = new double[width];
+			int[] type = new int[width];
+			int[] color = new int[width];
 			
-			while( !stop ) {
-				int coordCount = cpop.nextCoords(px, py, scale);
-				if( coordCount == 0 ) return;
-				
-				for( int i=0; i<coordCount; ++i ) {
+			synchronized( buffer ) {
+				g.setColor( color(0xFF00AAFF) );
+				g.fillRect(0,0,width,height);
+			}
+			for( Iterator li=layers.iterator(); li.hasNext(); ) {
+				LayerTerrainGenerator.Layer layer = (LayerTerrainGenerator.Layer)li.next();
+				for( int i=0; i<width; ++i ) {
+					px[i] = i;
 					wx[i] = worldX + px[i]*worldXPerPixel;
-					wy[i] = worldY + py[i]*worldYPerPixel;
+					wy[i] = worldZ;
 				}
-				colorFunction.apply(coordCount,wx,wy,color);
-				synchronized( buffer ) {
-					for( int i=0; i<coordCount; ++i ) {
-						g.setColor( color(color[i]) );
-						g.fillRect( px[i], py[i], scale[i], scale[i] );
+				layer.floorHeightFunction.apply(width, wx, wy, floor);
+				layer.ceilingHeightFunction.apply(width, wx, wy, ceil);
+				layer.typeFunction.apply(width, wx, wy, type);
+				for( int i=0; i<width; ++i ) {
+					if( type[i] == Blocks.AIR ) {
+						color[i] = 0xFF0088FF;
+					} else {
+						color[i] = Materials.getByBlockType(type[i]).color;
 					}
 				}
-				repaint();
+				synchronized( buffer ) {
+					for( int i=0; i<width; ++i ) {
+						if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
+						if( floor[i] < worldFloor ) floor[i] = worldFloor;
+						if( ceil[i] < floor[i] ) continue;
+						
+						int c = (int)((worldCeiling - ceil[i]) * height / (worldCeiling-worldFloor));
+						int f = (int)((worldCeiling - floor[i]) * height / (worldCeiling-worldFloor));
+						g.setColor( color(color[i]) );
+						g.fillRect( px[i], c, 1, f-c );
+					}
+				}
 			}
+			repaint();
 		}
 		
 		public void halt() {
@@ -148,10 +136,10 @@ public class NoiseCanvas extends Canvas
 	boolean showZoom = true;
 	double wx, wy, zoom;
 	
-	FunctionDaDa_Ia colorFunc;
-	NoiseRenderer cnr;
+	List layers;
+	LayerSideRenderer cnr;
 	
-	public NoiseCanvas() {
+	public LayerSideCanvas() {
 		addComponentListener(new ComponentListener() {
 			public void componentShown( ComponentEvent arg0 ) {
 				updateRenderer();
@@ -197,10 +185,9 @@ public class NoiseCanvas extends Canvas
 	protected void updateRenderer() {
 		double mpp = 1/zoom;
 		double leftX = wx-mpp*getWidth()/2;
-		double topY = wy-mpp*getHeight()/2;
 		stopRenderer();
-		if( colorFunc != null ) {
-			startRenderer(new NoiseRenderer(colorFunc,getWidth(),getHeight(),leftX,topY,mpp,mpp));
+		if( layers != null ) {
+			startRenderer(new LayerSideRenderer(layers,getWidth(),getHeight(),leftX,wy,mpp));
 		}
 	}
 	
@@ -231,7 +218,7 @@ public class NoiseCanvas extends Canvas
 	 */
 	public void paint(Graphics g) {
 		BufferedImage buf;
-		NoiseRenderer nr = cnr;
+		LayerSideRenderer nr = cnr;
 		if( nr != null && (buf = nr.buffer) != null ) {
 			synchronized( buf ) {
 				g.drawImage(buf, 0, 0, null);
@@ -263,7 +250,7 @@ public class NoiseCanvas extends Canvas
 		}
 	}
 	
-	public void startRenderer( NoiseRenderer nr ) {
+	public void startRenderer( LayerSideRenderer nr ) {
 		this.stopRenderer();
 		this.cnr = nr;
 		this.cnr.start();
@@ -290,11 +277,16 @@ public class NoiseCanvas extends Canvas
 		final ServiceManager sm = new ServiceManager();
 		final Frame f = new Frame("Noise Canvas");
 		// TODO: probably want to set up some listener instead of overriding
-		final NoiseCanvas nc = new NoiseCanvas();
+		final LayerSideCanvas nc = new LayerSideCanvas();
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
 			public void generatorUpdated( WorldGenerator wg ) {
-				nc.colorFunc = new GroundColorFunction( wg.getGroundFunction() );
+				if( wg.getGroundFunction() instanceof LayerTerrainGenerator.LayerGroundFunction ) {
+					nc.layers = ((LayerTerrainGenerator.LayerGroundFunction)wg.getGroundFunction()).layers;
+				} else {
+					System.err.println("Aagh this ground function is not of the layered variety");
+					System.err.println("Can't show it in LayerSideCanvas.");
+				}
 				nc.updateRenderer();
 			}
 		};
@@ -328,7 +320,7 @@ public class NoiseCanvas extends Canvas
 			gul.generatorUpdated( SimpleWorldGenerator.DEFAULT );
 		}
 		
-		nc.setPreferredSize(new Dimension(512,384));
+		nc.setPreferredSize(new Dimension(512,128));
 		f.add(nc);
 		f.pack();
 		f.addWindowListener(new WindowListener() {
