@@ -54,14 +54,21 @@ public class TNLCompiler
 	Pattern intPat = Pattern.compile("[+-]?\\d+");
 	Pattern floatPat = Pattern.compile("[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?");
 	
+	protected String sanitizeNumberString(String numStr) {
+		if( numStr.startsWith("+") ) {
+			numStr = numStr.substring(1);
+		}
+		return numStr;
+	}
+	
 	public Object compile( ASTNode node ) {
 		Matcher m;
 		if( (m = hexIntPat.matcher(node.macroName)).matches() ) {
 			return Integer.valueOf((m.group(1) == null ? "" : m.group(1))+m.group(2),16);
 		} else if( (m = intPat.matcher(node.macroName)).matches() ) {
-			return Integer.valueOf(node.macroName);
+			return Integer.valueOf(sanitizeNumberString(node.macroName));
 		} else if( (m = floatPat.matcher(node.macroName)).matches() ) {
-			return Double.valueOf(node.macroName);
+			return Double.valueOf(sanitizeNumberString(node.macroName));
 		} else {
 			MacroType mt = getMacroType(node.macroName, node);
 			return mt.instantiate(this, node);
