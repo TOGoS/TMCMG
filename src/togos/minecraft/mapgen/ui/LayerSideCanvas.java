@@ -141,7 +141,9 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		double leftX = wx-mpp*getWidth()/2;
 		stopRenderer();
 		
-		if( wg.getGroundFunction() instanceof LayerTerrainGenerator.LayerGroundFunction ) {
+		if( wg == null ) {
+			layers = null;
+		} else if( wg.getGroundFunction() instanceof LayerTerrainGenerator.LayerGroundFunction ) {
 			this.layers = ((LayerTerrainGenerator.LayerGroundFunction)wg.getGroundFunction()).layers;
 		} else {
 			System.err.println("Aagh this ground function is not of the layered variety");

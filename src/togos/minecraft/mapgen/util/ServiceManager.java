@@ -13,6 +13,13 @@ public class ServiceManager implements Service
 		if( running ) s.start();
 	}
 	
+	public void remove(Service s) {
+		synchronized( this ) {
+			services.remove(s);
+		}
+		s.halt();
+	}
+	
 	public synchronized void start() {
 		if( running ) return;
 		
