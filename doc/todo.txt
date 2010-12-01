@@ -1,3 +1,4 @@
+- Show script errors in WorldDesigner UI
 - Better documentation!
 - Make MPP display not flash so much, maybe move it to that status bar at the bottom
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
