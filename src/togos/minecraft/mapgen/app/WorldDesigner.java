@@ -15,8 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,10 +24,12 @@ import java.io.IOException;
 import javax.swing.BoxLayout;
 
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.LayerSideCanvas;
 import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
+import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
@@ -92,7 +94,7 @@ public class WorldDesigner
 		public void halt() {  sm.halt();  }
 	}
 	
-	public static class WorldDesignerMenuBar extends MenuBar {
+	public class WorldDesignerMenuBar extends MenuBar {
         private static final long serialVersionUID = 1L;
         
         WorldDesignerKernel wdk;
@@ -119,10 +121,11 @@ public class WorldDesigner
 				}
 			});
 			MenuItem exportMenuItem = new MenuItem("Export Chunks...",new MenuShortcut(KeyEvent.VK_X));
-			exportMenuItem.setEnabled(false);
+			//exportMenuItem.setEnabled(false);
 			exportMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed( ActionEvent arg0 ) {
-					System.err.println("EXPORT!");
+					chunkExportWindow.setVisible(true);
+					chunkExportWindow.pack();
 				}
 			});
 			CheckboxMenuItem autoReloadMenuItem = new CheckboxMenuItem("Auto Reload");
@@ -145,7 +148,20 @@ public class WorldDesigner
         }
 	}
 	
-	public static void main( String[] args ) {
+	WorldDesignerKernel wdk = new WorldDesignerKernel();
+	ChunkWritingService cws = new ChunkWritingService();
+	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(cws);
+	
+	LayerSideCanvas lsc = new LayerSideCanvas();
+	NoiseCanvas nc = new NoiseCanvas();
+	MasterWorldExplorerView mwev = new MasterWorldExplorerView();
+	Frame previewWindow = new Frame("World Preview");
+	
+	public WorldDesigner() {
+		lsc.showZoom = false;
+	}
+	
+	public void run(String[] args) {
 		String scriptFilename = null;
 		boolean autoReload = false;
 		boolean fullscreen = false;
@@ -162,19 +178,13 @@ public class WorldDesigner
 			}
 		}
 		
-		final WorldDesignerKernel wdk = new WorldDesignerKernel();
-		
-		final LayerSideCanvas lsc = new LayerSideCanvas();
-		lsc.showZoom = false;
-		final NoiseCanvas nc = new NoiseCanvas();
-		final MasterWorldExplorerView mwev = new MasterWorldExplorerView();
-		final Frame f = new Frame("World Preview");
 		final WorldExploreKeyListener wekl = new WorldExploreKeyListener(mwev);
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
 			public void generatorUpdated( WorldGenerator wg ) {
 				lsc.setWorldGenerator( wg );
 				nc.setWorldGenerator( wg );
+				chunkExportWindow.worldGenerator = wg;
 			}
 		};
 		
@@ -201,6 +211,10 @@ public class WorldDesigner
 			wdk.setScriptFile(scriptFile);
 		}
 		
+		wdk.sm.add(cws);
+		
+		wdk.start();
+		
 		final WorldDesignerMenuBar menuBar = new WorldDesignerMenuBar(wdk);
 		mwev.addSubView(nc);
 		mwev.addSubView(lsc);
@@ -213,37 +227,43 @@ public class WorldDesigner
 		errorLabel.setForeground(Color.PINK);
 		errorLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE,errorLabel.getPreferredSize().height));
 
-		f.setMenuBar(menuBar);
-		f.setLayout(new BoxLayout(f, BoxLayout.Y_AXIS));
-		f.add(lsc);
-		f.add(nc);
-		f.add(errorLabel);
-		f.validate();
-		f.addWindowListener(new WindowListener() {
-			public void windowOpened( WindowEvent arg0 ) {}
-			public void windowIconified( WindowEvent arg0 ) {}
-			public void windowDeiconified( WindowEvent arg0 ) {}
-			public void windowDeactivated( WindowEvent arg0 ) {}
+		previewWindow.setMenuBar(menuBar);
+		previewWindow.setLayout(new BoxLayout(previewWindow, BoxLayout.Y_AXIS));
+		previewWindow.add(lsc);
+		previewWindow.add(nc);
+		previewWindow.add(errorLabel);
+		previewWindow.validate();
+		previewWindow.addWindowListener(new WindowAdapter() {
 			public void windowClosing( WindowEvent arg0 ) {
-				lsc.stopRenderer();
-				nc.stopRenderer();
-				f.dispose();
-				wdk.halt();
+				halt();
 			}
-			public void windowClosed( WindowEvent arg0 ) {}
-			public void windowActivated( WindowEvent arg0 ) {}
 		});
-		wdk.start();
 		lsc.addKeyListener(wekl);
 		nc.addKeyListener(wekl);
+
 		if( fullscreen ) {
-			f.setUndecorated(true);
-			f.setExtendedState(Frame.MAXIMIZED_BOTH);
+			previewWindow.setUndecorated(true);
+			previewWindow.setExtendedState(Frame.MAXIMIZED_BOTH);
 		} else {
-			f.pack();
+			previewWindow.pack();
 		}
-		f.setVisible(true);
-		mwev.setWorldPos(0,0,1);
+		previewWindow.setVisible(true);
+		
+		chunkExportWindow.pack();
+		
 		lsc.requestFocus();
+	}
+	
+	protected void halt() {
+		lsc.stopRenderer();
+		nc.stopRenderer();
+		previewWindow.dispose();
+		chunkExportWindow.dispose();
+		wdk.halt();
+	}
+	
+	public static void main( String[] args ) {
+		WorldDesigner wd = new WorldDesigner();
+		wd.run(args);
 	}
 }
