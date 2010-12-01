@@ -23,4 +23,5 @@ layered-terrain(
 	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -1, 1, perlin ) ) ),
 	tree-populator( tree-types.round, fractal( 4, 100, 0.005, 2, 2, 1, perlin ) ), 
 	grassifier,
+	lighter,
 )
