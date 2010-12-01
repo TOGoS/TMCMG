@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.Label;
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -25,9 +26,11 @@ import javax.swing.BoxLayout;
 
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
+import togos.minecraft.mapgen.ui.HelpWindow;
 import togos.minecraft.mapgen.ui.LayerSideCanvas;
 import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
+import togos.minecraft.mapgen.ui.Icons;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
@@ -144,7 +147,19 @@ public class WorldDesigner
 			fileMenu.add(exportMenuItem);
 			fileMenu.add("-");
 			fileMenu.add(autoReloadMenuItem);
+			
+			MenuItem aboutMenuItem = new MenuItem("About");
+			aboutMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed( ActionEvent e ) {
+					new HelpWindow().setVisible(true);
+				}
+			});
+			
+			Menu helpMenu = new Menu("Help");
+			helpMenu.add(aboutMenuItem);
+			
 			add( fileMenu );
+			add( helpMenu );
         }
 	}
 	
@@ -190,7 +205,10 @@ public class WorldDesigner
 			}
 		}
 		
+		Image icon = Icons.getIcon("mcs48.png");
+		
 		chunkExportWindow.setChunkDir( chunkDir );
+		chunkExportWindow.setIconImage(icon);
 		
 		final WorldExploreKeyListener wekl = new WorldExploreKeyListener(mwev);
 		
@@ -259,6 +277,7 @@ public class WorldDesigner
 			previewWindow.setUndecorated(true);
 			previewWindow.setExtendedState(Frame.MAXIMIZED_BOTH);
 		} else {
+			previewWindow.setIconImage(icon);
 			previewWindow.pack();
 		}
 		previewWindow.setVisible(true);

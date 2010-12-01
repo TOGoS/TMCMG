@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>About TOGoS's Minecraft Map Generator</title>
+</head>
+<body>
+
+<h1>TOGoS's Minecraft Map Generator</h1>
+
+<p>...generates Minecraft Chunk data based on a TOGoS Noise Language (TNL)
+file containing parameters for the terrain, including heights of different types
+of ground and tree/vegetation distribution.  See the example script for
+explanations of script components.</p>
+
+<h3>Coordinates</h3>
+
+<p>Map coordinates are given as X, Y, and Z.  If you like to think that the
+in-game sun sets in the West, then +X = South, and +Z = West.  Y goes from 0
+(bedrock) to 128 (top of highest hill).  Coordinates are usually in meters,
+though when talking about chunk coordinates, they are usually in numbers of
+chunks (16 meters on a side).</p>
+
+<h3>World Preview</h3>
+
+<p>This window shows side and top views of the terrain resulting from interpreting the loaded
+script.  You can move around using the arrow keys and zoom in and out using plus
+and minus.  For now this shows only base terrain--no chunk-based objects
+such as trees or grass will appear in the preview.
+The number next to "MPP" near tht bottom indicates Meters Per Pixel.</p>
+
+<h3>Export Chunks</h3>
+
+<p>This window pops up when you select Export Chunks under the File menu.  To select
+an output directory (this should be a directory directly under <code>saves/</code> for SP
+data), you must browse to that directory and select a file directly within that
+directory, such as <code>level.dat</code>.</p>
+
+<p>The 4 boxes under the output directory selection are to give the X and Z coordinates
+of the Northeast-most corner of the map to generate chunks form, where an increment of
+1 means the width/depth of 1 chunk (16 meters), and the width and depth (again, in
+chunks) of the area.  When you hit <i>Generate</i> it will start generating new data
+for those chunks and writing them into the chosen output directory.
+<font color="red">WARNING:</font> THIS WILL OVERWRITE ANY EXISTING TERRAIN/BUILDINGS/OBJECTS
+IN THE AREA, so either back up your data before generating, or only generate
+on maps that have nothing you want to keep.</p>
+
+</body>
+</html>
