@@ -40,7 +40,7 @@ public class HelpWindow extends JFrame
 		helpText = helpText.replace("\r\n","\n");
 		helpText = helpText.replace("</p>\n\n<p>", "</p>\n<br />\n<p>");
 		helpLavel.setText(helpText);
-		helpLavel.setPreferredSize(new Dimension(640,512));
+		helpLavel.setPreferredSize(new Dimension(640,560));
 		
 		helpLavel.setBorder(new EmptyBorder(4, 8, 4, 12));
 		
