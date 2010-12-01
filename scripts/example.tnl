@@ -71,8 +71,9 @@ layered-terrain(
 	layer( materials.dirt, 0, ground-origin + hill-height - 2),
 	layer( materials.stone, 0, ground-origin + hill-height - 6),
 	layer( materials.bedrock, 0, 1 ),
-	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -0.4, 0.4, perlin ) ) ),
-	# layer( materials.sand, 0, 56 + fractal( 7, 10, 4, 5, 1.5, 11, ridge( -1, 1, perlin ) ) ),
+	# would make some lava-bottomed caves:
+	# layer( materials.air, 32, 32 + max(0,fractal( 4, 10, 10, 2, 2, 5, perlin )) ), 
+	# layer( materials.lava, 30, 35 ),
 	tree-populator( tree-types.round, fractal( 4, 100, 0.005, 2, 2, 1, perlin ) ), 
 	grassifier,
 	lighter,
