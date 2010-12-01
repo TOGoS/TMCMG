@@ -85,9 +85,15 @@ public class LayerTerrainGenerator implements WorldGenerator
 	}
 	
 	public static class LayerGroundFunction implements FunctionDaDa_DaIa {
+		public static final int AIR_IGNORE = 0;
+		public static final int AIR_SUBTRACT = 1;
+		public static final int AIR_NORMAL = 2;
+		
 		public List layers;
-		public LayerGroundFunction( List layers ) {
+		public int airTreatment;
+		public LayerGroundFunction( List layers, int airTreatment ) {
 			this.layers = layers;
+			this.airTreatment = airTreatment;
 		}
 		
 		public void apply( int count, double[] inX, double[] inY, double[] outZ, int[] outT ) {
@@ -105,6 +111,18 @@ public class LayerTerrainGenerator implements WorldGenerator
 		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
 		    	l.typeFunction.apply(count, inX, inY, lType);
 		    	for( int j=0; j<count; ++j ) {
+		    		boolean subtract = false;
+		    		if( lType[j] == Blocks.AIR ) {
+		    			switch( airTreatment ) {
+		    			case( AIR_IGNORE ):
+		    				continue;
+		    			case( AIR_NORMAL ):
+		    				break;
+		    			case( AIR_SUBTRACT ):
+		    				subtract = true;
+		    				break;
+		    			}
+		    		}
 		    		if( Double.isNaN(lCeil[j]) ) {
 		    			throw new RuntimeException("Ceiling height is NaN for layer "+l);
 		    		}
@@ -114,8 +132,14 @@ public class LayerTerrainGenerator implements WorldGenerator
 		    		if( lCeil[j] < highest[j] ) continue;
 		    		if( lCeil[j] < lFloor[j] ) continue;
 		    		
-		    		outT[j] = lType[j];
-		    		highest[j] = lCeil[j];
+		    		if( subtract ) {
+		    			if( highest[j] <= lCeil[j] && highest[j] >= lFloor[j] ) {
+		    				highest[j] = lFloor[j];
+		    			}
+		    		} else {
+			    		outT[j] = lType[j];
+		    			highest[j] = lCeil[j];
+		    		}
 		    	}
 		    }
 		}
@@ -126,6 +150,6 @@ public class LayerTerrainGenerator implements WorldGenerator
 	}
 	
 	public FunctionDaDa_DaIa getGroundFunction() {
-		return new LayerGroundFunction(layers);
+		return new LayerGroundFunction(layers, LayerGroundFunction.AIR_SUBTRACT);
 	}
 }

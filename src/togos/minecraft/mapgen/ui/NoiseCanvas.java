@@ -123,7 +123,8 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 				colorFunction.apply(coordCount,wx,wy,color);
 				synchronized( buffer ) {
 					for( int i=0; i<coordCount; ++i ) {
-						g.setColor( color(color[i]) );
+						int pcolor = color[i] == 0 ? 0xFF000000 : color[i];
+						g.setColor( color(pcolor) );
 						g.fillRect( px[i], py[i], scale[i], scale[i] );
 					}
 				}

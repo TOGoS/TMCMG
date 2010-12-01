@@ -52,7 +52,7 @@ public class Materials
 		add(new Material( (byte)0x08, (byte)0x00, 0xFFFF00FF, "? ", "Moving water" ));
 		add(new Material( (byte)0x09, (byte)0x00, 0xFF000088, "WW", "Water" ));
 		add(new Material( (byte)0x0A, (byte)0x00, 0xFFFF00FF, "? ", "Moving lava" ));
-		add(new Material( (byte)0x0B, (byte)0x00, 0xFFFF00FF, "? ", "Lava" ));
+		add(new Material( (byte)0x0B, (byte)0x00, 0xFFBBAA00, "? ", "Lava" ));
 		add(new Material( (byte)0x0C, (byte)0x00, 0xFFAAAA66, "SS", "Sand" ));
 		add(new Material( (byte)0x0D, (byte)0x00, 0xFFFF00FF, "? ", "Gravel" ));
 		add(new Material( (byte)0x0E, (byte)0x00, 0xFFFF00FF, "? ", "Gold ore" ));
