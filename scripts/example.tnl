@@ -1,3 +1,55 @@
+#### TNL Example Script ####
+# beginning a line with # makes a comment, obviously
+# <name> = <some expression> names an expression so you can use it easily later
+#
+# most functions take an X,Y,Z and return a value, but in TNL you do not
+# normally reference X,Y,Z and the value directly (since those depend
+# on which section of map is being generated, which is controlled externally).
+# Rather, you chain functions together to specify how X,Y,Z and the result value
+# are transformed. e.g.
+#   perlin * 2
+#     - will double the return value from perlin
+#   xf( x * 2, y * 2, z, perlin )
+#     - will double the X and Y values that are given to perlin  
+#
+# Constant numbers can be represented in standard decimal format:
+#   23, -4.75 +12.3333
+#
+# Outputs can be added, subtracted, multiplied, and divided using infix
+# operators:
+#   2 * 3, perlin * 8 - 2.1, max(0,perlin) - 0.5
+#
+# Some functions only take constants for certain arguments.  e.g. you may
+# pass (4) as the x, y arguments to scale-in, but not (perlin).
+#
+# Notes about some basic functions:
+# x, y, z
+#   - the values of the X, Y, and Z inputs 
+# perlin
+#   - the standard 3-dimensional perlin noise function
+# xf( <x-transform>, <y-transform>, <z-transform>, <basis-function> )
+#   - transforms X, Y, and Z using the transforms given before passing
+#     to <basis-function>, which is an arbitrary expression
+# scale-in( <x:const>, <y:const>, <z:const>, <basis-function>
+#   - a special case of xf that scales X, Y, and Z by the specified CONSTANT
+#     amounts 
+# translates-in( <x:const>, <y:const>, <z:const>, <basis-function>
+#   - a special case of xf that translates X, Y, and Z by the specified
+#     CONSTANT amounts
+# min( <a>, <b> )
+#   - takes the lower of the outputs of a and b for each point (X,Y,Z) of input
+# max( <a>, <b> )
+#   - takes the higher of the outputs of a and b for each point (X,Y,Z) of input
+# ridge( <min>, <max>, <value> )
+#   - 'folds up' the value function so that the output fits between
+#     <min> and <max> at every point
+# fractal( <iterations>,
+#          <initial-xyz-divisor>, <initial-v-scale>,
+#          <xyz-iteration-divisor>, <v-iteration-scale>,
+#          <z-iteration-offset>, <basis-function> )
+#   - documentation pending, see if you can figure it.
+
+# You can name an expression with the syntax "<name> = <expression>;":
 coolbase = ridge( -0.4, 0.4, perlin ) * scale-in( 0.1, 0.1, 0.1, perlin );
 
 # continental-height = min(+32,max(-32, translate-in( -2200, 200, 0, fractal( 2, 1024, 32, 2, 2, 1, coolbase ) ))); # + fractal( 4, 20, 20, 10, 2, 11, coolbase ) ))) - 8;
