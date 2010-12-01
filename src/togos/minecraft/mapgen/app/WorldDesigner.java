@@ -71,7 +71,7 @@ public class WorldDesigner
 				fw.halt();
 				fw = null;
 			}
-			this.scriptFile = f;
+			this.scriptFile = f.getAbsoluteFile();
 			if( autoReloadEnabled ) initFileWatcher();
 			fileUpdated(f);
 		}
@@ -161,22 +161,36 @@ public class WorldDesigner
 		lsc.showZoom = false;
 	}
 	
+	public static String USAGE =
+		"Usage: WorldDesigner [options] <path/to/script.tnl>\n" +
+		"Options:\n" +
+		"  -chunk-dir <dir> ; default directory to store generated map chunks\n" +
+		"  -auto-reload     ; poll script file and automatically reload when updated\n" +
+		"  -fullscreen      ; display maximized with no border\n";
+	
 	public void run(String[] args) {
 		String scriptFilename = null;
 		boolean autoReload = false;
 		boolean fullscreen = false;
+		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
-			if( "-auto-reload".equals(args[i]) ) {
+			if( "-chunk-dir".equals(args[i]) ) {
+				chunkDir = args[++i];
+			} else if( "-auto-reload".equals(args[i]) ) {
 				autoReload = true;
 			} else if( "-fullscreen".equals(args[i]) ) {
 				fullscreen = true;
+			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
+				System.out.println(USAGE);
 			} else if( !args[i].startsWith("-") ) {
 				scriptFilename = args[i];
 			} else {
-				System.err.println("Usage: NoiseCanvas <path/to/script.tnl>");
+				System.err.println(USAGE);
 				System.exit(1);
 			}
 		}
+		
+		chunkExportWindow.setChunkDir( chunkDir );
 		
 		final WorldExploreKeyListener wekl = new WorldExploreKeyListener(mwev);
 		
@@ -184,7 +198,7 @@ public class WorldDesigner
 			public void generatorUpdated( WorldGenerator wg ) {
 				lsc.setWorldGenerator( wg );
 				nc.setWorldGenerator( wg );
-				chunkExportWindow.worldGenerator = wg;
+				chunkExportWindow.setWorldGenerator( wg );
 			}
 		};
 		

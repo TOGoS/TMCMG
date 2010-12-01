@@ -32,6 +32,7 @@ public class WorldGeneratorMacros
 		});
 		
 		wgMacros.put("grassifier", new ConstantMacroType(new Grassifier()));
+		wgMacros.put("lighter", new ConstantMacroType(new Lighter()));
 		wgMacros.put("tree-types.round", new ConstantMacroType(new TreeGenerator()));
 		wgMacros.put("tree-populator", new BaseMacroType() {
 			protected int getRequiredArgCount() {  return 2;  }

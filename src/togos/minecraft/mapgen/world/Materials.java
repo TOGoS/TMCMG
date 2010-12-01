@@ -59,7 +59,7 @@ public class Materials
 		add(new Material( (byte)0x0F, (byte)0x00, 0xFFFF00FF, "? ", "Iron ore" ));
 		add(new Material( (byte)0x10, (byte)0x00, 0xFFFF00FF, "? ", "Coal ore" ));
 		add(new Material( (byte)0x11, (byte)0x00, 0xFFFF00FF, "? ", "Log" ));
-		add(new Material( (byte)0x12, (byte)0x00, 0xFFFF00FF, "? ", "Leaves" ));
+		add(new Material( (byte)0x12, (byte)0x00, 0xFF006633, "? ", "Leaves" ));
 		add(new Material( (byte)0x13, (byte)0x00, 0xFFFF00FF, "? ", "Sponge" ));
 		add(new Material( (byte)0x14, (byte)0x00, 0xFFFF00FF, "? ", "Glass" ));
 		add(new Material( (byte)0x15, (byte)0x00, 0xFFFF00FF, "? ", "Red Cloth" ));
@@ -123,7 +123,7 @@ public class Materials
 		add(new Material( (byte)0x4F, (byte)0x00, 0xFFFF00FF, "? ", "Ice" ));
 		add(new Material( (byte)0x50, (byte)0x00, 0xFFFF00FF, "? ", "Snow Block" ));
 		add(new Material( (byte)0x51, (byte)0x00, 0xFFFF00FF, "? ", "Cactus" ));
-		add(new Material( (byte)0x52, (byte)0x00, 0xFFFF00FF, "? ", "Clay" ));
+		add(new Material( (byte)0x52, (byte)0x00, 0xFFAAAAAA, "? ", "Clay" ));
 		add(new Material( (byte)0x53, (byte)0x00, 0xFFFF00FF, "? ", "Reed" ));
 		add(new Material( (byte)0x54, (byte)0x00, 0xFFFF00FF, "? ", "Jukebox" ));
 		add(new Material( (byte)0x55, (byte)0x00, 0xFFFF00FF, "? ", "Fence" ));

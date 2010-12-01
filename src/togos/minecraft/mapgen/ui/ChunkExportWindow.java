@@ -17,6 +17,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 
 import javax.swing.BoxLayout;
 
@@ -29,10 +30,11 @@ public class ChunkExportWindow extends Frame
     public class ProgressBar extends Canvas {
         private static final long serialVersionUID = 1L;
         
-		float progress = 0.5f;
-    	String message = "text";
+		float progress = 0.0f;
+    	String message = "";
     	
     	public Color progressColor = new Color(0,128,0);
+    	public Color errorColor = new Color(128,0,0);
     	public Color bgColor = new Color(96,96,96); 
     	
     	public ProgressBar() {
@@ -57,8 +59,9 @@ public class ChunkExportWindow extends Frame
     	public void paint( Graphics g ) {
     	    super.paint(g);
     	    Rectangle2D messageBounds = g.getFontMetrics().getStringBounds(message, g);
-    	    int cutoff = (int)(getWidth()*progress);
-    	    g.setColor(progressColor);
+    	    float rat = Math.abs(progress);
+    	    int cutoff = (int)(getWidth()*rat);
+    	    g.setColor(progress < 0 ? errorColor : progressColor);
     	    g.fillRect(0, 0, cutoff, getHeight());
     	    g.setColor(bgColor);
     	    g.fillRect(cutoff, 0, getWidth()-cutoff, getHeight());
@@ -76,7 +79,7 @@ public class ChunkExportWindow extends Frame
     public WorldGenerator worldGenerator;
     public ChunkWritingService cws;
     
-    Label outputDirField = new Label("./junk");
+    Label outputDirField = new Label();
     TextField xField, zField, widthField, depthField;
     ProgressBar progressBar;
     
@@ -85,6 +88,14 @@ public class ChunkExportWindow extends Frame
     	zField.setText(""+z);
     	widthField.setText(""+width);
     	depthField.setText(""+depth);
+    }
+    
+    public void setChunkDir( String dir ) {
+    	outputDirField.setText( new File(dir).getAbsolutePath() );
+    }
+    
+    public void setWorldGenerator( WorldGenerator wg ) {
+    	this.worldGenerator = wg;
     }
     
     public ChunkExportWindow( ChunkWritingService _cws ) {
@@ -102,24 +113,27 @@ public class ChunkExportWindow extends Frame
     	};
     	
     	Button browseDirButton = new Button("Output Dir");
-    	final Label dirField = new Label();
-    	dirField.setPreferredSize(new Dimension(200,0));
-    	dirField.setAlignment(Label.RIGHT);
+    	outputDirField.setPreferredSize(new Dimension(200,0));
+    	outputDirField.setAlignment(Label.RIGHT);
     	browseDirButton.addActionListener(new ActionListener() {
     		public void actionPerformed( ActionEvent arg0 ) {
     			FileDialog picker = new FileDialog((Frame)null, "    Find level.dat");
     			picker.setVisible(true);
     			if( picker.getFile() != null ) {
-    				dirField.setText(picker.getDirectory());
+    				String dir = picker.getDirectory();
+    				if( dir.endsWith("/") || dir.endsWith("\\") ) {
+    					dir = dir.substring(0,dir.length()-1);
+    				}
+    				outputDirField.setText(dir);
     			}
     			picker.dispose();
     		}
     	});
     	
-    	Panel dirPanel = new Panel();
-    	dirPanel.setLayout(new BoxLayout(dirPanel,BoxLayout.X_AXIS));
-    	dirPanel.add(browseDirButton);
-    	dirPanel.add(dirField);
+    	Panel outputdirPanel = new Panel();
+    	outputdirPanel.setLayout(new BoxLayout(outputdirPanel,BoxLayout.X_AXIS));
+    	outputdirPanel.add(browseDirButton);
+    	outputdirPanel.add(outputDirField);
     	
     	xField = new TextField("-16",4);
     	xField.addFocusListener(selectAllFocusListener);
@@ -141,22 +155,27 @@ public class ChunkExportWindow extends Frame
 
 						WorldGenerator wg = worldGenerator;
 						if( wg == null ) {
-							progressBar.setMessage("Error: no world generator");
+							progressBar.setProgress(-1, "Error: no world generator");
 							return;
 						}
 						ChunkMunger chunkMunger = wg.getChunkMunger();
 						
 						cws.setBounds(bx, bz, bw, bd);
-						cws.setChunkDir("junk-chunx");
+						cws.setChunkDir(outputDirField.getText());
 						cws.setChunkMunger(chunkMunger);
 						cws.start();
 					} catch( NumberFormatException e ) {
-						progressBar.setMessage("Error: "+e.getMessage());
+						progressBar.setProgress(-1, "Error: "+e.getMessage());
 					}
 				}
 			}
 		});
     	Button abortButton = new Button("Abort");
+    	abortButton.addActionListener(new ActionListener() {
+    		public void actionPerformed( ActionEvent arg0 ) {
+    			cws.halt();
+    		}
+    	});
     	
     	Panel inputPanel = new Panel();
     	inputPanel.setLayout(new BoxLayout(inputPanel,BoxLayout.X_AXIS));
@@ -176,7 +195,7 @@ public class ChunkExportWindow extends Frame
 			}
 		});
     	
-    	add(dirPanel);
+    	add(outputdirPanel);
     	add(inputPanel);
     	add(progressBar);
     	
