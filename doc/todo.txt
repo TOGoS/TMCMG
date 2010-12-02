@@ -1,5 +1,3 @@
-- Show script errors in WorldDesigner UI
-- Make MPP display not flash so much, maybe move it to that status bar at the bottom
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
   unrealistic positions
 - Write web server to serve arbitrary chunks and Ruby-FUSE filesystem to
@@ -10,6 +8,9 @@
 - Flower/mushroom populator
 
 
+* Show script errors in WorldDesigner UI
+* Make MPP display not flash so much, maybe move it to that status bar at the bottom
+  - mouvred to share status bar with script errors 
 * Better documentation!
   - There's a README with some lengthy explanations of thins, now.
 * Figure out how caves should be displayed.

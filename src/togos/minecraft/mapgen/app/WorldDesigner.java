@@ -27,10 +27,10 @@ import javax.swing.BoxLayout;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.HelpWindow;
+import togos.minecraft.mapgen.ui.Icons;
 import togos.minecraft.mapgen.ui.LayerSideCanvas;
 import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
-import togos.minecraft.mapgen.ui.Icons;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
@@ -169,11 +169,18 @@ public class WorldDesigner
 	
 	LayerSideCanvas lsc = new LayerSideCanvas();
 	NoiseCanvas nc = new NoiseCanvas();
-	MasterWorldExplorerView mwev = new MasterWorldExplorerView();
+	Label statusLabel = new Label();
+	MasterWorldExplorerView mwev = new MasterWorldExplorerView() {
+		public void setWorldPos(double wx, double wy, double zoom) {
+			super.setWorldPos(wx, wy, zoom);
+			updatePositionStatus();
+		}
+	};
 	Frame previewWindow = new Frame("World Preview");
 	
 	public WorldDesigner() {
 		lsc.showZoom = false;
+		nc.showZoom = false;
 	}
 	
 	public static String USAGE =
@@ -182,6 +189,16 @@ public class WorldDesigner
 		"  -chunk-dir <dir> ; default directory to store generated map chunks\n" +
 		"  -auto-reload     ; poll script file and automatically reload when updated\n" +
 		"  -fullscreen      ; display maximized with no border\n";
+	
+	protected void setStatus( boolean isError, String text ) {
+		statusLabel.setForeground(isError ? Color.PINK : Color.GREEN);
+		statusLabel.setText(text.replace("\n", "   "));
+	}
+	
+	protected void updatePositionStatus() {
+		setStatus(false, "MPP: "+(1/mwev.getZoom())+",    "+
+			mwev.getWorldX()+", "+mwev.getWorldY());
+	}
 	
 	public void run(String[] args) {
 		String scriptFilename = null;
@@ -227,11 +244,15 @@ public class WorldDesigner
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
 					gul.generatorUpdated( worldGenerator );
+					updatePositionStatus();
 				} catch( ScriptError e ) {
-					System.err.println(ScriptUtil.formatScriptError(e));
+					String errText = ScriptUtil.formatScriptError(e);
+					setStatus(true,errText);
+					System.err.println(errText);
 				} catch( FileNotFoundException e ) {
-					System.err.println(e.getMessage());
-					return;
+					String errText = e.getMessage();
+					setStatus(true,errText);
+					System.err.println(errText);
 				} catch( IOException e ) {
 					throw new RuntimeException(e);
 				}
@@ -254,16 +275,15 @@ public class WorldDesigner
 		lsc.setMaximumSize(new Dimension(Integer.MAX_VALUE,128));
 		nc.setPreferredSize(new Dimension(640,384));
 
-		Label errorLabel = new Label();
-		errorLabel.setBackground(Color.BLACK);
-		errorLabel.setForeground(Color.PINK);
-		errorLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE,errorLabel.getPreferredSize().height));
+		statusLabel.setBackground(Color.BLACK);
+		statusLabel.setForeground(Color.PINK);
+		statusLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE,statusLabel.getPreferredSize().height));
 
 		previewWindow.setMenuBar(menuBar);
 		previewWindow.setLayout(new BoxLayout(previewWindow, BoxLayout.Y_AXIS));
 		previewWindow.add(lsc);
 		previewWindow.add(nc);
-		previewWindow.add(errorLabel);
+		previewWindow.add(statusLabel);
 		previewWindow.validate();
 		previewWindow.addWindowListener(new WindowAdapter() {
 			public void windowClosing( WindowEvent arg0 ) {

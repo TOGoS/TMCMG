@@ -13,8 +13,8 @@ public class TNLParser
 		operatorPrecedence.put("**", new Integer(50));
 		operatorPrecedence.put("*",  new Integer(40));
 		operatorPrecedence.put("/",  new Integer(30));
-		operatorPrecedence.put("-",  new Integer(25));
-		operatorPrecedence.put("+",  new Integer(20));
+		operatorPrecedence.put("+",  new Integer(25));
+		operatorPrecedence.put("-",  new Integer(20));
 		operatorPrecedence.put("=",  new Integer(15));
 		operatorPrecedence.put(",",  new Integer(COMMA_PRECEDENCE));
 		operatorPrecedence.put(";",  new Integer( 5));
@@ -93,7 +93,7 @@ public class TNLParser
 		}
 		Integer oPrec = (Integer)operatorPrecedence.get(op.value);
 		if( oPrec == null ) {
-			throw new ParseError("Invalid operator '"+op.value+"'", op);
+			throw new ParseError("Invalid operator '"+op.value+"' (forget a semicolon?)", op);
 		}
 		if( oPrec.intValue() < gtPrecedence ) {
 			unreadToken(op);
