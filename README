@@ -69,7 +69,7 @@ brackets> denote placeholders for expressions.
       -( a, +(b, /( *(c, d), e)))
 
 perlin()[x,y,z] -> value
-  - A function for generating smooth noise closely base on Ken Perlin's
+  - A function for generating smooth noise closely based on Ken Perlin's
     Improved 3D noise function.
 
 translate-in( <xt>, <yt>, <zt>, <expr> )[x,y,z] -> value
@@ -82,7 +82,7 @@ scale-in( <xs>, <ys>, <zs>, <expr> )[x,y,z] -> value
 
 xf( <xt>, <yt>, <zt>, <expr> )[x,y,z] -> value
   - arbitrarily transform inputs to expr
-  - equivalent to expr( <xt>[x,y,z], <yt>[x,y,z], <zt>[x,y,z] )
+  - equivalent to <expr>[ <xt>[x,y,z], <yt>[x,y,z], <zt>[x,y,z] ]
 
 ridge( <min>, <max>, <expr> )[x,y,z] -> value
   - transforms the output of <expr> by folding it back and forth
@@ -96,11 +96,11 @@ ridge( <min>, <max>, <expr> )[x,y,z] -> value
 
 min( <expr1>, <expr2>, ... )[x,y,z] -> value
   - returns the lowest value returned by any of the component
-    expressions for the input x, y, z   
+    expressions at each input point. 
 
 max( <expr1>, <expr2>, ... )[x,y,z] -> value
   - returns the highest value returned by any of the component
-    expressions for the input x, y, z
+    expressions at each input point. 
 
 fractal( <iter>, <hscale>, <vscale>, <ihscale>, <ivscale>,
     <ztrans>, <expr> )[x,y,z] -> value
@@ -146,21 +146,27 @@ layer( <material-id>, <floor-height>, <ceiling-height> )
     coordinates become the x and y inputs - the z input to the
     height function will always be zero.
 
-Chunk post-processors (these are applied to chunks after all material
-layers):
+=== Chunk post-processors ===
+
+These are applied to chunks after all material layers:
 
 grassifier
   - adds grass to the topmost block if it is dirt
 
 lighter
-  - attempts (it's currently not completely correct) to set correct
-    light values throughout the chunk based on shadows, water, etc.
+  - attempts (it's currently not completely correct) to initialize
+    proper light values throughout the chunk based on shadows, water,
+    etc.
 
 tree-populator( <tree-type>, <density-function> )
   - places trees at pseudo-random locations in chunks, with their
     placement being more likely where <density-function> returns
-    higher values.  The value returned by <density-function>[x,y,z]
-    is interpreted as 'trees per square meter' - this many trees
-    the tree populator will *attempt* to place, though it may fail
-    to place some if they would be put on a surface other than dirt
-    or if there are obstacles that prevent them from fitting.
+    higher values.
+  - density-function = [x,y,z]->v expression giving trees per square
+    meter.  As with layer height functions, the x and y inputs come
+    to the function come from world x and z, and the z input will
+    always be zero.  The return value is interpreted as number of
+    trees the populator will *attempt* to place--it may fail to place
+    some if they would be put on a surface other than dirt or if
+    there are obstacles that prevent them from fitting.
+  - for now, <tree-type> is limited to the constant 'tree-types.round'
