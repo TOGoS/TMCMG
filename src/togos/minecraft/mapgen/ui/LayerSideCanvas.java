@@ -235,7 +235,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 			File scriptFile = new File(scriptFilename);
 			ful.fileUpdated( scriptFile );
 			if( autoReload ) {
-				FileWatcher fw = new FileWatcher( scriptFile );
+				FileWatcher fw = new FileWatcher( scriptFile, 500 );
 				fw.addUpdateListener(ful);
 				sm.add(fw);
 			}

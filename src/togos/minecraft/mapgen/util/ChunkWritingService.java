@@ -13,6 +13,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		public void chunkProgressUpdated( int chunksWritten, int totalChunks );
 	}
 	
+	// By design, if the service is started without being initialized,
+	// it won't do anything, since bounds are all zero:
 	int bx=0, bz=0, bw=0, bd=0;
 	ChunkMunger chunkMunger;
 	protected volatile boolean go = false;

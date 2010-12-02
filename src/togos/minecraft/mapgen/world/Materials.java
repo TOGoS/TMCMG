@@ -86,7 +86,7 @@ public class Materials
 		add(new Material( (byte)0x2A, (byte)0x00, 0xFFFF00FF, "? ", "Iron Block" ));
 		add(new Material( (byte)0x2B, (byte)0x00, 0xFFFF00FF, "? ", "Double Step" ));
 		add(new Material( (byte)0x2C, (byte)0x00, 0xFFFF00FF, "? ", "Step" ));
-		add(new Material( (byte)0x2D, (byte)0x00, 0xFFFF00FF, "? ", "Brick" ));
+		add(new Material( (byte)0x2D, (byte)0x00, 0xFF882222, "? ", "Brick" ));
 		add(new Material( (byte)0x2E, (byte)0x00, 0xFFFF00FF, "? ", "TNT" ));
 		add(new Material( (byte)0x2F, (byte)0x00, 0xFFFF00FF, "? ", "Bookshelf" ));
 		add(new Material( (byte)0x30, (byte)0x00, 0xFFFF00FF, "MC", "Mossy Cobblestone" ));

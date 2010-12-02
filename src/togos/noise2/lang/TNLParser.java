@@ -50,7 +50,12 @@ public class TNLParser
 			t = readToken();
 			while( t != null && !")".equals(t.value) ) {
 				unreadToken(t);
-				arguments.add(readNode(COMMA_PRECEDENCE+1));
+				
+				ASTNode argNode = readNode(COMMA_PRECEDENCE+1);
+				// Argnode should never be null here?
+				// But just in case I change something:
+				if( argNode != null ) arguments.add(argNode);
+				
 				t = readToken();
 				if( t != null && !",".equals(t.value) ) {
 					unreadToken(t);
@@ -103,7 +108,9 @@ public class TNLParser
 			arguments.add(first);
 			Token fop = op;
 			while( oPrec.intValue() == gtPrecedence ) {
-				arguments.add( readNode( gtPrecedence+1 ) );
+				ASTNode argNode = readNode( gtPrecedence+1 );
+				if( argNode != null ) arguments.add( argNode );
+				
 				fop = readToken();
 				if( fop == null || ")".equals(fop.value) ) {
 					oPrec = new Integer(0);

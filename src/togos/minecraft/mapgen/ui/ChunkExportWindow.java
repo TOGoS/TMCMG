@@ -18,10 +18,20 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 
+import org.jnbt.CompoundTag;
+import org.jnbt.DoubleTag;
+import org.jnbt.ListTag;
+import org.jnbt.NBTInputStream;
+
 import togos.minecraft.mapgen.util.ChunkWritingService;
+import togos.minecraft.mapgen.util.FileUpdateListener;
+import togos.minecraft.mapgen.util.FileWatcher;
+import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 
@@ -82,6 +92,59 @@ public class ChunkExportWindow extends Frame
     Label outputDirField = new Label();
     TextField xField, zField, widthField, depthField;
     ProgressBar progressBar;
+    Label levelDatStatusBar = new Label();
+    ServiceManager sm;
+    FileWatcher levelDatWatcher;
+    
+    protected void interpretLevelDat( File f ) {
+    	if( !f.exists() ) {
+    		levelDatStatusBar.setText("No level.dat found.");
+    		return;
+    	}
+    	
+    	try {
+			FileInputStream is = new FileInputStream(f);
+			try {
+				NBTInputStream nis = new NBTInputStream(is);
+				CompoundTag t = (CompoundTag)nis.readTag();
+				CompoundTag d = (CompoundTag)t.getValue().get("Data");
+				CompoundTag p = (CompoundTag)d.getValue().get("Player");
+				ListTag pos = (ListTag)p.getValue().get("Pos");
+				List posValues = pos.getValue();
+				long x = ((DoubleTag)posValues.get(0)).getValue().longValue();
+				long y = ((DoubleTag)posValues.get(1)).getValue().longValue();
+				long z = ((DoubleTag)posValues.get(2)).getValue().longValue();
+				
+				int cx = (int)Math.floor(x/16d);
+				int cz = (int)Math.floor(z/16d);
+				
+				levelDatStatusBar.setText("Player's at ("+x+","+y+","+z+"), in chunk ("+cx+","+cz+")." );
+				nis.close();
+			} finally {
+				is.close();
+			}
+    	} catch( Exception e ) {
+    		levelDatStatusBar.setText("Failed to find player: "+e.getMessage());
+    	}
+	}
+    
+    protected void initLevelDatWatcher() {
+    	String chunkDir = outputDirField.getText();
+    	File levelDat = new File(chunkDir + "/level.dat");
+    	synchronized( this ) {
+	    	if( levelDatWatcher != null ) {
+	    		sm.remove(levelDatWatcher);
+	    	}
+	    	levelDatWatcher = new FileWatcher(levelDat, 1000);
+	    	levelDatWatcher.addUpdateListener(new FileUpdateListener() {
+				public void fileUpdated( File f ) {
+					interpretLevelDat( f );
+				}
+			});
+	    	sm.add(levelDatWatcher);
+    	}
+    	levelDatWatcher.forceUpdate();
+    }
     
     public void setChunkExportBounds( int x, int z, int depth, int width ) {
     	xField.setText(""+x);
@@ -92,15 +155,17 @@ public class ChunkExportWindow extends Frame
     
     public void setChunkDir( String dir ) {
     	outputDirField.setText( new File(dir).getAbsolutePath() );
+    	initLevelDatWatcher();
     }
     
     public void setWorldGenerator( WorldGenerator wg ) {
     	this.worldGenerator = wg;
     }
     
-    public ChunkExportWindow( ChunkWritingService _cws ) {
+    public ChunkExportWindow( ServiceManager _sm, ChunkWritingService _cws ) {
     	super("Export Chunks");
     	
+    	this.sm = _sm;
     	this.cws = _cws;
     	setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
     	
@@ -124,7 +189,7 @@ public class ChunkExportWindow extends Frame
     				if( dir.endsWith("/") || dir.endsWith("\\") ) {
     					dir = dir.substring(0,dir.length()-1);
     				}
-    				outputDirField.setText(dir);
+    				setChunkDir( dir );
     			}
     			picker.dispose();
     		}
@@ -198,9 +263,20 @@ public class ChunkExportWindow extends Frame
     	add(outputdirPanel);
     	add(inputPanel);
     	add(progressBar);
+    	add(levelDatStatusBar);
     	
     	addWindowListener(new WindowAdapter() {
-			public void windowClosing( WindowEvent arg0 ) {
+    		public void windowActivated( WindowEvent evt ) {
+    			if( levelDatWatcher != null ) {
+    				sm.add(levelDatWatcher);
+    			}
+    		}
+    		public void windowDeactivated( WindowEvent evt ) {
+    			if( levelDatWatcher != null ) {
+    				sm.remove(levelDatWatcher);
+    			}
+    		}
+			public void windowClosing( WindowEvent evt ) {
 				setVisible(false);
 			}
 		});
@@ -211,11 +287,13 @@ public class ChunkExportWindow extends Frame
     
     public static void main( String[] args ) {
     	final ChunkWritingService cws = new ChunkWritingService();
-    	final ChunkExportWindow cew = new ChunkExportWindow(cws);
+    	final ServiceManager sm = new ServiceManager();
+    	sm.add(cws);
+    	final ChunkExportWindow cew = new ChunkExportWindow(sm,cws);
     	cew.addWindowListener(new WindowAdapter() {
     		public void windowClosing( WindowEvent e ) {
     			cew.dispose();
-    			cws.halt();
+    			sm.halt();
     		}
     	});
     	cew.pack();

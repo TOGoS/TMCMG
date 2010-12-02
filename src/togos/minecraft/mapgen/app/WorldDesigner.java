@@ -63,7 +63,7 @@ public class WorldDesigner
 		
 		protected void initFileWatcher() {
 			if( scriptFile != null ) {
-				fw = new FileWatcher(scriptFile);
+				fw = new FileWatcher(scriptFile,500);
 				fw.addUpdateListener(this);
 				sm.add(fw);
 			}
@@ -165,7 +165,7 @@ public class WorldDesigner
 	
 	WorldDesignerKernel wdk = new WorldDesignerKernel();
 	ChunkWritingService cws = new ChunkWritingService();
-	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(cws);
+	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm,cws);
 	
 	LayerSideCanvas lsc = new LayerSideCanvas();
 	NoiseCanvas nc = new NoiseCanvas();
@@ -317,6 +317,14 @@ public class WorldDesigner
 	
 	public static void main( String[] args ) {
 		WorldDesigner wd = new WorldDesigner();
-		wd.run(args);
+		try {
+			wd.run(args);
+		} catch( RuntimeException e ) {
+			wd.halt();
+			throw e;
+		} catch( Exception e ) {
+			wd.halt();
+			throw new RuntimeException(e);
+		}
 	}
 }
