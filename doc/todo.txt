@@ -4,7 +4,11 @@
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
   unrealistic positions
 - Write web server to serve arbitrary chunks and Ruby-FUSE filesystem to
-  automatically load them. 
+  automatically load them.
+- Large trees, pine trees
+- Tree populator should have some reasonable limit (like 1 tree per 4
+  square meters) on density
+- Flower/mushroom populator
 
 * Figure out how caves should be displayed.
   - for purposes of GroundFunction, layer floor becomes ground height
