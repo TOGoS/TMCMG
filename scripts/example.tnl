@@ -65,6 +65,9 @@ dirt-height = beach-height * 2 - 2 + fractal( 2, 8, 8, 2, 2, 2, coolbase );
 
 ground-origin = 64;
 
+# This final statement, because it is not of the form <name> = <expr>, is
+# the 'final value of the script'!  i.e., the reason we are loading this
+# script file is to define this, so it does not need a name:
 layered-terrain(
 	layer( materials.water, 0, 64 ),
 	layer( materials.sand, 0, ground-origin + beach-height ),
