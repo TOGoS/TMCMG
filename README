@@ -170,4 +170,6 @@ tree-populator( <tree-type>, <density-function> )
     trees the populator will *attempt* to place--it may fail to place
     some if they would be put on a surface other than dirt or if
     there are obstacles that prevent them from fitting.
-  - for now, <tree-type> is limited to the constant 'tree-types.round'
+  - for now, <tree-type> is limited to the constants:
+    tree-types.round
+    tree-types.pine
