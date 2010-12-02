@@ -79,8 +79,8 @@ public class SimpleWorldGenerator implements WorldGenerator
 		cmList.addMunger( lm.getChunkMunger() );
 		cmList.addMunger( new Grassifier() );
 		GroundStampPopulator tsp = new GroundStampPopulator(
-			new TreeGenerator(), 20,
-			new AdaptInDaDa_DaDaDa_Da(new ScaleOutDaDaDa_Da(1d/16, new ScaleInDaDaDa_Da(1d/64, 1d/64, 1d/64, new PerlinDaDaDa_Da()))),
+			new RoundTreeGenerator(), 20,
+			new AdaptInDaDa_DaDaDa_Da(new ScaleOutDaDaDa_Da(1d/16, new ScaleInDaDaDa_Da(1d/64, 1d/64, 1d/64, new PerlinDaDaDa_Da()))), 4,
 			lm.getGroundFunction(), new int[]{Blocks.DIRT, Blocks.GRASS}
 		);
 		cmList.addMunger( new StampPopulatorChunkMunger(tsp) );

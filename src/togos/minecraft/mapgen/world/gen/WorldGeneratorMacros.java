@@ -33,7 +33,8 @@ public class WorldGeneratorMacros
 		
 		wgMacros.put("grassifier", new ConstantMacroType(new Grassifier()));
 		wgMacros.put("lighter", new ConstantMacroType(new Lighter()));
-		wgMacros.put("tree-types.round", new ConstantMacroType(new TreeGenerator()));
+		wgMacros.put("tree-types.round", new ConstantMacroType(new RoundTreeGenerator()));
+		wgMacros.put("tree-types.pine", new ConstantMacroType(new PineTreeGenerator()));
 		wgMacros.put("tree-populator", new BaseMacroType() {
 			protected int getRequiredArgCount() {  return 2;  }
 			
@@ -45,7 +46,7 @@ public class WorldGeneratorMacros
 				}
 				StampGenerator stampGenerator = (StampGenerator)compiledArgs[0];
 				FunctionDaDa_Da density = FunctionUtil.toDaDa_Da(compiledArgs[1], argNodes[1]);
-				return new GroundStampPopulator( stampGenerator, 20, density, null, new int[]{
+				return new GroundStampPopulator( stampGenerator, 20, density, 4, null, new int[]{
 					Blocks.DIRT, Blocks.GRASS
 				} );
 			}

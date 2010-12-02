@@ -12,20 +12,22 @@ import togos.noise2.function.FunctionDaDa_DaIa;
 public class GroundStampPopulator implements StampPopulator
 {
 	FunctionDaDa_Da densityFunction;
+	double maxDensity;
 	FunctionDaDa_DaIa groundFunction;
 	int[] allowedGroundTypes;
 	Stamp[] stamps;
 	
 	long hashMultiplier = -573845504;
-	StampGenerator stampGenerator = new TreeGenerator();
+	StampGenerator stampGenerator = new RoundTreeGenerator();
 	
 	public GroundStampPopulator(
 		StampGenerator stampGenerator, int instanceCount,
-		FunctionDaDa_Da densityFunction,
+		FunctionDaDa_Da densityFunction, double maxDensity,
 		FunctionDaDa_DaIa groundFunction, int[] allowedGroundTypes
 	) {
 		this.stampGenerator = stampGenerator;
 		this.densityFunction = densityFunction;
+		this.maxDensity = maxDensity;
 		this.groundFunction = groundFunction;
 		this.stamps = new Stamp[instanceCount];
 		this.allowedGroundTypes = allowedGroundTypes;
@@ -50,7 +52,7 @@ public class GroundStampPopulator implements StampPopulator
 			new double[]{cwz},
 			density
 		);
-		int count = (int)(density[0]*ChunkData.CHUNK_WIDTH*ChunkData.CHUNK_DEPTH);
+		int count = (int)(Math.min(maxDensity,density[0])*ChunkData.CHUNK_WIDTH*ChunkData.CHUNK_DEPTH);
 		if( count < 0 ) return;
 		double[] x = new double[count];
 		double[] z = new double[count];

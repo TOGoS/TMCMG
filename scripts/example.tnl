@@ -65,10 +65,7 @@ dirt-height = beach-height * 2 - 2 + fractal( 2, 8, 8, 2, 2, 2, coolbase );
 
 ground-origin = 64;
 
-# This final statement, because it is not of the form <name> = <expr>, is
-# the 'final value of the script'!  i.e., the reason we are loading this
-# script file is to define this, so it does not need a name:
-layered-terrain(
+regular = layered-terrain(
 	layer( materials.water, 0, 64 ),
 	layer( materials.sand, 0, ground-origin + beach-height ),
 	layer( materials.dirt, 0, ground-origin + hill-height - 2),
@@ -80,4 +77,25 @@ layered-terrain(
 	tree-populator( tree-types.round, fractal( 4, 100, 0.005, 2, 2, 1, perlin ) ), 
 	grassifier,
 	lighter,
-)
+);
+
+simple-dirt-height = min( 48, fractal( 10, 8, 16, 3, 1.3, 1, coolbase ) );
+simple-sand-height = min( 7, simple-dirt-height + 2 + 2 * fractal( 2, 50, 4, 2, 2, 1, perlin ) );
+
+tree-test = layered-terrain(
+	layer( materials.water, 0, 64 ),
+	layer( materials.sand, 0, 60 + simple-sand-height ),
+	layer( materials.dirt, 0, 60 + simple-dirt-height ),    
+	layer( materials.bedrock, 0, 1 ),
+	grassifier,
+	tree-populator( tree-types.pine, fractal( 2, 50, 0.01, 2, 2, 3, perlin ) ),
+	tree-populator( tree-types.round, fractal( 2, 50, 0.01, 2, 2, -3, perlin ) ),
+	lighter,
+);
+
+# This final statement, because it is not of the form <name> = <expr>, is
+# the 'final value of the script'!  i.e., the reason we are loading this
+# script file is to define this, so it does not need a name.
+# We can easily switch between several generators by defining them with names
+# and then naming the one we want, here:
+tree-test

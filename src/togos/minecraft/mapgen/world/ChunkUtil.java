@@ -13,7 +13,7 @@ public class ChunkUtil
 		for( int z=0; z<cd.depth; ++z ) {
 			for( int x=0; x<cd.width; ++x ) {
 				int y;
-				int light = maxLight;
+				float light = maxLight;
 				boolean shadowed = false;
 				int groundHeight = 127;
 				for( y = 127; y>=0; --y ) {
@@ -23,7 +23,8 @@ public class ChunkUtil
 						if( !shadowed ) groundHeight = y;
 						break;
 					case(Blocks.LEAVES):
-						if( light > 13 ) light = 13;
+						if( light > 14 ) light = 14;
+						light -= 0.5;
 						shadowed = true;
 						break;
 					case(Blocks.WATER): case(Blocks.MOVING_WATER):
@@ -36,7 +37,7 @@ public class ChunkUtil
 						light = 0;
 						shadowed = true;
 					}
-					cd.setSkyLight(x, y, z, light);
+					cd.setSkyLight(x, y, z, (int)light);
 				}
 				cd.setLightHeight(x, z, groundHeight);
 			}
