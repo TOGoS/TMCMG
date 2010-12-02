@@ -156,7 +156,8 @@ grassifier
 lighter
   - attempts (it's currently not completely correct) to initialize
     proper light values throughout the chunk based on shadows, water,
-    etc.
+    etc.  It is recommended that you include this as the last component
+    to layered-terrain.
 
 tree-populator( <tree-type>, <density-function> )
   - places trees at pseudo-random locations in chunks, with their
