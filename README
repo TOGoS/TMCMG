@@ -163,7 +163,7 @@ tree-populator( <tree-type>, <density-function> )
     placement being more likely where <density-function> returns
     higher values.
   - density-function = [x,y,z]->v expression giving trees per square
-    meter.  As with layer height functions, the x and y inputs come
+    meter.  As with layer height functions, the x and y inputs
     to the function come from world x and z, and the z input will
     always be zero.  The return value is interpreted as number of
     trees the populator will *attempt* to place--it may fail to place
