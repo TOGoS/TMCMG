@@ -67,7 +67,6 @@ public class ChunkExportWindow extends Frame
     	}
     	
     	public void paint( Graphics g ) {
-    	    super.paint(g);
     	    Rectangle2D messageBounds = g.getFontMetrics().getStringBounds(message, g);
     	    float rat = Math.abs(progress);
     	    int cutoff = (int)(getWidth()*rat);
