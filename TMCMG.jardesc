@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="TMCMG/export/TMCMG.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/TMCMG/TMCMG.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=TMCMG/src&lt;togos.minecraft.mapgen.app{WorldDesigner.java[WorldDesigner" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <file path="/TMCMG/JNBT-LICENSE"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{ByteArrayTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{ShortTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{EndTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{ListTag.java"/>
+        <javaElement handleIdentifier="=TMCMG/test"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{NBTConstants.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{NBTInputStream.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{CompoundTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{DoubleTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{NBTOutputStream.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{NBTUtils.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{LongTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{StringTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{ByteTag.java"/>
+        <javaElement handleIdentifier="=TMCMG/src"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{FloatTag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{Tag.java"/>
+        <javaElement handleIdentifier="=JNBT/src&lt;org.jnbt{IntTag.java"/>
+    </selectedElements>
+</jardesc>
