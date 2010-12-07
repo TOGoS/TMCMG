@@ -15,28 +15,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import togos.mf.api.CallHandler;
+import togos.mf.api.Request;
+import togos.mf.api.Response;
+import togos.mf.api.ResponseCodes;
+import togos.mf.base.BaseRequest;
+import togos.mf.base.BaseResponse;
+
 public class WebServer {
-	class Request {
-		public Request( String verb, String resourceName ) {
-			this.verb = verb;
-			this.resourceName = resourceName;
-		}
-		
-		public String verb;
-		public String resourceName;
-	}
-	
-	class Response {
-		public int statusCode;
-		public String statusText;
-		public String contentType = "text/plain; charset=utf-8";
-		public byte[] data;
-	}
-	
-	interface RequestHandler {
-		public Response handle( Request req );
-	}
-	
 	class ConnectionHandler implements Runnable {
 		protected Socket cs;
 		
@@ -64,17 +50,27 @@ public class WebServer {
 					// ignoring headers for now...
 				}
 				String[] rp = rl.split("\\s");
-				Request req = new Request(rp[0], rp[1]);
+				Request req = new BaseRequest(rp[0], rp[1]);
 				Response res = handle( req );
+				
+				byte[] contentBytes;
+				if( res.getContent() instanceof byte[] ) {
+					contentBytes = (byte[])res.getContent();
+				} else {
+					throw new RuntimeException("Response content not a byte array, but "+res.getContent());
+				}
+				String contentType = res.getContentMetadata().get(BaseResponse.DC_FORMAT).toString();
 				
 				OutputStream o = cs.getOutputStream();
 				String responseHeaders =
-					"HTTP/1.0 "+res.statusCode+" "+res.statusText+"\r\n"+
-					"Content-Length: "+res.data.length+"\r\n"+
-					"Content-Type: "+res.contentType+"\r\n"+
-					"\r\n";
+					"HTTP/1.0 "+res.getStatus()+" Hello\r\n"+
+					"Content-Length: "+contentBytes.length+"\r\n";
+				if( contentType != null ) {
+					responseHeaders += "Content-Type: "+contentType+"\r\n";
+				}
+				responseHeaders += "\r\n";
 				o.write(responseHeaders.getBytes("ASCII"));
-				o.write(res.data);
+				o.write(contentBytes);
 				o.flush();
 			} catch( UnsupportedEncodingException e ) {
 				System.err.println(getConnectionErrorDescription());
@@ -93,12 +89,16 @@ public class WebServer {
 	protected List requestHandlers = new ArrayList();
 	public int port = 14419;
 	
+	public void addRequestHandler( CallHandler rh ) {
+		this.requestHandlers.add(rh);
+	}
+	
 	protected Response _handle( Request req ) {
 		for( Iterator i=requestHandlers.iterator(); i.hasNext(); ) {
-			Response res = ((RequestHandler)i.next()).handle(req);
-			if( res != null ) return res;
+			Response res = ((CallHandler)i.next()).call(req);
+			if( res.getStatus() != ResponseCodes.RESPONSE_UNHANDLED ) return res;
 		}
-		throw new RuntimeException("No handler found for "+req.verb+" "+req.resourceName);
+		throw new RuntimeException("No handler found for "+req.getVerb()+" "+req.getResourceName());
 	}
 	
 	protected Response handle( Request req ) {
@@ -112,11 +112,10 @@ public class WebServer {
 				e.printStackTrace(pw);
 				pw.flush(); osw.flush();
 				
-				Response res = new Response();
-				res.statusCode = 500;
-				res.statusText = "Server Error";
-				res.contentType = "text/plain; charset=utf-8";
-				res.data = baos.toByteArray();
+				BaseResponse res = new BaseResponse();
+				res.status = 500;
+				res.putContentMetadata(BaseResponse.DC_FORMAT, "text/plain; charset=utf-8");
+				res.content = baos.toByteArray();
 				return res;
 			} catch( IOException e2 ) {
 				throw new RuntimeException(e2);
@@ -133,7 +132,7 @@ public class WebServer {
 	}
 	
 	public static final String USAGE =
-		"Usage: WebServer [-index-root <dir-containing-indexes>]";
+		"Usage: WebServer [-port <listen-port>]";
 	
 	public static void main(String[] args) {
 		WebServer ws = new WebServer();

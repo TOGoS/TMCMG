@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
@@ -37,6 +37,17 @@ public class ChunkWriter
 			"c." + Integer.toString(x,36) + "." + Integer.toString(z,36) + ".dat";
 	}
 	
+	public void writeChunk( ChunkData cd, OutputStream os ) throws IOException {
+		NBTOutputStream nbtos = new NBTOutputStream(os);
+		
+		HashMap levelRootTags = new HashMap();
+		levelRootTags.put("Level",cd.toTag());
+		CompoundTag fileRootTag = new CompoundTag("",levelRootTags);
+		
+		nbtos.writeTag(fileRootTag);
+		nbtos.close();
+	}
+	
 	public void writeChunkToFile( ChunkData cd, String baseDir ) throws IOException {
 		String fullPath = baseDir + "/" + chunkPath( cd.getChunkX(), cd.getChunkZ() );
 		File f = new File(fullPath);
@@ -44,22 +55,19 @@ public class ChunkWriter
 		if( dir != null && !dir.exists() ) dir.mkdirs();
 		FileOutputStream os = new FileOutputStream(f);
 		try {
-			NBTOutputStream nbtos = new NBTOutputStream(os);
-			
-			HashMap levelRootTags = new HashMap();
-			levelRootTags.put("Level",cd.toTag());
-			CompoundTag fileRootTag = new CompoundTag("",levelRootTags);
-			
-			nbtos.writeTag(fileRootTag);
-			nbtos.close();
+			writeChunk( cd, os );
 		} finally {
 			os.close();
 		}
 	}
-	
+		
 	protected String chunkBaseDir;
 	public ChunkWriter( String baseDir ) {
 		this.chunkBaseDir = baseDir;
+	}
+	
+	public ChunkWriter() {
+		this( null );
 	}
 	
 	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
@@ -129,7 +137,6 @@ public class ChunkWriter
 				for( int x=0; x<boundsWidth; ++x ) {
 					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);
 					cfunc.mungeChunk(cd);
-					ChunkUtil.calculateLighting(cd, 15);
 					chunkWriter.writeChunkToFile(cd, chunkDir);
 				}
 			}
@@ -137,5 +144,4 @@ public class ChunkWriter
 			throw new RuntimeException(e);
 		}
 	}
-
 }
