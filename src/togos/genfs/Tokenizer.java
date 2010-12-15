@@ -75,4 +75,45 @@ public class Tokenizer
 		}
 		return (String[])tokens.toArray(new String[tokens.size()]);
 	}
+	
+	public static String detokenize( String[] args ) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for( int i=0; i<args.length; ++i ) {
+			if( !first ) sb.append(' ');
+			boolean needQuotes = false;
+			for( int j=0; j<args[i].length(); ++j ) {
+				char c = args[i].charAt(j);
+				if( (c >= 'a' && c <= 'z') ||
+				    (c >= 'A' && c <= 'Z') ||
+				    (c >= '0' && c <= '9') ||
+				    c == '_' || c == '-' || c == '.'
+				) {
+					
+				} else {
+					needQuotes = true;
+					break;
+				}
+			}
+			if( needQuotes ) {
+				sb.append('"');
+				for( int j=0; j<args[i].length(); ++j ) {
+					char c = args[i].charAt(j);
+					switch( c ) {
+					case('\\'): sb.append("\\\\"); break;
+					case('"' ): sb.append("\\\""); break;
+					case('\r'): sb.append("\\r");   break;
+					case('\n'): sb.append("\\n");   break;
+					case('\t'): sb.append("\\t");   break;
+					default:    sb.append(c);      break;
+					}
+				}
+				sb.append('"');
+			} else {
+				sb.append(args[i]);
+			}
+			first = false;
+		}
+		return sb.toString();
+	}
 }
