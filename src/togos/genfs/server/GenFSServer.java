@@ -1,6 +1,7 @@
 package togos.genfs.server;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -44,7 +45,7 @@ public class GenFSServer implements Runnable
 	
 	static Charset CHARSET = Charset.forName("UTF-8");
 
-	PrintStream debugStream = null; // System.err;
+	public PrintStream debugStream = null; // System.err;
 	
 	public RequestHandler requestHandler = new RequestHandler() {
 		public Stat getStat( String path ) throws FSError {
@@ -103,8 +104,11 @@ public class GenFSServer implements Runnable
 			try {
 				BufferedReader r = new BufferedReader( new InputStreamReader( sock.getInputStream(), CHARSET ));
 				String requestLine = r.readLine();
+				if( requestLine == null ) {
+					throw new IOException("Got no request line");
+				}
 				String[] tokens = Tokenizer.tokenize(requestLine);
-				if( debugStream != null ) debugStream.println("Read "+tokens[0]);
+				if( debugStream != null ) debugStream.println("Read "+requestLine);
 				try {
 					if( "GET-STAT".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
@@ -135,8 +139,12 @@ public class GenFSServer implements Runnable
 						AliasResponse ar = requestHandler.openRead(tokens[1]);
 						writeLine(new String[]{"OK-ALIAS",ar.realPath});
 					} else if( "CREATE+OPEN-WRITE".equals(tokens[0]) ) {
-						if( tokens.length != 2 ) throw new ClientError();
+						if( tokens.length < 2 ) throw new ClientError();
+						// TODO: should take 3rd argument, if there is one, as mode
 						AliasResponse ar = requestHandler.openWrite(tokens[1]);
+						File f = new File(ar.realPath);
+						File p = f.getParentFile();
+						if( p != null && !p.exists() ) p.mkdirs();
 						writeLine(new String[]{"OK-ALIAS",ar.realPath});
 					} else if( "OPEN-WRITE".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();

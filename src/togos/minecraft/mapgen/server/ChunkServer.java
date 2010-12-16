@@ -3,6 +3,7 @@ package togos.minecraft.mapgen.server;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,8 @@ import togos.noise2.lang.TNLCompiler;
 
 public class ChunkServer
 {
+	PrintStream debugStream = null; // System.err;
+	
 	class ChunkWriteJob {
 		String filename;
 		ChunkGenerator cg;
@@ -51,10 +54,13 @@ public class ChunkServer
 			File cf = new File(filename);
 			if( cf.exists() ) return;
 			
-			// TODO: use resMan
+			if( debugStream != null ) debugStream.println("Generating "+filename+"...");
 			
-			ChunkData cd = cg.getChunkData(x, y);
+			// TODO: use resMan to get chunk data
+			
 			try {
+				ChunkData cd = cg.getChunkData(x, y);
+				
 				File pd = cf.getParentFile();
 				if( !pd.exists() ) pd.mkdirs();
 				FileOutputStream fos = new FileOutputStream(cf);
@@ -63,8 +69,13 @@ public class ChunkServer
 				} finally {
 					fos.close();
 				}
+				if( debugStream != null ) debugStream.println("Done generating "+filename);
 			} catch( IOException e ) {
+				if( debugStream != null ) debugStream.println("Error generating "+filename);
 				throw new RuntimeException(e);
+			} catch( RuntimeException e ) {
+				if( debugStream != null ) debugStream.println("Error generating "+filename);
+				throw e;
 			}
 		}
 		
@@ -160,7 +171,6 @@ public class ChunkServer
 		
 		public Stat getStat( String path ) throws FSError {
 			PathInfo pi = ex2in(path);
-			System.err.println("getStat: Real path = "+pi.path);
 			File f = new File(pi.path);
 			ChunkGenerator cg;
 			if( f.exists() ) {
@@ -200,7 +210,7 @@ public class ChunkServer
 		protected PathInfo open( String path ) {
 			PathInfo pi = ex2in(path);
 			ChunkGenerator cg = (ChunkGenerator)generators.get(pi.dim);
-			if( cg != null ) {
+			if( cg != null && pi.chunkCoords != null ) {
 				ChunkWriteJob cwj = getChunkWriteJob(pi.path, cg, pi.chunkCoords[0], pi.chunkCoords[1]);
 				try { 
 					cwj.join();
@@ -307,6 +317,7 @@ public class ChunkServer
 		String gfsRoot = null;
 		ChunkServer cs = new ChunkServer();
 		Map generatorScripts = new HashMap();
+		boolean debug = false;
 		
 		for( int i=0; i<args.length; ++i ) {
 			if( args[i].contains("=") ) {
@@ -324,6 +335,9 @@ public class ChunkServer
 				if( gfsRoot.endsWith("/") ) {
 					gfsRoot = gfsRoot.substring(0,gfsRoot.length()-1);
 				}
+			} else if( "-debug".equals(args[i]) ) {
+				debug = true;
+				cs.debugStream = System.err;
 			} else {
 				System.err.println("Unrecognised argument: "+args[i]);
 				System.err.println(USAGE);
@@ -344,6 +358,9 @@ public class ChunkServer
 			cs.initHandlers( ws );
 		}
 		if( gfss != null ) {
+			if( debug ) {
+				gfss.debugStream = System.err;
+			}
 			if( gfsRoot == null ) {
 				System.err.println("No -gfs-root specified");
 				System.exit(1);
