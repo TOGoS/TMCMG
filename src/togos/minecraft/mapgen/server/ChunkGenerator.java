@@ -3,13 +3,12 @@ package togos.minecraft.mapgen.server;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseResponse;
+import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.app.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
@@ -61,18 +60,15 @@ public class ChunkGenerator
 		return baos.toByteArray();
 	}
 	
-	Pattern CHUNKPAT = Pattern.compile("^(.*/)?c\\.(\\-?[0-9a-z]+)\\.(\\-?[0-9a-z]+)\\.dat");
-	
 	public Response call( Request req ) {
-		String resName = req.getResourceName();
-		Matcher cpm = CHUNKPAT.matcher(resName);
-		if( !cpm.matches() ) return BaseResponse.RESPONSE_UNHANDLED;
+		int[] xy = PathUtil.chunkCoords( req.getResourceName() );
 		
-		String x36 = cpm.group(2);
-		String y36 = cpm.group(3);
-		int x = Integer.parseInt(x36, 36);
-		int y = Integer.parseInt(y36, 36);
-		return new BaseResponse(ResponseCodes.RESPONSE_NORMAL,
-				getSerializedChunkData(x, y), "application/octet-stream");
+		if( xy == null ) return BaseResponse.RESPONSE_UNHANDLED;
+		
+		return new BaseResponse(
+			ResponseCodes.RESPONSE_NORMAL,
+			getSerializedChunkData(xy[0], xy[1]),
+			"application/octet-stream"
+		);
 	}
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -13,34 +14,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import togos.genfs.DirectoryEntry;
+import togos.genfs.Stat;
 import togos.genfs.Tokenizer;
+import togos.genfs.err.ClientError;
+import togos.genfs.err.DoesNotExistError;
+import togos.genfs.err.FSError;
+import togos.genfs.err.InvalidOperationError;
+import togos.genfs.err.PermissionError;
 
-public class GenFSServer
+public class GenFSServer implements Runnable
 {
-	public class ClientError extends Exception {
-        private static final long serialVersionUID = 1L;
-	}
-	public class FSError extends Exception {
-        private static final long serialVersionUID = 1L;		
-	}
-	public class PermissionError extends FSError {
-        private static final long serialVersionUID = 1L;
-	}
-	
 	public static class AliasResponse {
 		String realPath;
 		public AliasResponse( String realPath ) {
 			this.realPath = realPath;
-		}
-	}
-	
-	public static class Stat {
-		public long size;
-		public int mode;
-		public Stat() {}
-		public Stat( long size, int mode ) {
-			this.size = size;
-			this.mode = mode;
 		}
 	}
 	
@@ -54,19 +42,11 @@ public class GenFSServer
 		public void closeWrite( String path, String aliasedPath ) throws FSError;
 	}
 	
-	public static class DirectoryEntry extends Stat {
-		public String name;
-		
-		public DirectoryEntry() { }
-		public DirectoryEntry( String name, long size, int mode ) {
-			super( size, mode );
-			this.name = name;
-		}
-	}
-	
 	static Charset CHARSET = Charset.forName("UTF-8");
+
+	PrintStream debugStream = null; // System.err;
 	
-	RequestHandler rh = new RequestHandler() {
+	public RequestHandler requestHandler = new RequestHandler() {
 		public Stat getStat( String path ) throws FSError {
 			if( "/".equals(path) ) {
 				return new Stat( 0, 0040755 );
@@ -113,7 +93,7 @@ public class GenFSServer
 			}
 		}
 		protected void writeLine( String line ) throws IOException {
-			System.err.println("Writing "+line);
+			if( debugStream != null ) debugStream.println("Writing "+line);
 			w.write(line+"\n");
 		}
 		protected void writeLine( String[] stuff ) throws IOException {
@@ -124,18 +104,18 @@ public class GenFSServer
 				BufferedReader r = new BufferedReader( new InputStreamReader( sock.getInputStream(), CHARSET ));
 				String requestLine = r.readLine();
 				String[] tokens = Tokenizer.tokenize(requestLine);
-				System.err.println("Read "+tokens[0]);
+				if( debugStream != null ) debugStream.println("Read "+tokens[0]);
 				try {
 					if( "GET-STAT".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
-						Stat s = rh.getStat(tokens[1]);
+						Stat s = requestHandler.getStat(tokens[1]);
 						writeLine(new String[] {
 							"OK-STAT", Long.toString(s.size),
 							"0"+Integer.toOctalString(s.mode)
 						});
 					} else if( "READ-DIR".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
-						List entries = rh.getDirEntries(tokens[1]);
+						List entries = requestHandler.getDirEntries(tokens[1]);
 						writeLine("OK-DIR-LIST");
 						for( Iterator i=entries.iterator(); i.hasNext(); ) {
 							DirectoryEntry ent = (DirectoryEntry)i.next();
@@ -148,31 +128,35 @@ public class GenFSServer
 						writeLine("END-DIR-LIST");
 					} else if( "TRUNCATE".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
-						rh.truncate(tokens[1]);
+						requestHandler.truncate(tokens[1]);
 						writeLine("OK-TRUNCATED");
 					} else if( "OPEN-READ".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
-						AliasResponse ar = rh.openRead(tokens[1]);
+						AliasResponse ar = requestHandler.openRead(tokens[1]);
 						writeLine(new String[]{"OK-ALIAS",ar.realPath});
 					} else if( "CREATE+OPEN-WRITE".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
-						AliasResponse ar = rh.openWrite(tokens[1]);
+						AliasResponse ar = requestHandler.openWrite(tokens[1]);
 						writeLine(new String[]{"OK-ALIAS",ar.realPath});
 					} else if( "OPEN-WRITE".equals(tokens[0]) ) {
 						if( tokens.length != 2 ) throw new ClientError();
-						AliasResponse ar = rh.openWrite(tokens[1]);
+						AliasResponse ar = requestHandler.openWrite(tokens[1]);
 						writeLine(new String[]{"OK-ALIAS",ar.realPath});
 					} else if( "CLOSE-READ".equals(tokens[0]) ) {
 						if( tokens.length != 3 ) throw new ClientError();
-						rh.closeRead(tokens[1], tokens[2]);
+						requestHandler.closeRead(tokens[1], tokens[2]);
 						writeLine("OK-CLOSED");
 					} else if( "CLOSE-WRITE".equals(tokens[0]) ) {
 						if( tokens.length != 3 ) throw new ClientError();
-						rh.closeWrite(tokens[1], tokens[2]);
+						requestHandler.closeWrite(tokens[1], tokens[2]);
 						writeLine("OK-CLOSED");
 					} else {
 						writeLine("CLIENT-ERROR");
 					}
+				} catch( DoesNotExistError e ) {
+					writeLine("DOES-NOT-EXIST");
+				} catch( InvalidOperationError e ) {
+					writeLine("DOES-NOT-EXIST");
 				} catch( ClientError e ) {
 					writeLine("CLIENT-ERROR");
 				} catch( PermissionError e ) {

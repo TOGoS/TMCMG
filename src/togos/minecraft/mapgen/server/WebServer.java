@@ -22,7 +22,7 @@ import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 
-public class WebServer {
+public class WebServer implements Runnable {
 	class ConnectionHandler implements Runnable {
 		protected Socket cs;
 		
@@ -123,11 +123,15 @@ public class WebServer {
 		}
 	}
 	
-	public void run() throws IOException {
-		ServerSocket ss = new ServerSocket(port);
-		while( true ) {
-			Socket clientSock = ss.accept();
-			new Thread(new ConnectionHandler(clientSock)).start();
+	public void run() {
+		try {
+			ServerSocket ss = new ServerSocket(port);
+			while( true ) {
+				Socket clientSock = ss.accept();
+				new Thread(new ConnectionHandler(clientSock)).start();
+			}
+		} catch( IOException e ) {
+			throw new RuntimeException(e);
 		}
 	}
 	

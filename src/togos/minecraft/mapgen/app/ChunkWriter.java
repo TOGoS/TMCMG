@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 
+import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
@@ -20,21 +21,11 @@ import togos.noise2.lang.ScriptError;
 
 public class ChunkWriter
 {
-	public int tmod( int num, int modby ) {
-		if( num < 0 ) {
-			num = -num;
-			num %= modby;
-			num = modby - num;
-			return num;
-		} else {
-			return num % modby;
-		}
-	}
+	public static ChunkWriter instance = new ChunkWriter();
 	
 	public String chunkPath( int x, int z ) {
-		return Integer.toString( tmod(x,64), 36 ) + "/" +
-			Integer.toString( tmod(z,64), 36 ) + "/" +
-			"c." + Integer.toString(x,36) + "." + Integer.toString(z,36) + ".dat";
+		return PathUtil.mcChunkDir(x,z) +
+			PathUtil.chunkBaseName(x,z);
 	}
 	
 	public void writeChunk( ChunkData cd, OutputStream os ) throws IOException {
