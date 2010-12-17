@@ -24,8 +24,7 @@ public class ChunkWriter
 	public static ChunkWriter instance = new ChunkWriter();
 	
 	public String chunkPath( int x, int z ) {
-		return PathUtil.mcChunkDir(x,z) +
-			PathUtil.chunkBaseName(x,z);
+		return PathUtil.mcChunkDir(x,z) + "/" + PathUtil.chunkBaseName(x,z);
 	}
 	
 	public void writeChunk( ChunkData cd, OutputStream os ) throws IOException {
