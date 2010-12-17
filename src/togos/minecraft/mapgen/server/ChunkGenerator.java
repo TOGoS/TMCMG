@@ -27,11 +27,19 @@ public class ChunkGenerator
 		this.compiler = c;
 	}
 	
+	protected boolean shouldRecompile() {
+		return lastCompiled == -1 || lastCompiled < scriptFile.lastModified();
+	}
+	
 	public Object getCompiledScript() {
 		try {
-			if( lastCompiled == -1 || lastCompiled < scriptFile.lastModified() ) {
-				compiled = ScriptUtil.compile(compiler, scriptFile);
-				lastCompiled = System.currentTimeMillis();
+			if( shouldRecompile() ) {
+				synchronized( compiler ) {
+					if( shouldRecompile() ) {
+						compiled = ScriptUtil.compile(compiler, scriptFile);
+						lastCompiled = System.currentTimeMillis();
+					}
+				}
 			}
 			return compiled;
 		} catch( IOException e ) {
