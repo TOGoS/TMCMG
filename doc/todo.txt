@@ -5,74 +5,9 @@
 - Large trees
 - Flower/mushroom populator
 
-- Fix race conditions so GenFSServer works:
-
-Fix this error, which I'm assuming is due to multiple threads trying to compile a script
-at once:
-Generating /home/tog/proj/TMCMG/gfsdata/DIM-0/senw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/c.2.-3.dat...
-Read OPEN-READ "/DIM-0/2/1p/c.2.-3.dat"
-Generating /home/tog/proj/TMCMG/gfsdata/DIM-0/senw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/c.2.-3.dat...
-Compile error: 'tree-test' macro definition is recursive
-At example.tnl:101,1
-Error generating /home/tog/proj/TMCMG/gfsdata/DIM-0/senw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/c.2.-3.dat
-Exception in thread "Thread-8" java.lang.RuntimeException: togos.noise2.lang.CompileError: 'tree-test' macro definition is recursive
-        at togos.minecraft.mapgen.server.ChunkGenerator.getCompiledScript(ChunkGenerator.java:41)
-        at togos.minecraft.mapgen.server.ChunkGenerator.getChunkData(ChunkGenerator.java:46)
-        at togos.minecraft.mapgen.server.ChunkServer$ChunkWriteJob.run(ChunkServer.java:62)
-        at togos.minecraft.mapgen.server.ChunkServer$1.run(ChunkServer.java:95)
-        at java.lang.Thread.run(Thread.java:619)
-Caused by: togos.noise2.lang.CompileError: 'tree-test' macro definition is recursive
-        at togos.noise2.lang.TNLCompiler.getMacroType(TNLCompiler.java:41)
-        at togos.noise2.lang.TNLCompiler.compile(TNLCompiler.java:73)
-        at togos.noise2.lang.macro.LanguageMacros$2.instantiate(LanguageMacros.java:50)
-        at togos.noise2.lang.TNLCompiler.compile(TNLCompiler.java:74)
-        at togos.minecraft.mapgen.ScriptUtil.compile(ScriptUtil.java:37)
-        at togos.minecraft.mapgen.ScriptUtil.compile(ScriptUtil.java:53)
-        at togos.minecraft.mapgen.server.ChunkGenerator.getCompiledScript(ChunkGenerator.java:33)
-        ... 4 more
-Writing OK-ALIAS "/home/tog/proj/TMCMG/gfsdata/DIM-0/senw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/nwnw/c.2.-3.dat"
-
-This leads to the minecraft server saying cool stuff like:
-java.io.FileNotFoundException: ./GFSLand/2/1p/c.2.-3.dat (No such file or directory)
-        at java.io.FileInputStream.open(Native Method)
-        at java.io.FileInputStream.<init>(FileInputStream.java:106)
-        at fj.a(SourceFile:47)
-        at jq.e(SourceFile:121)
-        at jq.d(SourceFile:74)
-        at jq.b(SourceFile:110)
-        at eq.c(SourceFile:380)
-        at eq.a(SourceFile:346)
-        at eq.a(SourceFile:262)
-        at il.a(SourceFile:52)
-        at eq.<init>(SourceFile:235)
-        at ex.<init>(SourceFile:24)
-        at net.minecraft.server.MinecraftServer.c(SourceFile:144)
-        at net.minecraft.server.MinecraftServer.d(SourceFile:135)
-        at net.minecraft.server.MinecraftServer.run(SourceFile:191)
-        at bx.run(SourceFile:484)
-
-Also sometimes I get this error:
-java.io.EOFException: Unexpected end of ZLIB input stream
-        at java.util.zip.InflaterInputStream.fill(InflaterInputStream.java:223)
-        at java.util.zip.InflaterInputStream.read(InflaterInputStream.java:141)
-        at java.util.zip.GZIPInputStream.read(GZIPInputStream.java:92)
-        at java.util.zip.InflaterInputStream.read(InflaterInputStream.java:105)
-        at java.io.DataInputStream.readByte(DataInputStream.java:248)
-
-Which might have something to do with this tidbit that's not supposed to happen:
-Generating /home/tog/proj/TMCMG/gfsdata/DIM-0/nesw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/senw/c.-6.-c.dat...
-Writing OK-STAT 42 0100644
-Read GET-STAT "/DIM-0/1m"
-getStat: Real path = /home/tog/proj/TMCMG/gfsdata/DIM-0/1m
-Writing OK-STAT 42 040755
-Read OPEN-READ "/DIM-0/1m/1g/c.-6.-c.dat"
-Generating /home/tog/proj/TMCMG/gfsdata/DIM-0/nesw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/senw/c.-6.-c.dat...
-Done generating /home/tog/proj/TMCMG/gfsdata/DIM-0/nesw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/senw/c.-6.-c.dat
-Done generating /home/tog/proj/TMCMG/gfsdata/DIM-0/nesw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/swsw/senw/c.-6.-c.dat
-
-
-
-
+* Fix race conditions so GenFSServer works
+  * Fix trying to generate a chunk multiple times simultaneously
+  * Don't use a TNLCompiler from multiple threads
 * Tree populator should have some reasonable limit (like 1 tree per 4
   square meters) on density
 * Pine trees
