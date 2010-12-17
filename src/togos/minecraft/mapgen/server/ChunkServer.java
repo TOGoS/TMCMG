@@ -90,10 +90,14 @@ public class ChunkServer
 			ChunkWriteJob cwj = (ChunkWriteJob)chunkWriteJobs.get( filename );
 			if( cwj == null ) {
 				final ChunkWriteJob _cwj = cwj = new ChunkWriteJob( filename, cg, x, y );
+				chunkWriteJobs.put( filename, cwj );
 				Thread t = new Thread(new Runnable() {
 					public void run() {
-						_cwj.run();
-						removeChunkWriteJob(filename);
+						try {
+							_cwj.run();
+						} finally {
+							removeChunkWriteJob(filename);
+						}
 					}
 				});
 				cwj.thread = t;
