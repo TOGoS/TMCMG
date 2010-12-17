@@ -1,10 +1,9 @@
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
   unrealistic positions
-- Write web server to serve arbitrary chunks and Ruby-FUSE filesystem to
-  automatically load them.
-- Large trees
+- Large, branching trees
 - Flower/mushroom populator
 
+* Write FUSE filesystem to automatically generate chunks.
 * Fix race conditions so GenFSServer works
   * Fix trying to generate a chunk multiple times simultaneously
   * Don't use a TNLCompiler from multiple threads

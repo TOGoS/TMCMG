@@ -4,9 +4,11 @@ TOGoS's Minecraft Map Generator (TMCMG) is a Java application for
 generating terrain data (chunk files) for Minecraft Alpha based on
 user-defined terrain functions.  It includes a GUI for previewing
 the generated terrain before exporting it, and can also be run from
-the command-line.  A notable planned feature is to be able to call
-the terrain generator from a FUSE filesystem to generate new chunks
-on-the-fly.
+the command-line.  It can also be used as a GenerateFS server and
+generate chunks as needed to generate infinite terrain (see end of
+this document for instructions for use with GenerateFS).
+
+
 
 == GUI Notes ==
 === World Preview ===
