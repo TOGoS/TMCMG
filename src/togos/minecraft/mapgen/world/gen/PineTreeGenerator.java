@@ -12,11 +12,12 @@ public class PineTreeGenerator implements StampGenerator
 	
 	public Stamp generateStamp( int seed ) {
 		Random r = new Random(seed);
+		r.nextInt(); r.nextInt(); r.nextInt();
 		double size = r.nextDouble();
 		size = size * (1+r.nextDouble());
 		int trunkHeight = minHeight+(int)(size*(maxHeight-minHeight));
 		int leafRadius = 2+(int)(2*size);
-		int leafBot = r.nextInt(trunkHeight/2);
+		int leafBot = 2+r.nextInt(trunkHeight/2);
 		
 		int w = leafRadius*2+1;
 		int h = trunkHeight+1;

@@ -14,24 +14,26 @@ import togos.noise2.function.TranslateInDaDaDa_Da;
 
 public class RoundTreeGenerator implements StampGenerator
 {
-	int minHeight = 3;
-	int maxHeight = 7;
+	public int minHeight = 5;
+	public int maxHeight = 9;
+	public double girthRat = 0.5;
 	
 	public Stamp generateStamp( int seed ) {
 		Random r = new Random(seed);
+		r.nextInt(); r.nextInt(); r.nextInt();
 		int trunkHeight = minHeight+r.nextInt(maxHeight-minHeight);
-		int girth = trunkHeight/2;
+		int girth = (int)(trunkHeight*girthRat);
 		
-		int w = girth*2+1;
+		int w = girth*2+3;
 		int h = trunkHeight*2;
-		int d = girth*2+1;
+		int d = girth*2+3;
 		
 		FunctionDaDaDa_Da leafDensityFunction = new AddOutDaDaDa_Da(new FunctionDaDaDa_Da[]{
 			new ScaleOutDaDaDa_Da( 0.5,
 				new TranslateInDaDaDa_Da(r.nextDouble()*10, r.nextDouble()*10, r.nextDouble()*10,
 					new ScaleInDaDaDa_Da(0.2, 0.2, 0.2, new PerlinDaDaDa_Da()))),
 			new TranslateInDaDaDa_Da(-w/2d, -trunkHeight, -d/2d,
-				new ScaleInDaDaDa_Da(1d/2.5, 2d/(1d*trunkHeight), 1d/2.5,
+				new ScaleInDaDaDa_Da(1.0/girth, 2.0/(1d*trunkHeight), 1.0/girth,
 					new DistanceDaDaDa_Da()))
 		});
 		
@@ -59,6 +61,13 @@ public class RoundTreeGenerator implements StampGenerator
 				s.setBlock((int)x[i],(int)y[i],(int)z[i], Blocks.LEAVES);
 			}
 		}
+		/*
+		for( int tz=0; tz<d; ++tz ) {
+			for( int tx=0; tx<w; ++tx ) {
+				s.setBlock(tx,0,tz,Blocks.COBBLESTONE);
+			}
+		}
+		*/
 		for( int ty=0; ty<trunkHeight; ++ty ) {
 			s.setBlock(w/2,ty,d/2, Blocks.LOG);
 		}
