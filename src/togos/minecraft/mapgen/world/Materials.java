@@ -18,7 +18,7 @@ public class Materials
 		name = name.replace("\"", "");
 		name = name.replace("(", "");
 		name = name.replace(")", "");
-		return name;
+		return name.toLowerCase();
 	}
 	
 	static void add( Material m ) {
