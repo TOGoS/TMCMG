@@ -72,7 +72,14 @@ brackets> denote placeholders for expressions.
 
 perlin()[x,y,z] -> value
   - A function for generating smooth noise closely based on Ken Perlin's
-    Improved 3D noise function.
+    Improved 3D noise function.  The range of this function is -1 to +1
+    and output is 0 at integer coordinates, so for example to create
+    rolling hills using a single perlin noise function you should multiply
+    the output by half the desired height between hilltops and valley floor
+    and divide the inputs by the desired average distance between hills
+  - e.g.  scale-in( 0.05, 0.05, 0.05, perlin ) * 8
+    would result in hills about 20 meters apart and 16 meters from top to
+    base.  
 
 translate-in( <xt>, <yt>, <zt>, <expr> )[x,y,z] -> value
   - fast input translation; xt, yt, and zt must all be constant
@@ -108,14 +115,14 @@ fractal( <iter>, <hscale>, <vscale>, <ihscale>, <ivscale>,
     <ztrans>, <expr> )[x,y,z] -> value
   - Scales inputs to and outputs from <expr> over multiple iterations,
     summing the results.
-  - All inputs except <expr> must be constant
+  - All parameters except <expr> must be constant
   - iter = number of iterations
   - hscale = horizontal scale (inputs will be divided by this) on
     first iteration
   - vscale = vertical scale (output will be multiplied by this) on
     first iteration
-  - ihscale = how much to multiply hscale after each iteration
-  - ivscale = how much to multiply vscale after each iteration
+  - ihscale = how much to multiply hscale between iterations
+  - ivscale = how much to multiply vscale between iterations
   - ztrans = how much to translate z for each iteration
 
 === Other Functions ===
