@@ -1,12 +1,14 @@
 package togos.noise2.function;
 
-public class RidgeOutDaDaDa_Da implements FunctionDaDaDa_Da
+import togos.noise2.lang.FunctionUtil;
+
+public class RidgeOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
-	FunctionDaDaDa_Da lower;
-	FunctionDaDaDa_Da upper;
-	FunctionDaDaDa_Da ridged;
+	SmartFunctionDaDaDa_Da lower;
+	SmartFunctionDaDaDa_Da upper;
+	SmartFunctionDaDaDa_Da ridged;
 	
-	public RidgeOutDaDaDa_Da( FunctionDaDaDa_Da lower, FunctionDaDaDa_Da upper, FunctionDaDaDa_Da ridged ) {
+	public RidgeOutDaDaDa_Da( SmartFunctionDaDaDa_Da lower, SmartFunctionDaDaDa_Da upper, SmartFunctionDaDaDa_Da ridged ) {
 		this.lower = lower;
 		this.upper = upper;
 		this.ridged = ridged;
@@ -43,5 +45,22 @@ public class RidgeOutDaDaDa_Da implements FunctionDaDaDa_Da
 				out[i] = lower[i] + d*2*(k - 2*Math.floor(2*k)*(k-0.5));
 			}
 		}
+	}
+	
+	public boolean isConstant() {
+		return lower.isConstant() && upper.isConstant() && ridged.isConstant();
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+		RidgeOutDaDaDa_Da simplified;
+		try {
+			simplified = (RidgeOutDaDaDa_Da)clone();
+        } catch( CloneNotSupportedException e ) {
+        	throw new RuntimeException(e);
+        }
+        simplified.lower = lower.simplify();
+        simplified.upper = upper.simplify();
+        simplified.ridged = ridged.simplify();
+		return FunctionUtil.collapseIfConstant(simplified);
 	}
 }

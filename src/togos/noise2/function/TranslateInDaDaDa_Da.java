@@ -1,10 +1,12 @@
 package togos.noise2.function;
 
-public class TranslateInDaDaDa_Da implements FunctionDaDaDa_Da
+import togos.noise2.lang.FunctionUtil;
+
+public class TranslateInDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
 	double dx, dy, dz;
-	FunctionDaDaDa_Da next;
-	public TranslateInDaDaDa_Da( double dx, double dy, double dz, FunctionDaDaDa_Da next ) {
+	SmartFunctionDaDaDa_Da next;
+	public TranslateInDaDaDa_Da( double dx, double dy, double dz, SmartFunctionDaDaDa_Da next ) {
 		this.dx = dx;
 		this.dy = dy;
 		this.dz = dz;
@@ -21,5 +23,13 @@ public class TranslateInDaDaDa_Da implements FunctionDaDaDa_Da
 			tz[i] = inZ[i]+dz;
 		}
 		next.apply(count, tx, ty, tz, out);
+	}
+	
+	public boolean isConstant() {
+		return next.isConstant();
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+		return FunctionUtil.collapseIfConstant(this);
 	}
 }

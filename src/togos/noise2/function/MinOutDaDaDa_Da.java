@@ -3,7 +3,7 @@ package togos.noise2.function;
 
 public class MinOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 {
-	public MinOutDaDaDa_Da( FunctionDaDaDa_Da[] components ) {
+	public MinOutDaDaDa_Da( SmartFunctionDaDaDa_Da[] components ) {
 		super(components);
 	}
 	

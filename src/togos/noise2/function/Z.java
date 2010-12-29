@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-public class Z implements FunctionDaDaDa_Da
+public class Z implements SmartFunctionDaDaDa_Da
 {
 	public static final Z instance = new Z();
 	
@@ -9,4 +9,7 @@ public class Z implements FunctionDaDaDa_Da
 			out[i] = inZ[i];
 		}
 	}
+	
+	public boolean isConstant() {  return false;  }
+	public SmartFunctionDaDaDa_Da simplify() {  return this;  }
 }

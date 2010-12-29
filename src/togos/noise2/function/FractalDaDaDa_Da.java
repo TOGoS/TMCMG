@@ -1,14 +1,16 @@
 package togos.noise2.function;
 
-public class FractalDaDaDa_Da implements FunctionDaDaDa_Da
+import togos.noise2.lang.FunctionUtil;
+
+public class FractalDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
 	int iterations;
 	double inithscale, hscale;
 	double initvscale, vscale;
 	double ztrans;
-	FunctionDaDaDa_Da next;
+	SmartFunctionDaDaDa_Da next;
 	
-	public FractalDaDaDa_Da( int iterations, double inithscale, double initvscale, double hscale, double vscale, double ztrans, FunctionDaDaDa_Da next ) {
+	public FractalDaDaDa_Da( int iterations, double inithscale, double initvscale, double hscale, double vscale, double ztrans, SmartFunctionDaDaDa_Da next ) {
 		this.iterations = iterations;
 		this.inithscale = inithscale;
 		this.initvscale = initvscale;
@@ -41,5 +43,13 @@ public class FractalDaDaDa_Da implements FunctionDaDaDa_Da
 			hs *= hscale;
 			vs *= vscale;
 		}
+	}
+	
+	public boolean isConstant() {
+		return next.isConstant();
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+		return FunctionUtil.collapseIfConstant(this);
 	}
 }

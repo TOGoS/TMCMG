@@ -1,7 +1,7 @@
 package togos.noise2.function;
 
 
-public class Constant_Da implements FunctionDaDaDa_Da, FunctionDaDa_Da
+public class Constant_Da implements SmartFunctionDaDaDa_Da, FunctionDaDa_Da
 {
 	public static final Constant_Da ZERO = new Constant_Da(0);
 	
@@ -40,5 +40,13 @@ public class Constant_Da implements FunctionDaDaDa_Da, FunctionDaDa_Da
 	
 	public String toString() {
 		return "const-double("+value+")";
+	}
+	
+	public boolean isConstant() {
+		return true;
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+	    return this;
 	}
 }

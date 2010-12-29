@@ -1,10 +1,12 @@
 package togos.noise2.function;
 
+import togos.noise2.lang.FunctionUtil;
 
-public abstract class ReduceOutDaDaDa_Da implements FunctionDaDaDa_Da
+
+public abstract class ReduceOutDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
 {
-	FunctionDaDaDa_Da[] components;
-	public ReduceOutDaDaDa_Da( FunctionDaDaDa_Da[] components ) {
+	SmartFunctionDaDaDa_Da[] components;
+	public ReduceOutDaDaDa_Da( SmartFunctionDaDaDa_Da[] components ) {
 		this.components = components;
 	}
 	
@@ -55,5 +57,27 @@ public abstract class ReduceOutDaDaDa_Da implements FunctionDaDaDa_Da
 		}
 		s += ")";
 		return s;
+	}
+	
+	public boolean isConstant() {
+		for( int i=0; i<components.length; ++i ) {
+			if( !components[i].isConstant() ) return false;
+		}
+		return true;
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+		SmartFunctionDaDaDa_Da[] simplifiedComponents = new SmartFunctionDaDaDa_Da[components.length];
+		for( int i=0; i<components.length; ++i ) {
+			simplifiedComponents[i] = components[i].simplify();
+		}
+		ReduceOutDaDaDa_Da simplified;
+        try {
+	        simplified = (ReduceOutDaDaDa_Da)this.clone();
+        } catch( CloneNotSupportedException e ) {
+        	throw new RuntimeException(e);
+        }
+		simplified.components = simplifiedComponents;
+		return FunctionUtil.collapseIfConstant(simplified);
 	}
 }

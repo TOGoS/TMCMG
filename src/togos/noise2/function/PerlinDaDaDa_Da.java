@@ -1,7 +1,7 @@
 package togos.noise2.function;
 
 
-public class PerlinDaDaDa_Da implements FunctionDaDaDa_Da
+public class PerlinDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
 	public static PerlinDaDaDa_Da instance = new PerlinDaDaDa_Da();
 	
@@ -12,4 +12,7 @@ public class PerlinDaDaDa_Da implements FunctionDaDaDa_Da
 	    	out[i] = perlin.get(inX[i], inY[i], inZ[i]);
 	    }
     }
+	
+	public boolean isConstant() {  return false;  }
+	public SmartFunctionDaDaDa_Da simplify() {  return this;  }
 }

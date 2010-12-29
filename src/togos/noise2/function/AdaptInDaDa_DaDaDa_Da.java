@@ -1,6 +1,5 @@
 package togos.noise2.function;
 
-
 public class AdaptInDaDa_DaDaDa_Da implements FunctionDaDa_Da
 {
 	FunctionDaDa_Da z;
@@ -9,7 +8,7 @@ public class AdaptInDaDa_DaDaDa_Da implements FunctionDaDa_Da
 		this.z = z;
 		this.next = next;
 	}
-	public AdaptInDaDa_DaDaDa_Da( FunctionDaDaDa_Da next ) {
+	public AdaptInDaDa_DaDaDa_Da( SmartFunctionDaDaDa_Da next ) {
 		this( Constant_Da.ZERO, next );
 	}
 	

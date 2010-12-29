@@ -1,11 +1,13 @@
 package togos.noise2.function;
 
+import togos.noise2.lang.FunctionUtil;
 
-public class ScaleInDaDaDa_Da implements FunctionDaDaDa_Da
+
+public class ScaleInDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
-	FunctionDaDaDa_Da next;
+	SmartFunctionDaDaDa_Da next;
 	double scaleX, scaleY, scaleZ;
-	public ScaleInDaDaDa_Da( double scaleX, double scaleY, double scaleZ, FunctionDaDaDa_Da next ) {
+	public ScaleInDaDaDa_Da( double scaleX, double scaleY, double scaleZ, SmartFunctionDaDaDa_Da next ) {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
@@ -22,5 +24,13 @@ public class ScaleInDaDaDa_Da implements FunctionDaDaDa_Da
 			scaledZ[i] = inZ[i]*scaleZ;
 		}
 		next.apply(count, scaledX, scaledY, scaledZ, out);
+	}
+	
+	public boolean isConstant() {
+		return next.isConstant();
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+		return FunctionUtil.collapseIfConstant(this);
 	}
 }

@@ -1,11 +1,13 @@
 package togos.noise2.function;
 
+import togos.noise2.lang.FunctionUtil;
 
-public class TerrainScaleDaDaDa_Da implements FunctionDaDaDa_Da
+
+public class TerrainScaleDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
-	FunctionDaDaDa_Da next;
+	SmartFunctionDaDaDa_Da next;
 	double hScale, vScale;
-	public TerrainScaleDaDaDa_Da( FunctionDaDaDa_Da next, double hScale, double vScale ) {
+	public TerrainScaleDaDaDa_Da( SmartFunctionDaDaDa_Da next, double hScale, double vScale ) {
 		this.next = next;
 		this.hScale = hScale;
 		this.vScale = vScale;
@@ -22,5 +24,13 @@ public class TerrainScaleDaDaDa_Da implements FunctionDaDaDa_Da
 		}
 		next.apply(count, scaledX, scaledY, scaledZ, out);
 		for( int i=0; i<count; ++i ) out[i] *= vScale;
+	}
+	
+	public boolean isConstant() {
+		return next.isConstant();
+	}
+	
+	public SmartFunctionDaDaDa_Da simplify() {
+		return FunctionUtil.collapseIfConstant(this);
 	}
 }
