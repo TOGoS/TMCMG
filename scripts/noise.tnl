@@ -1,0 +1,14 @@
+basis = simplex * 3;
+# basis = perlin * 1.5;
+
+simple-dirt-height = fractal( 1, 16, 8, 1, 1, 0, basis );
+
+layered-terrain(
+	layer( materials.water, 0, 64 ),
+	layer( materials.dirt, 0, 64 + simple-dirt-height ),    
+	layer( materials.stone, 0, 60 + simple-dirt-height ),
+	layer( materials.bedrock, 0, 1 ),
+	grassifier,
+	tree-populator( tree-types.pine, 0.01 ),
+	lighter,
+);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
+import togos.noise2.function.SimplexDaDaDa_Da;
 import togos.noise2.function.SmartFunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MinOutDaDaDa_Da;
@@ -105,5 +106,6 @@ public class NoiseMacros
 		add("y", new ConstantMacroType(Y.instance));
 		add("z", new ConstantMacroType(Z.instance));
 		add("perlin", new ConstantMacroType(PerlinDaDaDa_Da.instance));
+		add("simplex", new ConstantMacroType(SimplexDaDaDa_Da.instance));
 	}
 }
