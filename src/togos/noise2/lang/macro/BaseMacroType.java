@@ -11,7 +11,7 @@ public abstract class BaseMacroType implements MacroType {
 	
 	public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 		if( getRequiredArgCount() >= 0 && sn.arguments.size() != getRequiredArgCount() ) {
-			throw new CompileError( sn.macroName + "requires "+getRequiredArgCount()+" arguments, given "+sn.arguments.size()+".", sn );
+			throw new CompileError( sn.macroName + " requires "+getRequiredArgCount()+" arguments, given "+sn.arguments.size()+".", sn );
 		}
 		Object[] compiledArgs = new Object[sn.arguments.size()];
 		ASTNode[] argNodes = new ASTNode[sn.arguments.size()];

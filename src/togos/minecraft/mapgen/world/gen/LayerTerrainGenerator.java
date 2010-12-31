@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import togos.minecraft.mapgen.world.Blocks;
+import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
@@ -46,31 +47,21 @@ public class LayerTerrainGenerator implements WorldGenerator
 		}
 		
 		public void mungeChunk( ChunkData cd ) {
-			int cwx = cd.x*cd.width;
-			int cwz = cd.z*cd.depth;
 			int count = cd.width*cd.depth;
 			double[] x = new double[count];
 			double[] z = new double[count];
 			double[] ceiling = new double[count];
 			double[] floor = new double[count];
 			int[] type = new int[count];
-			int i=0;
-			for( int tx=0; tx<cd.width; ++tx ) {
-				for( int tz=0; tz<cd.depth; ++tz ) {
-					x[i] = cwx+tx;
-					z[i] = cwz+tz;
-					++i;
-				}
-			}
+			ChunkUtil.getTileXZCoordinates( cd, x, z );
 			for( Iterator li=layers.iterator(); li.hasNext();  ) {
-				i=0;
 				Layer l = (Layer)li.next();
 				// mix up z and y:
 				l.ceilingHeightFunction.apply(z.length, x, z, ceiling);
 				l.floorHeightFunction.apply(z.length, x, z, floor);
 				l.typeFunction.apply(z.length, x, z, type);
-				for( int tx=0; tx<cd.width; ++tx ) {
-					for( int tz=0; tz<cd.depth; ++tz, ++i ) {
+				for( int i=0, tz=0; tz<cd.depth; ++tz ) {
+					for( int tx=0; tx<cd.width; ++tx, ++i ) {
 						double flo = floor[i];
 						if( flo < 0 ) flo = 0;
 						double cei = ceiling[i];

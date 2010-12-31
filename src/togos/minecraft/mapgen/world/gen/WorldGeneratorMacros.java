@@ -32,6 +32,14 @@ public class WorldGeneratorMacros
 		});
 		
 		wgMacros.put("grassifier", new ConstantMacroType(new Grassifier()));
+		wgMacros.put("winterizer", new BaseMacroType() {
+			protected int getRequiredArgCount() {  return 1;  }
+			
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes,
+			        Object[] compiledArgs ) throws CompileError {
+				return new Winterizer(FunctionUtil.toDaDa_Da(compiledArgs[0], argNodes[0]));
+			}
+		});
 		wgMacros.put("lighter", new ConstantMacroType(new Lighter()));
 		wgMacros.put("tree-types.round", new ConstantMacroType(new RoundTreeGenerator()));
 		wgMacros.put("tree-types.pine", new ConstantMacroType(new PineTreeGenerator()));

@@ -79,12 +79,21 @@ perlin()[x,y,z] -> value
     and divide the inputs by the desired average distance between hills
   - e.g.  scale-in( 0.05, 0.05, 0.05, perlin ) * 8
     would result in hills about 20 meters apart and 16 meters from top to
-    base.  
+    base.
+  - See http://en.wikipedia.org/wiki/Perlin_noise
+
+simplex()[x,y,z] -> value
+  - Very similar to perlin noise, but based on a triangular grid, so in
+    theory is somewhat faster and has less noticable directional artifacts.
+  - The implementation used by TMCMG seems to have lower average amplitude
+    than perlin noise, so you may want to multiply the output more to get
+    a similar effect.
+  - See http://en.wikipedia.org/wiki/Simplex_noise
 
 translate-in( <xt>, <yt>, <zt>, <expr> )[x,y,z] -> value
   - fast input translation; xt, yt, and zt must all be constant
   - equivalent to <expr>[ x + <xt>, y + <yt>, z + <zt> ]
-  
+
 scale-in( <xs>, <ys>, <zs>, <expr> )[x,y,z] -> value
   - fast input scaling; xs, ys, and zs must all be constant
   - equivalent to <expr>[ x * <xs>, y * <ys>, z * <zs> ]
@@ -161,6 +170,10 @@ These are applied to chunks after all material layers:
 
 grassifier
   - adds grass to the topmost block if it is dirt
+
+winterizer( winterness-function )
+  - if topmost block is water, turns it to ice, otherwise adds a layer of
+    snow above it wherever winterness-function returns > 0
 
 lighter
   - attempts (it's currently not completely correct) to initialize

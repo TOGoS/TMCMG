@@ -2,6 +2,7 @@
   unrealistic positions
 - Large, branching trees
 - Flower/mushroom populator
+- 'center on player' button in Export Chunks window
 
 * Write FUSE filesystem to automatically generate chunks.
 * Fix race conditions so GenFSServer works

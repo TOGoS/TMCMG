@@ -22,12 +22,16 @@ public class Blocks
 	public static final byte LOG = 0x11;
 	public static final byte LEAVES = 0x12;
 	
+	public static final byte GLASS = 0x14;
+	
 	public static final byte TNT = 0x2E;
 	public static final byte MOSSY_COBBLESTONE = 0x30;
 	public static final byte OBSIDIAN = 0x31;
 	public static final byte TORCH = 0x32;
 	public static final byte CHEST = 0x36;
 	public static final byte WORKBENCH = 0x3A;
+	public static final byte SNOW = 0x4E;
+	public static final byte ICE = 0x4F;
 	
 	public static final short COAL = 0x0107;
 	public static final short IRON_INGOT = 0x0109;

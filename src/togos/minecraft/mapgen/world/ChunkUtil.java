@@ -19,7 +19,8 @@ public class ChunkUtil
 				for( y = 127; y>=0; --y ) {
 					byte block = cd.getBlock(x,y,z);
 					switch( block ) {
-					case(Blocks.AIR):
+					case(Blocks.AIR): case(Blocks.SNOW):
+					case(Blocks.ICE): case(Blocks.GLASS):
 						if( !shadowed ) groundHeight = y;
 						break;
 					case(Blocks.LEAVES):
@@ -104,6 +105,17 @@ public class ChunkUtil
 				ted.z + sz-s.originZ - s.getChunkZ()*s.depth + dest.getChunkZ()*dest.depth
 			);
 			addTileEntity(ted, dest, false);
+		}
+	}
+	
+	public static void getTileXZCoordinates( ChunkData cd, double[] x, double[] z ) {
+		int cwx = cd.x*cd.width;
+		int cwz = cd.z*cd.depth;
+		for( int i=0, tz=0; tz<cd.depth; ++tz ) {
+			for( int tx=0; tx<cd.width; ++tx, ++i ) {
+				x[i] = cwx+tx;
+				z[i] = cwz+tz;
+			}
 		}
 	}
 }
