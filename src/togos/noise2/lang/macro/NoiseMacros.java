@@ -3,6 +3,7 @@ package togos.noise2.lang.macro;
 import java.util.HashMap;
 
 import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
 import togos.noise2.function.SimplexDaDaDa_Da;
@@ -54,6 +55,17 @@ public class NoiseMacros
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
 		add("min", dddaamt(MinOutDaDaDa_Da.class));
 		add("max", dddaamt(MaxOutDaDaDa_Da.class));
+		add("clamp", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 3; }
+			
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
+				return new ClampOutDaDaDa_Da(
+					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[2], argNodes[2])
+				);
+			}
+		});
 		add("ridge", new BaseMacroType() {
 			protected int getRequiredArgCount() { return 3; }
 			
