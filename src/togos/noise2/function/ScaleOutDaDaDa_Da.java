@@ -1,8 +1,9 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class ScaleOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
+public class ScaleOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
 	SmartFunctionDaDaDa_Da next;
 	double scale;
@@ -11,9 +12,9 @@ public class ScaleOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		this.scale = scale;
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
-		next.apply(count, inX, inY, inZ, out);
-		for( int i=0; i<count; ++i ) out[i] *= scale;
+	public void apply( InputDaDaDa in, double[] out ) {
+		next.apply(in, out);
+		for( int i=in.count; i>=0; --i ) out[i] *= scale;
 	}
 	
 	public boolean isConstant() {

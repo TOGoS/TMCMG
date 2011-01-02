@@ -1,9 +1,10 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public class TransformInDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
+public class TransformInDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
 	SmartFunctionDaDaDa_Da next;
 	SmartFunctionDaDaDa_Da xfX, xfY, xfZ;
@@ -14,14 +15,14 @@ public class TransformInDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
 		this.next = next;
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
-		double[] transformedX = new double[count];
-		double[] transformedY = new double[count];
-		double[] transformedZ = new double[count];
-		xfX.apply(count, inX, inY, inZ, transformedX);
-		xfY.apply(count, inX, inY, inZ, transformedY);
-		xfZ.apply(count, inX, inY, inZ, transformedZ);
-		next.apply(count, transformedX, transformedY, transformedZ, out);
+	public void apply( InputDaDaDa in, double[] out ) {
+		double[] transformedX = new double[in.count];
+		double[] transformedY = new double[in.count];
+		double[] transformedZ = new double[in.count];
+		xfX.apply(in.count, in.x, in.y, in.z, transformedX);
+		xfY.apply(in.count, in.x, in.y, in.z, transformedY);
+		xfZ.apply(in.count, in.x, in.y, in.z, transformedZ);
+		next.apply(in.count, transformedX, transformedY, transformedZ, out);
 	}
 	
 	public boolean isConstant() {

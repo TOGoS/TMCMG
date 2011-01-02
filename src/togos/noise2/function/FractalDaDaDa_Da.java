@@ -1,8 +1,9 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class FractalDaDaDa_Da implements SmartFunctionDaDaDa_Da
+public class FractalDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
 	int iterations;
 	double inithscale, hscale;
@@ -20,24 +21,24 @@ public class FractalDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		this.next = next;
 	}
 	
-	public void apply(int count, double[] inX, double[] inY, double[] inZ, double[] out) {
-		double[] xfX = new double[count];
-		double[] xfY = new double[count];
-		double[] xfZ = new double[count];
-		double[] subOut = new double[count];
+	public void apply(InputDaDaDa in, double[] out) {
+		double[] xfX = new double[in.count];
+		double[] xfY = new double[in.count];
+		double[] xfZ = new double[in.count];
+		double[] subOut = new double[in.count];
 		double hs = this.inithscale;
 		double vs = this.initvscale;
-		for( int j=0; j<count; ++j ) {
+		for( int j=in.count-1; j>=0; --j ) {
 			out[j] = 0;
 		}
 		for( int i=0; i<iterations; ++i ) {
-			for( int j=0; j<count; ++j ) {
-				xfX[j] = inX[j]/hs;
-				xfY[j] = inY[j]/hs;
-				xfZ[j] = inZ[j]/hs+ztrans*i;
+			for( int j=in.count-1; j>=0; --j ) {
+				xfX[j] = in.x[j]/hs;
+				xfY[j] = in.y[j]/hs;
+				xfZ[j] = in.z[j]/hs+ztrans*i;
 			}
-			next.apply(count, xfX, xfY, xfZ, subOut);
-			for( int j=0; j<count; ++j ) {
+			next.apply(in.count, xfX, xfY, xfZ, subOut);
+			for( int j=in.count-1; j>=0; --j ) {
 				out[j] += subOut[j] * vs;
 			}
 			hs *= hscale;

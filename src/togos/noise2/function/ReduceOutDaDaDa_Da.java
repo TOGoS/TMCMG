@@ -1,10 +1,13 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public abstract class ReduceOutDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
+public abstract class ReduceOutDaDaDa_Da
+	extends SmartFunctionDaDaDa_Da
+	implements Cloneable
 {
 	SmartFunctionDaDaDa_Da[] components;
 	public ReduceOutDaDaDa_Da( SmartFunctionDaDaDa_Da[] components ) {
@@ -13,12 +16,12 @@ public abstract class ReduceOutDaDaDa_Da implements SmartFunctionDaDaDa_Da, Clon
 	
 	protected abstract void reduce( int count, double[] subOut, double[] out );
 	
-	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
-		components[0].apply(count, inX, inY, inZ, out);
-		double[] subOut = new double[count];
+	public void apply( InputDaDaDa in, double[] out ) {
+		components[0].apply(in, out);
+		double[] subOut = new double[in.count];
 		for( int i=1; i<components.length; ++i ) {
-			components[i].apply(count, inX, inY, inZ, subOut);
-			reduce( count, subOut, out );
+			components[i].apply(in, subOut);
+			reduce( in.count, subOut, out );
 		}
 	}
 	

@@ -1,9 +1,10 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public class TerrainScaleDaDaDa_Da implements SmartFunctionDaDaDa_Da
+public class TerrainScaleDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
 	SmartFunctionDaDaDa_Da next;
 	double hScale, vScale;
@@ -13,17 +14,17 @@ public class TerrainScaleDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		this.next = next;
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
-		double[] scaledX = new double[count];
-		double[] scaledY = new double[count];
-		double[] scaledZ = new double[count];
-		for( int i=0; i<count; ++i ) {
-			scaledX[i] = inX[i]/hScale;
-			scaledY[i] = inY[i]/hScale;
-			scaledZ[i] = inZ[i]/hScale;
+	public void apply( InputDaDaDa in, double[] out ) {
+		double[] scaledX = new double[in.count];
+		double[] scaledY = new double[in.count];
+		double[] scaledZ = new double[in.count];
+		for( int i=in.count-1; i>=0; --i ) {
+			scaledX[i] = in.x[i]/hScale;
+			scaledY[i] = in.y[i]/hScale;
+			scaledZ[i] = in.z[i]/hScale;
 		}
-		next.apply(count, scaledX, scaledY, scaledZ, out);
-		for( int i=0; i<count; ++i ) out[i] *= vScale;
+		next.apply(in.count, scaledX, scaledY, scaledZ, out);
+		for( int i=in.count-1; i>=0; --i ) out[i] *= vScale;
 	}
 	
 	public boolean isConstant() {

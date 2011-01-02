@@ -1,9 +1,10 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public class Constant_Da implements SmartFunctionDaDaDa_Da, FunctionDaDa_Da
+public class Constant_Da extends SmartFunctionDaDaDa_Da implements FunctionDaDa_Da
 {
 	public static final Constant_Da ZERO = new Constant_Da(0);
 	
@@ -27,8 +28,8 @@ public class Constant_Da implements SmartFunctionDaDaDa_Da, FunctionDaDa_Da
 		}
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
-		apply( count, out );
+	public void apply( InputDaDaDa in, double[] out ) {
+		apply( in.count, out );
 	}
 	
 	public void apply( int count, double[] inX, double[] inY, double[] out ) {

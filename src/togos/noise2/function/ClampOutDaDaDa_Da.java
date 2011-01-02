@@ -1,8 +1,9 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class ClampOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
+public class ClampOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
 	SmartFunctionDaDaDa_Da lower;
 	SmartFunctionDaDaDa_Da upper;
@@ -14,13 +15,13 @@ public class ClampOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		this.clamped = clamped;
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
-		double[] lower = new double[count];
-		this.lower.apply(count, inX, inY, inZ, lower);
-		double[] upper = new double[count];
-		this.upper.apply(count, inX, inY, inZ, upper);
-		this.clamped.apply(count, inX, inY, inZ, out);
-		for( int i=0; i<count; ++i ) {
+	public void apply( InputDaDaDa in, double[] out ) {
+		double[] lower = new double[in.count];
+		this.lower.apply(in, lower);
+		double[] upper = new double[in.count];
+		this.upper.apply(in, upper);
+		this.clamped.apply(in, out);
+		for( int i=in.count-1; i>=0; --i ) {
 			if( out[i] < lower[i] ) out[i] = lower[i];
 			if( out[i] > upper[i] ) out[i] = upper[i];
 		}

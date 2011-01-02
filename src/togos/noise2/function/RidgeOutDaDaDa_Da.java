@@ -1,8 +1,9 @@
 package togos.noise2.function;
 
+import togos.noise2.InputDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class RidgeOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
+public class RidgeOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
 	SmartFunctionDaDaDa_Da lower;
 	SmartFunctionDaDaDa_Da upper;
@@ -14,13 +15,13 @@ public class RidgeOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		this.ridged = ridged;
 	}
 	
-	public void apply(int count, double[] inX, double[] inY, double[] inZ, double[] out) {
-		double[] lower = new double[count];
-		this.lower.apply(count, inX, inY, inZ, lower);
-		double[] upper = new double[count];
-		this.upper.apply(count, inX, inY, inZ, upper);
-		this.ridged.apply(count, inX, inY, inZ, out);
-		for( int i=0; i<count; ++i ) {
+	public void apply( InputDaDaDa in, double[] out ) {
+		double[] lower = new double[in.count];
+		this.lower.apply(in, lower);
+		double[] upper = new double[in.count];
+		this.upper.apply(in, upper);
+		this.ridged.apply(in, out);
+		for( int i=in.count-1; i>=0; --i ) {
 			double d = upper[i]-lower[i];
 
 			// TODO: I'm guessing there's a better way to do this
