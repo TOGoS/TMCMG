@@ -1,0 +1,34 @@
+# Based on code from Altimor_
+# http://www.minecraftforum.net/viewtopic.php?f=25&t=107262#p1782457
+
+basis = perlin;
+
+upper-base = 110 + fractal(7,0.4,1,2,-2,0,basis);
+upper-top  = 100 + fractal(5,5  ,1,2,-2,0,basis);
+
+lower-base = 40 + fractal(7,2,1,2,-2,0,basis);
+lower-top  = 30 + fractal(5,6,1,2,-2,0,basis);
+
+layered-terrain(
+	# Ocean, in case you're into that kind of thing
+	layer( materials.water, 0, 16 ),
+	layer( materials.sand,  0, 8 + fractal(3,8,4,4,2,5,basis) ),
+
+	# Upper islands
+	layer( materials.grass, upper-base, upper-top),
+	layer( materials.dirt,  upper-base, upper-top - 1),
+	layer( materials.stone, upper-base, upper-top - 5),
+	
+	# Lower islands
+	layer( materials.grass, lower-base, lower-top),
+	layer( materials.dirt,  lower-base, lower-top - 1),
+	layer( materials.stone, lower-base, lower-top - 5),
+	
+	# Bedrock (ICYITKOT)
+	layer( materials.bedrock, 0, 1 ),
+	
+	# And that other stuff
+	tree-populator( tree-types.pine,  fractal( 3, 100, 0.007, 2, 2,  3, basis ) ),
+	tree-populator( tree-types.round, fractal( 3,  50, 0.007, 2, 2, -3, basis ) ),
+	lighter,
+)
