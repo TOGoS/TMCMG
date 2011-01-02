@@ -41,6 +41,7 @@ public class WorldGeneratorMacros
 			}
 		});
 		wgMacros.put("lighter", new ConstantMacroType(new Lighter()));
+		wgMacros.put("flag-populated", new ConstantMacroType(new TerrainPopulatedSetter()));
 		wgMacros.put("tree-types.round", new ConstantMacroType(new RoundTreeGenerator()));
 		wgMacros.put("tree-types.pine", new ConstantMacroType(new PineTreeGenerator()));
 		wgMacros.put("tree-populator", new BaseMacroType() {

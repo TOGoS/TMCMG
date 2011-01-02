@@ -50,6 +50,7 @@ public class ChunkData extends MiniChunkData
 	public byte[] blockLightData = new byte[(height*depth*width+1)/2];
 	public byte[] lightHeightData = new byte[depth*width];
 	public final int x,z;
+	public boolean terrainPopulated = false;
 	
 	public int getChunkX() { return x; }
 	public int getChunkZ() { return z; }
@@ -84,7 +85,7 @@ public class ChunkData extends MiniChunkData
 		levelTags.add(new LongTag("LastUpdate", 23392));//System.currentTimeMillis()));
 		levelTags.add(new IntTag("xPos", getChunkX()));
 		levelTags.add(new IntTag("zPos", getChunkZ()));
-		levelTags.add(new ByteTag("TerrainPopulated", (byte)1));
+		levelTags.add(new ByteTag("TerrainPopulated", (byte)(terrainPopulated ? 1 : 0)));
 		return new CompoundTag("Level", levelTags);
 	}
 }

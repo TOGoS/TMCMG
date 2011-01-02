@@ -181,6 +181,14 @@ lighter
     etc.  It is recommended that you include this as the last component
     to layered-terrain.
 
+flag-populated
+  - sets the 'terrain populated' flag on chunks so that Minecraft does
+    not try to add veins and calculate lighting itself.  Note that
+    Minecraft does a MUCH better job of calculating lighting than TMCMG
+    does, so you may want to leave this out unless you are very
+    particular about where ores (and ash, and maybe some other stuff)
+    get placed.
+
 tree-populator( <tree-type>, <density-function> )
   - places trees at pseudo-random locations in chunks, with their
     placement being more likely where <density-function> returns

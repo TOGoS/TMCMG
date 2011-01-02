@@ -39,4 +39,5 @@ layered-terrain(
 	tree-populator( tree-types.pine, fractal( 3, 100, 0.01, 2, 2, 3, perlin ) ),
 	tree-populator( tree-types.round, fractal( 3, 50, 0.01, 2, 2, -3, perlin ) ),
 	lighter,
+	flag-populated,
 )
