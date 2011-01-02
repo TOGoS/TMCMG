@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 public class RidgeOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
@@ -51,16 +51,15 @@ public class RidgeOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return lower.isConstant() && upper.isConstant() && ridged.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		RidgeOutDaDaDa_Da simplified;
-		try {
-			simplified = (RidgeOutDaDaDa_Da)clone();
-        } catch( CloneNotSupportedException e ) {
-        	throw new RuntimeException(e);
-        }
-        simplified.lower = lower.simplify();
-        simplified.upper = upper.simplify();
-        simplified.ridged = ridged.simplify();
-		return FunctionUtil.collapseIfConstant(simplified);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return new RidgeOutDaDaDa_Da(
+			(SmartFunctionDaDaDa_Da)rw.rewrite(lower),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(upper),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(ridged)
+		);
+	}
+	
+	public String toString() {
+		return "ridge("+lower+", "+upper+", "+ridged+")";
 	}
 }

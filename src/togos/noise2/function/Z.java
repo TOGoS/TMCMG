@@ -1,5 +1,7 @@
 package togos.noise2.function;
 
+import togos.noise2.rewrite.ExpressionRewriter;
+
 public class Z implements SmartFunctionDaDaDa_Da
 {
 	public static final Z instance = new Z();
@@ -11,5 +13,10 @@ public class Z implements SmartFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {  return false;  }
-	public SmartFunctionDaDaDa_Da simplify() {  return this;  }
+	
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return this;
+	}
+	
+	public String toString() { return "z"; }
 }

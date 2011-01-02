@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 public class TranslateInDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
@@ -29,7 +29,12 @@ public class TranslateInDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return next.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		return FunctionUtil.collapseIfConstant(this);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return new TranslateInDaDaDa_Da(dx, dy, dz,
+			(SmartFunctionDaDaDa_Da)rw.rewrite(next));
+	}
+	
+	public String toString() {
+		return "translate-in("+dx+", "+dy+", "+dz+", "+next+")";
 	}
 }

@@ -4,6 +4,11 @@ import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.TNLCompiler;
 
+/**
+ * A macro type that takes no arguments and always expands to the same
+ * expression.  (The resulting expression does not necessarily represent
+ * a constant.)
+ */
 public class ConstantMacroType implements MacroType
 {
 	protected Object value;

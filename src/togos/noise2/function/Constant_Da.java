@@ -1,5 +1,7 @@
 package togos.noise2.function;
 
+import togos.noise2.rewrite.ExpressionRewriter;
+
 
 public class Constant_Da implements SmartFunctionDaDaDa_Da, FunctionDaDa_Da
 {
@@ -39,14 +41,14 @@ public class Constant_Da implements SmartFunctionDaDaDa_Da, FunctionDaDa_Da
 	}
 	
 	public String toString() {
-		return "const-double("+value+")";
+		return Double.toString(value);
 	}
 	
 	public boolean isConstant() {
 		return true;
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 	    return this;
 	}
 }

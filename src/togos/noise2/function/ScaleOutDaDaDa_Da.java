@@ -1,7 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
-
+import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ScaleOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
@@ -21,7 +20,13 @@ public class ScaleOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return next.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		return FunctionUtil.collapseIfConstant(this);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return new ScaleOutDaDaDa_Da(scale,
+			(SmartFunctionDaDaDa_Da)rw.rewrite(next));
+	}
+
+	
+	public String toString() {
+		return "scale-out("+scale+", "+next+")";
 	}
 }

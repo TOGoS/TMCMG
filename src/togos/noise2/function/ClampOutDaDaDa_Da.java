@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ClampOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
@@ -30,16 +30,15 @@ public class ClampOutDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return lower.isConstant() && upper.isConstant() && clamped.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		ClampOutDaDaDa_Da simplified;
-		try {
-			simplified = (ClampOutDaDaDa_Da)clone();
-        } catch( CloneNotSupportedException e ) {
-        	throw new RuntimeException(e);
-        }
-        simplified.lower = lower.simplify();
-        simplified.upper = upper.simplify();
-        simplified.clamped = clamped.simplify();
-		return FunctionUtil.collapseIfConstant(simplified);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return new ClampOutDaDaDa_Da(
+			(SmartFunctionDaDaDa_Da)rw.rewrite(lower),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(upper),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(clamped)
+		);
+	}
+	
+	public String toString() {
+		return "clamp("+lower+", "+upper+", "+clamped+")";
 	}
 }

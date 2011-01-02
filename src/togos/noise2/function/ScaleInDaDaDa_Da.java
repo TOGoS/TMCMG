@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 
 public class ScaleInDaDaDa_Da implements SmartFunctionDaDaDa_Da
@@ -30,7 +30,11 @@ public class ScaleInDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return next.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		return FunctionUtil.collapseIfConstant(this);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return new ScaleInDaDaDa_Da(scaleX, scaleY, scaleZ, (SmartFunctionDaDaDa_Da)rw.rewrite(next));
+	}
+	
+	public String toString() {
+		return "scale-in("+scaleX+", "+scaleY+", "+scaleZ+", "+next+")";
 	}
 }

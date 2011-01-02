@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 public class FractalDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
@@ -49,7 +49,11 @@ public class FractalDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return next.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		return FunctionUtil.collapseIfConstant(this);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return this;
+	}
+	
+	public String toString() {
+		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+next+")";
 	}
 }

@@ -1,8 +1,8 @@
 package togos.noise2.function;
 
-public interface SmartFunctionDaDaDa_Da extends FunctionDaDaDa_Da
+import togos.noise2.lang.Expression;
+
+public interface SmartFunctionDaDaDa_Da extends FunctionDaDaDa_Da, Expression
 {
 	public boolean isConstant();
-	
-	public SmartFunctionDaDaDa_Da simplify();
 }

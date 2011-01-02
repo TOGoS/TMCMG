@@ -1,16 +1,16 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 
 public class TerrainScaleDaDaDa_Da implements SmartFunctionDaDaDa_Da
 {
 	SmartFunctionDaDaDa_Da next;
 	double hScale, vScale;
-	public TerrainScaleDaDaDa_Da( SmartFunctionDaDaDa_Da next, double hScale, double vScale ) {
-		this.next = next;
+	public TerrainScaleDaDaDa_Da( double hScale, double vScale, SmartFunctionDaDaDa_Da next ) {
 		this.hScale = hScale;
 		this.vScale = vScale;
+		this.next = next;
 	}
 	
 	public void apply( int count, double[] inX, double[] inY, double[] inZ, double[] out ) {
@@ -30,7 +30,11 @@ public class TerrainScaleDaDaDa_Da implements SmartFunctionDaDaDa_Da
 		return next.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		return FunctionUtil.collapseIfConstant(this);
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
+		return new TerrainScaleDaDaDa_Da(hScale, vScale, (SmartFunctionDaDaDa_Da)rw.rewrite(next));
+	}
+	
+	public String toString() {
+		return "terrain-scale("+hScale+", "+vScale+", "+next+")";
 	}
 }

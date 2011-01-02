@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
 import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 
 public abstract class ReduceOutDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
@@ -66,10 +67,10 @@ public abstract class ReduceOutDaDaDa_Da implements SmartFunctionDaDaDa_Da, Clon
 		return true;
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
+	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		SmartFunctionDaDaDa_Da[] simplifiedComponents = new SmartFunctionDaDaDa_Da[components.length];
 		for( int i=0; i<components.length; ++i ) {
-			simplifiedComponents[i] = components[i].simplify();
+			simplifiedComponents[i] = (SmartFunctionDaDaDa_Da)rw.rewrite(components[i]);
 		}
 		ReduceOutDaDaDa_Da simplified;
         try {

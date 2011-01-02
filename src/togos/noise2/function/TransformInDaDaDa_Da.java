@@ -1,6 +1,6 @@
 package togos.noise2.function;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.rewrite.ExpressionRewriter;
 
 
 public class TransformInDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
@@ -28,17 +28,16 @@ public class TransformInDaDaDa_Da implements SmartFunctionDaDaDa_Da, Cloneable
 		return xfX.isConstant() && xfY.isConstant() && xfZ.isConstant() && next.isConstant();
 	}
 	
-	public SmartFunctionDaDaDa_Da simplify() {
-		TransformInDaDaDa_Da simplified;
-		try {
-			simplified = (TransformInDaDaDa_Da) clone();
-        } catch( CloneNotSupportedException e ) {
-        	throw new RuntimeException(e);
-        }
-        simplified.xfX = xfX.simplify();
-        simplified.xfY = xfY.simplify();
-        simplified.xfZ = xfZ.simplify();
-        simplified.next = next.simplify();
-		return FunctionUtil.collapseIfConstant(simplified);
+	public Object rewriteSubExpressions(ExpressionRewriter rw)  {
+		return new TransformInDaDaDa_Da(
+			(SmartFunctionDaDaDa_Da)rw.rewrite(xfX),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(xfY),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(xfZ),
+			(SmartFunctionDaDaDa_Da)rw.rewrite(next)
+		);
+	}
+	
+	public String toString() {
+		return "transform-in("+xfX+", "+xfY+", "+xfZ+", "+next+")";
 	}
 }

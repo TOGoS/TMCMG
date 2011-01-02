@@ -23,28 +23,28 @@ public class SimpleWorldGenerator implements WorldGenerator
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
 		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
 			new Constant_Da(56),
-			new TerrainScaleDaDaDa_Da( perlin, 16384, 16 ),
-			new TerrainScaleDaDaDa_Da( perlin,  8192, 16 ),
-			new TerrainScaleDaDaDa_Da( perlin,  4096, 16 ),
-			new TerrainScaleDaDaDa_Da( perlin,   512, 12 ),
+			new TerrainScaleDaDaDa_Da( 16384, 16, perlin ),
+			new TerrainScaleDaDaDa_Da(  8192, 16, perlin ),
+			new TerrainScaleDaDaDa_Da(  4096, 16, perlin ),
+			new TerrainScaleDaDaDa_Da(   512, 12, perlin ),
 		});
 		AddOutDaDaDa_Da dirtLevel = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
 			sandLevel,
-			new TerrainScaleDaDaDa_Da( perlin,  2048, 32  ),
-			new TerrainScaleDaDaDa_Da( perlin,  1024, 12 ),
-			new TerrainScaleDaDaDa_Da( perlin,   256,  8 ),
-			new TerrainScaleDaDaDa_Da( perlin,    64,  8 ),
-			new TerrainScaleDaDaDa_Da( perlin,    32,  8 ),
-			new TerrainScaleDaDaDa_Da( perlin,    16,  8 ),
-			new TerrainScaleDaDaDa_Da( perlin,     4,  2 ),
+			new TerrainScaleDaDaDa_Da(  2048, 32, perlin  ),
+			new TerrainScaleDaDaDa_Da(  1024, 12, perlin ),
+			new TerrainScaleDaDaDa_Da(   256,  8, perlin ),
+			new TerrainScaleDaDaDa_Da(    64,  8, perlin ),
+			new TerrainScaleDaDaDa_Da(    32,  8, perlin ),
+			new TerrainScaleDaDaDa_Da(    16,  8, perlin ),
+			new TerrainScaleDaDaDa_Da(     4,  2, perlin ),
 		});
 		AddOutDaDaDa_Da stoneLevel = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
 			dirtLevel,
 			new Constant_Da(-4),
-			new TerrainScaleDaDaDa_Da( perlin,  128,  8 ),
+			new TerrainScaleDaDaDa_Da(  128,  8, perlin ),
 			new MultiplyOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
-				new TerrainScaleDaDaDa_Da( perlin, 1024,  2 ),
-				new TerrainScaleDaDaDa_Da( perlin,    8,  8 ),
+				new TerrainScaleDaDaDa_Da( 1024,  2, perlin ),
+				new TerrainScaleDaDaDa_Da(    8,  8, perlin ),
 			}),
 		});
 		
