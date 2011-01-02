@@ -29,13 +29,15 @@ public class ChunkUtil
 						shadowed = true;
 						break;
 					case(Blocks.WATER): case(Blocks.MOVING_WATER):
-						if( light > 13 ) light = 13;
-						--light;
-						if( light < 0 ) light = 0;
+						// Translucent materials
+						if( light > 12 ) light = 12;
+						else if( light > 0 ) --light;
 						shadowed = true;
 						break;
 					default:
-						light = 0;
+						// Opaque materials
+						if( light > 12 ) light = 12;
+						else if( light > 0 ) --light;
 						shadowed = true;
 					}
 					cd.setSkyLight(x, y, z, (int)light);
