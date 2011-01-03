@@ -90,10 +90,11 @@ tree-test = layered-terrain(
 	layer( materials.bedrock, 0, 1 ),
 	# layer( materials.bedrock, 96, 96 + winterness ),
 	grassifier,
-	tree-populator( tree-types.pine, fractal( 2, 50, 0.01, 2, 2, 3, perlin ) ),
-	tree-populator( tree-types.round, fractal( 2, 50, 0.01, 2, 2, -3, perlin ) ),
+	tree-populator( tree-types.pine, fractal( 2, 50, 0.01, 2, 2, 3, perlin ), 1 ),
+	tree-populator( tree-types.round, fractal( 2, 50, 0.01, 2, 2, -3, perlin ), 2 ),
 	winterizer( winterness ),
 	lighter,
+	flag-populated,
 );
 
 # This final statement, because it is not of the form <name> = <expr>, is

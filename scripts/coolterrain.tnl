@@ -31,13 +31,13 @@ layered-terrain(
 	# Cave with lava:
 	layer( materials.air,  16 + fractal(3,5,3,3,3,-7,perlin),         min(mountain-height - 2,20 + fractal(3,5,4,3,3,-7,perlin)) ),
 	layer( materials.lava, 16 + fractal(3,5,3,3,3,-7,perlin), min(16, min(mountain-height - 2,20 + fractal(3,5,4,3,3,-7,perlin)) )),
-
+	
 	layer( materials.bedrock, 0, max(1,fractal(3,12,12,3,3,1,coolperl)) ),
 	
 	# Chunk processors:
 	grassifier,
-	tree-populator( tree-types.pine, fractal( 3, 100, 0.01, 2, 2, 3, perlin ) ),
-	tree-populator( tree-types.round, fractal( 3, 50, 0.01, 2, 2, -3, perlin ) ),
+	tree-populator( tree-types.pine, fractal( 3, 100, 0.003, 2, 2, 3, perlin ), 4 ),
+	tree-populator( tree-types.round, fractal( 3, 50, 0.003, 2, 2, -3, perlin ), 5 ),
 	lighter,
 	flag-populated,
 )

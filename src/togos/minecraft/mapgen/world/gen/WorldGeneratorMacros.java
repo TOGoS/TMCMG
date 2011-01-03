@@ -45,19 +45,28 @@ public class WorldGeneratorMacros
 		wgMacros.put("tree-types.round", new ConstantMacroType(new RoundTreeGenerator()));
 		wgMacros.put("tree-types.pine", new ConstantMacroType(new PineTreeGenerator()));
 		wgMacros.put("tree-populator", new BaseMacroType() {
-			protected int getRequiredArgCount() {  return 2;  }
+			protected int getRequiredArgCount() {  return -1;  }
 			
-			protected Object instantiate( ASTNode node, ASTNode[] argNodes,
-			        Object[] compiledArgs ) throws CompileError {
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
+				int placementSeed;
+				if( compiledArgs.length == 2 ) {
+					placementSeed = 0;
+				} else if( compiledArgs.length == 3 ) {
+					placementSeed = FunctionUtil.toInt(compiledArgs[2], argNodes[2]);
+				} else {
+					throw new CompileError(node.macroName+" requires 2 or 3 arguments", node);
+				}
 				if( !(compiledArgs[0] instanceof StampGenerator) ) {
 					throw new CompileError("First argument to "+node.macroName+
 						" should be a StampGenerator, but given "+compiledArgs[0].getClass(), node);
 				}
 				StampGenerator stampGenerator = (StampGenerator)compiledArgs[0];
 				FunctionDaDa_Da density = FunctionUtil.toDaDa_Da(compiledArgs[1], argNodes[1]);
-				return new GroundStampPopulator( stampGenerator, 20, density, 4, null, new int[]{
+				GroundStampPopulator gsp = new GroundStampPopulator( stampGenerator, 20, density, 4, null, new int[]{
 					Blocks.DIRT, Blocks.GRASS
 				} );
+				gsp.placementSeed = placementSeed;
+				return gsp;
 			}
 		});
 		wgMacros.put("layered-terrain", new MacroType() {

@@ -19,8 +19,8 @@ public class TranslateInDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		double[] ty = new double[in.count];
 		double[] tz = new double[in.count];
 		for( int i=in.count-1; i>=0; --i ) {
-			tx[i] = in.z[i]+dx;
-			ty[i] = in.z[i]+dy;
+			tx[i] = in.x[i]+dx;
+			ty[i] = in.y[i]+dy;
 			tz[i] = in.z[i]+dz;
 		}
 		next.apply(in.count, tx, ty, tz, out);

@@ -14,7 +14,7 @@ public class ScaleOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public void apply( InputDaDaDa in, double[] out ) {
 		next.apply(in, out);
-		for( int i=in.count; i>=0; --i ) out[i] *= scale;
+		for( int i=in.count-1; i>=0; --i ) out[i] *= scale;
 	}
 	
 	public boolean isConstant() {

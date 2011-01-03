@@ -16,6 +16,7 @@ public class GroundStampPopulator implements StampPopulator
 	FunctionDaDa_DaIa groundFunction;
 	int[] allowedGroundTypes;
 	Stamp[] stamps;
+	int placementSeed = 0;
 	
 	long hashMultiplier = -573845504;
 	StampGenerator stampGenerator = new RoundTreeGenerator();
@@ -41,7 +42,7 @@ public class GroundStampPopulator implements StampPopulator
 	}
 	
 	protected void collect( Collection instances, int cx, int cz ) {
-		Random r = new Random(cx*1234+cz);
+		Random r = new Random((cx*1234+cz) ^ placementSeed);
 		double[] density = new double[1];
 		
 		long cwx = (long)cx*ChunkData.CHUNK_WIDTH;
