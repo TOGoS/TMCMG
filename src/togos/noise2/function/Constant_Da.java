@@ -1,6 +1,8 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
@@ -22,18 +24,20 @@ public class Constant_Da extends SmartFunctionDaDaDa_Da implements FunctionDaDa_
 		this.value = value;
 	}
 	
-	public void apply( int count, double[] out ) {
+	public DataDa apply( int count ) {
+		double[] out = new double[count];
 		for( int j=0; j<count; ++j ) {
 			out[j] = value;
 		}
+		return new DataDa(out);
 	}
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		apply( in.count, out );
+	public DataDa apply( DataDaDa in ) {
+		return apply( in.getLength() );
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, double[] out ) {
-		apply( count, out );
+	public DataDa apply( DataDaDaDa in ) {
+		return apply( in.getLength() );
 	}
 	
 	public boolean equals( Object oth ) {

@@ -1,8 +1,8 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
-
 
 public class PerlinDaDaDa_Da extends SmartFunctionDaDaDa_Da
 {
@@ -10,10 +10,12 @@ public class PerlinDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public D5_2Perlin perlin = new D5_2Perlin();
 
-	public void apply( InputDaDaDa in, double[] out ) {
-	    for( int i=in.count-1; i>=0; --i ) {
+	public DataDa apply( DataDaDaDa in ) {
+		double[] out = new double[in.getLength()];
+	    for( int i=in.getLength()-1; i>=0; --i ) {
 	    	out[i] = perlin.get(in.x[i], in.y[i], in.z[i]);
 	    }
+	    return new DataDa(out);
     }
 	
 	public boolean isConstant() {  return false;  }

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.Stamp;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.DistanceDaDaDa_Da;
 import togos.noise2.function.SmartFunctionDaDaDa_Da;
@@ -54,8 +55,7 @@ public class RoundTreeGenerator implements StampGenerator
 				}
 			}
 		}
-		double[] leafDensity = new double[volume];
-		leafDensityFunction.apply(volume, x, y, z, leafDensity);
+		double[] leafDensity = leafDensityFunction.apply(new DataDaDaDa(x,y,z)).v;
 		for( i=0; i<volume; ++i ) {
 			if( leafDensity[i] < 1 ) {
 				s.setBlock((int)x[i],(int)y[i],(int)z[i], Blocks.LEAVES);

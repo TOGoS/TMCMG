@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
@@ -15,14 +16,12 @@ public class TransformInDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		this.next = next;
 	}
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		double[] transformedX = new double[in.count];
-		double[] transformedY = new double[in.count];
-		double[] transformedZ = new double[in.count];
-		xfX.apply(in.count, in.x, in.y, in.z, transformedX);
-		xfY.apply(in.count, in.x, in.y, in.z, transformedY);
-		xfZ.apply(in.count, in.x, in.y, in.z, transformedZ);
-		next.apply(in.count, transformedX, transformedY, transformedZ, out);
+	public DataDa apply( DataDaDaDa in ) {
+		return next.apply(new DataDaDaDa(
+			xfX.apply(in).v,
+			xfY.apply(in).v,
+			xfZ.apply(in).v
+		));
 	}
 	
 	public boolean isConstant() {

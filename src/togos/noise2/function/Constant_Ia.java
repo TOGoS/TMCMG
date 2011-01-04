@@ -1,5 +1,7 @@
 package togos.noise2.function;
 
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataIa;
 
 public class Constant_Ia implements FunctionDaDa_Ia
 {
@@ -19,14 +21,16 @@ public class Constant_Ia implements FunctionDaDa_Ia
 		this.value = value;
 	}
 	
-	public void apply( int count, int[] out ) {
+	public DataIa apply( int count ) {
+		int[] out = new int[count];
 		for( int j=0; j<count; ++j ) {
 			out[j] = value;
 		}
+		return new DataIa(out);
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, int[] out ) {
-		apply( count, out );
+	public DataIa apply( DataDaDa in ) {
+		return apply( in.getLength() );
 	}
 	
 	public boolean equals( Object oth ) {

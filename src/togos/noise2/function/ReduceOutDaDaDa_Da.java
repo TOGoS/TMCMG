@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
@@ -16,13 +17,16 @@ public abstract class ReduceOutDaDaDa_Da
 	
 	protected abstract void reduce( int count, double[] subOut, double[] out );
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		components[0].apply(in, out);
-		double[] subOut = new double[in.count];
-		for( int i=1; i<components.length; ++i ) {
-			components[i].apply(in, subOut);
-			reduce( in.count, subOut, out );
+	public DataDa apply( DataDaDaDa in ) {
+		double[] first = components[0].apply(in).v;
+		double[] out = new double[in.getLength()];
+		for( int j=0; j<first.length; ++j ) {
+			out[j] = first[j];
 		}
+		for( int i=1; i<components.length; ++i ) {
+			reduce( in.getLength(), components[i].apply(in).v, out );
+		}
+		return new DataDa(out);
 	}
 	
 	public boolean equals( Object oth ) {

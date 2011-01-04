@@ -29,6 +29,7 @@ import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.noise2.data.DataDaDa;
 import togos.noise2.lang.ScriptError;
 
 public class LayerSideCanvas extends WorldExplorerViewCanvas
@@ -78,9 +79,6 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 			
 			double[] wx = new double[width];
 			double[] wy = new double[width];
-			double[] floor = new double[width];
-			double[] ceil = new double[width];
-			int[] type = new int[width];
 			int[] color = new int[width];
 			
 			synchronized( buffer ) {
@@ -94,9 +92,10 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 					wx[i] = worldX + px[i]*worldXPerPixel;
 					wy[i] = worldZ;
 				}
-				layer.floorHeightFunction.apply(width, wx, wy, floor);
-				layer.ceilingHeightFunction.apply(width, wx, wy, ceil);
-				layer.typeFunction.apply(width, wx, wy, type);
+				DataDaDa input = new DataDaDa(wx,wy);
+				double[] floor = layer.floorHeightFunction.apply(input).v;
+				double[] ceil = layer.ceilingHeightFunction.apply(input).v;
+				int[] type = layer.typeFunction.apply(input).v;
 				for( int i=0; i<width; ++i ) {
 					if( type[i] == Blocks.AIR ) {
 						color[i] = 0xFF0088FF;

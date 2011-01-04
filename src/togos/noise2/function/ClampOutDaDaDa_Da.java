@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ClampOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
@@ -15,16 +16,17 @@ public class ClampOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		this.clamped = clamped;
 	}
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		double[] lower = new double[in.count];
-		this.lower.apply(in, lower);
-		double[] upper = new double[in.count];
-		this.upper.apply(in, upper);
-		this.clamped.apply(in, out);
-		for( int i=in.count-1; i>=0; --i ) {
-			if( out[i] < lower[i] ) out[i] = lower[i];
-			if( out[i] > upper[i] ) out[i] = upper[i];
+	public DataDa apply( DataDaDaDa in ) {
+		double[] lower = this.lower.apply(in).v;
+		double[] upper = this.upper.apply(in).v;
+		double[] clamped = this.clamped.apply(in).v;
+		double[] out = new double[in.getLength()];
+		for( int i=in.getLength()-1; i>=0; --i ) {
+			if( clamped[i] < lower[i] ) out[i] = lower[i];
+			else if( clamped[i] > upper[i] ) out[i] = upper[i];
+			else out[i] = clamped[i];
 		}
+		return new DataDa(out);
 	}
 	
 	public boolean isConstant() {

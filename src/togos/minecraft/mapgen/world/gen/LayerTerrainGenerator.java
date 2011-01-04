@@ -7,6 +7,8 @@ import java.util.List;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaIa;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
 import togos.noise2.function.FunctionDaDa_Ia;
@@ -47,19 +49,12 @@ public class LayerTerrainGenerator implements WorldGenerator
 		}
 		
 		public void mungeChunk( ChunkData cd ) {
-			int count = cd.width*cd.depth;
-			double[] x = new double[count];
-			double[] z = new double[count];
-			double[] ceiling = new double[count];
-			double[] floor = new double[count];
-			int[] type = new int[count];
-			ChunkUtil.getTileXZCoordinates( cd, x, z );
+			DataDaDa in = ChunkUtil.getTileXZCoordinates( cd );
 			for( Iterator li=layers.iterator(); li.hasNext();  ) {
 				Layer l = (Layer)li.next();
-				// mix up z and y:
-				l.ceilingHeightFunction.apply(z.length, x, z, ceiling);
-				l.floorHeightFunction.apply(z.length, x, z, floor);
-				l.typeFunction.apply(z.length, x, z, type);
+				double[] ceiling = l.ceilingHeightFunction.apply(in).v;
+				double[] floor = l.floorHeightFunction.apply(in).v;
+				int[] type = l.typeFunction.apply(in).v;
 				for( int i=0, tz=0; tz<cd.depth; ++tz ) {
 					for( int tx=0; tx<cd.width; ++tx, ++i ) {
 						double flo = floor[i];
@@ -87,21 +82,19 @@ public class LayerTerrainGenerator implements WorldGenerator
 			this.airTreatment = airTreatment;
 		}
 		
-		public void apply( int count, double[] inX, double[] inY, double[] outZ, int[] outT ) {
-	    	double[] lCeil = new double[count];
-	    	double[] lFloor = new double[count];
-	    	int[] lType = new int[count];
-	    	double[] highest = outZ;
-	    	for( int j=0; j<count; ++j ) {
+		public DataDaIa apply( DataDaDa in ) {
+	    	double[] highest = new double[in.getLength()];
+	    	int[] outT = new int[in.getLength()];
+	    	for( int j=in.getLength()-1; j>=0; --j ) {
 	    		highest[j] = Double.NEGATIVE_INFINITY;
 	    		outT[j] = Blocks.AIR;
 	    	}
 		    for( Iterator li=layers.iterator(); li.hasNext(); ) {
 		    	Layer l = (Layer)li.next();
-		    	l.ceilingHeightFunction.apply(count, inX, inY, lCeil);
-		    	l.floorHeightFunction.apply(count, inX, inY, lFloor);
-		    	l.typeFunction.apply(count, inX, inY, lType);
-		    	for( int j=0; j<count; ++j ) {
+		    	double[] lCeil = l.ceilingHeightFunction.apply(in).v;
+		    	double[] lFloor = l.floorHeightFunction.apply(in).v;
+		    	int[] lType = l.typeFunction.apply(in).v;
+		    	for( int j=in.getLength()-1; j>=0; --j ) {
 		    		boolean subtract = false;
 		    		if( lType[j] == Blocks.AIR ) {
 		    			switch( airTreatment ) {
@@ -133,6 +126,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 		    		}
 		    	}
 		    }
+		    return new DataDaIa( highest, outT );
 		}
 	}
 	

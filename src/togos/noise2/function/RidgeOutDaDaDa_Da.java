@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class RidgeOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
@@ -15,13 +16,12 @@ public class RidgeOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		this.ridged = ridged;
 	}
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		double[] lower = new double[in.count];
-		this.lower.apply(in, lower);
-		double[] upper = new double[in.count];
-		this.upper.apply(in, upper);
-		this.ridged.apply(in, out);
-		for( int i=in.count-1; i>=0; --i ) {
+	public DataDa apply( DataDaDaDa in ) {
+		double[] lower = this.lower.apply(in).v;
+		double[] upper = this.upper.apply(in).v;
+		double[] ridged = this.ridged.apply(in).v;
+		double[] out = new double[in.getLength()];
+		for( int i=in.getLength()-1; i>=0; --i ) {
 			double d = upper[i]-lower[i];
 
 			// TODO: I'm guessing there's a better way to do this
@@ -40,12 +40,13 @@ public class RidgeOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 				}
 				*/
 				
-				double k = (out[i]-lower[i])/(d*2);
+				double k = (ridged[i]-lower[i])/(d*2);
 				double c = Math.floor(k);
 				k -= c;
 				out[i] = lower[i] + d*2*(k - 2*Math.floor(2*k)*(k-0.5));
 			}
 		}
+		return new DataDa(out);
 	}
 	
 	public boolean isConstant() {

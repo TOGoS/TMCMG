@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class FractalDaDaDa_Da extends SmartFunctionDaDaDa_Da
@@ -21,29 +22,30 @@ public class FractalDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		this.next = next;
 	}
 	
-	public void apply(InputDaDaDa in, double[] out) {
-		double[] xfX = new double[in.count];
-		double[] xfY = new double[in.count];
-		double[] xfZ = new double[in.count];
-		double[] subOut = new double[in.count];
+	public DataDa apply(DataDaDaDa in) {
+		double[] xfX = new double[in.getLength()];
+		double[] xfY = new double[in.getLength()];
+		double[] xfZ = new double[in.getLength()];
+		double[] out = new double[in.getLength()];
 		double hs = this.inithscale;
 		double vs = this.initvscale;
-		for( int j=in.count-1; j>=0; --j ) {
+		for( int j=in.getLength()-1; j>=0; --j ) {
 			out[j] = 0;
 		}
 		for( int i=0; i<iterations; ++i ) {
-			for( int j=in.count-1; j>=0; --j ) {
+			for( int j=in.getLength()-1; j>=0; --j ) {
 				xfX[j] = in.x[j]/hs;
 				xfY[j] = in.y[j]/hs;
 				xfZ[j] = in.z[j]/hs+ztrans*i;
 			}
-			next.apply(in.count, xfX, xfY, xfZ, subOut);
-			for( int j=in.count-1; j>=0; --j ) {
+			double[] subOut = next.apply(new DataDaDaDa(xfX,xfY,xfZ)).v;
+			for( int j=in.getLength()-1; j>=0; --j ) {
 				out[j] += subOut[j] * vs;
 			}
 			hs *= hscale;
 			vs *= vscale;
 		}
+		return new DataDa(out);
 	}
 	
 	public boolean isConstant() {

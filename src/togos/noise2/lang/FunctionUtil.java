@@ -1,17 +1,19 @@
 package togos.noise2.lang;
 
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
 import togos.noise2.function.AdaptOutDaDa_Da_Ia;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
+import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.SmartFunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
 
 public class FunctionUtil
 {
-	static double[] ZERO = new double[]{0};
-	
 	public static SmartFunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof SmartFunctionDaDaDa_Da ) {
 			return (SmartFunctionDaDaDa_Da)r;
@@ -65,11 +67,24 @@ public class FunctionUtil
 			throw new CompileError("Can't convert "+r.getClass()+" to double", sloc);
 		}
 	}
-	
+
+	public static double getValue( FunctionDaDa_Da da, double x, double y ) {
+		double[] ax = new double[]{x};
+		double[] ay = new double[]{y};
+		DataDa out = da.apply(new DataDaDa(ax,ay));
+		return out.v[0];
+	}
+
+	public static double getValue( FunctionDaDaDa_Da da, double x, double y, double z ) {
+		double[] ax = new double[]{x};
+		double[] ay = new double[]{y};
+		double[] az = new double[]{z};
+		DataDa out = da.apply(new DataDaDaDa(ax,ay,az));
+		return out.v[0];
+	}
+
 	public static double getConstantValue( SmartFunctionDaDaDa_Da da ) {
-		double[] out = new double[1];
-		da.apply(1, ZERO, ZERO, ZERO, out);
-		return out[0];
+		return getValue( da, 0, 0, 0 );
 	}
 	
 	public static Constant_Da getConstantFunction( SmartFunctionDaDaDa_Da f ) {

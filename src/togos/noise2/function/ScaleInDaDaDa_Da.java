@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ScaleInDaDaDa_Da extends SmartFunctionDaDaDa_Da
@@ -14,16 +15,16 @@ public class ScaleInDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		this.next = next;
 	}
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		double[] scaledX = new double[in.count];
-		double[] scaledY = new double[in.count];
-		double[] scaledZ = new double[in.count];
-		for( int i=in.count-1; i>=0; --i ) {
+	public DataDa apply( DataDaDaDa in ) {
+		double[] scaledX = new double[in.getLength()];
+		double[] scaledY = new double[in.getLength()];
+		double[] scaledZ = new double[in.getLength()];
+		for( int i=in.getLength()-1; i>=0; --i ) {
 			scaledX[i] = in.x[i]*scaleX;
 			scaledY[i] = in.y[i]*scaleY;
 			scaledZ[i] = in.z[i]*scaleZ;
 		}
-		next.apply(in.count, scaledX, scaledY, scaledZ, out);
+		return next.apply(new DataDaDaDa(scaledX, scaledY, scaledZ));
 	}
 	
 	public boolean isConstant() {

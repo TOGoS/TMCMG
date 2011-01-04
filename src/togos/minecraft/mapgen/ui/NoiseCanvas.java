@@ -24,6 +24,7 @@ import togos.minecraft.mapgen.world.gen.GroundColorFunction;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.noise2.data.DataDaDa;
 import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ScriptError;
 
@@ -110,7 +111,6 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 			
 			double[] wx = new double[256];
 			double[] wy = new double[256];
-			int[] color = new int[256];
 			
 			while( !stop ) {
 				int coordCount = cpop.nextCoords(px, py, scale);
@@ -120,7 +120,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					wx[i] = worldX + px[i]*worldXPerPixel;
 					wy[i] = worldY + py[i]*worldYPerPixel;
 				}
-				colorFunction.apply(coordCount,wx,wy,color);
+				int[] color = colorFunction.apply(new DataDaDa(wx,wy)).v;
 				synchronized( buffer ) {
 					for( int i=0; i<coordCount; ++i ) {
 						int pcolor = color[i] == 0 ? 0xFF000000 : color[i];

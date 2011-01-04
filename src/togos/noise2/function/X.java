@@ -1,16 +1,15 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class X extends SmartFunctionDaDaDa_Da
 {
 	public static final X instance = new X();
 	
-	public void apply(InputDaDaDa in, double[] out) {
-		for( int i=0; i<in.count; ++i ) {
-			out[i] = in.x[i];
-		}
+	public DataDa apply(DataDaDaDa in) {
+		return new DataDa(in.x);
 	}
 	
 	public boolean isConstant() {  return false;  }

@@ -6,8 +6,11 @@ import java.util.Random;
 
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaIa;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
+import togos.noise2.lang.FunctionUtil;
 
 public class GroundStampPopulator implements StampPopulator
 {
@@ -43,31 +46,24 @@ public class GroundStampPopulator implements StampPopulator
 	
 	protected void collect( Collection instances, int cx, int cz ) {
 		Random r = new Random((cx*1234+cz) ^ placementSeed);
-		double[] density = new double[1];
 		
 		long cwx = (long)cx*ChunkData.CHUNK_WIDTH;
 		long cwz = (long)cz*ChunkData.CHUNK_DEPTH;
 		
-		densityFunction.apply(1,
-			new double[]{cwx},
-			new double[]{cwz},
-			density
-		);
-		int count = (int)(Math.min(maxDensity,density[0])*ChunkData.CHUNK_WIDTH*ChunkData.CHUNK_DEPTH);
+		double density = FunctionUtil.getValue( densityFunction, cwx, cwz );
+		int count = (int)(Math.min(maxDensity,density)*ChunkData.CHUNK_WIDTH*ChunkData.CHUNK_DEPTH);
 		if( count < 0 ) return;
 		double[] x = new double[count];
 		double[] z = new double[count];
-		double[] groundHeight = new double[count];
-		int[] groundType = new int[count];
 		for( int i=0; i<count; ++i ) {
 			x[i] = cwx + r.nextInt(ChunkData.CHUNK_WIDTH);
 			z[i] = cwz + r.nextInt(ChunkData.CHUNK_DEPTH);
 		}
-		groundFunction.apply(count, x,z, groundHeight, groundType);
+		DataDaIa ground = groundFunction.apply(new DataDaDa(x,z));
 		for( int i=0; i<count; ++i ) {
 			boolean allowPlacement = false;
 			for( int j=0; j<allowedGroundTypes.length; ++j ) {
-				if( allowedGroundTypes[j] == groundType[i] ) {
+				if( allowedGroundTypes[j] == ground.i[i] ) {
 					allowPlacement = true;
 					break;
 				}
@@ -75,7 +71,7 @@ public class GroundStampPopulator implements StampPopulator
 			if( allowPlacement ) {
 				long wx = (long)x[i];
 				long wz = (long)z[i];
-				instances.add(new StampInstance( getStamp(wx,wz), wx, (int)groundHeight[i], wz ));
+				instances.add(new StampInstance( getStamp(wx,wz), wx, (int)ground.d[i], wz ));
 			}
 		}
 	}

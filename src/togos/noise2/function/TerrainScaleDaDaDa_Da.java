@@ -1,6 +1,7 @@
 package togos.noise2.function;
 
-import togos.noise2.InputDaDaDa;
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
@@ -14,17 +15,19 @@ public class TerrainScaleDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		this.next = next;
 	}
 	
-	public void apply( InputDaDaDa in, double[] out ) {
-		double[] scaledX = new double[in.count];
-		double[] scaledY = new double[in.count];
-		double[] scaledZ = new double[in.count];
-		for( int i=in.count-1; i>=0; --i ) {
+	public DataDa apply( DataDaDaDa in ) {
+		double[] scaledX = new double[in.getLength()];
+		double[] scaledY = new double[in.getLength()];
+		double[] scaledZ = new double[in.getLength()];
+		double[] out = new double[in.getLength()];
+		for( int i=in.getLength()-1; i>=0; --i ) {
 			scaledX[i] = in.x[i]/hScale;
 			scaledY[i] = in.y[i]/hScale;
 			scaledZ[i] = in.z[i]/hScale;
 		}
-		next.apply(in.count, scaledX, scaledY, scaledZ, out);
-		for( int i=in.count-1; i>=0; --i ) out[i] *= vScale;
+		double[] subOut = next.apply(new DataDaDaDa(scaledX,scaledY,scaledZ)).v;
+		for( int i=in.getLength()-1; i>=0; --i ) out[i] = subOut[i] * vScale;
+		return new DataDa(subOut);
 	}
 	
 	public boolean isConstant() {

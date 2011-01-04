@@ -1,6 +1,9 @@
 package togos.noise2.function;
 
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaIa;
+
 public interface FunctionDaDa_DaIa
 {
-	public void apply( int count, double[] inX, double[] inY, double[] outZ, int[] outT );
+	public DataDaIa apply( DataDaDa in );
 }

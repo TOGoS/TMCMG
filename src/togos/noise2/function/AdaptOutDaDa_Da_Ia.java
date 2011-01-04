@@ -1,5 +1,9 @@
 package togos.noise2.function;
 
+import togos.noise2.data.DataDa;
+import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataIa;
+
 
 public class AdaptOutDaDa_Da_Ia implements FunctionDaDa_Ia
 {
@@ -8,11 +12,12 @@ public class AdaptOutDaDa_Da_Ia implements FunctionDaDa_Ia
 		this.next = next;
 	}
 	
-	public void apply( int count, double[] inX, double[] inY, int[] out ) {
-		double[] dout = new double[count];
-		next.apply(count, inX, inY, dout);
-		for( int i=0; i<count; ++i ) {
-			out[i] = (int)Math.floor(dout[i]);
+	public DataIa apply( DataDaDa in ) {
+		int[] out = new int[in.getLength()];
+		DataDa d = next.apply(in);
+		for( int i=d.getLength()-1; i>=0; --i ) {
+			out[i] = (int)Math.floor(d.v[i]);
 		}
+		return new DataIa(out);
 	}
 }
