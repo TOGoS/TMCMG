@@ -1,12 +1,12 @@
 package togos.noise2.lang;
 
 import junit.framework.TestCase;
-import togos.noise2.function.SmartFunctionDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.NoiseMacros;
 import togos.noise2.rewrite.ConstantFolder;
 
-public class SmartFunctionTest extends TestCase
+public class TNLFunctionTest extends TestCase
 {
 	SourceLocation ZSL = new SourceLocation() {
 		public int getSourceLineNumber() {
@@ -30,9 +30,9 @@ public class SmartFunctionTest extends TestCase
 	protected void testCompile( String simplified, String original, boolean simplify ) {
 		try {
 			Object c = compile(original);
-			SmartFunctionDaDaDa_Da fd = (SmartFunctionDaDaDa_Da)FunctionUtil.toDaDaDa_Da(c, ZSL);
-			if( simplify ) fd = (SmartFunctionDaDaDa_Da)ConstantFolder.instance.rewrite(fd);
-			assertEquals( simplified, fd.toString() );
+			TNLFunctionDaDaDa_Da fd = (TNLFunctionDaDaDa_Da)FunctionUtil.toDaDaDa_Da(c, ZSL);
+			if( simplify ) fd = (TNLFunctionDaDaDa_Da)ConstantFolder.instance.rewrite(fd);
+			assertEquals( simplified, fd.toTnl() );
 		} catch( ScriptError e ) {
 			throw new RuntimeException(e);
 		}

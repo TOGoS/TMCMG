@@ -4,11 +4,11 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class TranslateInDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class TranslateInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
 	double dx, dy, dz;
-	SmartFunctionDaDaDa_Da next;
-	public TranslateInDaDaDa_Da( double dx, double dy, double dz, SmartFunctionDaDaDa_Da next ) {
+	TNLFunctionDaDaDa_Da next;
+	public TranslateInDaDaDa_Da( double dx, double dy, double dz, TNLFunctionDaDaDa_Da next ) {
 		this.dx = dx;
 		this.dy = dy;
 		this.dz = dz;
@@ -33,10 +33,10 @@ public class TranslateInDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		return new TranslateInDaDaDa_Da(dx, dy, dz,
-			(SmartFunctionDaDaDa_Da)rw.rewrite(next));
+			(TNLFunctionDaDaDa_Da)rw.rewrite(next));
 	}
 	
-	public String toString() {
-		return "translate-in("+dx+", "+dy+", "+dz+", "+next+")";
+	public String toTnl() {
+		return "translate-in("+dx+", "+dy+", "+dz+", "+next.toTnl()+")";
 	}
 }

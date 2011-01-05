@@ -5,7 +5,7 @@ import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
-import togos.noise2.function.SmartFunctionDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
@@ -21,14 +21,14 @@ public class SimpleWorldGenerator implements WorldGenerator
 	public static SimpleWorldGenerator DEFAULT;
 	static {
 		PerlinDaDaDa_Da perlin = new PerlinDaDaDa_Da();
-		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+		AddOutDaDaDa_Da sandLevel = new AddOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 			new Constant_Da(56),
 			new TerrainScaleDaDaDa_Da( 16384, 16, perlin ),
 			new TerrainScaleDaDaDa_Da(  8192, 16, perlin ),
 			new TerrainScaleDaDaDa_Da(  4096, 16, perlin ),
 			new TerrainScaleDaDaDa_Da(   512, 12, perlin ),
 		});
-		AddOutDaDaDa_Da dirtLevel = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+		AddOutDaDaDa_Da dirtLevel = new AddOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 			sandLevel,
 			new TerrainScaleDaDaDa_Da(  2048, 32, perlin  ),
 			new TerrainScaleDaDaDa_Da(  1024, 12, perlin ),
@@ -38,11 +38,11 @@ public class SimpleWorldGenerator implements WorldGenerator
 			new TerrainScaleDaDaDa_Da(    16,  8, perlin ),
 			new TerrainScaleDaDaDa_Da(     4,  2, perlin ),
 		});
-		AddOutDaDaDa_Da stoneLevel = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+		AddOutDaDaDa_Da stoneLevel = new AddOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 			dirtLevel,
 			new Constant_Da(-4),
 			new TerrainScaleDaDaDa_Da(  128,  8, perlin ),
-			new MultiplyOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+			new MultiplyOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 				new TerrainScaleDaDaDa_Da( 1024,  2, perlin ),
 				new TerrainScaleDaDaDa_Da(    8,  8, perlin ),
 			}),

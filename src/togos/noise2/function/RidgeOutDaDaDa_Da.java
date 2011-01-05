@@ -4,13 +4,13 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class RidgeOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	SmartFunctionDaDaDa_Da lower;
-	SmartFunctionDaDaDa_Da upper;
-	SmartFunctionDaDaDa_Da ridged;
+	TNLFunctionDaDaDa_Da lower;
+	TNLFunctionDaDaDa_Da upper;
+	TNLFunctionDaDaDa_Da ridged;
 	
-	public RidgeOutDaDaDa_Da( SmartFunctionDaDaDa_Da lower, SmartFunctionDaDaDa_Da upper, SmartFunctionDaDaDa_Da ridged ) {
+	public RidgeOutDaDaDa_Da( TNLFunctionDaDaDa_Da lower, TNLFunctionDaDaDa_Da upper, TNLFunctionDaDaDa_Da ridged ) {
 		this.lower = lower;
 		this.upper = upper;
 		this.ridged = ridged;
@@ -55,13 +55,13 @@ public class RidgeOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		return new RidgeOutDaDaDa_Da(
-			(SmartFunctionDaDaDa_Da)rw.rewrite(lower),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(upper),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(ridged)
+			(TNLFunctionDaDaDa_Da)rw.rewrite(lower),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(upper),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(ridged)
 		);
 	}
 	
-	public String toString() {
-		return "ridge("+lower+", "+upper+", "+ridged+")";
+	public String toTnl() {
+		return "ridge("+lower.toTnl()+", "+upper.toTnl()+", "+ridged.toTnl()+")";
 	}
 }

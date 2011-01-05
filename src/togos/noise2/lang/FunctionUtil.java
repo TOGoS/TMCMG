@@ -8,15 +8,15 @@ import togos.noise2.function.AdaptOutDaDa_Da_Ia;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
 import togos.noise2.function.FunctionDaDaDa_Da;
-import togos.noise2.function.SmartFunctionDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
 
 public class FunctionUtil
 {
-	public static SmartFunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
-		if( r instanceof SmartFunctionDaDaDa_Da ) {
-			return (SmartFunctionDaDaDa_Da)r;
+	public static TNLFunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
+		if( r instanceof TNLFunctionDaDaDa_Da ) {
+			return (TNLFunctionDaDaDa_Da)r;
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
@@ -27,8 +27,8 @@ public class FunctionUtil
 	public static FunctionDaDa_Da toDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDa_Da ) {
 			return (FunctionDaDa_Da)r;
-		} else if( r instanceof SmartFunctionDaDaDa_Da ) {
-			return new AdaptInDaDa_DaDaDa_Da( (SmartFunctionDaDaDa_Da)r );
+		} else if( r instanceof TNLFunctionDaDaDa_Da ) {
+			return new AdaptInDaDa_DaDaDa_Da( (TNLFunctionDaDaDa_Da)r );
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
@@ -37,8 +37,8 @@ public class FunctionUtil
 	}
 
 	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {
-		if( r instanceof SmartFunctionDaDaDa_Da ) {
-			r = new AdaptInDaDa_DaDaDa_Da( (SmartFunctionDaDaDa_Da)r );
+		if( r instanceof TNLFunctionDaDaDa_Da ) {
+			r = new AdaptInDaDa_DaDaDa_Da( (TNLFunctionDaDaDa_Da)r );
 		}
 		
 		if( r instanceof FunctionDaDa_Ia ) {
@@ -83,15 +83,15 @@ public class FunctionUtil
 		return out.v[0];
 	}
 
-	public static double getConstantValue( SmartFunctionDaDaDa_Da da ) {
+	public static double getConstantValue( TNLFunctionDaDaDa_Da da ) {
 		return getValue( da, 0, 0, 0 );
 	}
 	
-	public static Constant_Da getConstantFunction( SmartFunctionDaDaDa_Da f ) {
+	public static Constant_Da getConstantFunction( TNLFunctionDaDaDa_Da f ) {
 		return new Constant_Da( getConstantValue(f) );
 	}
 	
-	public static SmartFunctionDaDaDa_Da collapseIfConstant( SmartFunctionDaDaDa_Da f ) {
+	public static TNLFunctionDaDaDa_Da collapseIfConstant( TNLFunctionDaDaDa_Da f ) {
 		if( f.isConstant() ) return getConstantFunction(f);
 		return f;
 	}

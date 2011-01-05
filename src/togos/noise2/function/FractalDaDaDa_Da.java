@@ -4,15 +4,15 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class FractalDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
 	int iterations;
 	double inithscale, hscale;
 	double initvscale, vscale;
 	double ztrans;
-	SmartFunctionDaDaDa_Da next;
+	TNLFunctionDaDaDa_Da next;
 	
-	public FractalDaDaDa_Da( int iterations, double inithscale, double initvscale, double hscale, double vscale, double ztrans, SmartFunctionDaDaDa_Da next ) {
+	public FractalDaDaDa_Da( int iterations, double inithscale, double initvscale, double hscale, double vscale, double ztrans, TNLFunctionDaDaDa_Da next ) {
 		this.iterations = iterations;
 		this.inithscale = inithscale;
 		this.initvscale = initvscale;
@@ -56,7 +56,7 @@ public class FractalDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		return this;
 	}
 	
-	public String toString() {
-		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+next+")";
+	public String toTnl() {
+		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+next.toTnl()+")";
 	}
 }

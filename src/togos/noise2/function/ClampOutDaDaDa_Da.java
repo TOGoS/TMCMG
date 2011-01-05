@@ -4,13 +4,13 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class ClampOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	SmartFunctionDaDaDa_Da lower;
-	SmartFunctionDaDaDa_Da upper;
-	SmartFunctionDaDaDa_Da clamped;
+	TNLFunctionDaDaDa_Da lower;
+	TNLFunctionDaDaDa_Da upper;
+	TNLFunctionDaDaDa_Da clamped;
 	
-	public ClampOutDaDaDa_Da( SmartFunctionDaDaDa_Da lower, SmartFunctionDaDaDa_Da upper, SmartFunctionDaDaDa_Da clamped ) {
+	public ClampOutDaDaDa_Da( TNLFunctionDaDaDa_Da lower, TNLFunctionDaDaDa_Da upper, TNLFunctionDaDaDa_Da clamped ) {
 		this.lower = lower;
 		this.upper = upper;
 		this.clamped = clamped;
@@ -35,13 +35,13 @@ public class ClampOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		return new ClampOutDaDaDa_Da(
-			(SmartFunctionDaDaDa_Da)rw.rewrite(lower),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(upper),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(clamped)
+			(TNLFunctionDaDaDa_Da)rw.rewrite(lower),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(upper),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(clamped)
 		);
 	}
 	
-	public String toString() {
+	public String toTnl() {
 		return "clamp("+lower+", "+upper+", "+clamped+")";
 	}
 }

@@ -6,7 +6,7 @@ import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public class Constant_Da extends SmartFunctionDaDaDa_Da implements FunctionDaDa_Da
+public class Constant_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDa_Da
 {
 	public static final Constant_Da ZERO = new Constant_Da(0);
 	
@@ -46,6 +46,10 @@ public class Constant_Da extends SmartFunctionDaDaDa_Da implements FunctionDaDa_
 	}
 	
 	public String toString() {
+		return "constant-double("+value+")";
+	}
+	
+	public String toTnl() {
 		return Double.toString(value);
 	}
 	

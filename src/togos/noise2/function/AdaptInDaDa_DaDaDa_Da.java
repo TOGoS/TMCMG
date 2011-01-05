@@ -12,7 +12,7 @@ public class AdaptInDaDa_DaDaDa_Da implements FunctionDaDa_Da
 		this.z = z;
 		this.next = next;
 	}
-	public AdaptInDaDa_DaDaDa_Da( SmartFunctionDaDaDa_Da next ) {
+	public AdaptInDaDa_DaDaDa_Da( TNLFunctionDaDaDa_Da next ) {
 		this( Constant_Da.ZERO, next );
 	}
 	

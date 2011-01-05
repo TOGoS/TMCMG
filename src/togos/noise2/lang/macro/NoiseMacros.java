@@ -7,7 +7,7 @@ import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
 import togos.noise2.function.SimplexDaDaDa_Da;
-import togos.noise2.function.SmartFunctionDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MinOutDaDaDa_Da;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
@@ -27,7 +27,7 @@ import togos.noise2.lang.FunctionUtil;
 public class NoiseMacros
 {
 	static abstract class DcDcDcDfMacroType extends BaseMacroType {
-		protected abstract Object instantiate( double x, double y, double z, SmartFunctionDaDaDa_Da next );
+		protected abstract Object instantiate( double x, double y, double z, TNLFunctionDaDaDa_Da next );
 		
 		protected int getRequiredArgCount() { return 4; } 
 		
@@ -93,12 +93,12 @@ public class NoiseMacros
 			}
 		});
 		add("scale-in", new DcDcDcDfMacroType() {
-			public Object instantiate( double x, double y, double z, SmartFunctionDaDaDa_Da next ) {
+			public Object instantiate( double x, double y, double z, TNLFunctionDaDaDa_Da next ) {
 				return new ScaleInDaDaDa_Da(x,y,z,next);
 			}
 		});
 		add("translate-in", new DcDcDcDfMacroType() {
-			public Object instantiate( double x, double y, double z, SmartFunctionDaDaDa_Da next ) {
+			public Object instantiate( double x, double y, double z, TNLFunctionDaDaDa_Da next ) {
 				return new TranslateInDaDaDa_Da(x,y,z,next);
 			}
 		});

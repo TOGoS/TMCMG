@@ -4,11 +4,11 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class ScaleOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class ScaleOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	SmartFunctionDaDaDa_Da next;
+	TNLFunctionDaDaDa_Da next;
 	double scale;
-	public ScaleOutDaDaDa_Da( double scale, SmartFunctionDaDaDa_Da next ) {
+	public ScaleOutDaDaDa_Da( double scale, TNLFunctionDaDaDa_Da next ) {
 		this.next = next;
 		this.scale = scale;
 	}
@@ -28,11 +28,11 @@ public class ScaleOutDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		return new ScaleOutDaDaDa_Da(scale,
-			(SmartFunctionDaDaDa_Da)rw.rewrite(next));
+			(TNLFunctionDaDaDa_Da)rw.rewrite(next));
 	}
 
 	
-	public String toString() {
-		return "scale-out("+scale+", "+next+")";
+	public String toTnl() {
+		return "scale-out("+scale+", "+next.toTnl()+")";
 	}
 }

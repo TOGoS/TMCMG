@@ -7,7 +7,7 @@ import togos.minecraft.mapgen.world.structure.Stamp;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.DistanceDaDaDa_Da;
-import togos.noise2.function.SmartFunctionDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.ScaleOutDaDaDa_Da;
@@ -29,7 +29,7 @@ public class RoundTreeGenerator implements StampGenerator
 		int h = trunkHeight*2;
 		int d = girth*2+3;
 		
-		SmartFunctionDaDaDa_Da leafDensityFunction = new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[]{
+		TNLFunctionDaDaDa_Da leafDensityFunction = new AddOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[]{
 			new ScaleOutDaDaDa_Da( 0.5,
 				new TranslateInDaDaDa_Da(r.nextDouble()*10, r.nextDouble()*10, r.nextDouble()*10,
 					new ScaleInDaDaDa_Da(0.2, 0.2, 0.2, new PerlinDaDaDa_Da()))),

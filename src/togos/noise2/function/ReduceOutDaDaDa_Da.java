@@ -7,11 +7,11 @@ import togos.noise2.rewrite.ExpressionRewriter;
 
 
 public abstract class ReduceOutDaDaDa_Da
-	extends SmartFunctionDaDaDa_Da
+	extends TNLFunctionDaDaDa_Da
 	implements Cloneable
 {
-	SmartFunctionDaDaDa_Da[] components;
-	public ReduceOutDaDaDa_Da( SmartFunctionDaDaDa_Da[] components ) {
+	TNLFunctionDaDaDa_Da[] components;
+	public ReduceOutDaDaDa_Da( TNLFunctionDaDaDa_Da[] components ) {
 		this.components = components;
 	}
 	
@@ -43,7 +43,7 @@ public abstract class ReduceOutDaDaDa_Da
 	protected String getOperatorSymbol() { return null; }
 	protected String getMacroName() { return null; }
 	
-	public String toString() {
+	public String toTnl() {
 		String macroName = getMacroName();
 		String opSymbol = getOperatorSymbol();
 		String separator;
@@ -55,12 +55,12 @@ public abstract class ReduceOutDaDaDa_Da
 			s = "(";
 			separator = " "+opSymbol+" ";
 		} else {
-			return super.toString();
+			throw new RuntimeException("No opSymbol or macroName; can't toTnl "+getClass());
 		}
 		boolean first = true;
 		for( int i=0; i<components.length; ++i ) {
 			if( !first ) s += separator;
-			s += components[i].toString();
+			s += components[i].toTnl();
 			first = false;
 		}
 		s += ")";
@@ -75,9 +75,9 @@ public abstract class ReduceOutDaDaDa_Da
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
-		SmartFunctionDaDaDa_Da[] simplifiedComponents = new SmartFunctionDaDaDa_Da[components.length];
+		TNLFunctionDaDaDa_Da[] simplifiedComponents = new TNLFunctionDaDaDa_Da[components.length];
 		for( int i=0; i<components.length; ++i ) {
-			simplifiedComponents[i] = (SmartFunctionDaDaDa_Da)rw.rewrite(components[i]);
+			simplifiedComponents[i] = (TNLFunctionDaDaDa_Da)rw.rewrite(components[i]);
 		}
 		ReduceOutDaDaDa_Da simplified;
         try {

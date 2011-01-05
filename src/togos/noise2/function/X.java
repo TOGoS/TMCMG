@@ -4,7 +4,7 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class X extends SmartFunctionDaDaDa_Da
+public class X extends TNLFunctionDaDaDa_Da
 {
 	public static final X instance = new X();
 	
@@ -18,5 +18,5 @@ public class X extends SmartFunctionDaDaDa_Da
 		return this;
 	}
 	
-	public String toString() { return "x"; }
+	public String toTnl() { return "x"; }
 }

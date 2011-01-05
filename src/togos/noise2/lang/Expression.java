@@ -7,5 +7,7 @@ public interface Expression
 	/**
 	 * Should call v.rewrite() on all sub-expressions
 	 */
-	public Object rewriteSubExpressions(ExpressionRewriter v); 
+	public Object rewriteSubExpressions(ExpressionRewriter v);
+	
+	public String toTnl();
 }

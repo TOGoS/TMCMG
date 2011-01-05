@@ -15,7 +15,7 @@ public class Constant_Ia implements FunctionDaDa_Ia
 		}
 	}
 	
-	int value; // this sale is for a limited time only!
+	int value;
 	
 	public Constant_Ia( int value ) {
 		this.value = value;
@@ -36,5 +36,13 @@ public class Constant_Ia implements FunctionDaDa_Ia
 	public boolean equals( Object oth ) {
 		if( !(oth instanceof Constant_Ia) ) return false;
 		return value == ((Constant_Ia)oth).value;
+	}
+	
+	public String toString() {
+		return "constant-int("+value+")";
+	}
+	
+	public String toTnl() {
+		return Integer.toString(value);
 	}
 }

@@ -4,7 +4,7 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class PerlinDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class PerlinDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
 	public static PerlinDaDaDa_Da instance = new PerlinDaDaDa_Da();
 	
@@ -24,7 +24,7 @@ public class PerlinDaDaDa_Da extends SmartFunctionDaDaDa_Da
 		return this;
 	}
 	
-	public String toString() {
+	public String toTnl() {
 		return "perlin";
 	}
 }

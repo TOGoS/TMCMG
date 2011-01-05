@@ -3,7 +3,7 @@ package togos.noise2.function;
 
 public class SubtractOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 {
-	public SubtractOutDaDaDa_Da( SmartFunctionDaDaDa_Da[] components ) {
+	public SubtractOutDaDaDa_Da( TNLFunctionDaDaDa_Da[] components ) {
 		super(components);
 	}
 	

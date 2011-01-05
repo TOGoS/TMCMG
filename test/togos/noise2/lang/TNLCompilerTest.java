@@ -3,7 +3,7 @@ package togos.noise2.lang;
 import junit.framework.TestCase;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.Constant_Da;
-import togos.noise2.function.SmartFunctionDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
@@ -31,7 +31,7 @@ public class TNLCompilerTest extends TestCase
 	public void testCompileFunction() throws ScriptError {
 		TNLCompiler comp = new TNLCompiler();
 		comp.macroTypes.put("*", new DaDaDa_DaArrayArgMacroType(MultiplyOutDaDaDa_Da.class));
-		assertEquals( new MultiplyOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+		assertEquals( new MultiplyOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 			new Constant_Da(2), new Constant_Da(3)
 		}), comp.compile("2 * 3") );
 	}
@@ -44,12 +44,12 @@ public class TNLCompilerTest extends TestCase
 		comp.macroTypes.put("max", new DaDaDa_DaArrayArgMacroType(MaxOutDaDaDa_Da.class));
 		comp.macroTypes.put("perlin", new ConstantMacroType(perlin));
 		assertEquals(
-			new AddOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
-				new MaxOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+			new AddOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
+				new MaxOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 					perlin,
 					new Constant_Da(0)
 				}),
-				new MultiplyOutDaDaDa_Da(new SmartFunctionDaDaDa_Da[] {
+				new MultiplyOutDaDaDa_Da(new TNLFunctionDaDaDa_Da[] {
 					new Constant_Da(2),
 					perlin
 				})

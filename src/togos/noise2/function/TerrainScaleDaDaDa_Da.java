@@ -5,11 +5,11 @@ import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public class TerrainScaleDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class TerrainScaleDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	SmartFunctionDaDaDa_Da next;
+	TNLFunctionDaDaDa_Da next;
 	double hScale, vScale;
-	public TerrainScaleDaDaDa_Da( double hScale, double vScale, SmartFunctionDaDaDa_Da next ) {
+	public TerrainScaleDaDaDa_Da( double hScale, double vScale, TNLFunctionDaDaDa_Da next ) {
 		this.hScale = hScale;
 		this.vScale = vScale;
 		this.next = next;
@@ -35,10 +35,10 @@ public class TerrainScaleDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
-		return new TerrainScaleDaDaDa_Da(hScale, vScale, (SmartFunctionDaDaDa_Da)rw.rewrite(next));
+		return new TerrainScaleDaDaDa_Da(hScale, vScale, (TNLFunctionDaDaDa_Da)rw.rewrite(next));
 	}
 	
-	public String toString() {
-		return "terrain-scale("+hScale+", "+vScale+", "+next+")";
+	public String toTnl() {
+		return "terrain-scale("+hScale+", "+vScale+", "+next.toTnl()+")";
 	}
 }

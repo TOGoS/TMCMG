@@ -5,11 +5,11 @@ import togos.noise2.data.DataDaDaDa;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
-public class TransformInDaDaDa_Da extends SmartFunctionDaDaDa_Da
+public class TransformInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	SmartFunctionDaDaDa_Da next;
-	SmartFunctionDaDaDa_Da xfX, xfY, xfZ;
-	public TransformInDaDaDa_Da( SmartFunctionDaDaDa_Da xfX, SmartFunctionDaDaDa_Da xfY, SmartFunctionDaDaDa_Da xfZ, SmartFunctionDaDaDa_Da next ) {
+	TNLFunctionDaDaDa_Da next;
+	TNLFunctionDaDaDa_Da xfX, xfY, xfZ;
+	public TransformInDaDaDa_Da( TNLFunctionDaDaDa_Da xfX, TNLFunctionDaDaDa_Da xfY, TNLFunctionDaDaDa_Da xfZ, TNLFunctionDaDaDa_Da next ) {
 		this.xfX = xfX;
 		this.xfY = xfY;
 		this.xfZ = xfZ;
@@ -30,14 +30,14 @@ public class TransformInDaDaDa_Da extends SmartFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw)  {
 		return new TransformInDaDaDa_Da(
-			(SmartFunctionDaDaDa_Da)rw.rewrite(xfX),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(xfY),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(xfZ),
-			(SmartFunctionDaDaDa_Da)rw.rewrite(next)
+			(TNLFunctionDaDaDa_Da)rw.rewrite(xfX),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(xfY),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(xfZ),
+			(TNLFunctionDaDaDa_Da)rw.rewrite(next)
 		);
 	}
 	
-	public String toString() {
-		return "transform-in("+xfX+", "+xfY+", "+xfZ+", "+next+")";
+	public String toTnl() {
+		return "transform-in("+xfX.toTnl()+", "+xfY.toTnl()+", "+xfZ.toTnl()+", "+next.toTnl()+")";
 	}
 }
