@@ -1,11 +1,24 @@
 package togos.noise2.data;
 
 import java.security.MessageDigest;
+import java.util.Random;
 
 import togos.noise2.DigestUtil;
 
 public abstract class Data
 {
+	static String guidPfx;
+	static {
+		long d = System.currentTimeMillis();
+		Random r = new Random(123123);
+		r.nextLong(); r.nextLong(); r.nextLong();
+		guidPfx = "urn:uuid:" + d + "-" + r.nextLong();
+	}
+	static long guidIncr = 1;
+	protected static synchronized String nextGuid() {
+		return guidPfx + "-" + (guidIncr++);
+	}
+	
 	protected String urn = null;
 	
 	protected void intBytes( long l, byte[] b, int o ) {
@@ -32,11 +45,21 @@ public abstract class Data
 	
 	public abstract void digest( MessageDigest md );
 	
-	public synchronized String getSha1Urn() {
+	protected String getSha1Urn() {
+		MessageDigest sha1 = DigestUtil.createSha1Digestor();
+		digest( sha1 );
+		return DigestUtil.getSha1Urn(sha1);
+	}
+	
+	protected String generateUrn() {
+		return nextGuid();
+		// If hashing wasn't so expensive this would be way better...
+		// return getSha1Urn();
+	}
+	
+	public synchronized String getUrn() {
 		if( urn == null ) {
-			MessageDigest sha1 = DigestUtil.createSha1Digestor();
-			digest( sha1 );
-			urn = DigestUtil.getSha1Urn(sha1);
+			urn = generateUrn();
 		}
 		return urn;
 	}

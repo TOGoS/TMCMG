@@ -2,7 +2,9 @@ package togos.noise2.lang.macro;
 
 import java.util.HashMap;
 
+import togos.noise2.cache.SoftCache;
 import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.CacheDaDaDa_Da;
 import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
@@ -119,5 +121,15 @@ public class NoiseMacros
 		add("z", new ConstantMacroType(Z.instance));
 		add("perlin", new ConstantMacroType(PerlinDaDaDa_Da.instance));
 		add("simplex", new ConstantMacroType(SimplexDaDaDa_Da.instance));
+		
+		add("cache", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 1; }			
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
+				return new CacheDaDaDa_Da(
+					SoftCache.getInstance(),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0])
+				);
+			}
+		});
 	}
 }

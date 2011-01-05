@@ -49,6 +49,7 @@ public class TNLFunctionTest extends TestCase
 	public void testCompile() {
 		testCompile( "1.0", "1.0" );
 		testCompile( "(perlin + (perlin * 2.0))", "perlin + p2" );
+		testCompile( "cache(simplex)", "cache(simplex)" );
 	}
 	
 	public void testSimplify() {
@@ -57,5 +58,6 @@ public class TNLFunctionTest extends TestCase
 		testSimplify( "ridge(0.5, 2.5, perlin)", "ridge(1 / 2, 5 / 2, perlin)" );
 		testSimplify( "1.0", "ridge(1 / 2, 5 / 2, 0.0)" );
 		testSimplify( "0.5", "clamp(1 / 2, 5 / 2, 0.0)" );
+		testSimplify( "0.5", "cache(0.5)" );
 	}
 }
