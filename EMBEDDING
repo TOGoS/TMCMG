@@ -1,0 +1,23 @@
+This documents at a very high level some of the internals of TMCMG.
+
+== Chunks ==
+
+A ChunkData object holds information about a single terrain chunk.
+This includes the chunk's x, y position in the world and an array
+of all blocks and their extended attributes.
+
+ChunkData objects are populated with data by ChunkMungers.
+ChunkMungers usually depend on the chunk's x and y being set
+before they can populate the terrain.
+
+== TNL Functions ==
+
+The TNL compiler can take a script as a string and output a
+compiled object.  What that object is depends on what was
+written in the script.  e.g. layered-terrain(...) compiles to a
+WorldGenerator object, but simplex() compiles to a TNLFunctionDaDaDa_Da
+(the interface for vector functions that take 3 doubles as inputs
+and return one as output).  To make use of the result of compiling
+a script your program must know how to handle the different types
+of things that may be returned (which may include throwing an
+exception if you can't do anything useful with it).
