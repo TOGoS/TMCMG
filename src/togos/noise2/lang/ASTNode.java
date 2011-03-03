@@ -3,6 +3,20 @@ package togos.noise2.lang;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Holds information about a node in a TNL program.
+ * For example...
+ * 
+ *   foo( bar(baz), quux )
+ *   
+ * would be compiled to an ASTNode with macroName="foo",
+ *   arguments = [
+ *     ASTNode( macroName="bar", arguments=[
+ *       ASTNode( macroName="baz", arguments=[] ),
+ *     ],
+ *     ASTNode( macroName="quux", arguments=[] )
+ *   ] 
+ */
 public class ASTNode implements SourceLocation
 {
 	public String sourceFilename = "(unknown)";

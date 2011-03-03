@@ -1,5 +1,9 @@
 package togos.noise2.lang;
 
+/**
+ * A single 'word' in a TNL program.
+ * '+', 'simplex', '(', ';', ',' each get a token.
+ */
 public class Token implements SourceLocation
 {
 	public String value;

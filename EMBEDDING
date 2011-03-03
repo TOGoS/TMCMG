@@ -10,6 +10,18 @@ ChunkData objects are populated with data by ChunkMungers.
 ChunkMungers usually depend on the chunk's x and y being set
 before they can populate the terrain.
 
+== Compiling a TNL Expression ==
+
+Use TNLWorldGeneratorCompiler (a subclass of TNLCompiler whose instances
+are pre-loaded with all world generator-related functions) to compile
+an expression.  The simplest way is to call
+
+  #compile( <expression source>, <name of source> )
+  
+where <name of source> is e.g. the filename or URL that the source was
+loaded from or the name of a text area on a form that the user typed it
+into.
+
 == TNL Functions ==
 
 The TNL compiler can take a script as a string and output a
@@ -21,3 +33,8 @@ and return one as output).  To make use of the result of compiling
 a script your program must know how to handle the different types
 of things that may be returned (which may include throwing an
 exception if you can't do anything useful with it).
+
+You can add new functions/macro types by implementing MacroType
+(you may want to extend BaseMacroType to save yourself some work) and
+register it with the compiler (e.g. in the compiler's constructor
+or by adding it to a collection like WorldGeneratorMacros). 
