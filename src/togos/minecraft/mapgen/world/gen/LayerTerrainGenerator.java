@@ -1,8 +1,10 @@
 package togos.minecraft.mapgen.world.gen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
@@ -31,6 +33,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 		}
 	}
 	
+	public Map components = new HashMap();
 	public List layers = new ArrayList();
 	protected Layer[] layerArray( List layers ) {
 		Layer[] larr = new Layer[layers.size()];
@@ -136,5 +139,9 @@ public class LayerTerrainGenerator implements WorldGenerator
 	
 	public FunctionDaDa_DaIa getGroundFunction() {
 		return new LayerGroundFunction(layers, LayerGroundFunction.AIR_SUBTRACT);
+	}
+	
+	public Map getComponents() {
+		return components;
 	}
 }

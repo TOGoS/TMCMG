@@ -1,5 +1,8 @@
 package togos.minecraft.mapgen.world.gen;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import togos.minecraft.mapgen.world.Blocks;
 import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
 import togos.noise2.function.AddOutDaDaDa_Da;
@@ -17,6 +20,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 {
 	public FunctionDaDa_DaIa groundFunction;
 	public ChunkMunger chunkMunger;
+	public Map components;
 	
 	public static SimpleWorldGenerator DEFAULT;
 	static {
@@ -88,9 +92,14 @@ public class SimpleWorldGenerator implements WorldGenerator
 		DEFAULT = new SimpleWorldGenerator(cmList, lm.getGroundFunction());
 	}
 	
-	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction ) {
+	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction, Map components ) {
 		this.chunkMunger = chunkMunger;
 		this.groundFunction = groundFunction;
+		this.components = components;
+	}
+	
+	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction ) {
+		this( chunkMunger, groundFunction, new HashMap() );
 	}
 	
 	public FunctionDaDa_DaIa getGroundFunction() {
@@ -99,5 +108,9 @@ public class SimpleWorldGenerator implements WorldGenerator
 	
 	public ChunkMunger getChunkMunger() {
 		return chunkMunger;
+	}
+	
+	public Map getComponents() {
+		return components;
 	}
 }

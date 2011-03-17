@@ -27,7 +27,8 @@ public class Token implements SourceLocation
 	}
 	
 	public String toString() {
-		return value;
+		return "("+lineNumber+","+columnNumber+") " + value;
+		//return value;
 	}
 	
 	public boolean equals( Object oth ) {

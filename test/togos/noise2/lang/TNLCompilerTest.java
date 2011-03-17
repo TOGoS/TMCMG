@@ -27,6 +27,11 @@ public class TNLCompilerTest extends TestCase
 		assertEquals( new Double(-100.25), comp.compile("-100.25") );
 		assertEquals( new Double(1.5e-5), comp.compile("+1.5e-5") );
 	}
+	
+	public void testCompileString() throws ScriptError {
+		TNLCompiler comp = new TNLCompiler();
+		assertEquals( "Hello, world!\n", comp.compile("\"Hello, world!\\n\""));
+	}
 
 	public void testCompileFunction() throws ScriptError {
 		TNLCompiler comp = new TNLCompiler();

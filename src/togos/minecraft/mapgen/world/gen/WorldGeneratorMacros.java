@@ -16,6 +16,15 @@ import togos.noise2.lang.macro.MacroType;
 
 public class WorldGeneratorMacros
 {
+	public static class ComponentDef {
+		public String name;
+		public Object value;
+		
+		public ComponentDef( String name, Object value ) {
+			this.name = name; this.value = value;
+		}
+	}
+	
 	static HashMap wgMacros = new HashMap();
 	static {
 		wgMacros.put("layer", new MacroType() {
@@ -30,7 +39,14 @@ public class WorldGeneratorMacros
 				);
 			}
 		});
-		
+		wgMacros.put("component", new BaseMacroType() {
+			protected int getRequiredArgCount() {  return 2;  }
+			
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes,
+			        Object[] compiledArgs ) {
+				return new ComponentDef( compiledArgs[0].toString(), compiledArgs[1] );
+			}
+		});
 		wgMacros.put("grassifier", new ConstantMacroType(new Grassifier()));
 		wgMacros.put("winterizer", new BaseMacroType() {
 			protected int getRequiredArgCount() {  return 1;  }
@@ -73,11 +89,16 @@ public class WorldGeneratorMacros
 			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				ArrayList chunkMungers = new ArrayList();
 				LayerTerrainGenerator lm = new LayerTerrainGenerator();
+				HashMap components = new HashMap();
 				for( Iterator i=sn.arguments.iterator(); i.hasNext(); ) {
 					ASTNode argNode = (ASTNode)i.next();
 					Object node = c.compile(argNode);
 					if( node instanceof LayerTerrainGenerator.Layer ) {
 						lm.layers.add( node );
+						continue;
+					}
+					if( node instanceof ComponentDef ) {
+						components.put(((ComponentDef)node).name, ((ComponentDef)node).value);
 						continue;
 					}
 					if( node instanceof StampPopulator ) {
@@ -96,7 +117,7 @@ public class WorldGeneratorMacros
 				}
 				
 				chunkMungers.add(0,lm.getChunkMunger());
-				return new SimpleWorldGenerator( new ChunkMungeList(chunkMungers), lm.getGroundFunction() );
+				return new SimpleWorldGenerator( new ChunkMungeList(chunkMungers), lm.getGroundFunction(), components );
 			}
 		});
 	}

@@ -69,6 +69,9 @@ public class TNLCompiler
 			return Integer.valueOf(sanitizeNumberString(node.macroName));
 		} else if( (m = floatPat.matcher(node.macroName)).matches() ) {
 			return Double.valueOf(sanitizeNumberString(node.macroName));
+		} else if( node.macroName.startsWith("\"") ) {
+			// Tokenizer's already unescaped things...
+			return node.macroName.substring(1);
 		} else {
 			MacroType mt = getMacroType(node.macroName, node);
 			return mt.instantiate(this, node);

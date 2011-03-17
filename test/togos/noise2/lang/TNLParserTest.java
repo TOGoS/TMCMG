@@ -27,6 +27,13 @@ public class TNLParserTest extends TestCase
 		ASTNode expected = new ASTNode("foo", Collections.EMPTY_LIST, NSL);
 		assertEquals( expected, parse("foo") );
 	}
+
+	public void testParseQuotedString() throws ParseError {
+		ASTNode expected = new ASTNode("\"foo", Collections.EMPTY_LIST, NSL);
+		assertEquals( expected, parse("\"foo\"") );
+		expected = new ASTNode("\"foo bar\n\\", Collections.EMPTY_LIST, NSL);
+		assertEquals( expected, parse("\"foo bar\\\n\\\\\"") );
+	}
 	
 	public void testParseSingleArgument() throws ParseError {
 		ArrayList expectedArguments = new ArrayList();
