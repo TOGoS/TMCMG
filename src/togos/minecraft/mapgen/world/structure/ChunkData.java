@@ -17,15 +17,8 @@ import togos.minecraft.mapgen.TagMap;
 
 public class ChunkData extends MiniChunkData
 {
-	public static int CHUNK_WIDTH  = 16;
-	public static int CHUNK_HEIGHT = 128;
-	public static int CHUNK_DEPTH  = 16;
-	public static int HEIGHT_MASK  = 0x7F;
-	
-	public ChunkData( int x, int z ) {
-		super(CHUNK_WIDTH,CHUNK_HEIGHT,CHUNK_DEPTH);
-		this.x = x;
-		this.z = z;
+	public ChunkData( long px, long py, long pz, int w, int h, int d ) {
+		super(px,py,pz,w,h,d);
 	}
 	
 	/*
@@ -49,11 +42,7 @@ public class ChunkData extends MiniChunkData
 	public byte[] skyLightData   = new byte[(height*depth*width+1)/2];
 	public byte[] blockLightData = new byte[(height*depth*width+1)/2];
 	public byte[] lightHeightData = new byte[depth*width];
-	public final int x,z;
 	public boolean terrainPopulated = false;
-	
-	public int getChunkX() { return x; }
-	public int getChunkZ() { return z; }
 	
 	//// Sky light ////
 	
@@ -64,7 +53,7 @@ public class ChunkData extends MiniChunkData
 	//// Light height ////
 	
 	public void setLightHeight( int x, int z, int height ) {
-		lightHeightData[z*width+x] = (byte)(height&HEIGHT_MASK);
+		lightHeightData[z*width+x] = (byte)(height);
 	}
 	
 	public Tag toTag() {
@@ -83,8 +72,8 @@ public class ChunkData extends MiniChunkData
 		levelTags.add(new ListTag("TileEntities", CompoundTag.class, tileEntityTags));
 		
 		levelTags.add(new LongTag("LastUpdate", 23392));//System.currentTimeMillis()));
-		levelTags.add(new IntTag("xPos", getChunkX()));
-		levelTags.add(new IntTag("zPos", getChunkZ()));
+		levelTags.add(new IntTag("xPos", (int)(getChunkPositionX()/getChunkWidth())));
+		levelTags.add(new IntTag("zPos", (int)(getChunkPositionZ()/getChunkDepth())));
 		levelTags.add(new ByteTag("TerrainPopulated", (byte)(terrainPopulated ? 1 : 0)));
 		return new CompoundTag("Level", levelTags);
 	}

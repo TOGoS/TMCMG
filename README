@@ -134,6 +134,16 @@ fractal( <iter>, <hscale>, <vscale>, <ihscale>, <ivscale>,
   - ivscale = how much to multiply vscale between iterations
   - ztrans = how much to translate z for each iteration
 
+cache( <expression> )[x,y,z] -> value
+  - Caches the result of the wrapped expression to speed up processing
+    when that expression is evaluated multiple times for the exact
+    same input.
+  - Should not alter the output at all, but will improve performance
+    in some cases.
+  - Ideally the compiler would be able to figure out what expressions
+    are used multiple times for the same inputs and automaticall insert
+    these, but that hasn't been implemented, yet.
+
 === Other Functions ===
 
 To define a world in Minecraft, you need more than a simple

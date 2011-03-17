@@ -3,26 +3,28 @@
 
 basis = perlin;
 
-upper-base = 110 + fractal(7,0.4,1,2,-2,0,basis);
-upper-top  = 100 + fractal(5,5  ,1,2,-2,0,basis);
+upper-base = cache(110 + fractal(7,0.4,1,2,-2,0,basis));
+upper-top  = cache(100 + fractal(5,5  ,1,2,-2,0,basis));
 
-lower-base = 40 + fractal(7,2,1,2,-2,0,basis);
-lower-top  = 30 + fractal(5,6,1,2,-2,0,basis);
+lower-base = cache(94 + fractal(7,2,1,2,-2,0,basis));
+lower-top  = cache(74 + fractal(5,6,1,2,-2,0,basis));
 
 layered-terrain(
 	# Ocean, in case you're into that kind of thing
-	layer( materials.water, 0, 16 ),
-	layer( materials.sand,  0, 8 + fractal(3,8,4,4,2,5,basis) ),
+	layer( materials.water, 0, 56 ),
+	layer( materials.sand,  0, 48 + fractal(3,8,4,4,2,5,basis) ),
+	layer( materials.dirt,  0, 40 + fractal(3,8,4,4,2,4,basis) ),
+	layer( materials.stone, 0, 32 + fractal(3,8,4,4,2,3,basis) ),
 
-	# Upper islands
-	layer( materials.grass, upper-base, upper-top),
-	layer( materials.dirt,  upper-base, upper-top - 1),
-	layer( materials.stone, upper-base, upper-top - 5),
-	
 	# Lower islands
 	layer( materials.grass, lower-base, lower-top),
 	layer( materials.dirt,  lower-base, lower-top - 1),
 	layer( materials.stone, lower-base, lower-top - 5),
+	
+	# Upper islands
+	layer( materials.grass, upper-base, upper-top),
+	layer( materials.dirt,  upper-base, upper-top - 1),
+	layer( materials.stone, upper-base, upper-top - 5),
 	
 	# Bedrock (ICYITKOT)
 	layer( materials.bedrock, 0, 1 ),

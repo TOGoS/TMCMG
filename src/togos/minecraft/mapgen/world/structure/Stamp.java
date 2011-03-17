@@ -10,7 +10,7 @@ public class Stamp extends MiniChunkData
 	public int originX, originY, originZ;
 	
 	public Stamp( int width, int height, int depth, int originX, int originY, int originZ ) {
-		super(width,height,depth);
+		super(0,0,0,width,height,depth);
 		mask = new boolean[width*height*depth];
 		this.originX = originX;
 		this.originY = originY;

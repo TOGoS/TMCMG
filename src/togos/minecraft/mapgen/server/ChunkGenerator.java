@@ -22,9 +22,13 @@ public class ChunkGenerator
 	long lastCompiled = -1;
 	TNLCompiler compiler;
 	Object compiled;
-	public ChunkGenerator( TNLCompiler c, String scriptFile ) {
+	int chunkWidth, chunkHeight, chunkDepth;
+	public ChunkGenerator( TNLCompiler c, String scriptFile, int chunkWidth, int chunkHeight, int chunkDepth ) {
 		this.scriptFile = new File(scriptFile);
 		this.compiler = c;
+		this.chunkWidth  = chunkWidth;
+		this.chunkHeight = chunkHeight;
+		this.chunkDepth  = chunkDepth;
 	}
 	
 	protected boolean shouldRecompile() {
@@ -52,7 +56,7 @@ public class ChunkGenerator
 	
 	public ChunkData getChunkData( int x, int y ) {
 		WorldGenerator worldGenerator = (WorldGenerator)getCompiledScript();
-		ChunkData cd = new ChunkData(x,y);
+		ChunkData cd = new ChunkData(x*chunkWidth,0,y*chunkDepth,chunkWidth,chunkHeight,chunkDepth);
 		worldGenerator.getChunkMunger().mungeChunk(cd);
 		return cd;
 	}

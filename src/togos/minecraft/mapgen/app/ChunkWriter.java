@@ -23,6 +23,8 @@ public class ChunkWriter
 {
 	public static ChunkWriter instance = new ChunkWriter();
 	
+	public int chunkWidth = 16, chunkHeight = 128, chunkDepth = 16;
+	
 	public String chunkPath( int x, int z ) {
 		return PathUtil.mcChunkDir(x,z) + "/" + PathUtil.chunkBaseName(x,z);
 	}
@@ -39,7 +41,10 @@ public class ChunkWriter
 	}
 	
 	public void writeChunkToFile( ChunkData cd, String baseDir ) throws IOException {
-		String fullPath = baseDir + "/" + chunkPath( cd.getChunkX(), cd.getChunkZ() );
+		String fullPath = baseDir + "/" + chunkPath(
+			(int)(cd.getChunkPositionX()/cd.getChunkWidth()),
+			(int)(cd.getChunkPositionZ()/cd.getChunkDepth())
+		);
 		File f = new File(fullPath);
 		File dir = f.getParentFile();
 		if( dir != null && !dir.exists() ) dir.mkdirs();
@@ -60,10 +65,31 @@ public class ChunkWriter
 		this( null );
 	}
 	
-	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
-		ChunkData cd = new ChunkData(cx,cz);
+	/**
+	 * @param cx number of chunks south of origin
+	 * @param cz number of chunks west of origin
+	 * @return new chunkdata object with coordinate stuff filled out
+	 */
+	public ChunkData createChunk( int cx, int cz ) {
+		return new ChunkData(
+			cx*chunkWidth, 0, cz*chunkDepth,
+			chunkWidth, chunkHeight, chunkDepth
+		);
+	}
+	
+	/**
+	 * @param cx number of chunks south of origin
+	 * @param cz number of chunks west of origin
+	 * @return new chunkdata object munged by cm
+	 */
+	public ChunkData getChunk( int cx, int cz, ChunkMunger cm ) {
+		ChunkData cd = createChunk( cx, cz );
 		cm.mungeChunk(cd);
-		writeChunkToFile(cd, chunkBaseDir);
+		return cd;
+	}
+	
+	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
+		writeChunkToFile(getChunk(cx,cz,cm), chunkBaseDir);
 	}
 	
 	public static String USAGE =
@@ -125,8 +151,7 @@ public class ChunkWriter
 			ChunkMunger cfunc = worldGenerator.getChunkMunger();
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
-					ChunkData cd = new ChunkData(boundsX+x,boundsZ+z);
-					cfunc.mungeChunk(cd);
+					ChunkData cd = chunkWriter.getChunk(boundsX+x,boundsZ+z,cfunc);
 					chunkWriter.writeChunkToFile(cd, chunkDir);
 				}
 			}

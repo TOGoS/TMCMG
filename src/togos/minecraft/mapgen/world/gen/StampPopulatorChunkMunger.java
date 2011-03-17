@@ -14,10 +14,10 @@ public class StampPopulatorChunkMunger implements ChunkMunger
 	}
 	
 	public void mungeChunk( ChunkData cd ) {
-		Collection inst = popu.getStampInstances( cd.x, cd.z );
+		Collection inst = popu.getStampInstances( cd.getChunkPositionX(), cd.getChunkPositionZ(), cd.getChunkWidth(), cd.getChunkDepth() );
 		for( Iterator i=inst.iterator(); i.hasNext(); ) {
 			StampPopulator.StampInstance si = (StampPopulator.StampInstance)i.next();
-			ChunkUtil.stamp( cd, si.stamp, (int)(si.wx-(cd.x*cd.width)), (int)si.wy, (int)(si.wz-(cd.z*cd.depth)));
+			ChunkUtil.stamp( cd, si.stamp, (int)(si.wx-cd.getChunkPositionX()), (int)si.wy, (int)(si.wz-cd.getChunkPositionZ()));
 		}
 	}
 }

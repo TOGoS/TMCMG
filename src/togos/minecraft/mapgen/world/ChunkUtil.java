@@ -49,13 +49,13 @@ public class ChunkUtil
 	}
 	
 	public static void addTileEntity( TileEntityData ted, MiniChunkData cd, boolean errorOnOutOfBounds ) {
-		int blockX = ted.x-cd.width*cd.getChunkX();
+		int blockX = (int)(ted.x-cd.getChunkPositionX());
 		int blockY = ted.y;
-		int blockZ = ted.z-cd.depth*cd.getChunkZ();
+		int blockZ = (int)(ted.z-cd.getChunkPositionZ());
 		if( blockX < 0 || blockX >= cd.width || blockZ < 0 || blockZ >= cd.depth || blockY < 0 || blockY >= cd.height ) {
 			if( errorOnOutOfBounds ) {
 				throw new RuntimeException("TileEntity "+ted.x+","+ted.z+" out of bounds of chunk "+
-					cd.getChunkX()+","+cd.getChunkZ() );
+					(cd.getChunkPositionX()/cd.getChunkWidth())+","+(cd.getChunkPositionZ()/cd.getChunkDepth()) );
 			} else {
 				return;
 			}
@@ -103,9 +103,9 @@ public class ChunkUtil
 		for( Iterator tei=s.tileEntityData.iterator(); tei.hasNext(); ) {
 			TileEntityData ted = (TileEntityData)tei.next();
 			ted = ted.duplicate(
-				ted.x + sx-s.originX - s.getChunkX()*s.width + dest.getChunkX()*dest.width,
+					(int)(ted.x + sx-s.originX - s.getChunkPositionX() + dest.getChunkPositionX()),
 				ted.y + sy-s.originY,
-				ted.z + sz-s.originZ - s.getChunkZ()*s.depth + dest.getChunkZ()*dest.depth
+				(int)(ted.z + sz-s.originZ - s.getChunkPositionZ() + dest.getChunkPositionZ())
 			);
 			addTileEntity(ted, dest, false);
 		}
@@ -116,8 +116,8 @@ public class ChunkUtil
 	 * from 0,0, 1,0, ... 14,15, 15,15.
 	 */
 	public static DataDaDa getTileXZCoordinates( ChunkData cd ) {
-		int cwx = cd.x*cd.width;
-		int cwz = cd.z*cd.depth;
+		long cwx = cd.getChunkPositionX();
+		long cwz = cd.getChunkPositionZ();
 		double[] x = new double[cd.width*cd.depth];
 		double[] z = new double[cd.width*cd.depth];
 		for( int i=0, tz=0; tz<cd.depth; ++tz ) {

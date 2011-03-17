@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaIa;
@@ -44,20 +43,17 @@ public class GroundStampPopulator implements StampPopulator
 		return stamps[seed];
 	}
 	
-	protected void collect( Collection instances, int cx, int cz ) {
-		Random r = new Random((cx*1234+cz) ^ placementSeed);
-		
-		long cwx = (long)cx*ChunkData.CHUNK_WIDTH;
-		long cwz = (long)cz*ChunkData.CHUNK_DEPTH;
+	protected void collect( Collection instances, long cwx, long cwz, int cw, int cd ) {
+		Random r = new Random((cwx*1234+cwz) ^ placementSeed);
 		
 		double density = FunctionUtil.getValue( densityFunction, cwx, cwz );
-		int count = (int)(Math.min(maxDensity,density)*ChunkData.CHUNK_WIDTH*ChunkData.CHUNK_DEPTH);
+		int count = (int)(Math.min(maxDensity,density)*cw*cd);
 		if( count < 0 ) return;
 		double[] x = new double[count];
 		double[] z = new double[count];
 		for( int i=0; i<count; ++i ) {
-			x[i] = cwx + r.nextInt(ChunkData.CHUNK_WIDTH);
-			z[i] = cwz + r.nextInt(ChunkData.CHUNK_DEPTH);
+			x[i] = cwx + r.nextInt(cw);
+			z[i] = cwz + r.nextInt(cd);
 		}
 		DataDaIa ground = groundFunction.apply(new DataDaDa(x,z));
 		for( int i=0; i<count; ++i ) {
@@ -76,17 +72,17 @@ public class GroundStampPopulator implements StampPopulator
 		}
 	}
 	
-	public Collection getStampInstances( int cx, int cz ) {
+	public Collection getStampInstances( long cwx, long cwz, int cw, int cd ) {
 		ArrayList instances = new ArrayList();
-		collect( instances, cx-1, cz-1 );
-		collect( instances, cx  , cz-1 );
-		collect( instances, cx+1, cz-1 );
-		collect( instances, cx-1, cz   );
-		collect( instances, cx  , cz   );
-		collect( instances, cx+1, cz   );
-		collect( instances, cx-1, cz+1 );
-		collect( instances, cx  , cz+1 );
-		collect( instances, cx+1, cz+1 );
+		collect( instances, cwx-cw, cwz-cd, cw, cd );
+		collect( instances, cwx   , cwz-cd, cw, cd );
+		collect( instances, cwx+cw, cwz-cd, cw, cd );
+		collect( instances, cwx-cw, cwz   , cw, cd );
+		collect( instances, cwx   , cwz   , cw, cd );
+		collect( instances, cwx+cw, cwz   , cw, cd );
+		collect( instances, cwx-cw, cwz+cd, cw, cd );
+		collect( instances, cwx   , cwz+cd, cw, cd );
+		collect( instances, cwx+cw, cwz+cd, cw, cd );
 		return instances;
 	}
 }

@@ -355,7 +355,8 @@ public class ChunkServer
 			Map.Entry ge = (Map.Entry)i.next();
 			String name = (String)ge.getKey();
 			String scriptPath = (String)ge.getValue();
-			cs.addChunkGenerator( name, new ChunkGenerator(compiler, scriptPath) ); 
+			// TODO: Default width, height, depth from old mc versions:
+			cs.addChunkGenerator( name, new ChunkGenerator(compiler, scriptPath, 16, 128, 16) ); 
 		}
 		
 		if( ws != null ) {

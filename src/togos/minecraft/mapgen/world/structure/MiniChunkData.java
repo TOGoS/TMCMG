@@ -5,15 +5,21 @@ import java.util.List;
 
 public class MiniChunkData
 {
-	public final int height;
-	public final int depth;
-	public final int width;
+	/**
+	 * X,Y,Z coordinates (in blocks a.k.a. world units a.k.a. meters)
+	 * of the bottom northeast corner of the chunk within the world.
+	 */
+	public final long posX, posY, posZ;
+	public final int width, height, depth;
 	
 	public byte[] blockData;
 	public byte[] blockExtraBits;
 	public List tileEntityData = new ArrayList();
 	
-	public MiniChunkData( int width, int height, int depth ) {
+	public MiniChunkData( long px, long py, long pz, int width, int height, int depth ) {
+		this.posX = px;
+		this.posY = py;
+		this.posZ = pz;
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
@@ -21,8 +27,18 @@ public class MiniChunkData
 		this.blockExtraBits = new byte[(height*depth*width+1)/2];
 	}
 	
-	public int getChunkX() { return 0; }
-	public int getChunkZ() { return 0; }
+	/*
+	 * Return the 
+	 * X,Y,Z coordinates (in blocks a.k.a. world units a.k.a. meters)
+	 * of the bottom northeast corner of the chunk within the world.
+	 */
+	public long getChunkPositionX() { return posX; }
+	public long getChunkPositionY() { return posY; }
+	public long getChunkPositionZ() { return posZ; }
+	
+	public int getChunkWidth() {  return width;  }
+	public int getChunkHeight() { return height; }
+	public int getChunkDepth() {  return depth;  }
 	
 	protected int blockIndex( int x, int y, int z ) {
 		return y + z*height + x*depth*height;

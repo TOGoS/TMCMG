@@ -19,5 +19,5 @@ public interface StampPopulator
 		}
 	}
 	
-	public Collection getStampInstances( int cx, int cz );
+	public Collection getStampInstances( long x, long z, int w, int d );
 }
