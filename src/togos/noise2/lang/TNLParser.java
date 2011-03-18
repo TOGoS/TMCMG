@@ -10,11 +10,13 @@ public class TNLParser
 	static HashMap operatorPrecedence = new HashMap();
 	static int COMMA_PRECEDENCE = 10;
 	static {
-		operatorPrecedence.put("**", new Integer(50));
-		operatorPrecedence.put("*",  new Integer(40));
-		operatorPrecedence.put("/",  new Integer(30));
-		operatorPrecedence.put("+",  new Integer(25));
-		operatorPrecedence.put("-",  new Integer(20));
+		operatorPrecedence.put("**", new Integer(60));
+		operatorPrecedence.put("*",  new Integer(50));
+		operatorPrecedence.put("/",  new Integer(40));
+		operatorPrecedence.put("+",  new Integer(30));
+		operatorPrecedence.put("-",  new Integer(25));
+		operatorPrecedence.put(">",  new Integer(20));
+		operatorPrecedence.put("<",  new Integer(20));
 		operatorPrecedence.put("=",  new Integer(15));
 		operatorPrecedence.put(",",  new Integer(COMMA_PRECEDENCE));
 		operatorPrecedence.put(";",  new Integer( 5));
@@ -63,7 +65,7 @@ public class TNLParser
 				t = readToken(); // next token after the comma
 			}
 			if( t == null ) {
-				throw new ParseError("Expected ')', but reached end of source.", t);
+				throw new ParseError("Expected ')', but reached end of source.", new Token("", t0.filename, -1, -1));
 			} else if( !")".equals(t.value) ) {
 				throw new ParseError("Expected ')', but got '"+t+"'.", t);
 			}

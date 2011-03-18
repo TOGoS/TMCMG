@@ -8,6 +8,8 @@ import togos.noise2.function.CacheDaDaDa_Da;
 import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
+import togos.noise2.function.GreaterThanDaDaDa_Da;
+import togos.noise2.function.LessThanDaDaDa_Da;
 import togos.noise2.function.SimplexDaDaDa_Da;
 import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
@@ -55,6 +57,24 @@ public class NoiseMacros
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
 		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
+		add("<", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 2; }
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
+				return new LessThanDaDaDa_Da(
+					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1])
+				);
+			}
+		});
+		add(">", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 2; }
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
+				return new GreaterThanDaDaDa_Da(
+					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1])
+				);
+			}
+		});
 		add("min", dddaamt(MinOutDaDaDa_Da.class));
 		add("max", dddaamt(MaxOutDaDaDa_Da.class));
 		add("clamp", new BaseMacroType() {

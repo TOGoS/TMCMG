@@ -1,0 +1,29 @@
+# Based on code from Altimor_
+# http://www.minecraftforum.net/viewtopic.php?f=25&t=107262#p1782457
+
+rigid = cache(48 + fractal( 8, 8, 4, 2, 2, -1, simplex ));
+rigid2 = cache(ridge( 32, 96, rigid ));
+
+water-area = (rigid < 96);
+lava-area  = (rigid > 96);
+
+layered-terrain(
+	# Ocean, in case you're into that kind of thing
+	layer( materials.water, 0, 64 * water-area ),
+	layer( materials.lava,  0, 48 * lava-area ),
+	layer( materials.obsidian, 0,
+		ridge( 0, 56, 56 + fractal( 1, 32, 64, 1, 1, 1, simplex ) ) * lava-area ),
+	
+	layer( materials.stone, 0, rigid2 ),
+	layer( materials.sand, rigid2 - 3, (rigid > 96) * rigid2 ),
+	layer( materials.dirt, max(64,rigid2 - 3), (rigid < 96) * rigid2 ),
+	
+	# Bedrock
+	layer( materials.bedrock, 0, 1 ),
+	
+	# And that other stuff
+	tree-populator( tree-types.pine,  fractal( 3, 100, 0.007, 2, 2,  3, simplex ), 1 ),
+	tree-populator( tree-types.round, fractal( 3,  50, 0.007, 2, 2, -3, simplex ), 2 ),
+	lighter,
+	flag-populated,
+)

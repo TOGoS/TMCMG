@@ -19,8 +19,15 @@ public class ScriptUtil
 {
 	public static String formatScriptError( ScriptError e ) {
 		SourceLocation sloc = e.sourceLocation;
-		return "Compile error: "+e.getMessage() + "\n" +
-			"At "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
+		String locMsg = "";
+		if( sloc != null ) {
+			if( sloc.getSourceLineNumber() == -1 ) {
+				locMsg = "\nIn "+sloc.getSourceFilename();
+			} else {
+				locMsg = "\nAt "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
+			}
+		}
+		return "Compile error: "+e.getMessage() + locMsg; 
 	}
 	
 	public static Object compileOrExit( TNLCompiler c, ASTNode n ) {
