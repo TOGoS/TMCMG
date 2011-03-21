@@ -2,6 +2,7 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
+import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ScaleInDaDaDa_Da extends TNLFunctionDaDaDa_Da
@@ -33,6 +34,10 @@ public class ScaleInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		return new ScaleInDaDaDa_Da(scaleX, scaleY, scaleZ, (TNLFunctionDaDaDa_Da)rw.rewrite(next));
+	}
+	
+	public Expression[] directSubExpressions() {
+		return new Expression[]{};
 	}
 	
 	public String toTnl() {

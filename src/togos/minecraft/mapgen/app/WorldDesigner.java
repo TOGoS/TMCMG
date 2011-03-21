@@ -278,6 +278,7 @@ public class WorldDesigner
 		statusLabel.setBackground(Color.BLACK);
 		statusLabel.setForeground(Color.PINK);
 		statusLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE,statusLabel.getPreferredSize().height));
+		statusLabel.validate();
 
 		previewWindow.setMenuBar(menuBar);
 		previewWindow.setLayout(new BoxLayout(previewWindow, BoxLayout.Y_AXIS));

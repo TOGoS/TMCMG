@@ -2,6 +2,7 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
+import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
@@ -58,5 +59,9 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	
 	public String toTnl() {
 		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+next.toTnl()+")";
+	}
+	
+	public Expression[] directSubExpressions() {
+		return new Expression[]{};
 	}
 }

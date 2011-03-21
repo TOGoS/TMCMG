@@ -2,6 +2,7 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
+import togos.noise2.lang.Expression;
 import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
@@ -87,5 +88,9 @@ public abstract class ReduceOutDaDaDa_Da
         }
 		simplified.components = simplifiedComponents;
 		return FunctionUtil.collapseIfConstant(simplified);
+	}
+	
+	public Expression[] directSubExpressions() {
+		return components;
 	}
 }

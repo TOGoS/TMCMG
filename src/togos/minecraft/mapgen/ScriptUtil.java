@@ -41,7 +41,7 @@ public class ScriptUtil
 	}
 	
 	public static Object compile( TNLCompiler c, Reader r, String sourceFilename, int sourceLineNumber ) throws IOException, ParseError, CompileError {
-		return c.compile( new TNLParser(new TNLTokenizer(r, sourceFilename, sourceLineNumber, 1)).readNode(0) );		
+		return c.compile( new TNLParser(new TNLTokenizer(r, sourceFilename, sourceLineNumber, 1)).readNode(0) );
 	}
 	
 	public static Object compile( TNLCompiler c, String source, String sourceFilename, int sourceLineNumber )

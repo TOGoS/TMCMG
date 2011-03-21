@@ -2,6 +2,7 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
+import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
@@ -43,5 +44,9 @@ public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	
 	public String toTnl() {
 		return "clamp("+lower+", "+upper+", "+clamped+")";
+	}
+	
+	public Expression[] directSubExpressions() {
+		return new Expression[]{ lower, upper, clamped };
 	}
 }

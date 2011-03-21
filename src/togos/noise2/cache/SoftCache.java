@@ -27,13 +27,19 @@ public class SoftCache implements Cache
 	}
 	
 	protected WeakHashMap handles = new WeakHashMap();
+	//protected HashMap handles = new HashMap();
+	
+	public int cacheHits = 0, cacheMisses = 0;
 	
 	protected synchronized Handle getHandle( Object key ) {
 		SoftReference sr = (SoftReference)handles.get(key);
 		Handle h = sr == null ? null : (Handle)sr.get();
 		if( h == null ) {
+			++cacheMisses;
 			h = new Handle(key);
 			handles.put(key,new SoftReference(h));
+		} else {
+			++cacheHits;
 		}
 		return h;
 	}

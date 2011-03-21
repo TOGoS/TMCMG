@@ -24,6 +24,7 @@ import togos.minecraft.mapgen.world.gen.GroundColorFunction;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.noise2.cache.SoftCache;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ScriptError;
@@ -99,18 +100,23 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		
 		CoordPopulator cpop = new CoordPopulator();
 		
+		long elapsedMs = 0;
+		long samples = 0;
+		
 		public void run() {
 			if( width == 0 || height == 0 ) return;
 			
 			buffer = createBuffer();
 			Graphics g = buffer.getGraphics();
 			
-			int[] px = new int[256];
-			int[] py = new int[256];
-			int[] scale = new int[256];
+			int batchSize = 1024;
 			
-			double[] wx = new double[256];
-			double[] wy = new double[256];
+			int[] px = new int[batchSize];
+			int[] py = new int[batchSize];
+			int[] scale = new int[batchSize];
+			
+			double[] wx = new double[batchSize];
+			double[] wy = new double[batchSize];
 			
 			while( !stop ) {
 				int coordCount = cpop.nextCoords(px, py, scale);
@@ -120,13 +126,21 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					wx[i] = worldX + px[i]*worldXPerPixel;
 					wy[i] = worldY + py[i]*worldYPerPixel;
 				}
+				long beginTime = System.currentTimeMillis();
 				int[] color = colorFunction.apply(new DataDaDa(wx,wy)).v;
+				long endTime = System.currentTimeMillis();
+				elapsedMs += (endTime - beginTime);
+				samples += batchSize;
 				synchronized( buffer ) {
 					for( int i=0; i<coordCount; ++i ) {
 						int pcolor = color[i] == 0 ? 0xFF000000 : color[i];
 						g.setColor( color(pcolor) );
 						g.fillRect( px[i], py[i], scale[i], scale[i] );
 					}
+				}
+				if( elapsedMs > 0 ) {
+					//System.err.println(samples / elapsedMs + " samples per ms");
+					//System.err.println(SoftCache.getInstance().cacheHits + " cahce hits, " + SoftCache.getInstance().cacheMisses + " misses");
 				}
 				repaint();
 			}

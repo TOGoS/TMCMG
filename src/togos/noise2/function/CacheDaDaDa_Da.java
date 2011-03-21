@@ -5,6 +5,7 @@ import togos.noise2.DigestUtil;
 import togos.noise2.cache.Cache;
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
+import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
@@ -63,6 +64,10 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {
 		return new CacheDaDaDa_Da( cache, (TNLFunctionDaDaDa_Da)v.rewrite(next) );
+	}
+	
+	public Expression[] directSubExpressions() {
+		return new Expression[]{ next };
 	}
 	
 	public String toTnl() {

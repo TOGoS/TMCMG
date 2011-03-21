@@ -12,14 +12,14 @@ public abstract class Data
 		long d = System.currentTimeMillis();
 		Random r = new Random(123123);
 		r.nextLong(); r.nextLong(); r.nextLong();
-		guidPfx = "urn:uuid:" + d + "-" + r.nextLong();
+		guidPfx = "urn:uuid:" + Long.toString(d ^ r.nextLong(),16) + "-";
 	}
 	static long guidIncr = 1;
 	protected static synchronized String nextGuid() {
-		return guidPfx + "-" + (guidIncr++);
+		return guidPfx + Long.toString(guidIncr++,16);
 	}
 	
-	protected String urn = null;
+	public String urn = null;
 	
 	protected void intBytes( long l, byte[] b, int o ) {
 		b[o+0] = (byte)((l >> 24) & 0xFF);

@@ -1,3 +1,7 @@
+- Fix caching
+  (doesn't work across Layers because Data objects get separate IDs
+  due to passing through AdaptInDaDa_DaDaDa_Das)
+
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
   unrealistic positions
 - Large, branching trees
