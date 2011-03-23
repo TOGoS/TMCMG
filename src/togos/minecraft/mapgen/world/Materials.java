@@ -90,7 +90,7 @@ public class Materials
 		add(new Material( (byte)0x2E, (byte)0x00, 0xFFFF00FF, "? ", "TNT" ));
 		add(new Material( (byte)0x2F, (byte)0x00, 0xFFFF00FF, "BS", "Bookshelf" ));
 		add(new Material( (byte)0x30, (byte)0x00, 0xFFFF00FF, "MC", "Mossy Cobblestone" ));
-		add(new Material( (byte)0x31, (byte)0x00, 0xFFFF00FF, "OB", "Obsidian" ));
+		add(new Material( (byte)0x31, (byte)0x00, 0xFF442244, "OB", "Obsidian" ));
 		add(new Material( (byte)0x32, (byte)0x00, 0xFFFF00FF, "t ", "Torch" ));
 		add(new Material( (byte)0x33, (byte)0x00, 0xFFFF00FF, "f ", "Fire" ));
 		add(new Material( (byte)0x34, (byte)0x00, 0xFFFF00FF, "? ", "Mob Spawner" ));

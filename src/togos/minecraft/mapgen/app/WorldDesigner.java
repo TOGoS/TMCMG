@@ -98,9 +98,13 @@ public class WorldDesigner
 	}
 	
 	public class WorldDesignerMenuBar extends MenuBar {
-        private static final long serialVersionUID = 1L;
-        
-        WorldDesignerKernel wdk;
+		private static final long serialVersionUID = 1L;
+		
+		WorldDesignerKernel wdk;
+		
+		CheckboxMenuItem shadingMenuItem;
+		CheckboxMenuItem autoReloadMenuItem;
+		
 		public WorldDesignerMenuBar( WorldDesignerKernel _wdk ) {
 			this.wdk = _wdk;
 
@@ -131,9 +135,8 @@ public class WorldDesigner
 					chunkExportWindow.pack();
 				}
 			});
-			CheckboxMenuItem autoReloadMenuItem = new CheckboxMenuItem("Auto Reload");
+			autoReloadMenuItem = new CheckboxMenuItem("Auto Reload");
 			autoReloadMenuItem.setShortcut(new MenuShortcut(KeyEvent.VK_A));
-			autoReloadMenuItem.setState(wdk.autoReloadEnabled);
 			autoReloadMenuItem.addItemListener(new ItemListener() {
 				public void itemStateChanged( ItemEvent evt ) {
 					wdk.setAutoReloadEnabled( evt.getStateChange() == ItemEvent.SELECTED );
@@ -148,6 +151,21 @@ public class WorldDesigner
 			fileMenu.add("-");
 			fileMenu.add(autoReloadMenuItem);
 			
+			
+			shadingMenuItem = new CheckboxMenuItem("Enable Shading");
+			shadingMenuItem.setShortcut(new MenuShortcut(KeyEvent.VK_G));
+			shadingMenuItem.addItemListener(new ItemListener() {
+				public void itemStateChanged( ItemEvent evt ) {
+					noiseCanvas.shadingEnabled = ( evt.getStateChange() == ItemEvent.SELECTED );
+					noiseCanvas.stateUpdated();
+				}
+			});
+
+			Menu viewMenu = new Menu("View");
+			viewMenu.add(shadingMenuItem);
+
+			
+			
 			MenuItem aboutMenuItem = new MenuItem("About");
 			aboutMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed( ActionEvent e ) {
@@ -159,8 +177,14 @@ public class WorldDesigner
 			helpMenu.add(aboutMenuItem);
 			
 			add( fileMenu );
+			add( viewMenu );
 			add( helpMenu );
-        }
+		}
+		
+		public void initState() {
+			shadingMenuItem.setState(noiseCanvas.shadingEnabled);
+			autoReloadMenuItem.setState(wdk.autoReloadEnabled);
+		}
 	}
 	
 	WorldDesignerKernel wdk = new WorldDesignerKernel();
@@ -168,7 +192,7 @@ public class WorldDesigner
 	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm,cws);
 	
 	LayerSideCanvas lsc = new LayerSideCanvas();
-	NoiseCanvas nc = new NoiseCanvas();
+	NoiseCanvas noiseCanvas = new NoiseCanvas();
 	Label statusLabel = new Label();
 	MasterWorldExplorerView mwev = new MasterWorldExplorerView() {
 		public void setWorldPos(double wx, double wy, double zoom) {
@@ -180,7 +204,7 @@ public class WorldDesigner
 	
 	public WorldDesigner() {
 		lsc.showZoom = false;
-		nc.showZoom = false;
+		noiseCanvas.showZoom = false;
 	}
 	
 	public static String USAGE =
@@ -188,7 +212,8 @@ public class WorldDesigner
 		"Options:\n" +
 		"  -chunk-dir <dir> ; default directory to store generated map chunks\n" +
 		"  -auto-reload     ; poll script file and automatically reload when updated\n" +
-		"  -fullscreen      ; display maximized with no border\n";
+		"  -fullscreen      ; display maximized with no border\n" +
+		"  -shading         ; enable terrain shading";
 	
 	protected void setStatus( boolean isError, String text ) {
 		statusLabel.setForeground(isError ? Color.PINK : Color.GREEN);
@@ -204,6 +229,7 @@ public class WorldDesigner
 		String scriptFilename = null;
 		boolean autoReload = false;
 		boolean fullscreen = false;
+		boolean shade = false;
 		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-chunk-dir".equals(args[i]) ) {
@@ -212,6 +238,8 @@ public class WorldDesigner
 				autoReload = true;
 			} else if( "-fullscreen".equals(args[i]) ) {
 				fullscreen = true;
+			} else if( "-shade".equals(args[i]) ) {
+				shade = true;
 			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
 				System.out.println(USAGE);
 			} else if( !args[i].startsWith("-") ) {
@@ -232,7 +260,7 @@ public class WorldDesigner
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
 			public void generatorUpdated( WorldGenerator wg ) {
 				lsc.setWorldGenerator( wg );
-				nc.setWorldGenerator( wg );
+				noiseCanvas.setWorldGenerator( wg );
 				chunkExportWindow.setWorldGenerator( wg );
 			}
 		};
@@ -269,11 +297,12 @@ public class WorldDesigner
 		wdk.start();
 		
 		final WorldDesignerMenuBar menuBar = new WorldDesignerMenuBar(wdk);
-		mwev.addSubView(nc);
+		mwev.addSubView(noiseCanvas);
 		mwev.addSubView(lsc);
 		lsc.setPreferredSize(new Dimension(640,128));
 		lsc.setMaximumSize(new Dimension(Integer.MAX_VALUE,128));
-		nc.setPreferredSize(new Dimension(640,384));
+		noiseCanvas.setPreferredSize(new Dimension(640,384));
+		noiseCanvas.shadingEnabled = shade;
 
 		statusLabel.setBackground(Color.BLACK);
 		statusLabel.setForeground(Color.PINK);
@@ -283,7 +312,7 @@ public class WorldDesigner
 		previewWindow.setMenuBar(menuBar);
 		previewWindow.setLayout(new BoxLayout(previewWindow, BoxLayout.Y_AXIS));
 		previewWindow.add(lsc);
-		previewWindow.add(nc);
+		previewWindow.add(noiseCanvas);
 		previewWindow.add(statusLabel);
 		previewWindow.validate();
 		previewWindow.addWindowListener(new WindowAdapter() {
@@ -292,7 +321,7 @@ public class WorldDesigner
 			}
 		});
 		lsc.addKeyListener(wekl);
-		nc.addKeyListener(wekl);
+		noiseCanvas.addKeyListener(wekl);
 
 		if( fullscreen ) {
 			previewWindow.setUndecorated(true);
@@ -301,6 +330,8 @@ public class WorldDesigner
 			previewWindow.setIconImage(icon);
 			previewWindow.pack();
 		}
+		
+		menuBar.initState();
 		previewWindow.setVisible(true);
 		
 		chunkExportWindow.pack();
@@ -310,7 +341,7 @@ public class WorldDesigner
 	
 	protected void halt() {
 		lsc.stopRenderer();
-		nc.stopRenderer();
+		noiseCanvas.stopRenderer();
 		previewWindow.dispose();
 		chunkExportWindow.dispose();
 		wdk.halt();
