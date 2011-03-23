@@ -49,7 +49,7 @@ public class TNLFunctionTest extends TestCase
 	public void testCompile() {
 		testCompile( "1.0", "1.0" );
 		testCompile( "(perlin + (perlin * 2.0))", "perlin + p2" );
-		testCompile( "cache(simplex)", "cache(simplex)" );
+		testCompile( "simplex", "cache(simplex)" ); // cache(...).toTnl -> ...
 	}
 	
 	public void testSimplify() {
