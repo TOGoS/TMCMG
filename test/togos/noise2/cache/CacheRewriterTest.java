@@ -34,5 +34,8 @@ public class CacheRewriterTest extends TestCase
 		assertTrue( dse[3] instanceof Constant_Da );
 		assertTrue( dse[4] instanceof CacheDaDaDa_Da );
 		assertTrue( dse[5] instanceof CacheDaDaDa_Da );
+		// the simplex in the (4 * simplex)
+		assertTrue( ((ReduceOutDaDaDa_Da)((CacheDaDaDa_Da)dse[4]).next).directSubExpressions()[1] instanceof CacheDaDaDa_Da );
+		System.err.println(o.toString());
 	}
 }

@@ -17,5 +17,12 @@ public interface Expression
 	 */
 	public abstract Expression[] directSubExpressions();
 	
+	/**
+	 * A string that is
+	 * - valid TNL and 
+	 * - is semantically equivalent to this expression.
+	 *   - parts of the expression that make no difference samantically,
+	 *     such as cache(), can and should be left out. 
+	 */
 	public String toTnl();
 }

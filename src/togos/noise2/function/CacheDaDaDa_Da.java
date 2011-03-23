@@ -41,7 +41,7 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	protected Cache cache;
-	protected TNLFunctionDaDaDa_Da next;
+	public TNLFunctionDaDaDa_Da next;
 	protected String nextUrn;
 	
 	public CacheDaDaDa_Da( Cache cache, TNLFunctionDaDaDa_Da next ) {
@@ -70,7 +70,11 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return new Expression[]{ next };
 	}
 	
+	public String toString() {
+		return "cache("+next.toString()+")";
+	}
+	
 	public String toTnl() {
-	    return "cache("+next.toTnl()+")";
+	    return next.toTnl();
 	}
 }

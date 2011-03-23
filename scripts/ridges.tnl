@@ -1,8 +1,8 @@
 # Based on code from Altimor_
 # http://www.minecraftforum.net/viewtopic.php?f=25&t=107262#p1782457
 
-rigid = cache(48 + fractal( 8, 8, 4, 2, 2, -1, simplex ));
-rigid2 = cache(ridge( 32, 96, rigid ));
+rigid = 48 + fractal( 8, 8, 4, 2, 2, -1, simplex );
+rigid2 = ridge( 32, 96, rigid );
 
 water-area = (rigid < 96);
 lava-area  = (rigid > 96);

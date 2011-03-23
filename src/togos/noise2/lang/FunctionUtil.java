@@ -27,13 +27,13 @@ public class FunctionUtil
 	public static FunctionDaDa_Da toDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDa_Da ) {
 			return (FunctionDaDa_Da)r;
-		} else if( r instanceof FunctionDaDaDa_Da ) {
-			return new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
+		} else if( r instanceof TNLFunctionDaDaDa_Da ) {
+			return new AdaptInDaDa_DaDaDa_Da( (TNLFunctionDaDaDa_Da)r );
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
 			throw new CompileError("Can't convert "+r.getClass()+" to FunctionDaDaDa_Da", sloc);
-		}		
+		}
 	}
 
 	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {

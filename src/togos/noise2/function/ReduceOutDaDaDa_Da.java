@@ -44,7 +44,7 @@ public abstract class ReduceOutDaDaDa_Da
 	protected String getOperatorSymbol() { return null; }
 	protected String getMacroName() { return null; }
 	
-	public String toTnl() {
+	public String toTnl(boolean tnlifySubs) {
 		String macroName = getMacroName();
 		String opSymbol = getOperatorSymbol();
 		String separator;
@@ -61,11 +61,19 @@ public abstract class ReduceOutDaDaDa_Da
 		boolean first = true;
 		for( int i=0; i<components.length; ++i ) {
 			if( !first ) s += separator;
-			s += components[i].toTnl();
+			s += (tnlifySubs ? components[i].toTnl() : components[i].toString());
 			first = false;
 		}
 		s += ")";
 		return s;
+	}
+	
+	public String toTnl() {
+		return toTnl(true);
+	}
+	
+	public String toString() {
+		return toTnl(false);
 	}
 	
 	public boolean isConstant() {

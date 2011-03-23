@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import togos.minecraft.mapgen.world.Blocks;
+import togos.noise2.cache.SoftCache;
 import togos.noise2.function.FunctionDaDa_Da;
+import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.FunctionUtil;
@@ -13,6 +15,8 @@ import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.macro.BaseMacroType;
 import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.MacroType;
+import togos.noise2.rewrite.CacheRewriter;
+import togos.noise2.rewrite.ConstantFolder;
 
 public class WorldGeneratorMacros
 {
@@ -107,8 +111,10 @@ public class WorldGeneratorMacros
 			}
 		});
 		wgMacros.put("layered-terrain", new MacroType() {
-			public Object instantiate( TNLCompiler c, ASTNode sn )
-					throws CompileError {
+			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
+				ConstantFolder cf = ConstantFolder.instance;
+				CacheRewriter crw = new CacheRewriter(SoftCache.getInstance());
+
 				ArrayList chunkMungers = new ArrayList();
 				LayerTerrainGenerator lm = new LayerTerrainGenerator();
 				HashMap components = new HashMap();
@@ -129,7 +135,7 @@ public class WorldGeneratorMacros
 							GroundStampPopulator gsp = (GroundStampPopulator) node;
 							gsp.groundFunction = lm.getGroundFunction();
 						}
-
+						
 						node = new StampPopulatorChunkMunger(
 								(StampPopulator) node);
 					}
@@ -141,7 +147,38 @@ public class WorldGeneratorMacros
 							+ node.getClass() + " into world generator",
 							argNode);
 				}
+				
+				for( Iterator li=lm.layers.iterator(); li.hasNext(); ) {
+					LayerTerrainGenerator.Layer layer = (LayerTerrainGenerator.Layer)li.next();
+					
+					layer.floorHeightFunction   = (FunctionDaDa_Da)cf.rewrite( layer.floorHeightFunction );
+					layer.ceilingHeightFunction = (FunctionDaDa_Da)cf.rewrite( layer.ceilingHeightFunction );
+					layer.typeFunction          = (FunctionDaDa_Ia)cf.rewrite( layer.typeFunction );
+					
+					crw.initCounts( layer.floorHeightFunction );
+					crw.initCounts( layer.ceilingHeightFunction );
+					crw.initCounts( layer.typeFunction );
+				}
+				
+				//crw.dumpCounts(System.out);
+				
+				for( Iterator li=lm.layers.iterator(); li.hasNext(); ) {
+					LayerTerrainGenerator.Layer layer = (LayerTerrainGenerator.Layer)li.next();
+					//System.err.println("   "+layer.floorHeightFunction.toString());
+					//System.err.println("   "+layer.ceilingHeightFunction.toString());
+					//System.err.println("   "+layer.typeFunction.toString());
 
+					layer.floorHeightFunction   = (FunctionDaDa_Da)crw.rewrite( layer.floorHeightFunction );
+					layer.ceilingHeightFunction = (FunctionDaDa_Da)crw.rewrite( layer.ceilingHeightFunction );
+					layer.typeFunction          = (FunctionDaDa_Ia)crw.rewrite( layer.typeFunction );
+					
+					//System.err.println("-> "+layer.floorHeightFunction.toString());
+					//System.err.println("-> "+layer.ceilingHeightFunction.toString());
+					//System.err.println("-> "+layer.typeFunction.toString());
+				}
+				
+				//System.exit(0);
+				
 				chunkMungers.add(0, lm.getChunkMunger());
 				return new SimpleWorldGenerator(
 						new ChunkMungeList(chunkMungers), lm

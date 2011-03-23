@@ -27,7 +27,6 @@ public class SoftCache implements Cache
 	}
 	
 	protected WeakHashMap handles = new WeakHashMap();
-	//protected HashMap handles = new HashMap();
 	
 	public int cacheHits = 0, cacheMisses = 0;
 	

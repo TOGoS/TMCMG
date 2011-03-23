@@ -8,12 +8,17 @@ public class DataDaDaDa extends Data
 	public double[] y;
 	public double[] z;
 	
-	public DataDaDaDa( double[] x, double[] y, double[] z ) {
+	public DataDaDaDa( double[] x, double[] y, double[] z, String urn ) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.urn = urn;
 	}
 	
+	public DataDaDaDa( double[] x, double[] y, double[] z ) {
+		this( x, y, z, null );
+	}
+
 	public int getLength() {
 		return x.length;
 	}

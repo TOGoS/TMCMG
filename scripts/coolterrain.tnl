@@ -1,12 +1,12 @@
 coolperl = perlin * min(2,max(0.2,scale-in( 0.1, 0.1, 0.1, perlin ) * 2));
 sand-height = fractal( 12, 8, 4, 2, 1.4, 1, coolperl );
-max-ground = 112 + fractal( 3, 32, 4, 2, 1.5, -5, perlin ); 
-min-ground = 32 + fractal( 4, 32, 4, 2, 1.7, -5, perlin );
-mountain-height = max(min-ground,min(max-ground,
+max-ground = cache(112 + fractal( 3, 32, 4, 2, 1.5, -5, perlin )); 
+min-ground = cache( 32 + fractal( 4, 32, 4, 2, 1.7, -5, perlin ));
+mountain-height = cache(max(min-ground,min(max-ground,
 	32 + fractal(4,48,48,2,1.5,-1,perlin) * max(0.4,fractal(4,512,1.5,1,1,-7,perlin))
-));
+)));
 coal-height = fractal(3,6,3,3,3,-1,perlin);
-var-height = fractal(1,5,2,2,1,-23,perlin);
+var-height  = fractal(1,5,2,2,1,-23,perlin);
 
 layered-terrain(
 	layer( materials.water, 0, 64 ),

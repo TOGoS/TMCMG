@@ -40,6 +40,12 @@ public class CacheRewriter implements ExpressionRewriter
 		}
 	}
 	
+	public void initCounts( Object expr ) {
+		if( expr instanceof Expression ) {
+			initCounts( (Expression)expr );
+		}
+	}
+	
 	public void dumpCounts( PrintStream out ) {
 		for( Iterator i = uteCounts.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry me = (Map.Entry)i.next();
@@ -64,6 +70,8 @@ public class CacheRewriter implements ExpressionRewriter
 			} else {
 				return e;
 			}
+		} else if( f instanceof Expression ) {
+			return ((Expression)f).rewriteSubExpressions(this);
 		} else {
 			return f;
 		}

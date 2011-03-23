@@ -2,8 +2,10 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataIa;
+import togos.noise2.lang.Expression;
+import togos.noise2.rewrite.ExpressionRewriter;
 
-public class Constant_Ia implements FunctionDaDa_Ia
+public class Constant_Ia implements FunctionDaDa_Ia, Expression
 {
 	public static final Constant_Ia ZERO = new Constant_Ia(0);
 	
@@ -44,5 +46,13 @@ public class Constant_Ia implements FunctionDaDa_Ia
 	
 	public String toTnl() {
 		return Integer.toString(value);
+	}
+	
+	public Expression[] directSubExpressions() {
+		return new Expression[0];
+	}
+	
+	public Object rewriteSubExpressions( ExpressionRewriter v ) {
+	    return this;
 	}
 }
