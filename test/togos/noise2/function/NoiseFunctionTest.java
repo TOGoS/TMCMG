@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.macro.NoiseMacros;
 
-public class NoiseFunctionTest extends TestCase
+public abstract class NoiseFunctionTest extends TestCase
 {
 	public TNLCompiler mkCompiler() {
 		TNLCompiler comp = new TNLCompiler();
