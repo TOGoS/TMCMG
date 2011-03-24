@@ -225,7 +225,8 @@ public class WorldDesigner
 		"  -chunk-dir <dir> ; default directory to store generated map chunks\n" +
 		"  -auto-reload     ; poll script file and automatically reload when updated\n" +
 		"  -fullscreen      ; display maximized with no border\n" +
-		"  -shading         ; enable terrain shading";
+		"  -normal-shading  ; enable angle-based terrain shading (slow)\n" +
+		"  -height-shading  ; enable height-based terrain shading)\n";
 	
 	protected void setStatus( boolean isError, String text ) {
 		statusLabel.setForeground(isError ? Color.PINK : Color.GREEN);
