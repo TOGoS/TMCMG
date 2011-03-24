@@ -101,6 +101,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 				
 				if( FunctionUtil.isConstant(layer.typeFunction) ) {
 					// To speed things up, special case when type is constant:
+					// (Would also work if we only knew it was constant wrt. Y)
 					
 					DataDaDaDa typeInput = new DataDaDaDa(wx,ceil,wz);
 					int[] type = layer.typeFunction.apply(typeInput).v;
@@ -131,40 +132,46 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 				} else {
 					BufferedImage columnBuffer = new BufferedImage(1,height,BufferedImage.TYPE_INT_ARGB);
 					
-					for( int i=0; i<width; ++i ) {
+					for( int i=0; i<width && !stop; ++i ) {
+						if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
+						if( floor[i] < worldFloor ) floor[i] = worldFloor;
+						if( ceil[i] < floor[i] ) continue;
+						
+						int colHeight = (int)ceil[i] - (int)floor[i];
+						double[] colX = new double[colHeight];
+						double[] colY = new double[colHeight];
+						double[] colZ = new double[colHeight];
+						int[] colColors = new int[colHeight];
+						for( int j=0; j<colHeight; ++j ) {
+							colX[j] = wx[i];
+							colY[j] = (int)ceil[i] - j;
+							colZ[j] = wz[i];
+						}
+						DataDaDaDa finput = new DataDaDaDa(colX,colY,colZ);
+						int[] colTypes = layer.typeFunction.apply(finput).v;
+						for( int j=0; j<colHeight; ++j ) {
+							if( colTypes[j] == Blocks.NONE ) {
+								colColors[j] = 0x00000000;
+							} else if( colTypes[j] == Blocks.AIR ) {
+								colColors[j] = 0xFF0088FF;
+							} else {
+								colColors[j] = Materials.getByBlockType(colTypes[j]).color;
+							}
+						}
+						
+						columnBuffer.setRGB(0, 0, 1, colHeight, colColors, 0, 1);
 						synchronized( buffer ) {
-							if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
-							if( floor[i] < worldFloor ) floor[i] = worldFloor;
-							if( ceil[i] < floor[i] ) continue;
-							
-							int colHeight = (int)ceil[i] - (int)floor[i];
-							double[] colX = new double[colHeight];
-							double[] colY = new double[colHeight];
-							double[] colZ = new double[colHeight];
-							int[] colColors = new int[colHeight];
-							for( int j=0; j<colHeight; ++j ) {
-								colX[j] = wx[i];
-								colY[j] = (int)ceil[i] - j;
-								colZ[j] = wz[i];
-							}
-							DataDaDaDa finput = new DataDaDaDa(colX,colY,colZ);
-							int[] colTypes = layer.typeFunction.apply(finput).v;
-							for( int j=0; j<colHeight; ++j ) {
-								if( colTypes[j] == Blocks.NONE ) {
-									colColors[j] = 0x00000000;
-								} else if( colTypes[j] == Blocks.AIR ) {
-									colColors[j] = 0xFF0088FF;
-								} else {
-									colColors[j] = Materials.getByBlockType(colTypes[j]).color;
-								}
-							}
-							
-							columnBuffer.setRGB(0, 0, 1, colHeight, colColors, 0, 1);
 							g.drawImage(columnBuffer, i, height-(int)ceil[i], null);
 						}
+						
+						// Request a repaint after every few columns of these ~expensive~ layers
+						if( i % 32 == 31 ) repaint();
 					}
+					// Request a repaint after every layer is drawn
+					repaint();
 				}
 			}
+			// Request a repaint when *done*
 			repaint();
 		}
 		
@@ -215,6 +222,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		BufferedImage buf;
 		LayerSideRenderer nr = cnr;
 		if( nr != null && (buf = nr.buffer) != null ) {
+			// Not sure if locking is really needed here...
 			synchronized( buf ) {
 				g.drawImage(buf, 0, 0, null);
 			}

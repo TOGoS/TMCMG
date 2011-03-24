@@ -202,6 +202,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		BufferedImage buf;
 		NoiseRenderer nr = cnr;
 		if( nr != null && (buf = nr.buffer) != null ) {
+			// Not sure if locking is really needed here...
 			synchronized( buf ) {
 				g.drawImage(buf, 0, 0, null);
 			}

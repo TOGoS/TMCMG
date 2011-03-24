@@ -8,12 +8,13 @@ water-area = (rigid < 96);
 lava-area  = (rigid > 96);
 
 hard-lava-material = materials.stone + (simplex > 0) * (materials.obsidian - materials.stone);
+hard-lava-volume = fractal( 2, 16, 64, 2, 2, 1, simplex ) - (y - 48);
 
 layered-terrain(
 	# Ocean, in case you're into that kind of thing
 	layer( materials.water, 0, 64 * water-area ),
 	layer( materials.lava,  0, 48 * lava-area ),
-	layer( materials.none + (fractal( 2, 16, 64, 2, 2, 1, simplex ) - (y - 48) > 0) * (hard-lava-material - materials.none), 32, 80 * lava-area ),
+	layer( if(hard-lava-volume, hard-lava-material, materials.none), 32, 88 * lava-area ),
 	
 	layer( materials.stone, 0, rigid2 ),
 	layer( materials.sand, rigid2 - 3, (rigid > 96) * rigid2 ),

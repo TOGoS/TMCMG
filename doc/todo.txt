@@ -1,3 +1,4 @@
+- 'Drop' trees and other objects into chunks rather than relying on the ground function
 - Add % operator (should act logically with negative numbers)
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
   unrealistic positions

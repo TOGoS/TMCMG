@@ -7,7 +7,7 @@ layered-terrain(
 	# Ocean, in case you're into that kind of thing
 	layer( materials.water, 0, 64 ),
 	
-	layer( materials.stone + (ridge(0,8,y) > 4) * (materials.dirt - materials.stone), 0, ridge( 32, 96, rigid ) ),
+	layer( if(ridge(0,8,y) > 4, materials.dirt, materials.stone), 0, ridge( 32, 96, rigid ) ),
 	
 	# Bedrock
 	layer( materials.bedrock, 0, 1 ),

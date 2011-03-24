@@ -90,8 +90,10 @@ public class LayerTerrainGenerator implements WorldGenerator
 		}
 		
 		public DataDaIa apply( DataDaDa in ) {
+			int count = in.getLength();
+			
 	    	double[] highest = new double[in.getLength()];
-	    	int[] outT = new int[in.getLength()];
+	    	int[] outT = new int[count];
 	    	for( int j=in.getLength()-1; j>=0; --j ) {
 	    		highest[j] = Double.NEGATIVE_INFINITY;
 	    		outT[j] = Blocks.AIR;
@@ -100,8 +102,10 @@ public class LayerTerrainGenerator implements WorldGenerator
 		    	HeightmapLayer l = (HeightmapLayer)li.next();
 		    	double[] lCeil = l.ceilingHeightFunction.apply(in).v;
 		    	double[] lFloor = l.floorHeightFunction.apply(in).v;
-				DataDaDaDa finput = new DataDaDaDa(in.x,lCeil,in.y);
-				int[] lType = l.typeFunction.apply(finput).v;
+				double[] lMid = new double[count];
+				for( int i=count-1; i>=0; --i ) lMid[i] = (lFloor[i] + lCeil[i]) / 2; 
+				DataDaDaDa typeInput = new DataDaDaDa(in.x,lMid,in.y);
+				int[] lType = l.typeFunction.apply(typeInput).v;
 		    	for( int j=in.getLength()-1; j>=0; --j ) {
 		    		boolean subtract = false;
 		    		if( lType[j] == Blocks.NONE ) {
