@@ -31,6 +31,7 @@ import togos.minecraft.mapgen.ui.Icons;
 import togos.minecraft.mapgen.ui.LayerSideCanvas;
 import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
+import togos.minecraft.mapgen.ui.Stat;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
@@ -256,6 +257,8 @@ public class WorldDesigner
 				normalShade = true;
 			} else if( "-height-shading".equals(args[i]) ) {
 				heightShade = true;
+			} else if( "-perf-log".equals(args[i]) ) {
+				Stat.performanceLoggingEnabled = true;
 			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
 				System.out.println(USAGE);
 			} else if( !args[i].startsWith("-") ) {

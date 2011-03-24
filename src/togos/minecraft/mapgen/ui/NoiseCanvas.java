@@ -139,7 +139,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 						g.fillRect( px[i], py[i], scale[i], scale[i] );
 					}
 				}
-				if( elapsedMs > 0 ) {
+				if( Stat.performanceLoggingEnabled && elapsedMs > 0 ) {
 					System.err.println(samples / elapsedMs + " samples per ms");
 					System.err.println(SoftCache.getInstance().cacheHits + " cahce hits, " + SoftCache.getInstance().cacheMisses + " misses");
 				}
