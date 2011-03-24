@@ -2,16 +2,16 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	TNLFunctionDaDaDa_Da lower;
-	TNLFunctionDaDaDa_Da upper;
-	TNLFunctionDaDaDa_Da clamped;
+	FunctionDaDaDa_Da lower;
+	FunctionDaDaDa_Da upper;
+	FunctionDaDaDa_Da clamped;
 	
-	public ClampOutDaDaDa_Da( TNLFunctionDaDaDa_Da lower, TNLFunctionDaDaDa_Da upper, TNLFunctionDaDaDa_Da clamped ) {
+	public ClampOutDaDaDa_Da( FunctionDaDaDa_Da lower, FunctionDaDaDa_Da upper, FunctionDaDaDa_Da clamped ) {
 		this.lower = lower;
 		this.upper = upper;
 		this.clamped = clamped;
@@ -31,7 +31,7 @@ public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return lower.isConstant() && upper.isConstant() && clamped.isConstant();
+		return FunctionUtil.isConstant(lower) && FunctionUtil.isConstant(upper) && FunctionUtil.isConstant(clamped);
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
@@ -46,7 +46,7 @@ public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return "clamp("+lower+", "+upper+", "+clamped+")";
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{ lower, upper, clamped };
+	public Object[] directSubExpressions() {
+		return new Object[]{ lower, upper, clamped };
 	}
 }

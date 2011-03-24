@@ -2,6 +2,9 @@ package togos.minecraft.mapgen.world;
 
 public class Blocks
 {
+	/** Used in some cases to mean 'don't change' */
+	public static final int NONE = -1;
+	
 	public static final byte AIR = 0x00;
 	public static final byte STONE = 0x01;
 	public static final byte GRASS = 0x02;

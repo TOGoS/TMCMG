@@ -33,7 +33,7 @@ public class AdaptInDaDa_DaDaDa_Da implements FunctionDaDa_Da, Expression
 	    return ((Expression)next).toTnl();
 	}
 
-	public Expression[] directSubExpressions() {
+	public Object[] directSubExpressions() {
 		if( next instanceof Expression ) {
 			return new Expression[]{ (Expression)next };
 		} else {

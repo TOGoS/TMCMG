@@ -2,14 +2,14 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class TranslateInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
 	double dx, dy, dz;
-	TNLFunctionDaDaDa_Da next;
-	public TranslateInDaDaDa_Da( double dx, double dy, double dz, TNLFunctionDaDaDa_Da next ) {
+	FunctionDaDaDa_Da next;
+	public TranslateInDaDaDa_Da( double dx, double dy, double dz, FunctionDaDaDa_Da next ) {
 		this.dx = dx;
 		this.dy = dy;
 		this.dz = dz;
@@ -29,7 +29,7 @@ public class TranslateInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return next.isConstant();
+		return FunctionUtil.isConstant(next);
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
@@ -37,11 +37,11 @@ public class TranslateInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 			(TNLFunctionDaDaDa_Da)rw.rewrite(next));
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{};
+	public Object[] directSubExpressions() {
+		return new Object[]{};
 	}
 	
 	public String toTnl() {
-		return "translate-in("+dx+", "+dy+", "+dz+", "+next.toTnl()+")";
+		return "translate-in("+dx+", "+dy+", "+dz+", "+FunctionUtil.toTnl(next)+")";
 	}
 }

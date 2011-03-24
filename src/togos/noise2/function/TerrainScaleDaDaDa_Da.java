@@ -2,7 +2,6 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
@@ -39,8 +38,8 @@ public class TerrainScaleDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return new TerrainScaleDaDaDa_Da(hScale, vScale, (TNLFunctionDaDaDa_Da)rw.rewrite(next));
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{};
+	public Object[] directSubExpressions() {
+		return new Object[]{};
 	}
 	
 	public String toTnl() {

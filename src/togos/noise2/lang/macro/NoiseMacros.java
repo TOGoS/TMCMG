@@ -8,16 +8,16 @@ import togos.noise2.function.CacheDaDaDa_Da;
 import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
+import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.GreaterThanDaDaDa_Da;
 import togos.noise2.function.LessThanDaDaDa_Da;
-import togos.noise2.function.SimplexDaDaDa_Da;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MinOutDaDaDa_Da;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.RidgeOutDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
+import togos.noise2.function.SimplexDaDaDa_Da;
 import togos.noise2.function.SubtractOutDaDaDa_Da;
 import togos.noise2.function.TransformInDaDaDa_Da;
 import togos.noise2.function.TranslateInDaDaDa_Da;
@@ -31,7 +31,7 @@ import togos.noise2.lang.FunctionUtil;
 public class NoiseMacros
 {
 	static abstract class DcDcDcDfMacroType extends BaseMacroType {
-		protected abstract Object instantiate( double x, double y, double z, TNLFunctionDaDaDa_Da next );
+		protected abstract Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next );
 		
 		protected int getRequiredArgCount() { return 4; } 
 		
@@ -115,12 +115,12 @@ public class NoiseMacros
 			}
 		});
 		add("scale-in", new DcDcDcDfMacroType() {
-			public Object instantiate( double x, double y, double z, TNLFunctionDaDaDa_Da next ) {
+			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new ScaleInDaDaDa_Da(x,y,z,next);
 			}
 		});
 		add("translate-in", new DcDcDcDfMacroType() {
-			public Object instantiate( double x, double y, double z, TNLFunctionDaDaDa_Da next ) {
+			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new TranslateInDaDaDa_Da(x,y,z,next);
 			}
 		});

@@ -2,14 +2,14 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class ScaleInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	TNLFunctionDaDaDa_Da next;
+	FunctionDaDaDa_Da next;
 	double scaleX, scaleY, scaleZ;
-	public ScaleInDaDaDa_Da( double scaleX, double scaleY, double scaleZ, TNLFunctionDaDaDa_Da next ) {
+	public ScaleInDaDaDa_Da( double scaleX, double scaleY, double scaleZ, FunctionDaDaDa_Da next ) {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
@@ -29,18 +29,18 @@ public class ScaleInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return next.isConstant();
+		return FunctionUtil.isConstant(next);
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
 		return new ScaleInDaDaDa_Da(scaleX, scaleY, scaleZ, (TNLFunctionDaDaDa_Da)rw.rewrite(next));
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{};
+	public Object[] directSubExpressions() {
+		return new Object[]{};
 	}
 	
 	public String toTnl() {
-		return "scale-in("+scaleX+", "+scaleY+", "+scaleZ+", "+next.toTnl()+")";
+		return "scale-in("+scaleX+", "+scaleY+", "+scaleZ+", "+FunctionUtil.toTnl(next)+")";
 	}
 }

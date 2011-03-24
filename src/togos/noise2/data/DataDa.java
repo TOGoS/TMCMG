@@ -6,7 +6,7 @@ public class DataDa extends Data
 {
 	public double[] v;
 	
-	public DataDa( double[] x) {
+	public DataDa( double[] x ) {
 		this.v = x;
 	}
 	

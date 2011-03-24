@@ -2,7 +2,7 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
@@ -11,9 +11,9 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	double inithscale, hscale;
 	double initvscale, vscale;
 	double ztrans;
-	TNLFunctionDaDaDa_Da next;
+	FunctionDaDaDa_Da next;
 	
-	public FractalDaDaDa_Da( int iterations, double inithscale, double initvscale, double hscale, double vscale, double ztrans, TNLFunctionDaDaDa_Da next ) {
+	public FractalDaDaDa_Da( int iterations, double inithscale, double initvscale, double hscale, double vscale, double ztrans, FunctionDaDaDa_Da next ) {
 		this.iterations = iterations;
 		this.inithscale = inithscale;
 		this.initvscale = initvscale;
@@ -50,7 +50,7 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return next.isConstant();
+		return FunctionUtil.isConstant(next);
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
@@ -58,10 +58,10 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public String toTnl() {
-		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+next.toTnl()+")";
+		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+FunctionUtil.toTnl(next)+")";
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{};
+	public Object[] directSubExpressions() {
+		return new Object[]{};
 	}
 }

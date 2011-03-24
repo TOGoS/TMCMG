@@ -12,6 +12,8 @@ public class TNLWorldGeneratorCompiler extends TNLCompiler
 		macroTypes.putAll( LanguageMacros.stdLanguageMacros );
 		macroTypes.putAll( NoiseMacros.stdNoiseMacros );
 		macroTypes.putAll( WorldGeneratorMacros.wgMacros );
+		
+		macroTypes.put("materials.none", new ConstantMacroType(new Integer(-1)));
 		for( int i=0; i<128; ++i ) {
 			Material m = Materials.getByBlockType(i);
 			if( m != null ) {

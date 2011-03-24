@@ -25,11 +25,14 @@ import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.Materials;
+import togos.minecraft.mapgen.world.gen.HeightmapLayer;
 import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaDaDa;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.lang.ScriptError;
 
 public class LayerSideCanvas extends WorldExplorerViewCanvas
@@ -78,7 +81,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 			int[] px = new int[width];
 			
 			double[] wx = new double[width];
-			double[] wy = new double[width];
+			double[] wz = new double[width];
 			int[] color = new int[width];
 			
 			synchronized( buffer ) {
@@ -86,33 +89,79 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 				g.fillRect(0,0,width,height);
 			}
 			for( Iterator li=layers.iterator(); li.hasNext(); ) {
-				LayerTerrainGenerator.Layer layer = (LayerTerrainGenerator.Layer)li.next();
+				HeightmapLayer layer = (HeightmapLayer)li.next();
 				for( int i=0; i<width; ++i ) {
 					px[i] = i;
 					wx[i] = worldX + px[i]*worldXPerPixel;
-					wy[i] = worldZ;
+					wz[i] = worldZ;
 				}
-				DataDaDa input = new DataDaDa(wx,wy);
+				DataDaDa input = new DataDaDa(wx,wz);
 				double[] floor = layer.floorHeightFunction.apply(input).v;
 				double[] ceil = layer.ceilingHeightFunction.apply(input).v;
-				int[] type = layer.typeFunction.apply(input).v;
-				for( int i=0; i<width; ++i ) {
-					if( type[i] == Blocks.AIR ) {
-						color[i] = 0xFF0088FF;
-					} else {
-						color[i] = Materials.getByBlockType(type[i]).color;
-					}
-				}
-				synchronized( buffer ) {
+				
+				if( FunctionUtil.isConstant(layer.typeFunction) ) {
+					// To speed things up, special case when type is constant:
+					
+					DataDaDaDa typeInput = new DataDaDaDa(wx,ceil,wz);
+					int[] type = layer.typeFunction.apply(typeInput).v;
+					
 					for( int i=0; i<width; ++i ) {
-						if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
-						if( floor[i] < worldFloor ) floor[i] = worldFloor;
-						if( ceil[i] < floor[i] ) continue;
-						
-						int c = (int)((worldCeiling - ceil[i]) * height / (worldCeiling-worldFloor));
-						int f = (int)((worldCeiling - floor[i]) * height / (worldCeiling-worldFloor));
-						g.setColor( color(color[i]) );
-						g.fillRect( px[i], c, 1, f-c );
+						if( type[i] == Blocks.NONE ) {
+							color[i] = 0x00000000;
+						} else if( type[i] == Blocks.AIR ) {
+							color[i] = 0xFF0088FF;
+						} else {
+							color[i] = Materials.getByBlockType(type[i]).color;
+						}
+					}
+					synchronized( buffer ) {
+						for( int i=0; i<width; ++i ) {
+							if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
+							if( floor[i] < worldFloor ) floor[i] = worldFloor;
+							if( ceil[i] < floor[i] ) continue;
+							if( color[i] == 0x00000000 ) continue;
+							
+							int c = (int)((worldCeiling - ceil[i]) * height / (worldCeiling-worldFloor));
+							int f = (int)((worldCeiling - floor[i]) * height / (worldCeiling-worldFloor));
+							
+							g.setColor( color(color[i]) );
+							g.fillRect( px[i], c, 1, f-c );
+						}
+					}
+				} else {
+					BufferedImage columnBuffer = new BufferedImage(1,height,BufferedImage.TYPE_INT_ARGB);
+					
+					for( int i=0; i<width; ++i ) {
+						synchronized( buffer ) {
+							if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
+							if( floor[i] < worldFloor ) floor[i] = worldFloor;
+							if( ceil[i] < floor[i] ) continue;
+							
+							int colHeight = (int)ceil[i] - (int)floor[i];
+							double[] colX = new double[colHeight];
+							double[] colY = new double[colHeight];
+							double[] colZ = new double[colHeight];
+							int[] colColors = new int[colHeight];
+							for( int j=0; j<colHeight; ++j ) {
+								colX[j] = wx[i];
+								colY[j] = (int)ceil[i] - j;
+								colZ[j] = wz[i];
+							}
+							DataDaDaDa finput = new DataDaDaDa(colX,colY,colZ);
+							int[] colTypes = layer.typeFunction.apply(finput).v;
+							for( int j=0; j<colHeight; ++j ) {
+								if( colTypes[j] == Blocks.NONE ) {
+									colColors[j] = 0x00000000;
+								} else if( colTypes[j] == Blocks.AIR ) {
+									colColors[j] = 0xFF0088FF;
+								} else {
+									colColors[j] = Materials.getByBlockType(colTypes[j]).color;
+								}
+							}
+							
+							columnBuffer.setRGB(0, 0, 1, colHeight, colColors, 0, 1);
+							g.drawImage(columnBuffer, i, height-(int)ceil[i], null);
+						}
 					}
 				}
 			}

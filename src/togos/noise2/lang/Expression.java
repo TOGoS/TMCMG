@@ -13,9 +13,10 @@ public interface Expression
 	
 	/**
 	 * Return a list of all sub-expressions
-	 * that will be called with the *same inputs* as this expression. 
+	 * that will be called with the *same inputs* as this expression.
+	 * (they might not necessarily implement Expression).
 	 */
-	public abstract Expression[] directSubExpressions();
+	public abstract Object[] directSubExpressions();
 	
 	/**
 	 * A string that is

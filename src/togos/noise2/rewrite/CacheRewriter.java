@@ -34,7 +34,7 @@ public class CacheRewriter implements ExpressionRewriter
 	
 	public void initCounts( Expression expr ) {
 		incr( expr.toTnl() );
-		Expression[] se = expr.directSubExpressions();
+		Object[] se = expr.directSubExpressions();
 		for( int i=0; i<se.length; ++i ) {
 			initCounts(se[i]);
 		}

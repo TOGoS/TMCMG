@@ -6,7 +6,7 @@ import togos.noise2.rewrite.ExpressionRewriter;
 
 public class LessThanDaDaDa_Da extends ComparisonDaDaDa_Da
 {
-	public LessThanDaDaDa_Da( TNLFunctionDaDaDa_Da a, TNLFunctionDaDaDa_Da b ) {
+	public LessThanDaDaDa_Da( FunctionDaDaDa_Da a, FunctionDaDaDa_Da b ) {
 		super( a, b );
 	}
 	

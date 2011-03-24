@@ -5,7 +5,7 @@ import togos.noise2.DigestUtil;
 import togos.noise2.cache.Cache;
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
@@ -41,13 +41,13 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	protected Cache cache;
-	public TNLFunctionDaDaDa_Da next;
+	public FunctionDaDaDa_Da next;
 	protected String nextUrn;
 	
-	public CacheDaDaDa_Da( Cache cache, TNLFunctionDaDaDa_Da next ) {
+	public CacheDaDaDa_Da( Cache cache, FunctionDaDaDa_Da next ) {
 		this.cache = cache;
 		this.next = next;
-		this.nextUrn = DigestUtil.getSha1Urn( next.toTnl() );
+		this.nextUrn = DigestUtil.getSha1Urn( FunctionUtil.toTnl(next) );
 	}
 	
 	public DataDa apply( final DataDaDaDa in ) {
@@ -59,15 +59,15 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return next.isConstant();
+		return FunctionUtil.isConstant(next);
 	}
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {
 		return new CacheDaDaDa_Da( cache, (TNLFunctionDaDaDa_Da)v.rewrite(next) );
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{ next };
+	public Object[] directSubExpressions() {
+		return new Object[]{ next };
 	}
 	
 	public String toString() {
@@ -75,6 +75,6 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public String toTnl() {
-	    return next.toTnl();
+	    return FunctionUtil.toTnl(next);
 	}
 }

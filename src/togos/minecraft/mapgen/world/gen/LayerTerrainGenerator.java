@@ -10,36 +10,19 @@ import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.data.DataDaIa;
-import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
-import togos.noise2.function.FunctionDaDa_Ia;
 
 public class LayerTerrainGenerator implements WorldGenerator
 {	
-	public static class Layer {
-		public FunctionDaDa_Ia typeFunction;
-		public FunctionDaDa_Da floorHeightFunction;
-		public FunctionDaDa_Da ceilingHeightFunction;
-		
-		public Layer(
-			FunctionDaDa_Ia typeFunction,
-			FunctionDaDa_Da floorHeightFunction,
-			FunctionDaDa_Da ceilingHeightFunction
-		) {
-			this.typeFunction = typeFunction;
-			this.floorHeightFunction = floorHeightFunction;
-			this.ceilingHeightFunction = ceilingHeightFunction;
-		}
-	}
-	
 	public Map components = new HashMap();
 	public List layers = new ArrayList();
-	protected Layer[] layerArray( List layers ) {
-		Layer[] larr = new Layer[layers.size()];
+	protected HeightmapLayer[] layerArray( List layers ) {
+		HeightmapLayer[] larr = new HeightmapLayer[layers.size()];
 		int n=0;
 		for( Iterator i=layers.iterator(); i.hasNext(); ) {
-			larr[n++] = (Layer)i.next();
+			larr[n++] = (HeightmapLayer)i.next();
 		}
 		return larr;
 	}
@@ -54,20 +37,41 @@ public class LayerTerrainGenerator implements WorldGenerator
 		public void mungeChunk( ChunkData cd ) {
 			DataDaDa in = ChunkUtil.getTileXZCoordinates( cd );
 			for( Iterator li=layers.iterator(); li.hasNext();  ) {
-				Layer l = (Layer)li.next();
-				double[] ceiling = l.ceilingHeightFunction.apply(in).v;
-				double[] floor = l.floorHeightFunction.apply(in).v;
-				int[] type = l.typeFunction.apply(in).v;
-				for( int i=0, tz=0; tz<cd.depth; ++tz ) {
-					for( int tx=0; tx<cd.width; ++tx, ++i ) {
-						double flo = floor[i];
-						if( flo < 0 ) flo = 0;
-						double cei = ceiling[i];
-						if( cei > cd.height ) cei = cd.height; 
-						for( int ty=(int)flo; ty<cei; ++ty ) {
-							cd.setBlock(tx, ty, tz, (byte)type[i]);
+				Object o = li.next();
+				if( o instanceof HeightmapLayer ) {
+					HeightmapLayer layer = (HeightmapLayer)o;
+					double[] ceiling = layer.ceilingHeightFunction.apply(in).v;
+					double[] floor = layer.floorHeightFunction.apply(in).v;
+					for( int i=0, tz=0; tz<cd.depth; ++tz ) {
+						for( int tx=0; tx<cd.width; ++tx, ++i ) {
+							int flo = (int)floor[i];
+							if( flo < 0 ) flo = 0;
+							int cei = (int)ceiling[i];
+							if( cei > cd.height ) cei = cd.height;
+							if( flo >= cei ) continue;
+							
+							int colHeight = cei-flo;
+							double[] colX = new double[colHeight];
+							double[] colY = new double[colHeight];
+							double[] colZ = new double[colHeight];
+							for( int j=0; j<colHeight; ++j ) {
+								colX[j] = in.x[i];
+								colY[j] = flo+j;
+								colZ[j] = in.y[i];
+							}
+							DataDaDaDa finput = new DataDaDaDa(colX,colY,colZ);
+							int[] colTypes = layer.typeFunction.apply(finput).v;
+							
+							for( int j=0, ty=flo; ty<cei; ++ty, ++j ) {
+								int blockType = colTypes[j];
+								if( blockType != Blocks.NONE ) {
+									cd.setBlock(tx, ty, tz, (byte)blockType);
+								}
+							}
 						}
 					}
+				} else {
+					throw new RuntimeException("Don't know how to apply layer: "+o.getClass());
 				}
 			}
 		}
@@ -93,12 +97,16 @@ public class LayerTerrainGenerator implements WorldGenerator
 	    		outT[j] = Blocks.AIR;
 	    	}
 		    for( Iterator li=layers.iterator(); li.hasNext(); ) {
-		    	Layer l = (Layer)li.next();
+		    	HeightmapLayer l = (HeightmapLayer)li.next();
 		    	double[] lCeil = l.ceilingHeightFunction.apply(in).v;
 		    	double[] lFloor = l.floorHeightFunction.apply(in).v;
-		    	int[] lType = l.typeFunction.apply(in).v;
+				DataDaDaDa finput = new DataDaDaDa(in.x,lCeil,in.y);
+				int[] lType = l.typeFunction.apply(finput).v;
 		    	for( int j=in.getLength()-1; j>=0; --j ) {
 		    		boolean subtract = false;
+		    		if( lType[j] == Blocks.NONE ) {
+		    			continue;
+		    		}
 		    		if( lType[j] == Blocks.AIR ) {
 		    			switch( airTreatment ) {
 		    			case( AIR_IGNORE ):

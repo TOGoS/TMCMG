@@ -53,27 +53,27 @@ public class SimpleWorldGenerator implements WorldGenerator
 		});
 		
 		LayerTerrainGenerator lm = new LayerTerrainGenerator();
-		lm.layers.add( new LayerTerrainGenerator.Layer(
+		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.WATER),
 			new Constant_Da(32),
 			new Constant_Da(64)
 		));
-		lm.layers.add( new LayerTerrainGenerator.Layer(
+		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.SAND),
 			new Constant_Da(-10),
 			new AdaptInDaDa_DaDaDa_Da(sandLevel)
 		));
-		lm.layers.add( new LayerTerrainGenerator.Layer(
+		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.DIRT),
 			new Constant_Da(0),
 			new AdaptInDaDa_DaDaDa_Da(dirtLevel)
 		));
-		lm.layers.add( new LayerTerrainGenerator.Layer(
+		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.STONE),
 			new Constant_Da(1),
 			new AdaptInDaDa_DaDaDa_Da(stoneLevel)
 		));
-		lm.layers.add( new LayerTerrainGenerator.Layer(
+		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.BEDROCK),
 			new Constant_Da(0),
 			new Constant_Da(1)

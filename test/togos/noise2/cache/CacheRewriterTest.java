@@ -27,7 +27,7 @@ public class CacheRewriterTest extends TestCase
 		o = cw.rewrite(o);
 		
 		assertTrue( o instanceof AddOutDaDaDa_Da );
-		Expression[] dse = ((ReduceOutDaDaDa_Da)o).directSubExpressions();
+		Object[] dse = ((ReduceOutDaDaDa_Da)o).directSubExpressions();
 		assertTrue( dse[0] instanceof CacheDaDaDa_Da );
 		assertTrue( dse[1] instanceof MultiplyOutDaDaDa_Da );
 		assertTrue( dse[2] instanceof Constant_Da );

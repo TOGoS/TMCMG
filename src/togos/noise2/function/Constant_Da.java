@@ -3,9 +3,7 @@ package togos.noise2.function;
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
-
 
 public class Constant_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDa_Da
 {
@@ -62,7 +60,7 @@ public class Constant_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDa_Da
 	    return this;
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{};
+	public Object[] directSubExpressions() {
+		return new Object[]{};
 	}
 }

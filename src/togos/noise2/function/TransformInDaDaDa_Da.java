@@ -2,15 +2,15 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 
 public class TransformInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	TNLFunctionDaDaDa_Da next;
-	TNLFunctionDaDaDa_Da xfX, xfY, xfZ;
-	public TransformInDaDaDa_Da( TNLFunctionDaDaDa_Da xfX, TNLFunctionDaDaDa_Da xfY, TNLFunctionDaDaDa_Da xfZ, TNLFunctionDaDaDa_Da next ) {
+	FunctionDaDaDa_Da next;
+	FunctionDaDaDa_Da xfX, xfY, xfZ;
+	public TransformInDaDaDa_Da( FunctionDaDaDa_Da xfX, FunctionDaDaDa_Da xfY, FunctionDaDaDa_Da xfZ, FunctionDaDaDa_Da next ) {
 		this.xfX = xfX;
 		this.xfY = xfY;
 		this.xfZ = xfZ;
@@ -26,7 +26,7 @@ public class TransformInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return xfX.isConstant() && xfY.isConstant() && xfZ.isConstant() && next.isConstant();
+		return FunctionUtil.isConstant(xfX) && FunctionUtil.isConstant(xfY) && FunctionUtil.isConstant(xfZ) && FunctionUtil.isConstant(next);
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw)  {
@@ -38,11 +38,11 @@ public class TransformInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		);
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{ xfX, xfY, xfZ };
+	public Object[] directSubExpressions() {
+		return new Object[]{ xfX, xfY, xfZ };
 	}
 	
 	public String toTnl() {
-		return "transform-in("+xfX.toTnl()+", "+xfY.toTnl()+", "+xfZ.toTnl()+", "+next.toTnl()+")";
+		return "transform-in("+FunctionUtil.toTnl(xfX)+", "+FunctionUtil.toTnl(xfY)+", "+FunctionUtil.toTnl(xfZ)+", "+FunctionUtil.toTnl(next)+")";
 	}
 }

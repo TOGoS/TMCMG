@@ -1,0 +1,20 @@
+# Based on code from Altimor_
+# http://www.minecraftforum.net/viewtopic.php?f=25&t=107262#p1782457
+
+rigid = 48 + fractal( 8, 8, 4, 2, 2, -1, simplex );
+
+layered-terrain(
+	# Ocean, in case you're into that kind of thing
+	layer( materials.water, 0, 64 ),
+	
+	layer( materials.stone + (ridge(0,8,y) > 4) * (materials.dirt - materials.stone), 0, ridge( 32, 96, rigid ) ),
+	
+	# Bedrock
+	layer( materials.bedrock, 0, 1 ),
+	
+	# And that other stuff
+	tree-populator( tree-types.pine,  fractal( 3, 100, 0.007, 2, 2,  3, simplex ), 1 ),
+	tree-populator( tree-types.round, fractal( 3,  50, 0.007, 2, 2, -3, simplex ), 2 ),
+	lighter,
+	flag-populated,
+)

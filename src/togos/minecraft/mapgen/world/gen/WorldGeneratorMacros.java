@@ -6,8 +6,8 @@ import java.util.Iterator;
 
 import togos.minecraft.mapgen.world.Blocks;
 import togos.noise2.cache.SoftCache;
+import togos.noise2.function.FunctionDaDaDa_Ia;
 import togos.noise2.function.FunctionDaDa_Da;
-import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.FunctionUtil;
@@ -42,8 +42,8 @@ public class WorldGeneratorMacros
 									+ " requires 3 arguments for type, floor, ceiling; given "
 									+ sn.arguments.size(), sn);
 				}
-				return new LayerTerrainGenerator.Layer(
-					FunctionUtil.toDaDa_Ia(c.compile((ASTNode)sn.arguments.get(0)), sn),
+				return new HeightmapLayer(
+					FunctionUtil.toDaDaDa_Ia(c.compile((ASTNode)sn.arguments.get(0)), sn),
 					FunctionUtil.toDaDa_Da(c.compile((ASTNode)sn.arguments.get(1)), sn),
 					FunctionUtil.toDaDa_Da(c.compile((ASTNode)sn.arguments.get(2)), sn)
 				);
@@ -121,7 +121,7 @@ public class WorldGeneratorMacros
 				for( Iterator i = sn.arguments.iterator(); i.hasNext(); ) {
 					ASTNode argNode = (ASTNode) i.next();
 					Object node = c.compile(argNode);
-					if( node instanceof LayerTerrainGenerator.Layer ) {
+					if( node instanceof HeightmapLayer ) {
 						lm.layers.add(node);
 						continue;
 					}
@@ -149,11 +149,11 @@ public class WorldGeneratorMacros
 				}
 				
 				for( Iterator li=lm.layers.iterator(); li.hasNext(); ) {
-					LayerTerrainGenerator.Layer layer = (LayerTerrainGenerator.Layer)li.next();
+					HeightmapLayer layer = (HeightmapLayer)li.next();
 					
 					layer.floorHeightFunction   = (FunctionDaDa_Da)cf.rewrite( layer.floorHeightFunction );
 					layer.ceilingHeightFunction = (FunctionDaDa_Da)cf.rewrite( layer.ceilingHeightFunction );
-					layer.typeFunction          = (FunctionDaDa_Ia)cf.rewrite( layer.typeFunction );
+					layer.typeFunction        = (FunctionDaDaDa_Ia)cf.rewrite( layer.typeFunction );
 					
 					crw.initCounts( layer.floorHeightFunction );
 					crw.initCounts( layer.ceilingHeightFunction );
@@ -163,14 +163,14 @@ public class WorldGeneratorMacros
 				//crw.dumpCounts(System.out);
 				
 				for( Iterator li=lm.layers.iterator(); li.hasNext(); ) {
-					LayerTerrainGenerator.Layer layer = (LayerTerrainGenerator.Layer)li.next();
+					HeightmapLayer layer = (HeightmapLayer)li.next();
 					//System.err.println("   "+layer.floorHeightFunction.toString());
 					//System.err.println("   "+layer.ceilingHeightFunction.toString());
 					//System.err.println("   "+layer.typeFunction.toString());
 
 					layer.floorHeightFunction   = (FunctionDaDa_Da)crw.rewrite( layer.floorHeightFunction );
 					layer.ceilingHeightFunction = (FunctionDaDa_Da)crw.rewrite( layer.ceilingHeightFunction );
-					layer.typeFunction          = (FunctionDaDa_Ia)crw.rewrite( layer.typeFunction );
+					layer.typeFunction        = (FunctionDaDaDa_Ia)crw.rewrite( layer.typeFunction );
 					
 					//System.err.println("-> "+layer.floorHeightFunction.toString());
 					//System.err.println("-> "+layer.ceilingHeightFunction.toString());

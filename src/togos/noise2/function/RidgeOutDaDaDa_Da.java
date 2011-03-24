@@ -2,16 +2,16 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.Expression;
+import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
 public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	TNLFunctionDaDaDa_Da lower;
-	TNLFunctionDaDaDa_Da upper;
-	TNLFunctionDaDaDa_Da ridged;
+	FunctionDaDaDa_Da lower;
+	FunctionDaDaDa_Da upper;
+	FunctionDaDaDa_Da ridged;
 	
-	public RidgeOutDaDaDa_Da( TNLFunctionDaDaDa_Da lower, TNLFunctionDaDaDa_Da upper, TNLFunctionDaDaDa_Da ridged ) {
+	public RidgeOutDaDaDa_Da( FunctionDaDaDa_Da lower, FunctionDaDaDa_Da upper, FunctionDaDaDa_Da ridged ) {
 		this.lower = lower;
 		this.upper = upper;
 		this.ridged = ridged;
@@ -51,7 +51,7 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public boolean isConstant() {
-		return lower.isConstant() && upper.isConstant() && ridged.isConstant();
+		return FunctionUtil.isConstant(lower) && FunctionUtil.isConstant(upper) && FunctionUtil.isConstant(ridged);
 	}
 	
 	public Object rewriteSubExpressions(ExpressionRewriter rw) {
@@ -62,11 +62,11 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		);
 	}
 	
-	public Expression[] directSubExpressions() {
-		return new Expression[]{ upper, lower, ridged };
+	public Object[] directSubExpressions() {
+		return new Object[]{ upper, lower, ridged };
 	}
 	
 	public String toTnl() {
-		return "ridge("+lower.toTnl()+", "+upper.toTnl()+", "+ridged.toTnl()+")";
+		return "ridge("+FunctionUtil.toTnl(lower)+", "+FunctionUtil.toTnl(upper)+", "+FunctionUtil.toTnl(ridged)+")";
 	}
 }

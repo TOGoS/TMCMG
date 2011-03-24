@@ -4,19 +4,22 @@ import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
+import togos.noise2.function.AdaptOutDaDaDa_Da_Ia;
 import togos.noise2.function.AdaptOutDaDa_Da_Ia;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
 import togos.noise2.function.FunctionDaDaDa_Da;
+import togos.noise2.function.FunctionDaDaDa_Ia;
+import togos.noise2.function.PossiblyConstant;
 import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
 
 public class FunctionUtil
 {
-	public static TNLFunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
-		if( r instanceof TNLFunctionDaDaDa_Da ) {
-			return (TNLFunctionDaDaDa_Da)r;
+	public static FunctionDaDaDa_Da toDaDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
+		if( r instanceof FunctionDaDaDa_Da ) {
+			return (FunctionDaDaDa_Da)r;
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
@@ -27,8 +30,8 @@ public class FunctionUtil
 	public static FunctionDaDa_Da toDaDa_Da( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDa_Da ) {
 			return (FunctionDaDa_Da)r;
-		} else if( r instanceof TNLFunctionDaDaDa_Da ) {
-			return new AdaptInDaDa_DaDaDa_Da( (TNLFunctionDaDaDa_Da)r );
+		} else if( r instanceof FunctionDaDaDa_Da ) {
+			return new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
@@ -37,8 +40,8 @@ public class FunctionUtil
 	}
 
 	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {
-		if( r instanceof TNLFunctionDaDaDa_Da ) {
-			r = new AdaptInDaDa_DaDaDa_Da( (TNLFunctionDaDaDa_Da)r );
+		if( r instanceof FunctionDaDaDa_Da ) {
+			r = new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
 		}
 		
 		if( r instanceof FunctionDaDa_Ia ) {
@@ -48,7 +51,19 @@ public class FunctionUtil
 		} else if( r instanceof Number ) {
 			return new Constant_Ia( ((Number)r).intValue() );
 		} else {
-			throw new CompileError("Can't convert "+r.getClass()+" to FunctionDaDaDa_Da", sloc);
+			throw new CompileError("Can't convert "+r.getClass()+" to FunctionDaDa_Ia", sloc);
+		}		
+	}
+	
+	public static FunctionDaDaDa_Ia toDaDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {
+		if( r instanceof FunctionDaDaDa_Ia ) {
+			return (FunctionDaDaDa_Ia)r;
+		} else if( r instanceof FunctionDaDaDa_Da ) {
+			return new AdaptOutDaDaDa_Da_Ia((FunctionDaDaDa_Da)r);
+		} else if( r instanceof Number ) {
+			return new Constant_Ia( ((Number)r).intValue() );
+		} else {
+			throw new CompileError("Can't convert "+r.getClass()+" to FunctionDaDaDa_Ia", sloc);
 		}		
 	}
 	
@@ -94,5 +109,26 @@ public class FunctionUtil
 	public static TNLFunctionDaDaDa_Da collapseIfConstant( TNLFunctionDaDaDa_Da f ) {
 		if( f.isConstant() ) return getConstantFunction(f);
 		return f;
+	}
+	
+	public static String toTnl( Object o ) {
+		if( o instanceof Expression ) {
+			return ((Expression)o).toTnl();
+		} else {
+			throw new RuntimeException("Object is not expression, cannot toTnl it: "+o.getClass());
+		}
+	}
+	
+	/**
+	 * Return true if the object definitely represents
+	 * a function that will return the same value
+	 * regardless of inputs.
+	 */
+	public static boolean isConstant( Object o ) {
+		if( o instanceof PossiblyConstant ) {
+			return ((PossiblyConstant)o).isConstant();
+		} else {
+			return false;
+		}
 	}
 }

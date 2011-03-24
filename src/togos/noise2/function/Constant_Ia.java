@@ -1,11 +1,12 @@
 package togos.noise2.function;
 
 import togos.noise2.data.DataDaDa;
+import togos.noise2.data.DataDaDaDa;
 import togos.noise2.data.DataIa;
 import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class Constant_Ia implements FunctionDaDa_Ia, Expression
+public class Constant_Ia implements FunctionDaDa_Ia, FunctionDaDaDa_Ia, Expression, PossiblyConstant
 {
 	public static final Constant_Ia ZERO = new Constant_Ia(0);
 	
@@ -35,6 +36,10 @@ public class Constant_Ia implements FunctionDaDa_Ia, Expression
 		return apply( in.getLength() );
 	}
 	
+	public DataIa apply( DataDaDaDa in ) {
+		return apply( in.getLength() );
+	}
+	
 	public boolean equals( Object oth ) {
 		if( !(oth instanceof Constant_Ia) ) return false;
 		return value == ((Constant_Ia)oth).value;
@@ -48,11 +53,15 @@ public class Constant_Ia implements FunctionDaDa_Ia, Expression
 		return Integer.toString(value);
 	}
 	
-	public Expression[] directSubExpressions() {
+	public Object[] directSubExpressions() {
 		return new Expression[0];
 	}
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {
 	    return this;
+	}
+	
+	public boolean isConstant() {
+	    return true;
 	}
 }
