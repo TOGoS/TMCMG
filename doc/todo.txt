@@ -1,4 +1,3 @@
-- Optional depth shading (separate from normal shading) in top-down preview
 - Add if function (should support if(cond1, then1, cond2, then2, cond3, then3, else) syntax)
 - Add % operator (should act logically with negative numbers)
 - Add function to make selecting based on input easier
@@ -8,6 +7,7 @@
 - Flower/mushroom populator
 - 'center on player' button in Export Chunks window
 
+* Optional depth shading (separate from normal shading) in top-down preview
 * Fix caching
   (doesn't work across Layers because Data objects get separate IDs
   due to passing through AdaptInDaDa_DaDaDa_Das)
