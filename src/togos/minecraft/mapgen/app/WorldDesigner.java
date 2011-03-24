@@ -102,8 +102,9 @@ public class WorldDesigner
 		
 		WorldDesignerKernel wdk;
 		
-		CheckboxMenuItem shadingMenuItem;
 		CheckboxMenuItem autoReloadMenuItem;
+		CheckboxMenuItem normalShadingMenuItem;
+		CheckboxMenuItem heightShadingMenuItem;
 		
 		public WorldDesignerMenuBar( WorldDesignerKernel _wdk ) {
 			this.wdk = _wdk;
@@ -152,21 +153,31 @@ public class WorldDesigner
 			fileMenu.add(autoReloadMenuItem);
 			
 			
-			shadingMenuItem = new CheckboxMenuItem("Enable Shading");
-			shadingMenuItem.setShortcut(new MenuShortcut(KeyEvent.VK_G));
-			shadingMenuItem.addItemListener(new ItemListener() {
+			normalShadingMenuItem = new CheckboxMenuItem("Enable Normal Shading");
+			normalShadingMenuItem.setShortcut(new MenuShortcut(KeyEvent.VK_N));
+			normalShadingMenuItem.addItemListener(new ItemListener() {
 				public void itemStateChanged( ItemEvent evt ) {
-					noiseCanvas.shadingEnabled = ( evt.getStateChange() == ItemEvent.SELECTED );
+					noiseCanvas.normalShadingEnabled = ( evt.getStateChange() == ItemEvent.SELECTED );
+					noiseCanvas.stateUpdated();
+				}
+			});
+			heightShadingMenuItem = new CheckboxMenuItem("Enable Height Shading");
+			heightShadingMenuItem.setShortcut(new MenuShortcut(KeyEvent.VK_H));
+			heightShadingMenuItem.addItemListener(new ItemListener() {
+				public void itemStateChanged( ItemEvent evt ) {
+					noiseCanvas.heightShadingEnabled = ( evt.getStateChange() == ItemEvent.SELECTED );
 					noiseCanvas.stateUpdated();
 				}
 			});
 
 			Menu viewMenu = new Menu("View");
-			viewMenu.add(shadingMenuItem);
+			viewMenu.add(normalShadingMenuItem);
+			viewMenu.add(heightShadingMenuItem);
 
 			
 			
 			MenuItem aboutMenuItem = new MenuItem("About");
+			aboutMenuItem.setShortcut(new MenuShortcut(KeyEvent.VK_F1));
 			aboutMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed( ActionEvent e ) {
 					new HelpWindow().setVisible(true);
@@ -182,7 +193,8 @@ public class WorldDesigner
 		}
 		
 		public void initState() {
-			shadingMenuItem.setState(noiseCanvas.shadingEnabled);
+			normalShadingMenuItem.setState(noiseCanvas.normalShadingEnabled);
+			heightShadingMenuItem.setState(noiseCanvas.heightShadingEnabled);
 			autoReloadMenuItem.setState(wdk.autoReloadEnabled);
 		}
 	}
@@ -229,7 +241,8 @@ public class WorldDesigner
 		String scriptFilename = null;
 		boolean autoReload = false;
 		boolean fullscreen = false;
-		boolean shade = false;
+		boolean normalShade = false;
+		boolean heightShade = false;
 		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-chunk-dir".equals(args[i]) ) {
@@ -238,8 +251,10 @@ public class WorldDesigner
 				autoReload = true;
 			} else if( "-fullscreen".equals(args[i]) ) {
 				fullscreen = true;
-			} else if( "-shade".equals(args[i]) ) {
-				shade = true;
+			} else if( "-normal-shading".equals(args[i]) ) {
+				normalShade = true;
+			} else if( "-height-shading".equals(args[i]) ) {
+				heightShade = true;
 			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
 				System.out.println(USAGE);
 			} else if( !args[i].startsWith("-") ) {
@@ -302,7 +317,8 @@ public class WorldDesigner
 		lsc.setPreferredSize(new Dimension(640,128));
 		lsc.setMaximumSize(new Dimension(Integer.MAX_VALUE,128));
 		noiseCanvas.setPreferredSize(new Dimension(640,384));
-		noiseCanvas.shadingEnabled = shade;
+		noiseCanvas.normalShadingEnabled = normalShade;
+		noiseCanvas.heightShadingEnabled = heightShade;
 
 		statusLabel.setBackground(Color.BLACK);
 		statusLabel.setForeground(Color.PINK);

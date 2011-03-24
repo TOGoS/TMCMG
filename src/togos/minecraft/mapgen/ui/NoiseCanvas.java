@@ -21,7 +21,7 @@ import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
-import togos.minecraft.mapgen.world.gen.ShadingGroundColorFunction;
+import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
@@ -39,7 +39,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		double worldX, worldY, worldXPerPixel, worldYPerPixel;
 		
 		public volatile BufferedImage buffer;
-		protected volatile boolean stop = false;		
+		protected volatile boolean stop = false;
 		
 		public NoiseRenderer( FunctionDaDa_Ia colorFunction, int width, int height,
 			double worldX, double worldY, double worldXPerPixel, double worldYPerPixel
@@ -157,7 +157,8 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 	
 	public FunctionDaDa_Ia colorFunc;
 	NoiseRenderer cnr;
-	public boolean shadingEnabled;
+	public boolean normalShadingEnabled = true;
+	public boolean heightShadingEnabled = true;
 	
 	public NoiseCanvas() {
 		super();
@@ -172,11 +173,15 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		
 		if( wg == null ) {
 			colorFunc = null;
-		} else if( shadingEnabled ) {
-			colorFunc = new ShadingGroundColorFunction(
+		} else if( normalShadingEnabled ) {
+			NormalShadingGroundColorFunction gcf = new NormalShadingGroundColorFunction(
 				wg.getGroundFunction(), mpp/2, mpp/2, 0.3/mpp, 0.5 );
+			gcf.heightShadingEnabled = heightShadingEnabled;
+			colorFunc = gcf;
 		} else {
-			colorFunc = new GroundColorFunction( wg.getGroundFunction() );
+			GroundColorFunction gcf = new GroundColorFunction( wg.getGroundFunction() );
+			gcf.heightShadingEnabled = heightShadingEnabled;
+			colorFunc = gcf;
 		}
 		
 		if( colorFunc != null ) {
