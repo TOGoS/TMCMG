@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 
 public class DataDa extends Data
 {
-	public double[] v;
+	public final double[] v;
 	
 	public DataDa( double[] x ) {
 		this.v = x;

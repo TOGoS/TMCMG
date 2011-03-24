@@ -3,7 +3,7 @@ package togos.noise2.function;
 
 public class MultiplyOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 {
-	public MultiplyOutDaDaDa_Da( TNLFunctionDaDaDa_Da[] components ) {
+	public MultiplyOutDaDaDa_Da( FunctionDaDaDa_Da[] components ) {
 		super(components);
 	}
 	

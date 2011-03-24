@@ -4,8 +4,8 @@ import java.security.MessageDigest;
 
 public class DataDaIa extends Data
 {
-	public double[] d;
-	public int[] i;
+	public final double[] d;
+	public final int[] i;
 	
 	public DataDaIa( double[] d, int[] i ) {
 		this.d = d;

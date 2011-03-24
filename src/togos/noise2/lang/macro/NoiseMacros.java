@@ -4,16 +4,23 @@ import java.util.HashMap;
 
 import togos.noise2.cache.SoftCache;
 import togos.noise2.function.AddOutDaDaDa_Da;
+import togos.noise2.function.AndOutDaDaDa_Da;
 import togos.noise2.function.CacheDaDaDa_Da;
 import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
+import togos.noise2.function.EqualDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.GreaterThanDaDaDa_Da;
+import togos.noise2.function.GreaterThanOrEqualDaDaDa_Da;
+import togos.noise2.function.IfDaDaDa_Da;
 import togos.noise2.function.LessThanDaDaDa_Da;
+import togos.noise2.function.LessThanOrEqualDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MinOutDaDaDa_Da;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
+import togos.noise2.function.NotEqualDaDaDa_Da;
+import togos.noise2.function.OrOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.RidgeOutDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
@@ -52,29 +59,45 @@ public class NoiseMacros
 	static MacroType dddaamt(Class functionClass) {
 		return new DaDaDa_DaArrayArgMacroType(functionClass);
 	}
+	static MacroType tdddmt(Class functionClass) {
+		return new TwoDaDaDa_DaArgMacroType(functionClass);
+	}
 	static {
+		// Selection
+		add( "if", new BaseMacroType() {
+			protected int getRequiredArgCount() { return -1; }
+			
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
+				if( compiledArgs.length % 2 == 0 ) {
+					throw new CompileError("if requires an odd number of arguments, "+compiledArgs.length+" given", node);
+				}
+				FunctionDaDaDa_Da[] funx = new FunctionDaDaDa_Da[compiledArgs.length];
+				for( int i=0; i<funx.length; ++i ) {
+					funx[i] = FunctionUtil.toDaDaDa_Da(compiledArgs[i], argNodes[i]);
+				}
+				return new IfDaDaDa_Da( funx );
+			}
+		});
+		
+		// Comparison
+		add("<",  tdddmt(LessThanDaDaDa_Da.class));
+		add(">",  tdddmt(GreaterThanDaDaDa_Da.class));
+		add("<=", tdddmt(LessThanOrEqualDaDaDa_Da.class));
+		add(">=", tdddmt(GreaterThanOrEqualDaDaDa_Da.class));
+		add("==", tdddmt(EqualDaDaDa_Da.class));
+		add("!=", tdddmt(NotEqualDaDaDa_Da.class));
+		
+		// Boolean arithmetic
+		add("and", dddaamt(AndOutDaDaDa_Da.class));
+		add("or",  dddaamt(OrOutDaDaDa_Da.class));
+				
+		// Numeric arithmetic
 		add("+", dddaamt(AddOutDaDaDa_Da.class));
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
 		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
-		add("<", new BaseMacroType() {
-			protected int getRequiredArgCount() { return 2; }
-			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
-				return new LessThanDaDaDa_Da(
-					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
-					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1])
-				);
-			}
-		});
-		add(">", new BaseMacroType() {
-			protected int getRequiredArgCount() { return 2; }
-			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
-				return new GreaterThanDaDaDa_Da(
-					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]),
-					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1])
-				);
-			}
-		});
+		
+		// Clamping/folding
 		add("min", dddaamt(MinOutDaDaDa_Da.class));
 		add("max", dddaamt(MaxOutDaDaDa_Da.class));
 		add("clamp", new BaseMacroType() {
@@ -114,6 +137,8 @@ public class NoiseMacros
 				);
 			}
 		});
+		
+		// Input transformation
 		add("scale-in", new DcDcDcDfMacroType() {
 			public Object instantiate( double x, double y, double z, FunctionDaDaDa_Da next ) {
 				return new ScaleInDaDaDa_Da(x,y,z,next);
@@ -136,12 +161,17 @@ public class NoiseMacros
 				);
 			}
 		});
+		
+		// Inputs
 		add("x", new ConstantMacroType(X.instance));
 		add("y", new ConstantMacroType(Y.instance));
 		add("z", new ConstantMacroType(Z.instance));
+		
+		// Noise
 		add("perlin", new ConstantMacroType(PerlinDaDaDa_Da.instance));
 		add("simplex", new ConstantMacroType(SimplexDaDaDa_Da.instance));
 		
+		// Utility
 		add("cache", new BaseMacroType() {
 			protected int getRequiredArgCount() { return 1; }			
 			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {

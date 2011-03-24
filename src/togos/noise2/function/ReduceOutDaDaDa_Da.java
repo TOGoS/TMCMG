@@ -10,8 +10,8 @@ public abstract class ReduceOutDaDaDa_Da
 	extends TNLFunctionDaDaDa_Da
 	implements Cloneable
 {
-	TNLFunctionDaDaDa_Da[] components;
-	public ReduceOutDaDaDa_Da( TNLFunctionDaDaDa_Da[] components ) {
+	FunctionDaDaDa_Da[] components;
+	public ReduceOutDaDaDa_Da( FunctionDaDaDa_Da[] components ) {
 		this.components = components;
 	}
 	
@@ -60,7 +60,7 @@ public abstract class ReduceOutDaDaDa_Da
 		boolean first = true;
 		for( int i=0; i<components.length; ++i ) {
 			if( !first ) s += separator;
-			s += (tnlifySubs ? components[i].toTnl() : components[i].toString());
+			s += (tnlifySubs ? FunctionUtil.toTnl(components[i]) : components[i].toString());
 			first = false;
 		}
 		s += ")";
@@ -77,7 +77,7 @@ public abstract class ReduceOutDaDaDa_Da
 	
 	public boolean isConstant() {
 		for( int i=0; i<components.length; ++i ) {
-			if( !components[i].isConstant() ) return false;
+			if( !FunctionUtil.isConstant(components[i]) ) return false;
 		}
 		return true;
 	}

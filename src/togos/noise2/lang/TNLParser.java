@@ -17,6 +17,12 @@ public class TNLParser
 		operatorPrecedence.put("-",  new Integer(25));
 		operatorPrecedence.put(">",  new Integer(20));
 		operatorPrecedence.put("<",  new Integer(20));
+		operatorPrecedence.put(">=", new Integer(20));
+		operatorPrecedence.put("<=", new Integer(20));
+		operatorPrecedence.put("==", new Integer(18));
+		operatorPrecedence.put("!=", new Integer(18));
+		operatorPrecedence.put("and", new Integer(17));
+		operatorPrecedence.put("or",  new Integer(16));
 		operatorPrecedence.put("=",  new Integer(15));
 		operatorPrecedence.put(",",  new Integer(COMMA_PRECEDENCE));
 		operatorPrecedence.put(";",  new Integer( 5));
