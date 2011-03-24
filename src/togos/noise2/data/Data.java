@@ -12,14 +12,14 @@ public abstract class Data
 		long d = System.currentTimeMillis();
 		Random r = new Random(123123);
 		r.nextLong(); r.nextLong(); r.nextLong();
-		guidPfx = "urn:uuid:" + Long.toString(d ^ r.nextLong(),16) + "-";
+		guidPfx = Long.toString(d ^ r.nextLong(),16) + "-";
 	}
 	static long guidIncr = 1;
 	protected static synchronized String nextGuid() {
 		return guidPfx + Long.toString(guidIncr++,16);
 	}
 	
-	public String urn = null;
+	public String dataId = null;
 	
 	protected void intBytes( long l, byte[] b, int o ) {
 		b[o+0] = (byte)((l >> 24) & 0xFF);
@@ -51,16 +51,16 @@ public abstract class Data
 		return DigestUtil.getSha1Urn(sha1);
 	}
 	
-	protected String generateUrn() {
+	protected String generateDataId() {
 		return nextGuid();
 		// If hashing wasn't so expensive this would be way better...
 		// return getSha1Urn();
 	}
 	
-	public synchronized String getUrn() {
-		if( urn == null ) {
-			urn = generateUrn();
+	public synchronized String getDataId() {
+		if( dataId == null ) {
+			dataId = generateDataId();
 		}
-		return urn;
+		return dataId;
 	}
 }

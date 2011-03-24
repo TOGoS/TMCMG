@@ -6,23 +6,26 @@ import togos.noise2.data.DataDaDaDa;
 import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class AdaptInDaDa_DaDaDa_Da implements FunctionDaDa_Da, Expression
+/**
+ * So called because the outer data's X and Y are mapped to the inner data's X and Z 
+ */
+public class AdaptInXZDaDaDa_DaDa_Da implements FunctionDaDa_Da, Expression
 {
-	static Constant_Da Z = new Constant_Da(0); 
+	static Constant_Da Y = new Constant_Da(0); 
 	
 	FunctionDaDaDa_Da next;
 	
-	public AdaptInDaDa_DaDaDa_Da( FunctionDaDaDa_Da next ) {
+	public AdaptInXZDaDaDa_DaDa_Da( FunctionDaDaDa_Da next ) {
 		this.next = next;
 	}
 
 	public DataDa apply( DataDaDa in ) {
-		DataDa z = Z.apply(in);
-		return next.apply(new DataDaDaDa(in.x, in.y, z.v, in.getUrn()));
+		DataDa y = Y.apply(in);
+		return next.apply(new DataDaDaDa(in.x, y.v, in.y, "adaptX0Y:"+in.getDataId()));
 	}
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {
-	    return new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)v.rewrite(next) );
+	    return new AdaptInXZDaDaDa_DaDa_Da( (FunctionDaDaDa_Da)v.rewrite(next) );
 	}
 	
 	public String toString() {

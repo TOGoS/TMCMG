@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import togos.minecraft.mapgen.world.Blocks;
-import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
+import togos.noise2.function.AdaptInXZDaDaDa_DaDa_Da;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
@@ -61,17 +61,17 @@ public class SimpleWorldGenerator implements WorldGenerator
 		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.SAND),
 			new Constant_Da(-10),
-			new AdaptInDaDa_DaDaDa_Da(sandLevel)
+			new AdaptInXZDaDaDa_DaDa_Da(sandLevel)
 		));
 		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.DIRT),
 			new Constant_Da(0),
-			new AdaptInDaDa_DaDaDa_Da(dirtLevel)
+			new AdaptInXZDaDaDa_DaDa_Da(dirtLevel)
 		));
 		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.STONE),
 			new Constant_Da(1),
-			new AdaptInDaDa_DaDaDa_Da(stoneLevel)
+			new AdaptInXZDaDaDa_DaDa_Da(stoneLevel)
 		));
 		lm.layers.add( new HeightmapLayer(
 			new Constant_Ia(Blocks.BEDROCK),
@@ -84,7 +84,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 		cmList.addMunger( new Grassifier() );
 		GroundStampPopulator tsp = new GroundStampPopulator(
 			new RoundTreeGenerator(), 20,
-			new AdaptInDaDa_DaDaDa_Da(new ScaleOutDaDaDa_Da(1d/16, new ScaleInDaDaDa_Da(1d/64, 1d/64, 1d/64, new PerlinDaDaDa_Da()))), 4,
+			new AdaptInXZDaDaDa_DaDa_Da(new ScaleOutDaDaDa_Da(1d/16, new ScaleInDaDaDa_Da(1d/64, 1d/64, 1d/64, new PerlinDaDaDa_Da()))), 4,
 			lm.getGroundFunction(), new int[]{Blocks.DIRT, Blocks.GRASS}
 		);
 		cmList.addMunger( new StampPopulatorChunkMunger(tsp) );

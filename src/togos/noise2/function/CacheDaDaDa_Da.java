@@ -51,7 +51,7 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( final DataDaDaDa in ) {
-	    return (DataDa)cache.get(new CacheKey( nextUrn, in.getUrn() ), new FunctionO_O() {
+	    return (DataDa)cache.get(new CacheKey( nextUrn, in.getDataId() ), new FunctionO_O() {
 	    	public Object apply( Object cacheKey ) {
 	    		return next.apply(in);
 	    	}

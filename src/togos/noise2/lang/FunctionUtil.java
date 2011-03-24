@@ -3,7 +3,7 @@ package togos.noise2.lang;
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.function.AdaptInDaDa_DaDaDa_Da;
+import togos.noise2.function.AdaptInXZDaDaDa_DaDa_Da;
 import togos.noise2.function.AdaptOutDaDaDa_Da_Ia;
 import togos.noise2.function.AdaptOutDaDa_Da_Ia;
 import togos.noise2.function.Constant_Da;
@@ -31,7 +31,7 @@ public class FunctionUtil
 		if( r instanceof FunctionDaDa_Da ) {
 			return (FunctionDaDa_Da)r;
 		} else if( r instanceof FunctionDaDaDa_Da ) {
-			return new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
+			return new AdaptInXZDaDaDa_DaDa_Da( (FunctionDaDaDa_Da)r );
 		} else if( r instanceof Number ) {
 			return new Constant_Da( ((Number)r).doubleValue() );
 		} else {
@@ -41,7 +41,7 @@ public class FunctionUtil
 
 	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDaDa_Da ) {
-			r = new AdaptInDaDa_DaDaDa_Da( (FunctionDaDaDa_Da)r );
+			r = new AdaptInXZDaDaDa_DaDa_Da( (FunctionDaDaDa_Da)r );
 		}
 		
 		if( r instanceof FunctionDaDa_Ia ) {

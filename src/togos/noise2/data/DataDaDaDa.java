@@ -12,7 +12,7 @@ public class DataDaDaDa extends Data
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.urn = urn;
+		this.dataId = urn;
 	}
 	
 	public DataDaDaDa( double[] x, double[] y, double[] z ) {

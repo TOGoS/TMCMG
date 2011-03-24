@@ -25,6 +25,7 @@ import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.noise2.cache.SoftCache;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ScriptError;
@@ -139,8 +140,8 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					}
 				}
 				if( elapsedMs > 0 ) {
-					//System.err.println(samples / elapsedMs + " samples per ms");
-					//System.err.println(SoftCache.getInstance().cacheHits + " cahce hits, " + SoftCache.getInstance().cacheMisses + " misses");
+					System.err.println(samples / elapsedMs + " samples per ms");
+					System.err.println(SoftCache.getInstance().cacheHits + " cahce hits, " + SoftCache.getInstance().cacheMisses + " misses");
 				}
 				repaint();
 			}
