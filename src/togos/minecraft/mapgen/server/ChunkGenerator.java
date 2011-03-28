@@ -1,8 +1,10 @@
 package togos.minecraft.mapgen.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 import togos.mf.api.Request;
 import togos.mf.api.Response;
@@ -10,7 +12,7 @@ import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseResponse;
 import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.app.ChunkWriter;
+import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.lang.ScriptError;
@@ -65,7 +67,9 @@ public class ChunkGenerator
 		ChunkWriter cw = new ChunkWriter();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
-	        cw.writeChunk( getChunkData(x,y), baos );
+			DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(baos));
+	        cw.writeChunk( getChunkData(x,y), dos );
+	        dos.close();
         } catch( IOException e ) {
         	throw new RuntimeException(e);
         }

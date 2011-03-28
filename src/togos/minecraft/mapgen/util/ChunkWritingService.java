@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import togos.minecraft.mapgen.app.ChunkWriter;
+import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 
 public class ChunkWritingService extends ChunkWriter implements Runnable, Service

@@ -1,14 +1,14 @@
-package togos.minecraft.mapgen.app;
+package togos.minecraft.mapgen.io;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.zip.GZIPOutputStream;
 
 import org.jnbt.CompoundTag;
-import org.jnbt.NBTOutputStream;
 
 import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
@@ -29,8 +29,8 @@ public class ChunkWriter
 		return PathUtil.mcChunkDir(x,z) + "/" + PathUtil.chunkBaseName(x,z);
 	}
 	
-	public void writeChunk( ChunkData cd, OutputStream os ) throws IOException {
-		NBTOutputStream nbtos = new NBTOutputStream(os);
+	public void writeChunk( ChunkData cd, DataOutputStream os ) throws IOException {
+		BetterNBTOutputStream nbtos = new BetterNBTOutputStream(os);
 		
 		HashMap levelRootTags = new HashMap();
 		levelRootTags.put("Level",cd.toTag());
@@ -50,12 +50,21 @@ public class ChunkWriter
 		if( dir != null && !dir.exists() ) dir.mkdirs();
 		FileOutputStream os = new FileOutputStream(f);
 		try {
-			writeChunk( cd, os );
+			writeChunk( cd, new DataOutputStream(new GZIPOutputStream(os)) );
 		} finally {
 			os.close();
 		}
 	}
-		
+	
+	public void writeChunkToRegionFile( ChunkData cd, String baseDir ) throws IOException {
+		DataOutputStream os = RegionFileCache.getChunkDataOutputStream(new File(baseDir),
+			(int)(cd.getChunkPositionX()/cd.getChunkWidth()),
+			(int)(cd.getChunkPositionZ()/cd.getChunkDepth())
+		);
+		writeChunk(cd, os);
+		os.close();
+	}
+	
 	protected String chunkBaseDir;
 	public ChunkWriter( String baseDir ) {
 		this.chunkBaseDir = baseDir;
@@ -89,7 +98,8 @@ public class ChunkWriter
 	}
 	
 	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
-		writeChunkToFile(getChunk(cx,cz,cm), chunkBaseDir);
+		//writeChunkToFile(getChunk(cx,cz,cm), chunkBaseDir);
+		writeChunkToRegionFile(getChunk(cx,cz,cm), chunkBaseDir);
 	}
 	
 	public static String USAGE =

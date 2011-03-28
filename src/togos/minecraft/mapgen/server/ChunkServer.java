@@ -1,5 +1,6 @@
 package togos.minecraft.mapgen.server;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 
 import togos.genfs.GenFSUtil;
 import togos.genfs.Stat;
@@ -27,7 +29,7 @@ import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
 import togos.minecraft.mapgen.PathUtil;
-import togos.minecraft.mapgen.app.ChunkWriter;
+import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.lang.TNLCompiler;
@@ -65,7 +67,9 @@ public class ChunkServer
 				if( !pd.exists() ) pd.mkdirs();
 				FileOutputStream fos = new FileOutputStream(cf);
 				try {
-					ChunkWriter.instance.writeChunk( cd, fos );
+					DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(fos));
+					ChunkWriter.instance.writeChunk( cd, dos );
+					dos.close();
 				} finally {
 					fos.close();
 				}
