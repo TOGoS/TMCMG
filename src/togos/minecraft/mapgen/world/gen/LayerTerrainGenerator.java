@@ -8,6 +8,7 @@ import java.util.Map;
 
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
+import togos.minecraft.mapgen.world.LayerUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaDaDa;
@@ -40,15 +41,15 @@ public class LayerTerrainGenerator implements WorldGenerator
 				Object o = li.next();
 				if( o instanceof HeightmapLayer ) {
 					HeightmapLayer layer = (HeightmapLayer)o;
-					double[] ceiling = layer.ceilingHeightFunction.apply(in).v;
-					double[] floor = layer.floorHeightFunction.apply(in).v;
+					int[] ceiling = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(in).v);
+					int[] floor   = LayerUtil.roundHeights(layer.floorHeightFunction.apply(in).v);
 					for( int i=0, tz=0; tz<cd.depth; ++tz ) {
 						for( int tx=0; tx<cd.width; ++tx, ++i ) {
-							int flo = (int)floor[i];
+							int flo = floor[i];
 							if( flo < 0 ) flo = 0;
-							int cei = (int)ceiling[i];
+							int cei = ceiling[i];
 							if( cei > cd.height ) cei = cd.height;
-							if( flo >= cei ) continue;
+							if( cei <= flo ) continue;
 							
 							int colHeight = cei-flo;
 							double[] colX = new double[colHeight];
@@ -92,56 +93,55 @@ public class LayerTerrainGenerator implements WorldGenerator
 		public DataDaIa apply( DataDaDa in ) {
 			int count = in.getLength();
 			
-	    	double[] highest = new double[in.getLength()];
-	    	int[] outT = new int[count];
-	    	for( int j=in.getLength()-1; j>=0; --j ) {
-	    		highest[j] = Double.NEGATIVE_INFINITY;
-	    		outT[j] = Blocks.AIR;
-	    	}
-		    for( Iterator li=layers.iterator(); li.hasNext(); ) {
-		    	HeightmapLayer l = (HeightmapLayer)li.next();
-		    	double[] lCeil = l.ceilingHeightFunction.apply(in).v;
-		    	double[] lFloor = l.floorHeightFunction.apply(in).v;
-				double[] lMid = new double[count];
-				for( int i=count-1; i>=0; --i ) lMid[i] = (lFloor[i] + lCeil[i]) / 2; 
-				DataDaDaDa typeInput = new DataDaDaDa(in.x,lMid,in.y);
+			double[] highest = new double[in.getLength()];
+			int[] outT = new int[count];
+			for( int j=in.getLength()-1; j>=0; --j ) {
+				highest[j] = Double.NEGATIVE_INFINITY;
+				outT[j] = Blocks.AIR;
+			}
+			for( Iterator li=layers.iterator(); li.hasNext(); ) {
+				HeightmapLayer l = (HeightmapLayer)li.next();
+				double[] lCeil  = l.ceilingHeightFunction.apply(in).v;
+				double[] lFloor = l.floorHeightFunction.apply(in).v;
+				double[] lTopY = LayerUtil.maxY(lCeil);
+				DataDaDaDa typeInput = new DataDaDaDa(in.x,lTopY,in.y);
 				int[] lType = l.typeFunction.apply(typeInput).v;
-		    	for( int j=in.getLength()-1; j>=0; --j ) {
-		    		boolean subtract = false;
-		    		if( lType[j] == Blocks.NONE ) {
-		    			continue;
-		    		}
-		    		if( lType[j] == Blocks.AIR ) {
-		    			switch( airTreatment ) {
-		    			case( AIR_IGNORE ):
-		    				continue;
-		    			case( AIR_NORMAL ):
-		    				break;
-		    			case( AIR_SUBTRACT ):
-		    				subtract = true;
-		    				break;
-		    			}
-		    		}
-		    		if( Double.isNaN(lCeil[j]) ) {
-		    			throw new RuntimeException("Ceiling height is NaN for layer "+l);
-		    		}
-		    		if( Double.isNaN(lFloor[j]) ) {
-		    			throw new RuntimeException("Floor height is NaN for layer "+l);
-		    		}
-		    		if( lCeil[j] < highest[j] ) continue;
-		    		if( lCeil[j] < lFloor[j] ) continue;
-		    		
-		    		if( subtract ) {
-		    			if( highest[j] <= lCeil[j] && highest[j] >= lFloor[j] ) {
-		    				highest[j] = lFloor[j];
-		    			}
-		    		} else {
-			    		outT[j] = lType[j];
-		    			highest[j] = lCeil[j];
-		    		}
-		    	}
-		    }
-		    return new DataDaIa( highest, outT );
+				for( int j=in.getLength()-1; j>=0; --j ) {
+					boolean subtract = false;
+					if( lType[j] == Blocks.NONE ) {
+						continue;
+					}
+					if( lType[j] == Blocks.AIR ) {
+						switch( airTreatment ) {
+						case( AIR_IGNORE ):
+							continue;
+						case( AIR_NORMAL ):
+							break;
+						case( AIR_SUBTRACT ):
+							subtract = true;
+							break;
+						}
+					}
+					if( Double.isNaN(lCeil[j]) ) {
+						throw new RuntimeException("Ceiling height is NaN for layer "+l);
+					}
+					if( Double.isNaN(lFloor[j]) ) {
+						throw new RuntimeException("Floor height is NaN for layer "+l);
+					}
+					if( lCeil[j] < highest[j] ) continue;
+					if( lCeil[j] < lFloor[j] ) continue;
+					
+					if( subtract ) {
+						if( highest[j] <= lCeil[j] && highest[j] >= lFloor[j] ) {
+							highest[j] = lFloor[j];
+						}
+					} else {
+						outT[j] = lType[j];
+						highest[j] = lCeil[j];
+					}
+				}
+			}
+			return new DataDaIa( highest, outT );
 		}
 	}
 	

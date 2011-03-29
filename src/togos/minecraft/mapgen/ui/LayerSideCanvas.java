@@ -24,6 +24,7 @@ import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.Blocks;
+import togos.minecraft.mapgen.world.LayerUtil;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.HeightmapLayer;
 import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
@@ -43,7 +44,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		List layers;
 		int width, height;
 		double worldX, worldZ, worldXPerPixel;
-		final double worldFloor = 0, worldCeiling = 128;
+		final int worldFloor = 0, worldCeiling = 128;
 		
 		public volatile BufferedImage buffer;
 		protected volatile boolean stop = false;		
@@ -96,14 +97,14 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 					wz[i] = worldZ;
 				}
 				DataDaDa input = new DataDaDa(wx,wz);
-				double[] floor = layer.floorHeightFunction.apply(input).v;
-				double[] ceil = layer.ceilingHeightFunction.apply(input).v;
-				
+				int[] floor = LayerUtil.roundHeights(layer.floorHeightFunction.apply(input).v);
+				int[] ceil  = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(input).v);
+				double[] maxY = LayerUtil.maxY(ceil);
 				if( FunctionUtil.isConstant(layer.typeFunction) ) {
 					// To speed things up, special case when type is constant:
 					// (Would also work if we only knew it was constant wrt. Y)
 					
-					DataDaDaDa typeInput = new DataDaDaDa(wx,ceil,wz);
+					DataDaDaDa typeInput = new DataDaDaDa(wx,maxY,wz);
 					int[] type = layer.typeFunction.apply(typeInput).v;
 					
 					for( int i=0; i<width; ++i ) {
@@ -119,11 +120,11 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 						for( int i=0; i<width; ++i ) {
 							if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
 							if( floor[i] < worldFloor ) floor[i] = worldFloor;
-							if( ceil[i] < floor[i] ) continue;
+							if( ceil[i] <= floor[i] ) continue;
 							if( color[i] == 0x00000000 ) continue;
 							
-							int c = (int)((worldCeiling - ceil[i]) * height / (worldCeiling-worldFloor));
-							int f = (int)((worldCeiling - floor[i]) * height / (worldCeiling-worldFloor));
+							int c = ((worldCeiling - ceil[i]) * height / (worldCeiling-worldFloor));
+							int f = ((worldCeiling - floor[i]) * height / (worldCeiling-worldFloor));
 							
 							g.setColor( color(color[i]) );
 							g.fillRect( px[i], c, 1, f-c );
