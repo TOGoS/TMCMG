@@ -35,6 +35,9 @@ public class ChunkUtil
 						else if( light > 0 ) --light;
 						shadowed = true;
 						break;
+					case(Blocks.LAVA):
+						light = 15;
+						break;
 					default:
 						// Opaque materials
 						if( light > 12 ) light = 12;
