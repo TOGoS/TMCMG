@@ -2,6 +2,7 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.Random;
 
+import togos.minecraft.mapgen.world.BlockBits;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.Stamp;
 
@@ -33,7 +34,7 @@ public class PineTreeGenerator implements StampGenerator
 					int dx = leafRadius-x;
 					int dz = leafRadius-z;
 					if( Math.sqrt(dx*dx+dz*dz)+(r.nextDouble()-0.5)*1.5 < rad ) {
-						s.setBlock(x,y,z,Blocks.LEAVES);
+						s.setBlock(x,y,z,Blocks.LEAVES,BlockBits.LEAVES_REDWOOD);
 					}
 				}
 			}
@@ -49,7 +50,7 @@ public class PineTreeGenerator implements StampGenerator
 			}
 		}
 		for( int ty=0; ty<trunkHeight; ++ty ) {
-			s.setBlock(w/2,ty,d/2, Blocks.LOG);
+			s.setBlock(w/2,ty,d/2, Blocks.LOG, BlockBits.LOG_REDWOOD);
 		}
 		return s;
 	}
