@@ -26,8 +26,8 @@ public class GreaterThanDaDaDa_Da extends ComparisonDaDaDa_Da
 
 	public Object rewriteSubExpressions( ExpressionRewriter rw ) {
 		return new GreaterThanDaDaDa_Da(
-			(TNLFunctionDaDaDa_Da)rw.rewrite(a),
-			(TNLFunctionDaDaDa_Da)rw.rewrite(b)
+			(FunctionDaDaDa_Da)rw.rewrite(a),
+			(FunctionDaDaDa_Da)rw.rewrite(b)
 		);
 	}
 }
