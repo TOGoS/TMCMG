@@ -64,4 +64,8 @@ public class Constant_Ia implements FunctionDaDa_Ia, FunctionDaDaDa_Ia, Expressi
 	public boolean isConstant() {
 	    return true;
 	}
+	
+	public int getTriviality() {
+	    return 100;
+	}
 }

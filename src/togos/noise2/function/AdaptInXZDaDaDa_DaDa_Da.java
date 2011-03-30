@@ -43,4 +43,8 @@ public class AdaptInXZDaDaDa_DaDa_Da implements FunctionDaDa_Da, Expression
 			return new Expression[0];
 		}
     }
+	
+	public int getTriviality() {
+	    return 0;
+	}
 }

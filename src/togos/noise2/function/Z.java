@@ -22,5 +22,10 @@ public class Z extends TNLFunctionDaDaDa_Da
 		return new Object[]{};
 	}
 	
+	public String toString() { return "z"; }
 	public String toTnl() { return "z"; }
+	
+	public int getTriviality() {
+	    return 200;
+	}
 }

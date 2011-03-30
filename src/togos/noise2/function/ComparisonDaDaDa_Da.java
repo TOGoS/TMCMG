@@ -18,6 +18,10 @@ public abstract class ComparisonDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	
 	protected abstract String getOperatorSymbol();
 	
+	public String toString() {
+		return "(" + a + " " + getOperatorSymbol() + " " + b + ")";
+	}
+	
 	public String toTnl() {
 		return "(" + FunctionUtil.toTnl(a) + " " + getOperatorSymbol() + " " + FunctionUtil.toTnl(b) + ")";
 	}

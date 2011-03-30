@@ -27,6 +27,10 @@ public class SimplexDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return new Object[]{};
 	}
 	
+	public String toString() {
+		return "simplex";
+	}
+	
 	public String toTnl() {
 		return "simplex";
 	}

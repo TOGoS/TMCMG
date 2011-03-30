@@ -66,6 +66,10 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return new Object[]{ upper, lower, ridged };
 	}
 	
+	public String toString() {
+		return "ridge("+lower+", "+upper+", "+ridged+")";
+	}
+	
 	public String toTnl() {
 		return "ridge("+FunctionUtil.toTnl(lower)+", "+FunctionUtil.toTnl(upper)+", "+FunctionUtil.toTnl(ridged)+")";
 	}

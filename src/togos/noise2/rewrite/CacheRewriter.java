@@ -57,8 +57,8 @@ public class CacheRewriter implements ExpressionRewriter
 		if( f instanceof TNLFunctionDaDaDa_Da ) {
 			TNLFunctionDaDaDa_Da e = (TNLFunctionDaDaDa_Da)f;
 			
-			if( e.isConstant() ) {
-				// Don't bother caching constants!
+			if( e.getTriviality() > 0 ) {
+				// Don't bother caching easy things!
 				return e;
 			}
 			

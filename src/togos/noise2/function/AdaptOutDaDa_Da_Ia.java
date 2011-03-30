@@ -33,4 +33,8 @@ public class AdaptOutDaDa_Da_Ia implements FunctionDaDa_Ia, Expression
 	public String toTnl() {
 		return ((Expression)next).toTnl();
 	}
+	
+	public int getTriviality() {
+	    return 0;
+	}
 }

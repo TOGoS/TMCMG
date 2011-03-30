@@ -63,4 +63,8 @@ public class Constant_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDa_Da
 	public Object[] directSubExpressions() {
 		return new Object[]{};
 	}
+	
+	public int getTriviality() {
+	    return 100;
+	}
 }

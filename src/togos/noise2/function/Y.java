@@ -22,5 +22,10 @@ public class Y extends TNLFunctionDaDaDa_Da
 		return new Object[]{};
 	}
 	
+	public String toString() { return "y"; }
 	public String toTnl() { return "y"; }
+	
+	public int getTriviality() {
+	    return 200;
+	}
 }

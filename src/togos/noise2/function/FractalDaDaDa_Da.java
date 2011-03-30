@@ -57,6 +57,10 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return this;
 	}
 	
+	public String toString() {
+		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+next+")";
+	}
+	
 	public String toTnl() {
 		return "fractal("+iterations+", "+inithscale+", "+initvscale+", "+hscale+", "+vscale+", "+ztrans+", "+FunctionUtil.toTnl(next)+")";
 	}

@@ -42,7 +42,10 @@ public class TransformInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		return new Object[]{ xfX, xfY, xfZ };
 	}
 	
+	public String toString() {
+		return "xf("+xfX+", "+xfY+", "+xfZ+", "+next+")";
+	}
 	public String toTnl() {
-		return "transform-in("+FunctionUtil.toTnl(xfX)+", "+FunctionUtil.toTnl(xfY)+", "+FunctionUtil.toTnl(xfZ)+", "+FunctionUtil.toTnl(next)+")";
+		return "xf("+FunctionUtil.toTnl(xfX)+", "+FunctionUtil.toTnl(xfY)+", "+FunctionUtil.toTnl(xfZ)+", "+FunctionUtil.toTnl(next)+")";
 	}
 }

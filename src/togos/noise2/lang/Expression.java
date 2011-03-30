@@ -26,4 +26,12 @@ public interface Expression
 	 *     such as cache(), can and should be left out. 
 	 */
 	public String toTnl();
+	
+	/**
+	 * 0   = not trivial
+	 * 100 = need to allocate an array, but populating it is dead simple (e.g. a constant)
+	 * 200 = returns existing object, possibly with wrapper
+	 * 300 = returns something very simple, no need for new object
+	 */
+	public int getTriviality();
 }
