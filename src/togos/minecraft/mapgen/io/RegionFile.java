@@ -2,6 +2,7 @@
  * Further modifications by TOGoS for use in TMCMG:
  *  - Removed use of templates, auto[un]boxing, and foreach loops
  *    to make source compatible with Java 1.4  
+ *  - Added ability to write chunks in both formats (gzip and deflate)
  */
 
 /*
@@ -68,8 +69,8 @@ import java.util.zip.*;
 
 public class RegionFile
 {
-    private static final int VERSION_GZIP = 1;
-    private static final int VERSION_DEFLATE = 2;
+    public static final int VERSION_GZIP = 1;
+    public static final int VERSION_DEFLATE = 2;
 
     private static final int SECTOR_BYTES = 4096;
     private static final int SECTOR_INTS = SECTOR_BYTES / 4;
@@ -241,9 +242,21 @@ public class RegionFile
     }
 
     public DataOutputStream getChunkDataOutputStream(int x, int z) {
+    	if (outOfBounds(x, z)) return null;
+    	
+        return new DataOutputStream(new DeflaterOutputStream(getChunkOutputStream(x, z, VERSION_DEFLATE)));
+    }
+    
+    /**
+     * Returns a low-level OutputStream object that is not wrapped in
+     * compressing and DataOutputStream objects. May be useful if
+     * data to be written is already compressed.  
+     * @author TOGoS
+     */
+    public OutputStream getChunkOutputStream( int x, int z, int format ) {
         if (outOfBounds(x, z)) return null;
 
-        return new DataOutputStream(new DeflaterOutputStream(new ChunkBuffer(x, z)));
+        return new ChunkBuffer(x, z, format);
     }
 
     /*
@@ -251,21 +264,22 @@ public class RegionFile
      * chunk is serializing -- only writes when serialization is over
      */
     class ChunkBuffer extends ByteArrayOutputStream {
-        private int x, z;
+        public final int x, z, format;
 
-        public ChunkBuffer(int x, int z) {
+        public ChunkBuffer(int x, int z, int format) {
             super(8096); // initialize to 8KB
             this.x = x;
             this.z = z;
+            this.format = format;
         }
 
         public void close() {
-            RegionFile.this.write(x, z, buf, count);
+            RegionFile.this.write(x, z, buf, count, format);
         }
     }
 
     /* write a chunk at (x,z) with length bytes of data to disk */
-    protected synchronized void write(int x, int z, byte[] data, int length) {
+    protected synchronized void write(int x, int z, byte[] data, int length, int format) {
         try {
             int offset = getOffset(x, z);
             int sectorNumber = offset >> 8;
@@ -280,7 +294,7 @@ public class RegionFile
             if (sectorNumber != 0 && sectorsAllocated == sectorsNeeded) {
                 /* we can simply overwrite the old sectors */
                 debug("SAVE", x, z, length, "rewrite");
-                write(sectorNumber, data, length);
+                write(sectorNumber, data, length, format);
             } else {
                 /* we need to allocate new sectors */
 
@@ -315,7 +329,7 @@ public class RegionFile
                     for (int i = 0; i < sectorsNeeded; ++i) {
                         sectorFree.set(sectorNumber + i, Boolean.FALSE);
                     }
-                    write(sectorNumber, data, length);
+                    write(sectorNumber, data, length, format);
                 } else {
                     /*
                      * no free space large enough found -- we need to grow the
@@ -330,7 +344,7 @@ public class RegionFile
                     }
                     sizeDelta += SECTOR_BYTES * sectorsNeeded;
 
-                    write(sectorNumber, data, length);
+                    write(sectorNumber, data, length, format);
                     setOffset(x, z, (sectorNumber << 8) | sectorsNeeded);
                 }
             }
@@ -341,11 +355,11 @@ public class RegionFile
     }
 
     /* write a chunk data to the region file at specified sector number */
-    private void write(int sectorNumber, byte[] data, int length) throws IOException {
+    private void write(int sectorNumber, byte[] data, int length, int format) throws IOException {
         debugln(" " + sectorNumber);
         file.seek(sectorNumber * SECTOR_BYTES);
         file.writeInt(length + 1); // chunk length
-        file.writeByte(VERSION_DEFLATE); // chunk version number
+        file.writeByte(format); // chunk version number
         file.write(data, 0, length); // chunk data
     }
 

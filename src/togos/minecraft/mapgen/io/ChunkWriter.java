@@ -57,12 +57,12 @@ public class ChunkWriter
 	}
 	
 	public void writeChunkToRegionFile( ChunkData cd, String baseDir ) throws IOException {
-		DataOutputStream os = RegionFileCache.getChunkDataOutputStream(new File(baseDir),
+		DataOutputStream dos = RegionFileCache.getChunkDataOutputStream(new File(baseDir),
 			(int)(cd.getChunkPositionX()/cd.getChunkWidth()),
 			(int)(cd.getChunkPositionZ()/cd.getChunkDepth())
 		);
-		writeChunk(cd, os);
-		os.close();
+		writeChunk(cd, dos);
+		dos.close();
 	}
 	
 	protected String chunkBaseDir;

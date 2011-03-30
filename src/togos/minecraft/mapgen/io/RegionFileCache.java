@@ -1,7 +1,8 @@
 /*
  * Further modifications by TOGoS for use in TMCMG:
  *  - Removed use of templates, auto[un]boxing, and foreach loops
- *    to make source compatible with Java 1.4  
+ *    to make source compatible with Java 1.4
+ *  - Added ability to write chunks in both formats (gzip and deflate)
  */
 
 /*
@@ -95,5 +96,17 @@ public class RegionFileCache {
     public static DataOutputStream getChunkDataOutputStream(File basePath, int chunkX, int chunkZ) {
         RegionFile r = getRegionFile(basePath, chunkX, chunkZ);
         return r.getChunkDataOutputStream(chunkX & 31, chunkZ & 31);
+    }
+    
+    /**
+     * Returns a low-level OutputStream object that is not wrapped in
+     * compressing and DataOutputStream objects. May be useful if
+     * data to be written is already compressed.  
+     * @author TOGoS
+     * @param format which format (RegionFile.VERSION_...) the chunk data will be written in
+     */
+    public static OutputStream getChunkOutputStream(File basePath, int chunkX, int chunkZ, int format) {
+        RegionFile r = getRegionFile(basePath, chunkX, chunkZ);
+        return r.getChunkOutputStream(chunkX & 31, chunkZ & 31, format);
     }
 }
