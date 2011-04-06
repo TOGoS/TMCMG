@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import togos.mf.api.Request;
+import togos.mf.base.Util;
 
 public class BaseRequest implements Request {
 	public String verb;
@@ -82,5 +83,16 @@ public class BaseRequest implements Request {
 			metadataClean = false;
 		}
 		metadata.put(key, value);
+	}
+	
+	public int hashCode() {
+		return Util.hashCode( this );
+	}
+	
+	public boolean equals( Object other ) {
+		if( other instanceof Request ) {
+			return Util.equals( this, (Request)other );
+		}
+		return false;
 	}
 }

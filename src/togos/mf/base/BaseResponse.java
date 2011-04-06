@@ -72,4 +72,15 @@ public class BaseResponse implements Response {
 		}
 		contentMetadata.put(key, value);
 	}
+	
+	public int hashCode() {
+		return Util.hashCode( this );
+	}
+	
+	public boolean equals( Object other ) {
+		if( other instanceof Response ) {
+			return Util.equals( this, (Response)other );
+		}
+		return false;
+	}
 }
