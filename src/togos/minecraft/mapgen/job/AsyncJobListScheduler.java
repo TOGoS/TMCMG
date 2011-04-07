@@ -53,12 +53,17 @@ public class AsyncJobListScheduler implements JobListScheduler, JobSource
 		public synchronized Object next() {
 			Job j = (Job)next.next();
 			j.addStatusListener(new JobStatusListener() {
-				public void jobStatusUpdated( Job j ) {
-					if( j.status == Job.STATUS_FETCHED ) {
+				public void jobStatusUpdated( Job j, int oldStatus, int newStatus ) {
+					boolean wasOutstanding = oldStatus >= Job.STATUS_FETCHED && oldStatus < Job.STATUS_COMPLETE;
+					boolean isOutstanding  = newStatus >= Job.STATUS_FETCHED && newStatus < Job.STATUS_COMPLETE;
+					
+					if( isOutstanding == wasOutstanding ) return;
+						
+					if( isOutstanding ) {
 						synchronized( OutstandingJobIterator.this ) {
 							++outstandingJobCount;
 						}
-					} else if( j.isDone() ) {
+					} else {
 						synchronized( OutstandingJobIterator.this ) {
 							--outstandingJobCount;
 							if( outstandingJobCount == 0 && !hasNext() ) {

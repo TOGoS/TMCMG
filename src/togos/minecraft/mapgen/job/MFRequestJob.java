@@ -20,4 +20,8 @@ public class MFRequestJob extends Job
 		this.res = res; 
 		setStatus( Job.STATUS_COMPLETE );
 	}
+	
+	public Response getResponse() {
+		return res;
+	}
 }

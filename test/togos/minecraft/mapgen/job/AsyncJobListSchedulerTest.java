@@ -27,7 +27,7 @@ public class AsyncJobListSchedulerTest extends TestCase
 	
 	public void testRunSomeJobs(boolean cancelSome) throws InterruptedException {
 		JobStatusListener jsl = new JobStatusListener() {
-			public void jobStatusUpdated( Job j ) {
+			public void jobStatusUpdated( Job j, int oldStatus, int newStatus ) {
 				if( j.isDone() ) {
 					synchronized( AsyncJobListSchedulerTest.this ) {
 						--outstandingJobCount;
