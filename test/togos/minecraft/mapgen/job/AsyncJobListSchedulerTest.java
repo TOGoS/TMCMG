@@ -5,9 +5,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-public class AsyncJobListRunnerTest extends TestCase
+public class AsyncJobListSchedulerTest extends TestCase
 {
-	protected void runJobs( AsyncJobListRunner ajlr ) {
+	protected void runJobs( JobSource ajlr ) {
 		try {
 			Job j;
 			while( (j = ajlr.getNextJob()) != null ) {
@@ -29,7 +29,7 @@ public class AsyncJobListRunnerTest extends TestCase
 		JobStatusListener jsl = new JobStatusListener() {
 			public void jobStatusUpdated( Job j ) {
 				if( j.isDone() ) {
-					synchronized( AsyncJobListRunnerTest.this ) {
+					synchronized( AsyncJobListSchedulerTest.this ) {
 						--outstandingJobCount;
 					}
 				}
@@ -85,12 +85,10 @@ public class AsyncJobListRunnerTest extends TestCase
 			*/
 		}
 		
-		final AsyncJobListRunner ajlr = new AsyncJobListRunner();
-		new Thread() {
-			public void run() {
-				runJobs(ajlr);
-			};
-		}.start();
+		final AsyncJobListScheduler ajlr = new AsyncJobListScheduler();
+		new Thread() { public void run() { runJobs(ajlr); } }.start();
+		new Thread() { public void run() { runJobs(ajlr); } }.start();
+		
 		outstandingJobCount = 5 * jobsPerSet;
 		/*
 			jobs1.size() +
@@ -127,7 +125,7 @@ public class AsyncJobListRunnerTest extends TestCase
 		} else {
 			assertEquals( 0, outstandingJobCount );
 		}
-		System.err.println(outstandingJobCount);
+		//System.err.println(outstandingJobCount);
 		ajlr.halt();
 	}
 	

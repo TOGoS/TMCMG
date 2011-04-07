@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class AsyncJobListRunner
+public class AsyncJobListScheduler implements JobListScheduler, JobSource
 {
 	protected List jobIterators = new ArrayList();
 	protected int jobIteratorPosition = 0;
@@ -13,19 +13,22 @@ public class AsyncJobListRunner
 	public synchronized Job getNextJob() throws InterruptedException {
 		while( running ) {
 			int originalPosition = jobIteratorPosition;
-			do {
-				try {
-					Iterator it = (Iterator)jobIterators.get(jobIteratorPosition);
-					if( it == null ) {
-					} else if( !it.hasNext() ) {
-						jobIterators.set(jobIteratorPosition, null);
-					} else {
-						return (Job)it.next();
+			if( jobIterators.size() > 0 ) {
+				// Find a job:
+				do {
+					try {
+						Iterator it = (Iterator)jobIterators.get(jobIteratorPosition);
+						if( it == null ) {
+						} else if( !it.hasNext() ) {
+							jobIterators.set(jobIteratorPosition, null);
+						} else {
+							return (Job)it.next();
+						}
+					} finally {
+						jobIteratorPosition = (jobIteratorPosition+1)%jobIterators.size();
 					}
-				} finally {
-					jobIteratorPosition = (jobIteratorPosition+1)%jobIterators.size();
-				}
-			} while( jobIteratorPosition != originalPosition );
+				} while( jobIteratorPosition != originalPosition );
+			}
 			wait();
 		}
 		return null;
@@ -101,8 +104,8 @@ public class AsyncJobListRunner
         }
 	}
 	
-	public synchronized JobListHandle enqueueJobs( Iterator jobs, String name ) {
-		final OutstandingJobIterator oji = new OutstandingJobIterator(jobs, name);
+	public synchronized JobListHandle enqueueJobs( Iterator jobs, String listName ) {
+		final OutstandingJobIterator oji = new OutstandingJobIterator(jobs, listName);
 		
 		synchronized( this ) {
 			initIndex: {
@@ -114,7 +117,7 @@ public class AsyncJobListRunner
 				}
 				jobIterators.add(oji);
 			}
-			AsyncJobListRunner.this.notify();
+			AsyncJobListScheduler.this.notify();
 		}
 		
 		return new JobListHandle() {
