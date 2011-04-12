@@ -10,8 +10,8 @@ import junit.framework.TestCase;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 import togos.mf.io.PacketReader;
+import togos.mf.io.PacketWriter;
 import togos.mf.io.slip.SLIP;
-import togos.mf.io.slip.SLIP.PacketWriter;
 import togos.minecraft.mapgen.data.Chunk;
 
 public class SimpleMFPacketCodecTest extends TestCase
