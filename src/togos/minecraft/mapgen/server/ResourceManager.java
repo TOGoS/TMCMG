@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 
-import togos.mf.api.CallHandler;
+import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.RequestVerbs;
 import togos.mf.api.Response;
@@ -12,13 +12,13 @@ import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 
-public class ResourceManager implements CallHandler
+public class ResourceManager implements Callable
 {	
 	WeakHashMap chunkHandles;
 	
 	ArrayList resourceLoaders = new ArrayList();
 	
-	public void addResourceLoader( CallHandler l ) {
+	public void addResourceLoader( Callable l ) {
 		this.resourceLoaders.add(l);
 	}
 	
@@ -34,7 +34,7 @@ public class ResourceManager implements CallHandler
 	public Response load( String resourceId ) {
 		BaseRequest req = new BaseRequest("GET",resourceId); 
 		for( Iterator i=resourceLoaders.iterator(); i.hasNext(); ) {
-			CallHandler l = (CallHandler)i.next();
+			Callable l = (Callable)i.next();
 			Response t = l.call(req);
 			if( t.getStatus() != ResponseCodes.RESPONSE_UNHANDLED ) return t;
 		}

@@ -24,7 +24,7 @@ import togos.genfs.err.InvalidOperationError;
 import togos.genfs.err.ServerError;
 import togos.genfs.server.GenFSServer;
 import togos.genfs.server.GenFSServer.AliasResponse;
-import togos.mf.api.CallHandler;
+import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
@@ -264,7 +264,7 @@ public class ChunkServer
 	
 	public void addChunkGenerator( final String name, final ChunkGenerator cGen ) {
 		generators.put( name, cGen );
-		resMan.addResourceLoader(new CallHandler() {
+		resMan.addResourceLoader(new Callable() {
 			public Response call( Request req ) {
 				if( req.getResourceName().startsWith("/"+name+"/") ) {
 					return cGen.call(req);
@@ -279,7 +279,7 @@ public class ChunkServer
 	}
 	
 	public void initHandlers( WebServer ws ) {
-		ws.addRequestHandler(new CallHandler() {
+		ws.addRequestHandler(new Callable() {
 			public Response call( Request req ) {
 				if( !"/".equals(req.getResourceName()) ) {
 					return BaseResponse.RESPONSE_UNHANDLED;

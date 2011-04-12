@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import togos.mf.api.CallHandler;
+import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
@@ -89,13 +89,13 @@ public class WebServer implements Runnable {
 	protected List requestHandlers = new ArrayList();
 	public int port = 14419;
 	
-	public void addRequestHandler( CallHandler rh ) {
+	public void addRequestHandler( Callable rh ) {
 		this.requestHandlers.add(rh);
 	}
 	
 	protected Response _handle( Request req ) {
 		for( Iterator i=requestHandlers.iterator(); i.hasNext(); ) {
-			Response res = ((CallHandler)i.next()).call(req);
+			Response res = ((Callable)i.next()).call(req);
 			if( res.getStatus() != ResponseCodes.RESPONSE_UNHANDLED ) return res;
 		}
 		throw new RuntimeException("No handler found for "+req.getVerb()+" "+req.getResourceName());
