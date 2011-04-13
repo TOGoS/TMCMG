@@ -82,7 +82,7 @@ public class ChunkGenerator
 		if( xy == null ) return BaseResponse.RESPONSE_UNHANDLED;
 		
 		return new BaseResponse(
-			ResponseCodes.RESPONSE_NORMAL,
+			ResponseCodes.NORMAL,
 			getSerializedChunkData(xy[0], xy[1]),
 			"application/octet-stream"
 		);

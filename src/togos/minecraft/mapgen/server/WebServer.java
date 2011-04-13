@@ -96,7 +96,7 @@ public class WebServer implements Runnable {
 	protected Response _handle( Request req ) {
 		for( Iterator i=requestHandlers.iterator(); i.hasNext(); ) {
 			Response res = ((Callable)i.next()).call(req);
-			if( res.getStatus() != ResponseCodes.RESPONSE_UNHANDLED ) return res;
+			if( res.getStatus() != ResponseCodes.UNHANDLED ) return res;
 		}
 		throw new RuntimeException("No handler found for "+req.getVerb()+" "+req.getResourceName());
 	}

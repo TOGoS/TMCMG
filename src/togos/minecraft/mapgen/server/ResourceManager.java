@@ -36,7 +36,7 @@ public class ResourceManager implements Callable
 		for( Iterator i=resourceLoaders.iterator(); i.hasNext(); ) {
 			Callable l = (Callable)i.next();
 			Response t = l.call(req);
-			if( t.getStatus() != ResponseCodes.RESPONSE_UNHANDLED ) return t;
+			if( t.getStatus() != ResponseCodes.UNHANDLED ) return t;
 		}
 		return BaseResponse.RESPONSE_UNHANDLED;
 	}
@@ -55,7 +55,7 @@ public class ResourceManager implements Callable
 	}
 	
 	public Response call( Request req ) {
-		if( RequestVerbs.VERB_GET.equals(req.getVerb()) ) {
+		if( RequestVerbs.GET.equals(req.getVerb()) ) {
 			return load( req.getResourceName() );
 		}
 		return BaseResponse.RESPONSE_UNHANDLED;
