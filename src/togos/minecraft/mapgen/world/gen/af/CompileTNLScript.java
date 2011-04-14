@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import togos.jobkernel.mf.Active;
 import togos.jobkernel.mf.ActiveFunction;
 import togos.jobkernel.uri.ActiveRef;
-import togos.jobkernel.uri.Ref;
 import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
+import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.TMCMGNamespace;
 import togos.minecraft.mapgen.util.ByteUtil;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
@@ -21,16 +22,20 @@ public class CompileTNLScript implements ActiveFunction
 	public static final String FUNCNAME = TMCMGNamespace.NS+"/Functions/CompileTNLScript";
 	public static final String SCRIPT_ARGNAME = FUNCNAME+"script";
 	
-	public static final ActiveRef makeRef( Ref scriptRef ) {
+	public static final ActiveRef makeRef( URIRef scriptRef ) {
 		ArrayList args = new ArrayList(2);
-		args.add( new ActiveRef.Arg(SCRIPT_ARGNAME, scriptRef));
-		return ActiveRef.create(FUNCNAME,args);
+		args.add( new Active.Arg(SCRIPT_ARGNAME, scriptRef));
+		return Active.mkActiveRef(FUNCNAME,args);
 	}
 	
 	public Collection getRequiredResourceRefs( ActiveRef ref ) {
 		ArrayList args = new ArrayList(2);
 		args.add( ref.requireArgument(SCRIPT_ARGNAME) );
 		return args;
+	}
+	
+	public Response runFast( ActiveRef ref, Map resources ) {
+	    return null;
 	}
 	
 	public Response run( ActiveRef ref, Map resources ) {

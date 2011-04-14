@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import togos.jobkernel.mf.ActiveFunction;
+import togos.jobkernel.mf.Active;
 import togos.jobkernel.uri.ActiveRef;
-import togos.jobkernel.uri.Ref;
+import togos.jobkernel.uri.ActiveRequestBuilder;
+import togos.jobkernel.uri.BaseRef;
 import togos.jobkernel.uri.URIUtil;
 import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
+import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.TMCMGNamespace;
 import togos.minecraft.mapgen.util.ByteUtil;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
@@ -23,22 +26,23 @@ public class GenerateTNLChunk implements ActiveFunction
 	public static final String SCRIPT_ARGNAME = FUNCNAME+"script";
 	public static final String COORDS_ARGNAME = FUNCNAME+"chunkCoords";
 	
-	public static final ActiveRef makeRef( Ref scriptRef, Ref coordsRef ) {
-		ArrayList args = new ArrayList(2);
-		args.add( new ActiveRef.Arg(SCRIPT_ARGNAME, scriptRef));
-		args.add( new ActiveRef.Arg(COORDS_ARGNAME, coordsRef));
-		return ActiveRef.create(FUNCNAME,args);
+	public static final ActiveRequestBuilder buildRef( URIRef scriptRef, URIRef coordsRef ) {
+		return Active.build( FUNCNAME ).with(SCRIPT_ARGNAME, scriptRef).with(COORDS_ARGNAME, coordsRef);	
 	}
 	
-	public static final Ref makeCoordsRef( long x, long y, long z, int w, int h, int d ) {
-		return new Ref(URIUtil.makeDataUri(x+","+y+","+z+","+w+","+h+","+d));
+	public static final URIRef makeRef( URIRef scriptRef, URIRef coordsRef ) {
+		return buildRef( scriptRef, coordsRef ).toRef();
 	}
 	
-	public static final ActiveRef makeRef( Ref scriptRef, long x, long y, long z, int w, int h, int d ) {
+	public static final URIRef makeCoordsRef( long x, long y, long z, int w, int h, int d ) {
+		return new BaseRef(URIUtil.makeDataUri(x+","+y+","+z+","+w+","+h+","+d));
+	}
+	
+	public static final URIRef makeRef( URIRef scriptRef, long x, long y, long z, int w, int h, int d ) {
 		return makeRef( scriptRef, makeCoordsRef(x,y,z,w,h,d) );
 	}
 	
-	protected static final Ref compiledScriptRef( ActiveRef ref ) {
+	protected static final URIRef compiledScriptRef( ActiveRef ref ) {
 		return CompileTNLScript.makeRef(ref.requireArgument(SCRIPT_ARGNAME));
 	}
 	
@@ -48,7 +52,11 @@ public class GenerateTNLChunk implements ActiveFunction
 		args.add( ref.requireArgument(COORDS_ARGNAME) );
 		return args;
 	}
-
+	
+	public Response runFast( ActiveRef ref, Map resources ) {
+	    return null;
+	}
+	
 	public Response run( ActiveRef ref, Map resources ) {
 		Object script = resources.get( compiledScriptRef(ref).getUri() );
 		String coords = ByteUtil.string( resources.get(ref.requireArgument(COORDS_ARGNAME).getUri()) );
