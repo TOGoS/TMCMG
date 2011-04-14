@@ -15,6 +15,18 @@ public class ByteUtil
 		return new String( buf, begin, length, UTF8 );
 	}
 	
+	public static final String string( Object o ) {
+		if( o instanceof String ) {
+			return (String)o;
+		} else if( o instanceof byte[] ) {
+			return new String( (byte[])o, UTF8 );
+		} else if( o == null ) {
+			return null;
+		} else {
+			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a string");
+		}
+	}
+	
 	public static final byte[] slice( byte[] buf, int begin, int length ) {
 		if( length <= 0 ) return EMPTY;
 		
