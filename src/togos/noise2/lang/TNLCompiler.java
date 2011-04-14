@@ -81,7 +81,7 @@ public class TNLCompiler
 	public Object compile( String source, String sourceName ) throws ParseError, CompileError {
 		TNLParser parser = new TNLParser(new TNLTokenizer(new StringReader(source), sourceName, 1, 1));
 		try {
-			ASTNode sn = parser.readNode(TNLParser.COMMA_PRECEDENCE);
+			ASTNode sn = parser.readNode(0);
 			return compile(sn);
 		} catch( IOException e ) {
 			throw new CompileError(e, new Token("","(inline)",1,1));
