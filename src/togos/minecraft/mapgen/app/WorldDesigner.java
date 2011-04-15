@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.swing.BoxLayout;
 
+import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.HelpWindow;
@@ -33,11 +34,13 @@ import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.ui.Stat;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
+import togos.minecraft.mapgen.util.ByteUtil;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.ServiceManager;
+import togos.minecraft.mapgen.util.TMCMGActiveKernel;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.lang.ScriptError;
@@ -51,6 +54,11 @@ public class WorldDesigner
 		FileUpdateListener ful;
 		GeneratorUpdateListener gul;
 		boolean autoReloadEnabled = false;
+		TMCMGActiveKernel ak = new TMCMGActiveKernel();
+		
+		public WorldDesignerKernel() {
+			sm.add(ak);
+		}
 		
 		public void setFileUpdateListener( FileUpdateListener ful ) {
 			this.ful = ful;
@@ -201,7 +209,7 @@ public class WorldDesigner
 	}
 	
 	WorldDesignerKernel wdk = new WorldDesignerKernel();
-	ChunkWritingService cws = new ChunkWritingService();
+	ChunkWritingService cws = new ChunkWritingService(wdk.ak);
 	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm,cws);
 	
 	LayerSideCanvas lsc = new LayerSideCanvas();
@@ -277,10 +285,10 @@ public class WorldDesigner
 		final WorldExploreKeyListener wekl = new WorldExploreKeyListener(mwev);
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
-			public void generatorUpdated( WorldGenerator wg ) {
+			public void generatorUpdated( URIRef wgScriptRef, WorldGenerator wg ) {
 				lsc.setWorldGenerator( wg );
 				noiseCanvas.setWorldGenerator( wg );
-				chunkExportWindow.setWorldGenerator( wg );
+				chunkExportWindow.setWorldGenerator( wgScriptRef, wg );
 			}
 		};
 		
@@ -290,7 +298,7 @@ public class WorldDesigner
 			public void fileUpdated( File scriptFile ) {
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
-					gul.generatorUpdated( worldGenerator );
+					gul.generatorUpdated( ByteUtil.readFileToDataRef(scriptFile), worldGenerator );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
 					String errText = ScriptUtil.formatScriptError(e);

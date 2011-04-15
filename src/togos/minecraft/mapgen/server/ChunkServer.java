@@ -68,7 +68,7 @@ public class ChunkServer
 				FileOutputStream fos = new FileOutputStream(cf);
 				try {
 					DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(fos));
-					ChunkWriter.instance.writeChunk( cd, dos );
+					ChunkWriter.writeChunk( cd, dos );
 					dos.close();
 				} finally {
 					fos.close();

@@ -28,11 +28,12 @@ import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 
+import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.ServiceManager;
-import togos.minecraft.mapgen.world.gen.ChunkMunger;
+import togos.minecraft.mapgen.util.TMCMGActiveKernel;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 
 public class ChunkExportWindow extends Frame
@@ -85,6 +86,7 @@ public class ChunkExportWindow extends Frame
     
     private static final long serialVersionUID = 1L;
     
+    public URIRef worldGeneratorScriptRef;
     public WorldGenerator worldGenerator;
     public ChunkWritingService cws;
     
@@ -157,7 +159,8 @@ public class ChunkExportWindow extends Frame
     	initLevelDatWatcher();
     }
     
-    public void setWorldGenerator( WorldGenerator wg ) {
+    public void setWorldGenerator( URIRef scriptRef, WorldGenerator wg ) {
+    	this.worldGeneratorScriptRef = scriptRef;
     	this.worldGenerator = wg;
     }
     
@@ -217,16 +220,15 @@ public class ChunkExportWindow extends Frame
 						int bw = Integer.parseInt(widthField.getText());
 						int bd = Integer.parseInt(depthField.getText());
 
-						WorldGenerator wg = worldGenerator;
+						URIRef wg = worldGeneratorScriptRef;
 						if( wg == null ) {
-							progressBar.setProgress(-1, "Error: no world generator");
+							progressBar.setProgress(-1, "Error: no script generator");
 							return;
 						}
-						ChunkMunger chunkMunger = wg.getChunkMunger();
 						
 						cws.setBounds(bx, bz, bw, bd);
 						cws.setChunkDir(outputDirField.getText());
-						cws.setChunkMunger(chunkMunger);
+						cws.setWorldGenerator(worldGeneratorScriptRef, worldGenerator.getChunkMunger());
 						cws.start();
 					} catch( NumberFormatException e ) {
 						progressBar.setProgress(-1, "Error: "+e.getMessage());
@@ -285,8 +287,10 @@ public class ChunkExportWindow extends Frame
     }
     
     public static void main( String[] args ) {
-    	final ChunkWritingService cws = new ChunkWritingService();
+    	final TMCMGActiveKernel ak = new TMCMGActiveKernel();
+    	final ChunkWritingService cws = new ChunkWritingService(ak);
     	final ServiceManager sm = new ServiceManager();
+    	sm.add(ak);
     	sm.add(cws);
     	final ChunkExportWindow cew = new ChunkExportWindow(sm,cws);
     	cew.addWindowListener(new WindowAdapter() {

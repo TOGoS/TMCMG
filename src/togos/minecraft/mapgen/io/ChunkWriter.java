@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.zip.GZIPOutputStream;
 
@@ -29,7 +30,7 @@ public class ChunkWriter
 		return PathUtil.mcChunkDir(x,z) + "/" + PathUtil.chunkBaseName(x,z);
 	}
 	
-	public void writeChunk( ChunkData cd, DataOutputStream os ) throws IOException {
+	public static void writeChunk( ChunkData cd, DataOutputStream os ) throws IOException {
 		BetterNBTOutputStream nbtos = new BetterNBTOutputStream(os);
 		
 		HashMap levelRootTags = new HashMap();
@@ -100,6 +101,12 @@ public class ChunkWriter
 	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
 		//writeChunkToFile(getChunk(cx,cz,cm), chunkBaseDir);
 		writeChunkToRegionFile(getChunk(cx,cz,cm), chunkBaseDir);
+	}
+	
+	public void writeChunk( int cx, int cz, byte[] data, int format ) throws IOException {
+		OutputStream os = RegionFileCache.getChunkOutputStream(new File(chunkBaseDir),cx,cz,format);
+		os.write(data);
+		os.close();
 	}
 	
 	public static String USAGE =

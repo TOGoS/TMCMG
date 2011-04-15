@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.util.ByteUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
@@ -266,7 +268,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		final LayerSideCanvas nc = new LayerSideCanvas();
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
-			public void generatorUpdated( WorldGenerator wg ) {
+			public void generatorUpdated( URIRef wgScriptRef, WorldGenerator wg ) {
 				nc.setWorldGenerator(wg);
 			}
 		};
@@ -275,7 +277,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 			public void fileUpdated( File scriptFile ) {
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
-					gul.generatorUpdated( worldGenerator );
+					gul.generatorUpdated( ByteUtil.readFileToDataRef(scriptFile), worldGenerator );
 				} catch( ScriptError e ) {
 					System.err.println(ScriptUtil.formatScriptError(e));
 				} catch( FileNotFoundException e ) {
@@ -297,7 +299,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 				sm.add(fw);
 			}
 		} else {
-			gul.generatorUpdated( SimpleWorldGenerator.DEFAULT );
+			gul.generatorUpdated( null, SimpleWorldGenerator.DEFAULT );
 		}
 		
 		nc.setPreferredSize(new Dimension(512,128));

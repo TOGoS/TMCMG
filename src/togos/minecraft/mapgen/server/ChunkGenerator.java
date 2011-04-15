@@ -64,11 +64,10 @@ public class ChunkGenerator
 	}
 	
 	public byte[] getSerializedChunkData( int x, int y ) {
-		ChunkWriter cw = new ChunkWriter();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(baos));
-	        cw.writeChunk( getChunkData(x,y), dos );
+	        ChunkWriter.writeChunk( getChunkData(x,y), dos );
 	        dos.close();
         } catch( IOException e ) {
         	throw new RuntimeException(e);

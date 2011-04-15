@@ -23,6 +23,8 @@ import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class GenerateTNLChunkTest extends TestCase
 {
+	// TODO: Use TMCMGActiveKernel for this stuffff
+	
 	Map afunx = new HashMap();
 	
 	MultiDispatchAsyncCallable mdac = new MultiDispatchAsyncCallable();
