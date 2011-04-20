@@ -59,7 +59,7 @@ public class SimpleMessageCodecTest extends TestCase
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PacketWriter pw = new SLIP.PacketWriter(baos);
-		SimpleMFStream smfs = new SimpleMFStream(null, pw);
+		SimpleMessageStream smfs = new SimpleMessageStream(null, pw);
 		
 		for( int i=0; i<messages.size(); ++i ) {
 			smfs.writeMessage((Message)messages.get(i));
@@ -67,7 +67,7 @@ public class SimpleMessageCodecTest extends TestCase
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream( baos.toByteArray() );
 		PacketReader pr = new SLIP.PacketReader(bais);
-		SimpleMFStream smis = new SimpleMFStream(pr, null);
+		SimpleMessageStream smis = new SimpleMessageStream(pr, null);
 		for( int i=0; i<messages.size(); ++i ) {
 			Message readMessage = smis.readMessage();
 			assertEquals( readMessage, (Message)messages.get(i) );

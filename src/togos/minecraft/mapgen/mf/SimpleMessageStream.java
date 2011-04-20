@@ -9,12 +9,12 @@ import togos.mf.io.MessageWriter;
 import togos.mf.io.PacketReader;
 import togos.mf.io.PacketWriter;
 
-public class SimpleMFStream implements MessageReader, MessageWriter
+public class SimpleMessageStream implements MessageReader, MessageWriter
 {
 	protected PacketReader pr;
 	protected PacketWriter pw;
 		
-	public SimpleMFStream( PacketReader pr, PacketWriter pw ) {
+	public SimpleMessageStream( PacketReader pr, PacketWriter pw ) {
 		this.pr = pr;
 		this.pw = pw;
 	}
