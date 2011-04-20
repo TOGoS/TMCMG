@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 
+import togos.mf.api.Message;
+import togos.mf.api.MessageTypes;
 import togos.mf.api.Request;
 import togos.mf.api.Response;
+import togos.mf.base.BaseMessage;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 import togos.minecraft.mapgen.data.Chunk;
 import togos.minecraft.mapgen.util.ByteUtil;
 
-public class SimpleMFMessage
+public class SimpleMessageCodec
 {
 	public static void encodeContent( Object c, OutputStream os ) throws IOException {
 		if( c instanceof byte[] ) {
@@ -40,13 +43,16 @@ public class SimpleMFMessage
 		if( c != null ) encodeContent( c, os );
 	}
 	
-	public static void encode( SimpleMFMessage pack, OutputStream os ) throws IOException {
-		if( pack.payload instanceof Request ) {
-			encodeRequest( (Request)pack.payload, pack.sessionId, os );
-		} else if( pack.payload instanceof Response ) {
-			encodeResponse( (Response)pack.payload, pack.sessionId, os );
-		} else {
-			throw new RuntimeException("SimpleMFPacket payload is not a Request or Response: "+pack.payload.getClass());
+	public static void encode( Message mess, OutputStream os ) throws IOException {
+		switch( mess.getMessageType() ) {
+		case( MessageTypes.REQUEST ): case( MessageTypes.REQUEST_NR ):
+			encodeRequest( (Request)mess.getPayload(), mess.getSessionId(), os );
+			break;
+		case( MessageTypes.RESPONSE ):
+			encodeResponse( (Response)mess.getPayload(), mess.getSessionId(), os );
+			break;
+		default:
+			throw new RuntimeException("Don't know how to encode message type: "+mess.getMessageType());
 		}
 	}
 	
@@ -70,7 +76,7 @@ public class SimpleMFMessage
 		return new BaseResponse(Integer.parseInt(responseInfo[0]), content);
 	}
 	
-	public static SimpleMFMessage decode( byte[] buf, int begin, int length ) throws IOException {
+	public static Message decode( byte[] buf, int begin, int length ) throws IOException {
 		int headerLength = findHeaderLength(buf, begin, length);
 		String header = ByteUtil.string( buf, begin, headerLength );
 		String[] headerLines = header.split("\n");
@@ -83,27 +89,17 @@ public class SimpleMFMessage
 		long id = Long.parseLong(messageInfo[1]);
 		Chunk content = Chunk.copyOf(buf, begin+headerLength+2, length-headerLength-2);
 		if( "REQUEST".equals(messageInfo[0]) ) {
-			return new SimpleMFMessage( id, decodeRequest( headerLines, content ) );
+			return new BaseMessage(
+				id == 0 ? MessageTypes.REQUEST_NR : MessageTypes.REQUEST,
+				id, decodeRequest( headerLines, content )
+			);
 		} else if( "RESPONSE".equals(messageInfo[0]) ) {
-			return new SimpleMFMessage( id, decodeResponse( headerLines, content ) );
+			return new BaseMessage(
+				MessageTypes.RESPONSE,
+				id, decodeResponse( headerLines, content )
+			);
 		} else {
 			throw new IOException( "Unrecognised message type");
 		}
-	}
-	
-	long sessionId;
-	Object payload;
-	
-	public SimpleMFMessage( long id, Object payload ) {
-		this.sessionId = id;
-		this.payload = payload;
-	}
-	
-	public boolean equals( Object oth ) {
-		if( oth instanceof SimpleMFMessage ) {
-			SimpleMFMessage op = (SimpleMFMessage)oth;
-			return this.sessionId == op.sessionId && this.payload.equals(op.payload);
-		}
-		return false;
 	}
 }

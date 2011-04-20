@@ -3,10 +3,13 @@ package togos.minecraft.mapgen.mf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import togos.mf.api.Message;
+import togos.mf.io.MessageReader;
+import togos.mf.io.MessageWriter;
 import togos.mf.io.PacketReader;
 import togos.mf.io.PacketWriter;
 
-public class SimpleMFStream
+public class SimpleMFStream implements MessageReader, MessageWriter
 {
 	protected PacketReader pr;
 	protected PacketWriter pw;
@@ -32,15 +35,15 @@ public class SimpleMFStream
 	}
 	*/
 	
-	public void writeMessage( SimpleMFMessage mess ) throws IOException {
+	public void writeMessage( Message mess ) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-		SimpleMFMessage.encode( mess, baos );
+		SimpleMessageCodec.encode( mess, baos );
 		byte[] data = baos.toByteArray();
 		pw.writePacket(data, data.length);
 	}
 	
-	public SimpleMFMessage readMessage() throws IOException {
+	public Message readMessage() throws IOException {
 		byte[] data = this.pr.readPacket(8192);
-		return SimpleMFMessage.decode(data, 0, data.length);
+		return SimpleMessageCodec.decode(data, 0, data.length);
 	}
 }
