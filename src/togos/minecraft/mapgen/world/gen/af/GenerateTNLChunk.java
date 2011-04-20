@@ -14,7 +14,7 @@ import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.TMCMGNamespace;
-import togos.minecraft.mapgen.util.ByteUtil;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
@@ -59,7 +59,7 @@ public class GenerateTNLChunk implements ActiveFunction
 	
 	public Response run( ActiveRef ref, Map resources ) {
 		Object script = resources.get( compiledScriptRef(ref).getUri() );
-		String coords = ByteUtil.string( resources.get(ref.requireArgument(COORDS_ARGNAME).getUri()) );
+		String coords = Util.string( resources.get(ref.requireArgument(COORDS_ARGNAME).getUri()) );
 		String[] coordStrs = coords.split(",");
 		long x = Long.parseLong(coordStrs[0]);
 		long y = Long.parseLong(coordStrs[1]);

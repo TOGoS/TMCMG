@@ -19,7 +19,7 @@ import java.util.List;
 
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.util.ByteUtil;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
@@ -277,7 +277,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 			public void fileUpdated( File scriptFile ) {
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
-					gul.generatorUpdated( ByteUtil.readFileToDataRef(scriptFile), worldGenerator );
+					gul.generatorUpdated( Util.readFileToDataRef(scriptFile), worldGenerator );
 				} catch( ScriptError e ) {
 					System.err.println(ScriptUtil.formatScriptError(e));
 				} catch( FileNotFoundException e ) {

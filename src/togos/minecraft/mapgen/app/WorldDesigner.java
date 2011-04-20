@@ -34,7 +34,7 @@ import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.ui.Stat;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
-import togos.minecraft.mapgen.util.ByteUtil;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -298,7 +298,7 @@ public class WorldDesigner
 			public void fileUpdated( File scriptFile ) {
 				try {
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
-					gul.generatorUpdated( ByteUtil.readFileToDataRef(scriptFile), worldGenerator );
+					gul.generatorUpdated( Util.readFileToDataRef(scriptFile), worldGenerator );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
 					String errText = ScriptUtil.formatScriptError(e);

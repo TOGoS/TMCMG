@@ -11,7 +11,7 @@ import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.TMCMGNamespace;
-import togos.minecraft.mapgen.util.ByteUtil;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.lang.ScriptError;
@@ -44,7 +44,7 @@ public class CompileTNLScript implements ActiveFunction
 		if( script instanceof WorldGenerator ) {
 			return BaseResponse.forValue(script);
 		} else {
-			String source = ByteUtil.string(script);
+			String source = Util.string(script);
 			TNLWorldGeneratorCompiler compiler = new TNLWorldGeneratorCompiler();
 			Object compiled;
             try {
