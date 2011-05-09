@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 
 import togos.jobkernel.uri.BaseRef;
 import togos.jobkernel.uri.URIUtil;
+import togos.mf.value.Chunk;
 import togos.mf.value.URIRef;
 
 public class Util
@@ -19,6 +20,9 @@ public class Util
 			return (String)o;
 		} else if( o instanceof byte[] ) {
 			return new String( (byte[])o, UTF8 );
+		} else if( o instanceof Chunk ) {
+			Chunk c = (Chunk)o;
+			return new String( c.data, c.offset, c.length, UTF8 );
 		} else if( o == null ) {
 			return null;
 		} else {
