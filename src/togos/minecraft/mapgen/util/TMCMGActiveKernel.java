@@ -1,15 +1,16 @@
 package togos.minecraft.mapgen.util;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import togos.jobkernel.job.JobService;
 import togos.jobkernel.mf.ActiveCallable;
 import togos.jobkernel.mf.AggregatingAsyncCallable;
 import togos.jobkernel.mf.AsyncCallAggregatePool;
+import togos.jobkernel.mf.AsyncMultiDispatch;
 import togos.jobkernel.mf.DataURICallable;
 import togos.jobkernel.mf.LimitingAsyncCallable;
-import togos.jobkernel.mf.MultiDispatchAsyncCallable;
 import togos.mf.api.AsyncCallable;
 import togos.mf.api.Request;
 import togos.mf.api.ResponseHandler;
@@ -21,7 +22,7 @@ public class TMCMGActiveKernel implements AsyncCallable, Service
 {
 	Map afunx = new HashMap();
 	
-	MultiDispatchAsyncCallable mdac = new MultiDispatchAsyncCallable();
+	AsyncMultiDispatch mdac = new AsyncMultiDispatch(new HashSet());
 	LimitingAsyncCallable lac = new LimitingAsyncCallable(10, mdac);
 	AggregatingAsyncCallable agg = new AggregatingAsyncCallable(new AsyncCallAggregatePool(), lac);
 	JobService jobServ = new JobService();
@@ -32,8 +33,8 @@ public class TMCMGActiveKernel implements AsyncCallable, Service
 		afunx.put(GenerateTNLChunk.FUNCNAME, GenerateTNLChunk.instance);
 		afunx.put(SerializeChunk.FUNCNAME, SerializeChunk.instance);
 		
-		mdac.addCallable(ac);
-		mdac.addCallable(DataURICallable.instance);
+		mdac.add(ac);
+		mdac.add(DataURICallable.instance);
 	}
 	
 	public void callAsync( Request req, ResponseHandler rHandler ) {

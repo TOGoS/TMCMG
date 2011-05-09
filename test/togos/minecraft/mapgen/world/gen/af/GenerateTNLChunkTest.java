@@ -1,18 +1,19 @@
 package togos.minecraft.mapgen.world.gen.af;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.TestCase;
 import togos.jobkernel.job.JobService;
-import togos.jobkernel.mf.ActiveCallable;
 import togos.jobkernel.mf.Active;
+import togos.jobkernel.mf.ActiveCallable;
 import togos.jobkernel.mf.AggregatingAsyncCallable;
 import togos.jobkernel.mf.AsyncCallAggregatePool;
+import togos.jobkernel.mf.AsyncMultiDispatch;
 import togos.jobkernel.mf.DataURICallable;
-import togos.jobkernel.mf.MultiDispatchAsyncCallable;
 import togos.jobkernel.uri.BaseRef;
 import togos.jobkernel.uri.URIUtil;
 import togos.mf.api.Response;
@@ -27,7 +28,7 @@ public class GenerateTNLChunkTest extends TestCase
 	
 	Map afunx = new HashMap();
 	
-	MultiDispatchAsyncCallable mdac = new MultiDispatchAsyncCallable();
+	AsyncMultiDispatch mdac = new AsyncMultiDispatch(new HashSet());
 	AggregatingAsyncCallable agg = new AggregatingAsyncCallable(new AsyncCallAggregatePool(), mdac);
 	JobService jobServ = new JobService( 2 );
 	ActiveCallable ac = new ActiveCallable( afunx, agg, jobServ.getJobQueue() );
@@ -36,8 +37,8 @@ public class GenerateTNLChunkTest extends TestCase
 		afunx.put(CompileTNLScript.FUNCNAME, CompileTNLScript.instance);
 		afunx.put(GenerateTNLChunk.FUNCNAME, GenerateTNLChunk.instance);
 		
-		mdac.addCallable(ac);
-		mdac.addCallable(DataURICallable.instance);
+		mdac.add(ac);
+		mdac.add(DataURICallable.instance);
 		
 		jobServ.start();
 	}
