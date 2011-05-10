@@ -30,6 +30,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	protected HashSet progressListeners = new HashSet();
 	protected URIRef scriptRef;
 	protected ChunkMunger cm;
+	
+	public boolean useJobSystem = true;
 	protected AsyncCallable callable;
 	
 	public ChunkWritingService( AsyncCallable callable ) {
@@ -65,7 +67,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 			((ChunkWritingProgressListener)li.next()).chunkProgressUpdated(written, total);
 		}
 		if( written == total ) {
-			System.err.println("Clear region file cache");
+			//System.err.println("Clear region file cache");
 			// HEY WATCH OUT THINGS COULD STILL BE RUNNING
 			// IF WE STARTED THINGS IN WEIRD ORDER
 			// BUT I THINK NEED TO DO THIS TO MAEK SURE
@@ -90,28 +92,28 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 				
 				final int cx = bx+x, cz = bz+z;
 
-				/*
-				writeChunk( cx, cz, cm );
-				chunkWritten();
-				*/
-				
-				final Request req = Active.mkRequest(
-					SerializeChunk.makeRef(
-						GenerateTNLChunk.makeRef(scriptRef, cx*16, 0, cz*16, 16, 128, 16 ) ) );
-				callable.callAsync(req, new ResponseHandler() {
-					public void setResponse( Response res ) {
-						if( res.getStatus() != ResponseCodes.NORMAL ) {
-							System.err.println("Failed to fetch chunk "+cx+","+cz+" from "+req.getResourceName());
-						} else {
-							try {
-								writeChunk( cx, cz, (byte[])res.getContent(), RegionFile.VERSION_DEFLATE );
-								chunkWritten();
-							} catch( IOException e ) {
-								throw new RuntimeException(e);
+				if( useJobSystem ) {
+					final Request req = Active.mkRequest(
+							SerializeChunk.makeRef(
+								GenerateTNLChunk.makeRef(scriptRef, cx*16, 0, cz*16, 16, 128, 16 ) ) );
+						callable.callAsync(req, new ResponseHandler() {
+							public void setResponse( Response res ) {
+								if( res.getStatus() != ResponseCodes.NORMAL ) {
+									System.err.println("Failed to fetch chunk "+cx+","+cz+" from "+req.getResourceName());
+								} else {
+									try {
+										writeChunk( cx, cz, (byte[])res.getContent(), RegionFile.VERSION_DEFLATE );
+										chunkWritten();
+									} catch( IOException e ) {
+										throw new RuntimeException(e);
+									}
+								}
 							}
-						}
-					}
-				});
+						});
+				} else {
+					writeChunk( cx, cz, cm );
+					chunkWritten();
+				}
 			}
 		}
 	}
