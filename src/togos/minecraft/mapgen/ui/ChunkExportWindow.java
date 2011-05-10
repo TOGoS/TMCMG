@@ -2,6 +2,7 @@ package togos.minecraft.mapgen.ui;
 
 import java.awt.Button;
 import java.awt.Canvas;
+import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -14,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
@@ -261,10 +264,20 @@ public class ChunkExportWindow extends Frame
 			}
 		});
     	
+    	Checkbox useJobSystemCheckbox = new Checkbox();
+    	useJobSystemCheckbox.setLabel("Use job system (possibly faster on multicore)");
+    	useJobSystemCheckbox.addItemListener(new ItemListener() {
+			public void itemStateChanged( ItemEvent evt ) {
+				cws.useJobSystem = ( evt.getStateChange() == ItemEvent.SELECTED );
+			}
+		});
+    	useJobSystemCheckbox.setState( cws.useJobSystem );
+    	
     	add(outputdirPanel);
     	add(inputPanel);
     	add(progressBar);
     	add(levelDatStatusBar);
+    	add(useJobSystemCheckbox);
     	
     	addWindowListener(new WindowAdapter() {
     		public void windowActivated( WindowEvent evt ) {

@@ -38,6 +38,12 @@ WARNING: THIS WILL OVERWRITE ANY EXISTING TERRAIN/BUILDINGS/OBJECTS
 IN THE AREA, so either back up your data before generating, or only generate
 on maps that have nothing you want to keep.
 
+There's an experimental job system for exporting chunks that can be
+enabled at any time (even while an export is in progress) by checking
+the 'Use job system' checkbox.  In the future this may be able to take
+advantage of spare computers, but for now is limited to the number of
+CPUs on your PC as returned by Runtime.getRuntime().availableProcessors().
+
 == TOGoS Noise Language ==
 
 TOGoS Noise Language (TNL) is the language for defining terrain

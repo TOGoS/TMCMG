@@ -253,6 +253,7 @@ public class WorldDesigner
 		boolean fullscreen = false;
 		boolean normalShade = false;
 		boolean heightShade = false;
+		boolean jobSystem = false;
 		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-chunk-dir".equals(args[i]) ) {
@@ -267,6 +268,8 @@ public class WorldDesigner
 				heightShade = true;
 			} else if( "-perf-log".equals(args[i]) ) {
 				Stat.performanceLoggingEnabled = true;
+			} else if( "-job-system".equals(args[i]) ) {
+				jobSystem = true;
 			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
 				System.out.println(USAGE);
 			} else if( !args[i].startsWith("-") ) {
@@ -291,6 +294,8 @@ public class WorldDesigner
 				chunkExportWindow.setWorldGenerator( wgScriptRef, wg );
 			}
 		};
+		
+		cws.useJobSystem = jobSystem;
 		
 		wdk.setAutoReloadEnabled(autoReload);
 		
