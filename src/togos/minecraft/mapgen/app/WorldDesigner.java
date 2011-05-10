@@ -41,6 +41,8 @@ import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.util.TMCMGActiveKernel;
+import togos.minecraft.mapgen.world.Materials;
+import togos.minecraft.mapgen.world.gen.Material;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.lang.ScriptError;
@@ -235,7 +237,10 @@ public class WorldDesigner
 		"  -auto-reload     ; poll script file and automatically reload when updated\n" +
 		"  -fullscreen      ; display maximized with no border\n" +
 		"  -normal-shading  ; enable angle-based terrain shading (slow)\n" +
-		"  -height-shading  ; enable height-based terrain shading)\n";
+		"  -height-shading  ; enable height-based terrain shading)\n"+
+		"Other commands:\n" +
+		"  -?, -h           ; print help and exit\n" +
+		"  -dump-materials  ; print material list and exit";
 	
 	protected void setStatus( boolean isError, String text ) {
 		statusLabel.setForeground(isError ? Color.PINK : Color.GREEN);
@@ -245,6 +250,33 @@ public class WorldDesigner
 	protected void updatePositionStatus() {
 		setStatus(false, "MPP: "+(1/mwev.getZoom())+",    "+
 			mwev.getWorldX()+", "+mwev.getWorldY());
+	}
+	
+	protected static String alignLeft( String s, int width, char pad ) {
+		if( s.length() > width ) {
+			s = s.substring(0,width);
+		}
+		while( s.length() < width ) {
+			s += pad;
+		}
+		return s;
+	}
+	
+	protected static String alignRight( String s, int width, char pad ) {
+		if( s.length() > width ) {
+			s = s.substring(s.length()-width);
+		}
+		while( s.length() < width ) {
+			s = pad + s;
+		}
+		return s;
+	}
+		
+	protected static String formatMaterialInfo( Material m ) {
+		return
+			alignLeft( Materials.normalizeName(m.name), 30, ' ' ) + " " +
+			alignLeft( m.name, 40, ' ' ) + " " +
+			"0x" + alignRight(Integer.toString(m.blockType, 16).toUpperCase(), 2, '0');
 	}
 	
 	public void run(String[] args) {
@@ -270,8 +302,17 @@ public class WorldDesigner
 				Stat.performanceLoggingEnabled = true;
 			} else if( "-job-system".equals(args[i]) ) {
 				jobSystem = true;
+			} else if( "-dump-materials".equals(args[i]) ) {
+				for( int j=0; j<Materials.byBlockType.length; ++j ) {
+					Material m = Materials.byBlockType[j];
+					if( m != null ) {
+						System.out.println(formatMaterialInfo(m));
+					}
+				}
+				System.exit(0);
 			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
 				System.out.println(USAGE);
+				System.exit(0);
 			} else if( !args[i].startsWith("-") ) {
 				scriptFilename = args[i];
 			} else {
