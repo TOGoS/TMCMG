@@ -34,10 +34,11 @@ an output directory (this should be a directory directly under <code>saves/</cod
 data), you must browse to that directory and select a file directly within that
 directory, such as <code>level.dat</code>.</p>
 
-<p>The 4 boxes under the output directory selection are to give the X and Z coordinates
-of the Northeast-most corner of the map to generate chunks form, where an increment of
-1 means the width/depth of 1 chunk (16 meters), and the width and depth (again, in
-chunks) of the area.  When you hit <i>Generate</i> it will start generating new data
+<p>The 4 boxes under the output directory selection are to give the
+X and Z coordinates of the northeastern-most corner and the width and
+height of the area to generate.  X, Z, width, and depth are all in terms
+of chunks, which are 16 blocks (16 meters) on a side.
+When you hit <i>Generate</i> it will start generating new data
 for those chunks and writing them into the chosen output directory.
 <font color="red">WARNING:</font> THIS WILL OVERWRITE ANY EXISTING TERRAIN/BUILDINGS/OBJECTS
 IN THE AREA, so either back up your data before generating, or only generate
