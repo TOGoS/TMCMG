@@ -42,8 +42,12 @@ public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		);
 	}
 	
-	public String toTnl() {
+	public String toString() {
 		return "clamp("+lower+", "+upper+", "+clamped+")";
+	}
+	
+	public String toTnl() {
+		return "clamp("+FunctionUtil.toTnl(lower)+", "+FunctionUtil.toTnl(upper)+", "+FunctionUtil.toTnl(clamped)+")";
 	}
 	
 	public Object[] directSubExpressions() {
