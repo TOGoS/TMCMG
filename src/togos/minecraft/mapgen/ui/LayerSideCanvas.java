@@ -99,8 +99,8 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 					wz[i] = worldZ;
 				}
 				DataDaDa input = new DataDaDa(wx,wz);
-				int[] floor = LayerUtil.roundHeights(layer.floorHeightFunction.apply(input).v);
-				int[] ceil  = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(input).v);
+				int[] floor = LayerUtil.roundHeights(layer.floorHeightFunction.apply(input).x);
+				int[] ceil  = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(input).x);
 				double[] maxY = LayerUtil.maxY(ceil);
 				if( FunctionUtil.isConstant(layer.typeFunction) ) {
 					// To speed things up, special case when type is constant:

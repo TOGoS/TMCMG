@@ -19,11 +19,11 @@ public class BooleanLogicTest extends NoiseFunctionTest
 			"    +3 )","test-script");
 		
 		DataDa out = expr.apply(in);
-		assertEquals( -1, out.v[0] );
-		assertEquals( +3, out.v[1] );
-		assertEquals( +3, out.v[2] );
-		assertEquals( +2, out.v[3] );
-		assertEquals( +4, out.v[4] );
-		assertEquals( +5, out.v[5] );
+		assertEquals( -1, out.x[0] );
+		assertEquals( +3, out.x[1] );
+		assertEquals( +3, out.x[2] );
+		assertEquals( +2, out.x[3] );
+		assertEquals( +4, out.x[4] );
+		assertEquals( +5, out.x[5] );
 	}
 }

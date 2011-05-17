@@ -170,6 +170,7 @@ public class NoiseMacros
 		// Noise
 		add("perlin", new ConstantMacroType(PerlinDaDaDa_Da.instance));
 		add("simplex", new ConstantMacroType(SimplexDaDaDa_Da.instance));
+		add("atan", new ConstantMacroType(SimplexDaDaDa_Da.instance));
 		
 		// Utility
 		add("cache", new BaseMacroType() {

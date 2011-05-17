@@ -17,7 +17,7 @@ public class AdaptOutDaDa_Da_Ia implements FunctionDaDa_Ia, Expression
 		int[] out = new int[in.getLength()];
 		DataDa d = next.apply(in);
 		for( int i=d.getLength()-1; i>=0; --i ) {
-			out[i] = (int)Math.floor(d.v[i]);
+			out[i] = (int)Math.floor(d.x[i]);
 		}
 		return new DataIa(out);
 	}

@@ -41,8 +41,8 @@ public class LayerTerrainGenerator implements WorldGenerator
 				Object o = li.next();
 				if( o instanceof HeightmapLayer ) {
 					HeightmapLayer layer = (HeightmapLayer)o;
-					int[] ceiling = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(in).v);
-					int[] floor   = LayerUtil.roundHeights(layer.floorHeightFunction.apply(in).v);
+					int[] ceiling = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(in).x);
+					int[] floor   = LayerUtil.roundHeights(layer.floorHeightFunction.apply(in).x);
 					for( int i=0, tz=0; tz<cd.depth; ++tz ) {
 						for( int tx=0; tx<cd.width; ++tx, ++i ) {
 							int flo = floor[i];
@@ -101,8 +101,8 @@ public class LayerTerrainGenerator implements WorldGenerator
 			}
 			for( Iterator li=layers.iterator(); li.hasNext(); ) {
 				HeightmapLayer l = (HeightmapLayer)li.next();
-				double[] lCeil  = l.ceilingHeightFunction.apply(in).v;
-				double[] lFloor = l.floorHeightFunction.apply(in).v;
+				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
+				double[] lFloor = l.floorHeightFunction.apply(in).x;
 				double[] lTopY = LayerUtil.maxY(lCeil);
 				DataDaDaDa typeInput = new DataDaDaDa(in.x,lTopY,in.y);
 				int[] lType = l.typeFunction.apply(typeInput).v;

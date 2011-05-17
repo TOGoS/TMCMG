@@ -16,7 +16,7 @@ public class Winterizer implements ChunkMunger
 	
 	public void mungeChunk( ChunkData cd ) {
 		DataDaDa in = ChunkUtil.getTileXZCoordinates( cd );
-		double[] winterness = winternessFunction.apply(in).v;
+		double[] winterness = winternessFunction.apply(in).x;
 		for( int i=0, z=0; z<cd.depth; ++z ) {
 			for( int x=0; x<cd.width; ++x, ++i ) {
 				if( winterness[i] <= 0 ) continue;

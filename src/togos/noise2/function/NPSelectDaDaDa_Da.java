@@ -28,7 +28,7 @@ public class NPSelectDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		
 		double[] resultValues = new double[count]; 
 		for( int i=0; i<count; ++i ) {
-			resultValues[i] = sValues.v[i] > 0 ? pValues.v[i] : nValues.v[i];
+			resultValues[i] = sValues.x[i] > 0 ? pValues.x[i] : nValues.x[i];
 		}
 		return new DataDa(resultValues);
 	}

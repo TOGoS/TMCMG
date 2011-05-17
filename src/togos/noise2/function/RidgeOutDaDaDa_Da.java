@@ -18,9 +18,9 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] lower = this.lower.apply(in).v;
-		double[] upper = this.upper.apply(in).v;
-		double[] ridged = this.ridged.apply(in).v;
+		double[] lower = this.lower.apply(in).x;
+		double[] upper = this.upper.apply(in).x;
+		double[] ridged = this.ridged.apply(in).x;
 		double[] out = new double[in.getLength()];
 		for( int i=in.getLength()-1; i>=0; --i ) {
 			double d = upper[i]-lower[i];

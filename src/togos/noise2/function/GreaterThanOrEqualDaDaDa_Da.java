@@ -15,8 +15,8 @@ public class GreaterThanOrEqualDaDaDa_Da extends ComparisonDaDaDa_Da
 	}
 
 	public DataDa apply( DataDaDaDa in ) {
-		double[] oa = a.apply(in).v;
-		double[] ob = b.apply(in).v;
+		double[] oa = a.apply(in).x;
+		double[] ob = b.apply(in).x;
 		double[] res = new double[oa.length];
 		for( int i=res.length-1; i>=0; --i ) {
 			res[i] = oa[i] >= ob[i] ? 1 : 0; 

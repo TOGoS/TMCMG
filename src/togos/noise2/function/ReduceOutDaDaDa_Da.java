@@ -18,13 +18,13 @@ public abstract class ReduceOutDaDaDa_Da
 	protected abstract void reduce( int count, double[] subOut, double[] out );
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] first = components[0].apply(in).v;
+		double[] first = components[0].apply(in).x;
 		double[] out = new double[in.getLength()];
 		for( int j=0; j<first.length; ++j ) {
 			out[j] = first[j];
 		}
 		for( int i=1; i<components.length; ++i ) {
-			reduce( in.getLength(), components[i].apply(in).v, out );
+			reduce( in.getLength(), components[i].apply(in).x, out );
 		}
 		return new DataDa(out);
 	}

@@ -14,7 +14,7 @@ public class ScaleOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] scaled = next.apply(in).v;
+		double[] scaled = next.apply(in).x;
 		double[] out = new double[in.getLength()];
 		for( int i=in.getLength()-1; i>=0; --i ) {
 			out[i] = scaled[i] * scale;

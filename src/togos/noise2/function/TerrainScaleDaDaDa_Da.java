@@ -25,7 +25,7 @@ public class TerrainScaleDaDaDa_Da extends TNLFunctionDaDaDa_Da
 			scaledY[i] = in.y[i]/hScale;
 			scaledZ[i] = in.z[i]/hScale;
 		}
-		double[] subOut = next.apply(new DataDaDaDa(scaledX,scaledY,scaledZ)).v;
+		double[] subOut = next.apply(new DataDaDaDa(scaledX,scaledY,scaledZ)).x;
 		for( int i=in.getLength()-1; i>=0; --i ) out[i] = subOut[i] * vScale;
 		return new DataDa(subOut);
 	}

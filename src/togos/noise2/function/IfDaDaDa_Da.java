@@ -27,8 +27,8 @@ public class IfDaDaDa_Da extends TNLFunctionDaDaDa_Da
 			DataDa resData  = funx[condi+1].apply(in);
 			anyFalses = false;
 			for( int i=len-1; i>=0; --i ) {
-				if( !capturedList[i] && condData.v[i] > 0 ) {
-					res.v[i] = resData.v[i];
+				if( !capturedList[i] && condData.x[i] > 0 ) {
+					res.x[i] = resData.x[i];
 					capturedList[i] = true;
 				} else {
 					anyFalses = true;
@@ -39,7 +39,7 @@ public class IfDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		DataDa elseResData = funx[condi].apply(in);
 		for( int i=len-1; i>=0; --i ) {
 			if( !capturedList[i] ) {
-				res.v[i] = elseResData.v[i];
+				res.x[i] = elseResData.x[i];
 			}
 		}
 		return res;

@@ -19,9 +19,9 @@ public class TransformInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	
 	public DataDa apply( DataDaDaDa in ) {
 		return next.apply(new DataDaDaDa(
-			xfX.apply(in).v,
-			xfY.apply(in).v,
-			xfZ.apply(in).v
+			xfX.apply(in).x,
+			xfY.apply(in).x,
+			xfZ.apply(in).x
 		));
 	}
 	

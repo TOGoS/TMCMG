@@ -2,18 +2,13 @@ package togos.noise2.data;
 
 import java.security.MessageDigest;
 
-public class DataDaDa extends Data
+public class DataDaDa extends DataDa
 {
-	public double[] x;
 	public double[] y;
 	
 	public DataDaDa( double[] x, double[] y ) {
-		this.x = x;
+		super(x);
 		this.y = y;
-	}
-	
-	public int getLength() {
-		return x.length;
 	}
 	
 	public void digest( MessageDigest md ) {

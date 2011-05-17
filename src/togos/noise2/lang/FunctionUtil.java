@@ -87,7 +87,7 @@ public class FunctionUtil
 		double[] ax = new double[]{x};
 		double[] ay = new double[]{y};
 		DataDa out = da.apply(new DataDaDa(ax,ay));
-		return out.v[0];
+		return out.x[0];
 	}
 
 	public static double getValue( FunctionDaDaDa_Da da, double x, double y, double z ) {
@@ -95,7 +95,7 @@ public class FunctionUtil
 		double[] ay = new double[]{y};
 		double[] az = new double[]{z};
 		DataDa out = da.apply(new DataDaDaDa(ax,ay,az));
-		return out.v[0];
+		return out.x[0];
 	}
 
 	public static double getConstantValue( TNLFunctionDaDaDa_Da da ) {

@@ -21,7 +21,7 @@ public class AdaptInXZDaDaDa_DaDa_Da implements FunctionDaDa_Da, Expression
 
 	public DataDa apply( DataDaDa in ) {
 		DataDa y = Y.apply(in);
-		return next.apply(new DataDaDaDa(in.x, y.v, in.y, "adaptX0Y:"+in.getDataId()));
+		return next.apply(new DataDaDaDa(in.x, y.x, in.y, "adaptX0Y:"+in.getDataId()));
 	}
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {
