@@ -35,8 +35,8 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		}
 		for( int i=0; i<iterations; ++i ) {
 			for( int j=in.getLength()-1; j>=0; --j ) {
-				xfX[j] = in.x[j]/hs;
-				xfY[j] = in.y[j]/hs;
+				xfX[j] = in.x[j]/hs+ztrans*i;
+				xfY[j] = in.y[j]/hs+ztrans*i;
 				xfZ[j] = in.z[j]/hs+ztrans*i;
 			}
 			double[] subOut = next.apply(new DataDaDaDa(xfX,xfY,xfZ)).x;
