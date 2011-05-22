@@ -25,6 +25,7 @@ import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.RidgeOutDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.SimplexDaDaDa_Da;
+import togos.noise2.function.SqrtDa_Da;
 import togos.noise2.function.SubtractOutDaDaDa_Da;
 import togos.noise2.function.TransformInDaDaDa_Da;
 import togos.noise2.function.TranslateInDaDaDa_Da;
@@ -96,6 +97,15 @@ public class NoiseMacros
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
 		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
+
+		add("sqrt", new BaseMacroType() {
+			protected int getRequiredArgCount() { return 1; }
+
+			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
+				return new SqrtDa_Da(FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]));
+			}
+		}
+		);
 		
 		// Clamping/folding
 		add("min", dddaamt(MinOutDaDaDa_Da.class));
