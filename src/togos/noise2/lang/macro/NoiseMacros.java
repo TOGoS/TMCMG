@@ -25,7 +25,7 @@ import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.RidgeOutDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.SimplexDaDaDa_Da;
-import togos.noise2.function.SqrtDa_Da;
+import togos.noise2.function.SqrtDaDaDa_Da;
 import togos.noise2.function.SubtractOutDaDaDa_Da;
 import togos.noise2.function.TransformInDaDaDa_Da;
 import togos.noise2.function.TranslateInDaDaDa_Da;
@@ -102,7 +102,7 @@ public class NoiseMacros
 			protected int getRequiredArgCount() { return 1; }
 
 			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
-				return new SqrtDa_Da(FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]));
+				return new SqrtDaDaDa_Da(FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]));
 			}
 		}
 		);

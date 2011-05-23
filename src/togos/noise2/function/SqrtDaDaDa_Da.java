@@ -5,15 +5,15 @@ import togos.noise2.data.DataDaDaDa;
 import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 
-public class SqrtDa_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDaDa_Da {
+public class SqrtDaDaDa_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDaDa_Da
+{
+	public FunctionDaDaDa_Da arg;
 	
-	private FunctionDaDaDa_Da arg;
-	
-	public SqrtDa_Da( FunctionDaDaDa_Da arg) {
+	public SqrtDaDaDa_Da( FunctionDaDaDa_Da arg) {
 		this.arg = arg;
 	}
 	
-	public DataDa apply( DataDaDaDa in) {
+	public DataDa apply( DataDaDaDa in ) {
 		int len = in.getLength();
 		double[] dat = arg.apply(in).x;
 		double[] out = new double[len];
@@ -40,7 +40,6 @@ public class SqrtDa_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDaDa_Da
     }
 
 	public Object rewriteSubExpressions( ExpressionRewriter rw ) {
-	    return new SqrtDa_Da((FunctionDaDaDa_Da)rw.rewrite(arg));
+	    return new SqrtDaDaDa_Da((FunctionDaDaDa_Da)rw.rewrite(arg));
     }
-
 }
