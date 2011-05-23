@@ -8,6 +8,7 @@ import togos.noise2.function.AndOutDaDaDa_Da;
 import togos.noise2.function.ArcTanDaDaDa_Da;
 import togos.noise2.function.CacheDaDaDa_Da;
 import togos.noise2.function.ClampOutDaDaDa_Da;
+import togos.noise2.function.CosDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
 import togos.noise2.function.EqualDaDaDa_Da;
 import togos.noise2.function.FractalDaDaDa_Da;
@@ -26,6 +27,7 @@ import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.RidgeOutDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.SimplexDaDaDa_Da;
+import togos.noise2.function.SinDaDaDa_Da;
 import togos.noise2.function.SqrtDaDaDa_Da;
 import togos.noise2.function.SubtractOutDaDaDa_Da;
 import togos.noise2.function.TransformInDaDaDa_Da;
@@ -112,6 +114,8 @@ public class NoiseMacros
 		add("sqrt", xArgMacroType(SqrtDaDaDa_Da.class));
 		
 		// Trigonometric functions
+		add("sin", xArgMacroType(SinDaDaDa_Da.class));
+		add("cos", xArgMacroType(CosDaDaDa_Da.class));
 		add("atan", xArgMacroType(ArcTanDaDaDa_Da.class));
 		
 		// Clamping/folding

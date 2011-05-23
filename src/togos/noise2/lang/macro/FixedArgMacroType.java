@@ -22,7 +22,7 @@ public abstract class FixedArgMacroType implements MacroType
 	
 	protected Object[] compileArguments( TNLCompiler c, ASTNode sn ) throws CompileError {
 		if( sn.arguments.size() != argCount ) {
-			throw new CompileError( sn.macroName + " requires "+2+" arguments, given "+sn.arguments.size()+".", sn );
+			throw new CompileError( sn.macroName + " requires "+argCount+" arguments, given "+sn.arguments.size()+".", sn );
 		}
 		
 		Object[] args = new Object[argCount];
