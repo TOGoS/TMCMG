@@ -182,6 +182,35 @@ layer( <material-id>, <floor-height>, <ceiling-height> )
     coordinates become the x and y inputs - the z input to the
     height function will always be zero.
 
+=== User-defined macros ===
+
+You may define macros to use later in your script.
+User-defined macros may take any number of arguments.
+
+  mymacro( myarg ) = myarg + xf( x / 10, y / 10, z / 10, myarg );
+
+  mymacro( simplex * 3 )
+  
+The above expression is equivalent to
+
+  (simplex * 3) + xf( x / 10, y / 10, z / 10, (simplex * 3) );
+
+Argument names may not conflict with names of macros or other arguments
+already defined within the same dynamic scope:
+
+  foo( arg ) = arg * 2;
+  bar( arg ) = arg * 3;
+  
+  quux = foo( 10 ) + bar( 10 ); # This is OK
+  quuux = foo( bar( 10 ) ); # Not OK; bar's arg conflicts with foo's.  
+
+I plan to eventually make arguments lexically scoped, so don't rely
+on programs like the following compiling:
+
+  foo = arg * 2;
+  bar( arg ) = foo * 3;
+  quux = bar( 4 ); # = 20
+
 === Chunk post-processors ===
 
 These are applied to chunks after all material layers:
