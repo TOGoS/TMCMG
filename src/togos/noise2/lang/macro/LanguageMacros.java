@@ -2,6 +2,7 @@ package togos.noise2.lang.macro;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
@@ -28,6 +29,7 @@ public class LanguageMacros
 		add(";", new MacroType() {
 			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				ASTNode mainNode = null;
+				Map newMacroTypes = new HashMap();
 				int mainCount = 0;
 				for( Iterator i=sn.arguments.iterator(); i.hasNext(); ) {
 					ASTNode n = (ASTNode)i.next();
@@ -35,19 +37,27 @@ public class LanguageMacros
 						if( n.arguments.size() != 2 ) {
 							throw new CompileError("'=' should have exactly 2 arguments, but this one has "+n.arguments.size(), n);
 						}
+						ASTNode lNode = (ASTNode)n.arguments.get(1);
 						ASTNode rNode = (ASTNode)n.arguments.get(0);
-						if( rNode.arguments.size() > 0 ) {
-							throw new CompileError("Expresstion to right of '=' should have zero arguments, but this one has "+
-								rNode.arguments.size(), rNode);
+						String[] argNames = new String[rNode.arguments.size()];
+						for( int pi=0; pi<argNames.length; ++pi ) {
+							ASTNode paramNode = (ASTNode)rNode.arguments.get(pi);
+							if( paramNode.arguments.size() > 0 ) {
+								throw new CompileError("Parameter ('"+paramNode.macroName+"') cannot itself have parameters", paramNode);
+							}
+							argNames[pi] = paramNode.macroName;
 						}
-						c.macroDefs.put( rNode.macroName, n.arguments.get(1) );
+						if( c.getMacroType(rNode.macroName) != null || newMacroTypes.containsKey(rNode.macroName) ) {
+							throw new CompileError("Duplicate definition of '"+rNode.macroName+"'", rNode);
+						}
+						newMacroTypes.put( rNode.macroName, new UserMacroType(rNode.macroName, argNames, lNode) );
 					} else {
 						mainNode = n;
 						++mainCount;
 					}
 				}
 				if( mainCount == 1 ) {
-					return c.compile(mainNode);
+					return c.withMacroTypes(newMacroTypes).compile(mainNode);
 				} else {
 					throw getWrongMainCountError( mainCount, sn );
 				}

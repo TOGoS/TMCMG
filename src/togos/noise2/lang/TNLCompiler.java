@@ -3,18 +3,15 @@ package togos.noise2.lang;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.MacroType;
 
 public class TNLCompiler
 {
-	public HashMap macroTypes = new HashMap();
-	private HashSet compilingMacroTypes = new HashSet();
-	public HashMap macroDefs = new HashMap();
+	public Map macroTypes = new HashMap();
 	
 	public TNLCompiler() {
 		initBuiltins();
@@ -24,29 +21,17 @@ public class TNLCompiler
 		// Here so you can override it
 	}
 	
-	public void addMacroDef( String name, ASTNode node ) throws CompileError {
-		if( macroTypes.containsKey(name) ) {
-			throw new CompileError("Attempt to redefine macro '"+name+"'", node);
-		}
-		macroDefs.put(name, node);
+	public TNLCompiler( Map macroTypes ) {
+		this.macroTypes = macroTypes;
 	}
 	
-	protected MacroType getMacroType( String name, SourceLocation sloc ) throws CompileError {
-		if( !macroTypes.containsKey(name) ) {
-			ASTNode def = (ASTNode)macroDefs.get(name);
-			if( def == null ) {
-				throw new CompileError("Reference to undefined macro "+name, sloc);
-			}
-			if( compilingMacroTypes.contains(name) ) {
-				throw new CompileError("'" + name + "' macro definition is recursive", sloc);
-			}
-			compilingMacroTypes.add(name);
-			try {
-				macroTypes.put(name, new ConstantMacroType(compile(def)));
-			} finally {
-				compilingMacroTypes.remove(name);
-			}
-		}
+	public TNLCompiler withMacroTypes( Map newMacroTypes ) {
+		Map macroTypes = new HashMap(this.macroTypes);
+		macroTypes.putAll(newMacroTypes);
+		return new TNLCompiler(macroTypes);
+	}
+	
+	public MacroType getMacroType( String name ) {
 		return (MacroType)macroTypes.get(name);
 	}
 	
@@ -73,7 +58,10 @@ public class TNLCompiler
 			// Tokenizer's already unescaped things...
 			return node.macroName.substring(1);
 		} else {
-			MacroType mt = getMacroType(node.macroName, node);
+			MacroType mt = (MacroType)macroTypes.get(node.macroName);
+			if( mt == null ) {
+				throw new CompileError("Undefined macro '"+node.macroName+"'", node);
+			}
 			return mt.instantiate(this, node);
 		}
 	}

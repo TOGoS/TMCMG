@@ -4,7 +4,8 @@ import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.TNLCompiler;
 
-public abstract class BaseMacroType implements MacroType {
+public abstract class BaseMacroType implements MacroType
+{
 	protected abstract int getRequiredArgCount();
 	
 	protected abstract Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError;

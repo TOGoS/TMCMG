@@ -17,7 +17,7 @@ public class Constant_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDa_Da
 		}
 	}
 	
-	double value; // this sale is for a limited time only!
+	public double value; // this sale is for a limited time only!
 	
 	public Constant_Da( double value ) {
 		this.value = value;
