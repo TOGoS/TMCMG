@@ -13,7 +13,11 @@ public abstract class NoiseFunctionTest extends TestCase
 	}
 	
 	protected void assertEquals( double a, double b ) {
-		assertEquals( "Expected "+a+" but was "+b+";", (long)(a*1024), (long)(b*1024) );
+		assertTrue( "Expected "+a+" but was "+b+".", a == b );
+	}
+
+	protected void assertNotEquals( double a, double b ) {
+		assertTrue( "Expected not "+a+", but was.", a != b );
 	}
 
 	TNLCompiler comp = mkCompiler();

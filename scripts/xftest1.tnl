@@ -1,0 +1,28 @@
+c-height = ridge( 32, 112,
+	64
+	+ 64 * simplex(
+		fractal( 4, 128, 1, 2, 2, 1, simplex ) / 2,
+		fractal( 4, 16, 0.5, 2, 2, 2, simplex ) / 2,
+		fractal( 2, 16, 0.5, 2, 2, -1, simplex ) * fractal( 2, 128, 2, 2, 1, -2, simplex ) / 2,
+	)
+	+ 128 * simplex(
+		fractal( 4, 128, 1, 2, 2, 1, simplex ) / 4,
+		fractal( 4, 16, 0.5, 2, 2, 2, simplex ) / 4,
+		fractal( 2, 16, 0.5, 2, 2, -1, simplex ) * fractal( 2, 128, 2, 2, 1, -2, simplex ) / 4,
+	)
+	+ fractal( 8, 64, 1, 2, 2, 3, simplex )
+	- 8  
+);
+
+g-height = c-height + 2 + fractal( 2, 32, 4, 2, 2, -1, simplex );
+
+s-height = (g-height - 64) * 0.5 + 66;
+
+layered-terrain(
+	layer( materials.water, 0, 64 ),
+	layer( materials.stone, 0, c-height ),
+	layer( materials.dirt, c-height, g-height ),
+	layer( materials.sand, g-height, s-height ),
+	lighter,
+	grassifier,
+)

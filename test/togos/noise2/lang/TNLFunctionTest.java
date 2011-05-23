@@ -48,14 +48,14 @@ public class TNLFunctionTest extends TestCase
 	
 	public void testCompile() {
 		testCompile( "1.0", "1.0" );
-		testCompile( "(perlin + (perlin * 2.0))", "perlin + p2" );
-		testCompile( "simplex", "cache(simplex)" ); // cache(...).toTnl -> ...
+		testCompile( "(perlin(x, y, z) + (perlin(x, y, z) * 2.0))", "perlin(x, y, z) + p2" );
+		testCompile( "simplex(x, y, z)", "cache(simplex(x, y, z))" ); // cache(...).toTnl -> ...
 	}
 	
 	public void testSimplify() {
 		testSimplify( "3.0", "1.0 + 2.0" );
 		testSimplify( "8.0", "1 * 4 + 2 * 2" );
-		testSimplify( "ridge(0.5, 2.5, perlin)", "ridge(1 / 2, 5 / 2, perlin)" );
+		testSimplify( "ridge(0.5, 2.5, perlin(x, (y + 1.0), z))", "ridge(1 / 2, 5 / 2, perlin(x, y + 1, z))" );
 		testSimplify( "1.0", "ridge(1 / 2, 5 / 2, 0.0)" );
 		testSimplify( "0.5", "clamp(1 / 2, 5 / 2, 0.0)" );
 		testSimplify( "0.5", "cache(0.5)" );

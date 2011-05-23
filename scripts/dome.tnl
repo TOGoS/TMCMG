@@ -1,0 +1,19 @@
+dome-rad = 96;
+
+dome-height = sqrt( dome-rad * dome-rad - (x * x + z * z) );
+
+bowl-rad = 32;
+
+bowl-height = sqrt( bowl-rad * bowl-rad - (x * x + z * z) );
+
+mg-height = 32 + 32 * atan( sqrt(x * x - z * z) / 128);
+
+layered-terrain(
+	layer( materials.water, 0, 64 ),
+	layer( materials.stone, 0, mg-height ),
+	layer( materials.dirt, mg-height, mg-height + 4 + 8 * simplex( (x + z) / 32, (x + z) / 32, x / 32 ) ),
+	layer( materials.stone, 0, min(16 + dome-height, 112 - bowl-height) ),
+	layer( materials.stone, 0, 32 ),
+	
+	lighter,
+)

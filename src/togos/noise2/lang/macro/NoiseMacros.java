@@ -5,6 +5,7 @@ import java.util.HashMap;
 import togos.noise2.cache.SoftCache;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.AndOutDaDaDa_Da;
+import togos.noise2.function.ArcTanDaDaDa_Da;
 import togos.noise2.function.CacheDaDaDa_Da;
 import togos.noise2.function.ClampOutDaDaDa_Da;
 import togos.noise2.function.DivideOutDaDaDa_Da;
@@ -57,11 +58,20 @@ public class NoiseMacros
 	protected static void add( String name, MacroType mt ) {
 		stdNoiseMacros.put(name,mt);
 	}
+	
 	static MacroType dddaamt(Class functionClass) {
 		return new DaDaDa_DaArrayArgMacroType(functionClass);
 	}
+	/** Returns a macro type that instantiates functionClass with one argument, defaulting to X */
+	static MacroType xArgMacroType(Class functionClass) {
+		return new FixedDaDaDa_DaArgMacroType(functionClass, 1, new FunctionDaDaDa_Da[]{X.instance});
+	}
+	/** Returns a macro type that instantiates functionClass with 3 arguments, defaulting to X,Y,Z */
+	static MacroType xyzArgMacroType(Class functionClass) {
+		return new FixedDaDaDa_DaArgMacroType(functionClass, 3, new FunctionDaDaDa_Da[]{X.instance,Y.instance,Z.instance});
+	}
 	static MacroType tdddmt(Class functionClass) {
-		return new TwoDaDaDa_DaArgMacroType(functionClass);
+		return new FixedDaDaDa_DaArgMacroType(functionClass, 2, null);
 	}
 	static {
 		// Selection
@@ -97,15 +107,12 @@ public class NoiseMacros
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
 		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
-
-		add("sqrt", new BaseMacroType() {
-			protected int getRequiredArgCount() { return 1; }
-
-			protected Object instantiate(ASTNode node, ASTNode[] argNodes, Object[] compiledArgs) throws CompileError {
-				return new SqrtDaDaDa_Da(FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0]));
-			}
-		}
-		);
+		
+		// Power fimctopms
+		add("sqrt", xArgMacroType(SqrtDaDaDa_Da.class));
+		
+		// Trigonometric functions
+		add("atan", xArgMacroType(ArcTanDaDaDa_Da.class));
 		
 		// Clamping/folding
 		add("min", dddaamt(MinOutDaDaDa_Da.class));
@@ -178,9 +185,8 @@ public class NoiseMacros
 		add("z", new ConstantMacroType(Z.instance));
 		
 		// Noise
-		add("perlin", new ConstantMacroType(PerlinDaDaDa_Da.instance));
-		add("simplex", new ConstantMacroType(SimplexDaDaDa_Da.instance));
-		add("atan", new ConstantMacroType(SimplexDaDaDa_Da.instance));
+		add("perlin", xyzArgMacroType(PerlinDaDaDa_Da.class));
+		add("simplex", xyzArgMacroType(SimplexDaDaDa_Da.class));
 		
 		// Utility
 		add("cache", new BaseMacroType() {

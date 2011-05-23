@@ -6,26 +6,42 @@ import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.TNLCompiler;
 
-public abstract class TwoArgMacroType implements MacroType
+public abstract class FixedArgMacroType implements MacroType
 {
 	Class compiledClass;
 	Class argClass;
+	int argCount;
 	
-	public TwoArgMacroType( Class compiledClass, Class argClass ) {
+	public FixedArgMacroType( Class compiledClass, Class argClass, int argCount ) {
 		this.compiledClass = compiledClass;
 		this.argClass = argClass;
+		this.argCount = argCount;
 	}
 	
 	protected abstract Object compileArgument( TNLCompiler c, ASTNode sn ) throws CompileError;	
 	
-	public Object instantiate(TNLCompiler c, ASTNode sn) throws CompileError {
-		if( sn.arguments.size() != 2 ) {
+	protected Object[] compileArguments( TNLCompiler c, ASTNode sn ) throws CompileError {
+		if( sn.arguments.size() != argCount ) {
 			throw new CompileError( sn.macroName + " requires "+2+" arguments, given "+sn.arguments.size()+".", sn );
 		}
-		Object cArg0 = compileArgument(c, (ASTNode)sn.arguments.get(0));
-		Object cArg1 = compileArgument(c, (ASTNode)sn.arguments.get(1));
+		
+		Object[] args = new Object[argCount];
+		for( int i=0; i<argCount; ++i ) {
+			args[i] = compileArgument(c, (ASTNode)sn.arguments.get(i) );
+		}
+		return args;
+	}
+	
+	public Object instantiate(TNLCompiler c, ASTNode sn) throws CompileError {
+		Object[] args = compileArguments(c, sn);
+		
+		Class[] argClasses = new Class[argCount];
+		for( int i=0; i<argCount; ++i ) {
+			argClasses[i] = argClass;
+		}
+		
 		try {
-			return compiledClass.getConstructor(new Class[]{argClass,argClass}).newInstance(new Object[]{cArg0,cArg1});
+			return compiledClass.getConstructor(argClasses).newInstance(args);
 		} catch (IllegalArgumentException e) {
 			throw new CompileError(e, sn);
 		} catch (SecurityException e) {

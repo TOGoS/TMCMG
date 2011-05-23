@@ -2,15 +2,15 @@ package togos.noise2.function;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
-import togos.noise2.lang.FunctionUtil;
-import togos.noise2.rewrite.ExpressionRewriter;
 
-public class SqrtDaDaDa_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDaDa_Da
+public class SqrtDaDaDa_Da extends OneArgDaDaDa_Da
 {
-	public FunctionDaDaDa_Da arg;
-	
 	public SqrtDaDaDa_Da( FunctionDaDaDa_Da arg) {
-		this.arg = arg;
+		super(arg);
+	}
+	
+	protected String getMacroName() {
+		return "sqrt";
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
@@ -22,24 +22,4 @@ public class SqrtDaDaDa_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDaD
 		}
 		return new DataDa( out );
 	}
-	
-	public String toString() {
-		return "sqrt(" + arg + ")";
-	}
-
-	public String toTnl() { 
-		return "sqrt(" + FunctionUtil.toTnl(arg) + ")"; 
-	}
-
-	public boolean isConstant() { 
-		return FunctionUtil.isConstant(arg); 
-	}
-
-	public Object[] directSubExpressions() {
-		return new Object[]{ arg };
-    }
-
-	public Object rewriteSubExpressions( ExpressionRewriter rw ) {
-	    return new SqrtDaDaDa_Da((FunctionDaDaDa_Da)rw.rewrite(arg));
-    }
 }
