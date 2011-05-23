@@ -55,19 +55,7 @@ different predefined and user-defined functions.
 
 === Noise Functions ===
 
-Since function definitions in TNL do not explicitly give their
-parameters, using name( parameters ) syntax to indicate composition
-of functions rather than their final application (in OOP terms this
-can be thought of as creating an object graph by calling constructors
-without calling methods on the resulting objects (in fact that is
-what's happening behind the scenes)), the following definitions use
-square[ brackets ] to denote that final application.  Where
-no constructor arguments are needed, parentheses in TNL are optional.
-e.g. you may write 'perlin()' or just 'perlin', since the Perlin
-noise function's constructor takes no arguments.  Words in <angle
-brackets> denote placeholders for expressions.
-
-+, -, *, / (expr1,expr2,...)[x,y,z] -> value
++, -, *, / (<expr1>,<expr2>,...)
   - add, subtract, multiply, and divide outputs of at least 2
     functions.  These can be written using infix notation, where
     standard precedence rules apply.  e.g.  the following 3
@@ -77,58 +65,77 @@ brackets> denote placeholders for expressions.
       a - (b + ((c * d) / e)) 
       -( a, +(b, /( *(c, d), e)))
 
-perlin()[x,y,z] -> value
+==, !=, >, <, >=, <= (<expr1>,<expr2>)
+  - Compare value of <expr1> and <expr2>; returns 1 when true,
+    0 when false.  Can be used with if(...) or in arithmetic
+    expressions.  Can be written using infix notation.
+    
+      == equal            ;  3 == 3
+      != not equal        ;  1 != 2
+      >  greater          ;  5 >  4
+      <  less             ; -3 < -2
+      >= greater or equal ;  1 >= 1
+      <= less or equal    ;  1 <= 3
+
+sin( <expr> ) - sine
+cos( <expr> ) - cosine
+atan( <expr> ) - arctangent
+sqrt( <expr> ) - square root
+
+perlin( <x>, <y>, <z> )
   - A function for generating smooth noise closely based on Ken Perlin's
     Improved 3D noise function.  The range of this function is -1 to +1
     and output is 0 at integer coordinates, so for example to create
     rolling hills using a single perlin noise function you should multiply
     the output by half the desired height between hilltops and valley floor
     and divide the inputs by the desired average distance between hills
-  - e.g.  scale-in( 0.05, 0.05, 0.05, perlin ) * 8
+  - e.g. 8 * perlin( x / 20, y / 20, z / 20 )
     would result in hills about 20 meters apart and 16 meters from top to
     base.
+  - perlin with no arguments is equivalent to perlin( x, y, z )
   - See http://en.wikipedia.org/wiki/Perlin_noise
 
-simplex()[x,y,z] -> value
-  - Very similar to perlin noise, but based on a triangular grid, so in
+simplex( <x>, <y>, <z> )
+  - A bit like perlin noise, but based on a triangular grid, so in
     theory is somewhat faster and has less noticable directional artifacts.
   - The implementation used by TMCMG seems to have lower average amplitude
     than perlin noise, so you may want to multiply the output more to get
     a similar effect.
+  - simplex with no arguments is equivalent to simplex( x, y, z )
   - See http://en.wikipedia.org/wiki/Simplex_noise
 
-translate-in( <xt>, <yt>, <zt>, <expr> )[x,y,z] -> value
+translate-in( <xt>, <yt>, <zt>, <expr> )
   - fast input translation; xt, yt, and zt must all be constant
-  - equivalent to <expr>[ x + <xt>, y + <yt>, z + <zt> ]
+  - <expr> is evaluated with (x,y,z) = (x + <xt>, y + <yt>, z + <zt>)
 
-scale-in( <xs>, <ys>, <zs>, <expr> )[x,y,z] -> value
+scale-in( <xs>, <ys>, <zs>, <expr> )
   - fast input scaling; xs, ys, and zs must all be constant
-  - equivalent to <expr>[ x * <xs>, y * <ys>, z * <zs> ]
+  - <expr> is evaluated with (x,y,z) = (x * <xs>, y * <ys>, z * <zs>)
 
 xf( <xt>, <yt>, <zt>, <expr> )[x,y,z] -> value
   - arbitrarily transform inputs to expr
-  - equivalent to <expr>[ <xt>[x,y,z], <yt>[x,y,z], <zt>[x,y,z] ]
+  - <expr> is evaluated with (x,y,z) = (<xt>, <yt>, <zt>)
 
-ridge( <min>, <max>, <expr> )[x,y,z] -> value
+ridge( <min>, <max>, <expr> )
   - transforms the output of <expr> by folding it back and forth
-    between <min> and <max> (which may be [x,y,z]->v expressions
+    between <min> and <max> (which may be complex expressions
     themselves) until it lies between <min> and <max>.  e.g.
     
-      ridge( 2, 4, -1 )[?,?,?] = 3
+      ridge( 2, 4, -1 ) = 3
     
     (to calculate by hand, 2 - -1 = 3, 2 + 3 = 5, 5 - 4 = 1, and
     4 - 1 = 3).
 
-min( <expr1>, <expr2>, ... )[x,y,z] -> value
+min( <expr1>, <expr2>, ... )
   - returns the lowest value returned by any of the component
     expressions at each input point. 
 
-max( <expr1>, <expr2>, ... )[x,y,z] -> value
+max( <expr1>, <expr2>, ... )
   - returns the highest value returned by any of the component
     expressions at each input point. 
 
 fractal( <iter>, <hscale>, <vscale>, <ihscale>, <ivscale>,
-    <ztrans>, <expr> )[x,y,z] -> value
+    <ztrans>, <expr> )
   - Scales inputs to and outputs from <expr> over multiple iterations,
     summing the results.
   - All parameters except <expr> must be constant
@@ -141,15 +148,9 @@ fractal( <iter>, <hscale>, <vscale>, <ihscale>, <ivscale>,
   - ivscale = how much to multiply vscale between iterations
   - ztrans = how much to translate z for each iteration
 
-cache( <expression> )[x,y,z] -> value
-  - Caches the result of the wrapped expression to speed up processing
-    when that expression is evaluated multiple times for the exact
-    same input.
-  - Should not alter the output at all, but will improve performance
-    in some cases.
-  - Ideally the compiler would be able to figure out what expressions
-    are used multiple times for the same inputs and automaticall insert
-    these, but that hasn't been implemented, yet.
+if( <cond1>, <res1>, <cond2>, <res2>, ..., <default> )
+  - Where the result of <cond1> is true, result is determined <res1>, etc.
+  - If no listed conditions are true, result is determined by <default>
 
 === Other Functions ===
 
