@@ -1,0 +1,33 @@
+seed = 0;
+
+tscale( hs, vs, v1 ) = xf( x / hs, y + vs + seed, z / hs, vs * v1 ); 
+
+coolclamp( v2 ) =
+        if( v2 < -0.2, ridge( -1.0, -0.2, v2 ),
+            v2 > +0.2, ridge( -0.2, +1.0, v2 ),
+            v2 );
+
+multiscale( hs1, vs1, v ) = xf( x / hs1, y / hs1, z / hs1, vs1 * (
+        tscale( 1, 1, v ) + tscale( 4, 4, v ) +
+        tscale( 1, 1, v ) * tscale( 4, 12, v ) +
+        tscale( 4, 4, v ) + tscale( 8, 8, v ) +
+        tscale( 16, 16, v ) * tscale( 32, 16, v ) +
+        tscale( 128, 16, v ) * tscale( 256, 4, v ) +
+        tscale( 256, 32, v ) +
+        tscale( 1024, 64, v ) +
+        tscale( 8192, 256, v ) +
+        tscale( 64, 64, v ) * tscale( 1024, 10, v ) +
+        0
+));
+
+test-terrain( ground-height ) = layered-terrain(
+        layer( materials.water, 0, 64 ),
+        layer( materials.stone, 0, ground-height ),
+        layer( materials.dirt, ground-height, ground-height + 3 + 4 * simplex( x / 8, seed, z / 8 ) ),
+        layer( materials.bedrock, 0, 1 ),
+        
+        lighter,
+        grassifier,
+);
+
+test-terrain( 64 + 48 * coolclamp(multiscale(16,0.1,simplex))) );
