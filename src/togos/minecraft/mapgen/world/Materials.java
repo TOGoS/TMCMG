@@ -13,7 +13,10 @@ import togos.minecraft.mapgen.world.gen.Material;
 
 public class Materials
 {
-	public static Material[] byBlockType = new Material[128];
+	static final int BLOCK_TYPE_MASK = 0xFF;
+	static final int BLOCK_TYPE_COUNT = 256;
+	
+	public static Material[] byBlockType = new Material[BLOCK_TYPE_COUNT];
 	static HashMap byName = new HashMap();
 	static HashMap byIcon = new HashMap();
 	
@@ -36,8 +39,7 @@ public class Materials
 	}
 	
 	public static Material getByBlockType(int blockType) {
-		if( blockType < 0 || blockType > 127 ) return null;
-		return byBlockType[blockType];
+		return byBlockType[blockType & BLOCK_TYPE_MASK];
 	}
 	
 	public static Material getByName(String name) {
@@ -49,6 +51,10 @@ public class Materials
 	}
 	
 	static {
+		Material voidMaterial = new Material( (byte)0x00, (byte)0x00, 0x00000000, "  ", "" );
+		for( int i=0; i<BLOCK_TYPE_COUNT; ++i ) {
+			byBlockType[i] = voidMaterial;
+		}
 		add(new Material( (byte)0x00, (byte)0x00, 0x00000000, ". ", "Air" ));
 		add(new Material( (byte)0x01, (byte)0x00, 0xFF888888, "XX", "Stone" ));
 		add(new Material( (byte)0x02, (byte)0x00, 0xFF008800, "GD", "Grass" ));
