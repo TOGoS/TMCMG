@@ -25,12 +25,6 @@ public class TNLCompiler
 		this.macroTypes = macroTypes;
 	}
 	
-	public TNLCompiler withMacroTypes( Map newMacroTypes ) {
-		Map macroTypes = new HashMap(this.macroTypes);
-		macroTypes.putAll(newMacroTypes);
-		return new TNLCompiler(macroTypes);
-	}
-	
 	public MacroType getMacroType( String name ) {
 		return (MacroType)macroTypes.get(name);
 	}

@@ -66,4 +66,13 @@ public class UserMacroTest extends TestCase
 		assertTrue( v1 instanceof Constant_Da );
 		assertTrue( ((Constant_Da)v1).value == 9 );
 	}
+	
+	public void testLexicalScope() throws ScriptError {
+		FunctionDaDaDa_Da v1 = FunctionUtil.toDaDaDa_Da(
+			comp.compile("add3(n) = n + 3; add5(n) = n + 5; add3(add5( (n = 1; n) ))"), null
+		);
+		v1 = (FunctionDaDaDa_Da)ConstantFolder.instance.rewrite(v1);
+		assertTrue( v1 instanceof Constant_Da );
+		assertTrue( ((Constant_Da)v1).value == 9 );
+	}
 }

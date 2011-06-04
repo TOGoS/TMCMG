@@ -29,7 +29,7 @@ public class LanguageMacros
 		add(";", new MacroType() {
 			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				ASTNode mainNode = null;
-				Map newMacroTypes = new HashMap();
+				Map newContext = new HashMap(c.macroTypes);
 				int mainCount = 0;
 				for( Iterator i=sn.arguments.iterator(); i.hasNext(); ) {
 					ASTNode n = (ASTNode)i.next();
@@ -47,17 +47,17 @@ public class LanguageMacros
 							}
 							argNames[pi] = paramNode.macroName;
 						}
-						if( c.getMacroType(rNode.macroName) != null || newMacroTypes.containsKey(rNode.macroName) ) {
+						if( c.getMacroType(rNode.macroName) != null || newContext.containsKey(rNode.macroName) ) {
 							throw new CompileError("Duplicate definition of '"+rNode.macroName+"'", rNode);
 						}
-						newMacroTypes.put( rNode.macroName, new UserMacroType(rNode.macroName, argNames, lNode) );
+						newContext.put( rNode.macroName, new UserMacroType(rNode.macroName, argNames, lNode, newContext) );
 					} else {
 						mainNode = n;
 						++mainCount;
 					}
 				}
 				if( mainCount == 1 ) {
-					return c.withMacroTypes(newMacroTypes).compile(mainNode);
+					return new TNLCompiler(newContext).compile(mainNode);
 				} else {
 					throw getWrongMainCountError( mainCount, sn );
 				}
