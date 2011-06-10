@@ -75,4 +75,49 @@ public class UserMacroTest extends TestCase
 		assertTrue( v1 instanceof Constant_Da );
 		assertTrue( ((Constant_Da)v1).value == 9 );
 	}
+	
+	public void testCurriedFunction() throws ScriptError {
+		FunctionDaDaDa_Da v1 = FunctionUtil.toDaDaDa_Da(
+			comp.compile(
+				"callmyfunc(f,a) = f(a);\n" +
+				"addTheseTwo(n,m) = n + m;\n" +
+				"apply2(funk,arg1,arg2) = funk(arg1,arg2);\n" +
+				"apply2(addTheseTwo,4,5);"
+			), null
+		);
+		v1 = (FunctionDaDaDa_Da)ConstantFolder.instance.rewrite(v1);
+		assertTrue( v1 instanceof Constant_Da );
+		assertTrue( ((Constant_Da)v1).value == 9 );
+	}
+	
+	public void testCurriedFunction2() throws ScriptError {
+		FunctionDaDaDa_Da v1 = FunctionUtil.toDaDaDa_Da(
+			comp.compile(
+				"callmyfunc(f,a) = f(a);\n" +
+				"addTheseTwo(n,m) = n + m;\n" +
+				"apply2(funk,arg1,arg2) = funk(arg1,arg2);\n" +
+				"apply1(funk,arg1) = funk(arg1);\n" +
+				"funkyApply(funk,arg1,arg2) = (\n" +
+				"  funkyApplyA(arg2A) = apply2(funk,arg1,arg2A);\n" +
+				"  apply1(funkyApplyA,arg2)\n" +
+				");\n" +
+				"funkyApply(addTheseTwo,4,5);"
+			), null
+		);
+		v1 = (FunctionDaDaDa_Da)ConstantFolder.instance.rewrite(v1);
+		assertTrue( v1 instanceof Constant_Da );
+		assertTrue( ((Constant_Da)v1).value == 9 );
+	}
+	
+	public void testUnsupportedCurrying() throws ScriptError {
+		try {
+			comp.compile(
+				"addTheseTwo(n,m) = n + m;\n" +
+				"apply1(funk,arg1) = funk(arg1);\n" +
+				"apply1(addTheseTwo(4),5);"
+			);
+			fail("'apply1(addTheseTwo(4),5)' should have generated a 'unsupported currying' compile error");
+		} catch( CompileError e ) {
+		}
+	}
 }
