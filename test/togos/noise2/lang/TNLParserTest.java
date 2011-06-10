@@ -132,4 +132,29 @@ public class TNLParserTest extends TestCase
 			parse(";(=(peace,war), =(freedom,slavery), =(strength,ignorance))")
 		);
 	}
+	
+	public void testTrailingSemicolonsOkay() throws ParseError {
+		assertEquals(
+			parse("a = b; c = d;"),
+			parse("a = b; c = d")
+		);
+	}
+	
+	public void testTrailingSemicolonsInParenthesesOkay() throws ParseError {
+		assertEquals(
+			parse("(a = b; c = d;)"),
+			parse("(a = b; c = d)")
+		);
+	}
+
+	public void testTrailingOperatorsOkay() throws ParseError {
+		assertEquals(
+			parse("((1 + 2 +) / (3 - 4 -) /); x; "),
+			parse("((1 + 2) / (3 - 4)); x")
+		);
+		assertEquals(
+			parse("a(b, c, d,); (e, f, g,)"),
+			parse("a(b, c, d); (e, f, g)")
+		);
+	}
 }

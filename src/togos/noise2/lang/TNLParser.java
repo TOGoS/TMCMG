@@ -49,6 +49,14 @@ public class TNLParser
 		this.lastToken = t;
 	}
 	
+	protected Token peekToken() throws IOException {
+		if( lastToken == null ) {
+			return lastToken = tokenizer.readToken();
+		} else {
+			return lastToken;
+		}
+	}
+	
 	protected ASTNode readMacro() throws IOException, ParseError {
 		Token t0 = readToken();
 		String macroName = t0.value;
@@ -83,6 +91,9 @@ public class TNLParser
 	
 	protected ASTNode readAtomicNode() throws IOException, ParseError {
 		Token t = readToken();
+		if( ")".equals(t) ) {
+			throw new RuntimeException("Tried to read an expression starting with ')'");
+		}
 		if( t == null ) return null;
 		if( "(".equals(t.value) ) {
 			ASTNode sn = readNode(0);
@@ -99,44 +110,52 @@ public class TNLParser
 	}
 	
 	public ASTNode readNode( ASTNode first, int gtPrecedence ) throws IOException, ParseError {
-		Token op = readToken();
-		if( op == null || ")".equals(op.value) ) {
-			unreadToken(op);
-			return first;
-		}
-		Integer oPrec = (Integer)operatorPrecedence.get(op.value);
-		if( oPrec == null ) {
-			throw new ParseError("Invalid operator '"+op.value+"' (forget a semicolon?)", op);
-		}
-		if( oPrec.intValue() < gtPrecedence ) {
-			unreadToken(op);
-			return first;
-		} else if( oPrec.intValue() == gtPrecedence ) {
-			ArrayList arguments = new ArrayList();
-			arguments.add(first);
-			Token fop = op;
-			while( oPrec.intValue() == gtPrecedence ) {
-				ASTNode argNode = readNode( gtPrecedence+1 );
-				if( argNode != null ) arguments.add( argNode );
-				
-				fop = readToken();
-				if( fop == null || ")".equals(fop.value) ) {
-					oPrec = new Integer(0);
-				} else {
-					oPrec = (Integer)operatorPrecedence.get(fop.value);
-					if( oPrec == null ) {
-						throw new ParseError("Invalid operator '"+fop.value+"'", fop);
-					}
-				}
+		Integer oPrec;
+		Token op;
+		
+		readFirst: while( true ) {
+			op = peekToken();
+			if( op == null || ")".equals(op.value) ) {
+				return first;
 			}
-			unreadToken(fop);
-			first = new ASTNode(op.value, arguments, op);
-		} else {
-			unreadToken(op);
-			first = readNode( first, oPrec.intValue() );
-			first = readNode( first, gtPrecedence );
+
+			// Otherwise we must be encountering an operator!
+			oPrec = (Integer)operatorPrecedence.get(op.value);
+			if( oPrec == null ) {
+				throw new ParseError("Invalid operator '"+op.value+"' (forget a semicolon?)", op);
+			}
+			
+			if( oPrec.intValue() < gtPrecedence ) {
+				return first;
+			}
+			
+			if( oPrec.intValue() > gtPrecedence ) {
+				// OK, read first node at higher precedence, then.
+				first = readNode( first, oPrec.intValue() );
+				// And then try again at this precedence.
+				continue readFirst;
+			}
+			
+			// If we get here, oPrec is exactly the precedence we are looking to gobble!
+			break readFirst;
 		}
-		return first;
+		
+		ArrayList arguments = new ArrayList();
+		arguments.add(first);
+		String name = op.value;
+		SourceLocation sl = op;
+		
+		readArguments: while( op != null && name.equals(op.value) ) {
+			readToken(); // skip over op
+			Token nextExprToken = peekToken();
+			if( nextExprToken == null || ")".equals(nextExprToken.value) ) {
+				break readArguments;
+			}
+			arguments.add( readNode( gtPrecedence+1 ) );
+			op = peekToken();
+		}
+		
+		return new ASTNode(name, arguments, sl);
 	}
 	
 	public ASTNode readNode( int gtPrecedence ) throws IOException, ParseError {
