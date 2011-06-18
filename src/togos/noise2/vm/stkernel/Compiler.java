@@ -2,6 +2,7 @@ package togos.noise2.vm.stkernel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class Compiler
 			}
 			line = line.trim();
 			if( line.length() == 0 ) continue;
-			String[] parts = line.split(" ");
+			String[] parts = line.split("\\s+");
 			if( parts.length == 0 ) continue;
 			
 			if( "vector".equals(parts[0]) ) {
@@ -119,5 +120,9 @@ public class Compiler
 		}
 		
 		return new STVectorKernel( vars, ops, maxVectorSize );
+	}
+	
+	public STVectorKernel compile(String script, String filename, int maxVectorSize) throws IOException, CompileError {
+		return compile(new BufferedReader(new StringReader(script)), filename, maxVectorSize);
 	}
 }
