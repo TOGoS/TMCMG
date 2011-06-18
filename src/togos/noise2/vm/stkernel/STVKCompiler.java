@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.SourceLocation;
 
-public class Compiler
+public class STVKCompiler
 {
 	public static class DumbSourceLocation implements SourceLocation {
 		final String filename;

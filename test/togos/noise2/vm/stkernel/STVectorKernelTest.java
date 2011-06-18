@@ -21,7 +21,7 @@ public class STVectorKernelTest extends TestCase
 			"res = x + res\n" +
 			"res = res + 3\n";
 		
-		Compiler c = new Compiler();
+		STVKCompiler c = new STVKCompiler();
 		STVectorKernel k = c.compile(new BufferedReader(new StringReader(script)), "test", 16);
 		double[] x = (double[])k.vars.get("x");
 		double[] y = (double[])k.vars.get("y");
