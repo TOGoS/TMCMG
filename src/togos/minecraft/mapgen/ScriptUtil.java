@@ -35,7 +35,7 @@ public class ScriptUtil
 				locMsg = "\nAt "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
 			}
 		}
-		return "Compile error: "+e.getMessage() + locMsg; 
+		return "Compile error: "+e.getRawMessage() + locMsg; 
 	}
 	
 	public static Object compileOrExit( TNLCompiler c, ASTNode n ) {

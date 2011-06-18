@@ -14,4 +14,21 @@ public class ScriptError extends Exception
 		super(cause);
 		this.sourceLocation = sloc;
 	}
+	
+	public String getRawMessage() {
+		return super.getMessage();
+	}
+	
+	public String getMessage() {
+		SourceLocation sloc = sourceLocation;
+		String locMsg = "";
+		if( sloc != null ) {
+			if( sloc.getSourceLineNumber() == -1 ) {
+				locMsg = " in "+sloc.getSourceFilename();
+			} else {
+				locMsg = " at "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
+			}
+		}
+		return super.getMessage() + locMsg;
+	}
 }
