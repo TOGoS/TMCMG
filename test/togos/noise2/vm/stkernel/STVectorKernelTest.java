@@ -14,18 +14,18 @@ public class STVectorKernelTest extends TestCase
 		String script =
 			"vector double x\n" +
 			"vector double y\n" +
-			"vector double res1\n" +
-			"vector double res2\n" +
+			"vector double res\n" +
 			"# comment!\n" +
 			"\n" + // Blank line!
-			"res1 = y * y\n" +
-			"res2 = x + res1\n";
+			"res = y * y\n" +
+			"res = x + res\n" +
+			"res = res + 3\n";
 		
 		Compiler c = new Compiler();
 		STVectorKernel k = c.compile(new BufferedReader(new StringReader(script)), "test", 16);
 		double[] x = (double[])k.vars.get("x");
 		double[] y = (double[])k.vars.get("y");
-		double[] res = (double[])k.vars.get("res2");
+		double[] res = (double[])k.vars.get("res");
 		x[0] = 1;
 		y[0] = 1;
 		x[1] = 3;
@@ -33,8 +33,8 @@ public class STVectorKernelTest extends TestCase
 		x[2] = 5;
 		y[2] = 5;
 		k.invoke(2);
-		assertEquals(  2, (int)res[0] );
-		assertEquals( 12, (int)res[1] );
+		assertEquals(  5, (int)res[0] );
+		assertEquals( 15, (int)res[1] );
 		assertEquals(  0, (int)res[2] );
 	}
 }

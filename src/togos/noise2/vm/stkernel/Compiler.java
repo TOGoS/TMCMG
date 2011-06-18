@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.SourceLocation;
@@ -23,7 +24,18 @@ public class Compiler
 		public int getSourceColumnNumber() { return 0;          }
 	}
 	
-	protected double[] getDoubleVector( String name, Map vars, String filename, int lineNumber ) throws CompileError {
+	Pattern NUMPAT = Pattern.compile("[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?");
+	
+	protected double[] getDoubleVector( String name, Map vars, int maxVectorSize, String filename, int lineNumber ) throws CompileError {
+		if( NUMPAT.matcher(name).matches() ) {
+			double value = Double.parseDouble(name);
+			name = "const_"+name;
+			double[] vec = new double[maxVectorSize];
+			for( int i=0; i<vec.length; ++i ) vec[i] = value;
+			vars.put(name, vec);
+			return vec;
+		}
+		
 		Object o = vars.get(name);
 		if( o instanceof double[] ) return (double[])o;
 		if( o == null ) {
@@ -71,33 +83,33 @@ public class Compiler
 			if( parts.length == 5 && "=".equals(parts[1]) ) {
 				if( "+".equals(parts[3]) ) {
 					ops.add( new AddOp(
-						getDoubleVector(parts[0], vars, filename, lineNumber),
-						getDoubleVector(parts[2], vars, filename, lineNumber),
-						getDoubleVector(parts[4], vars, filename, lineNumber)
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
 					));
 					continue;
 				}
 				if( "-".equals(parts[3]) ) {
 					ops.add( new SubtractOp(
-						getDoubleVector(parts[0], vars, filename, lineNumber),
-						getDoubleVector(parts[2], vars, filename, lineNumber),
-						getDoubleVector(parts[4], vars, filename, lineNumber)
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
 					));
 					continue;
 				}
 				if( "*".equals(parts[3]) ) {
 					ops.add( new MultiplyOp(
-						getDoubleVector(parts[0], vars, filename, lineNumber),
-						getDoubleVector(parts[2], vars, filename, lineNumber),
-						getDoubleVector(parts[4], vars, filename, lineNumber)
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
 					));
 					continue;
 				}
 				if( "/".equals(parts[3]) ) {
 					ops.add( new DivideOp(
-						getDoubleVector(parts[0], vars, filename, lineNumber),
-						getDoubleVector(parts[2], vars, filename, lineNumber),
-						getDoubleVector(parts[4], vars, filename, lineNumber)
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
 					));
 					continue;
 				}
