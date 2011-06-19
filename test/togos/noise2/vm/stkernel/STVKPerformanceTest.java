@@ -1,7 +1,6 @@
 package togos.noise2.vm.stkernel;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDaDa;
