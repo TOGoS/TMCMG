@@ -35,7 +35,11 @@ public class JavaCompilerTest extends TestCase
 		comp.sourceRoot = "junk-src";
 		comp.destClassRoot = "bin";
 		
+		assertFalse( comp.classExists(className) );
+		
 		comp.compile(className, classSource);
+		
+		assertTrue( comp.classExists(className) );
 		
 		Class c = Class.forName(className);
 		assertEquals( "Hallo I em "+np, c.newInstance().toString() );
