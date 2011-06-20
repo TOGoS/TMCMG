@@ -42,11 +42,12 @@ public class STVKPerformanceTest
 		try {
 			tree = (FunctionDaDaDa_Da)comp.compile("(1 + x) * y + (2 + y) * y + (3 + z) * y", "test");
 			stvk = new STVKCompiler().compile(
-				"vector double x\n" +
-				"vector double y\n" +
-				"vector double z\n" +
-				"vector double temp\n" +
-				"vector double res\n" +
+				"var double x\n" +
+				"var double y\n" +
+				"var double z\n" +
+				"var double temp\n" +
+				"var double res\n" +
+				"\n" +
 				"temp = 1 + x\n" +
 				"res  = temp * y\n" +
 				"temp = 2 + y\n" +

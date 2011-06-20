@@ -12,9 +12,9 @@ public class STVectorKernelTest extends TestCase
 {
 	public void testThing() throws IOException, CompileError {
 		String script =
-			"vector double x\n" +
-			"vector double y\n" +
-			"vector double res\n" +
+			"var double x\n" +
+			"var double y\n" +
+			"var double res\n" +
 			"# comment!\n" +
 			"\n" + // Blank line!
 			"res = y * y\n" +

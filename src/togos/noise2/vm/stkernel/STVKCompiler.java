@@ -64,9 +64,9 @@ public class STVKCompiler
 			String[] parts = line.split("\\s+");
 			if( parts.length == 0 ) continue;
 			
-			if( "vector".equals(parts[0]) ) {
+			if( "var".equals(parts[0]) ) {
 				if( parts.length != 3 ) {
-					throw new CompileError("'vector' statement requires 2 arguments", new DumbSourceLocation(filename,lineNumber));
+					throw new CompileError("'var' statement requires 2 arguments", new DumbSourceLocation(filename,lineNumber));
 				}
 				if( vars.containsKey(parts[2]) ) {
 					throw new CompileError("Redefinition of '"+parts[2]+"'", new DumbSourceLocation(filename,lineNumber));
