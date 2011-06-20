@@ -1,10 +1,10 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm.vops;
 
-public final class MultiplyOp implements VectorOp
+public final class STMultiplyOp implements STVectorOp
 {
 	final double[] a, b, dest;
 	
-	public MultiplyOp( final double[] dest, final double[] a, final double[] b ) {
+	public STMultiplyOp( final double[] dest, final double[] a, final double[] b ) {
 		this.a = a;
 		this.b = b;
 		this.dest = dest;

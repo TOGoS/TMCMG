@@ -1,4 +1,4 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm.vops;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.SourceLocation;
 
-public class STVKCompiler
+public class STVKScriptCompiler
 {
 	public static class DumbSourceLocation implements SourceLocation {
 		final String filename;
@@ -83,7 +83,7 @@ public class STVKCompiler
 			
 			if( parts.length == 5 && "=".equals(parts[1]) ) {
 				if( "+".equals(parts[3]) ) {
-					ops.add( new AddOp(
+					ops.add( new STAddOp(
 						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
@@ -91,7 +91,7 @@ public class STVKCompiler
 					continue;
 				}
 				if( "-".equals(parts[3]) ) {
-					ops.add( new SubtractOp(
+					ops.add( new STSubtractOp(
 						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
@@ -99,7 +99,7 @@ public class STVKCompiler
 					continue;
 				}
 				if( "*".equals(parts[3]) ) {
-					ops.add( new MultiplyOp(
+					ops.add( new STMultiplyOp(
 						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
@@ -107,7 +107,7 @@ public class STVKCompiler
 					continue;
 				}
 				if( "/".equals(parts[3]) ) {
-					ops.add( new DivideOp(
+					ops.add( new STDivideOp(
 						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)

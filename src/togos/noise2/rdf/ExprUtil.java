@@ -33,4 +33,8 @@ public class ExprUtil
 		}
 		return Base32.encode(sha1);
 	}
+	
+	public static String toString( Expression e ) {
+		return e.getTypeName()+"...";
+	}
 }

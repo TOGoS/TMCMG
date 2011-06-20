@@ -1,10 +1,12 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm.vops;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
 import togos.noise2.lang.CompileError;
+import togos.noise2.vm.vops.STVKScriptCompiler;
+import togos.noise2.vm.vops.STVectorKernel;
 
 import junit.framework.TestCase;
 
@@ -21,7 +23,7 @@ public class STVectorKernelTest extends TestCase
 			"res = x + res\n" +
 			"res = res + 3\n";
 		
-		STVKCompiler c = new STVKCompiler();
+		STVKScriptCompiler c = new STVKScriptCompiler();
 		STVectorKernel k = c.compile(new BufferedReader(new StringReader(script)), "test", 16);
 		double[] x = (double[])k.vars.get("x");
 		double[] y = (double[])k.vars.get("y");

@@ -1,4 +1,4 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm;
 
 import java.io.IOException;
 
@@ -9,8 +9,10 @@ import togos.noise2.lang.ScriptError;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.macro.LanguageMacros;
 import togos.noise2.lang.macro.NoiseMacros;
+import togos.noise2.vm.vops.STVKScriptCompiler;
+import togos.noise2.vm.vops.STVectorKernel;
 
-public class STVKPerformanceTest
+public class PerformanceTest
 {
 	class NativeCalculator {
 		public final double calculate( double x, double y, double z ) {
@@ -41,7 +43,7 @@ public class STVKPerformanceTest
 		
 		try {
 			tree = (FunctionDaDaDa_Da)comp.compile("(1 + x) * y + (2 + y) * y + (3 + z) * y", "test");
-			stvk = new STVKCompiler().compile(
+			stvk = new STVKScriptCompiler().compile(
 				"var double x\n" +
 				"var double y\n" +
 				"var double z\n" +
@@ -172,7 +174,7 @@ public class STVKPerformanceTest
 	}
 	
 	public static void main(String[] args) {
-		STVKPerformanceTest t = new STVKPerformanceTest();
+		PerformanceTest t = new PerformanceTest();
 		t.run();
 		t.printReport();
 	}

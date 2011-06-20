@@ -1,10 +1,10 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm.vops;
 
-public final class DivideOp implements VectorOp
+public final class STDivideOp implements STVectorOp
 {
 	final double[] a, b, dest;
 	
-	public DivideOp( final double[] dest, final double[] a, final double[] b ) {
+	public STDivideOp( final double[] dest, final double[] a, final double[] b ) {
 		this.a = a;
 		this.b = b;
 		this.dest = dest;

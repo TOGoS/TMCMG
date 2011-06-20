@@ -1,11 +1,11 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm.vops;
 
 import java.io.IOException;
 
 import togos.noise2.rdf.TNLNamespace;
 import togos.noise2.vm.OpWriter;
 
-public class STVKOpWriter implements OpWriter
+public class VKOpWriter implements OpWriter
 {
 	int varNum = 1;
 	Appendable w;
@@ -24,7 +24,7 @@ public class STVKOpWriter implements OpWriter
 		return name;
 	}
 	
-	public STVKOpWriter( Appendable w ) {
+	public VKOpWriter( Appendable w ) {
 		this.w = w;
 	}
 	

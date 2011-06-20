@@ -1,10 +1,10 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm.vops;
 
-public final class SubtractOp implements VectorOp
+public final class STSubtractOp implements STVectorOp
 {
 	final double[] a, b, dest;
 	
-	public SubtractOp( final double[] dest, final double[] a, final double[] b ) {
+	public STSubtractOp( final double[] dest, final double[] a, final double[] b ) {
 		this.a = a;
 		this.b = b;
 		this.dest = dest;

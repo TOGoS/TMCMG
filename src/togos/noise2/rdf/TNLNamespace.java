@@ -4,6 +4,10 @@ public class TNLNamespace
 {
 	public static final String TN_NS = "http://ns.nuke24.net/TOGoSNoise/";
 	
+	public static final String X = TN_NS+"X";
+	public static final String Y = TN_NS+"Y";
+	public static final String Z = TN_NS+"Z";
+	
 	public static final String ADD  = TN_NS+"Add";
 	public static final String TERM = TN_NS+"term";
 	

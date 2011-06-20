@@ -30,7 +30,11 @@ public class JavaCompilerTest extends TestCase
 			"}\n";
 		
 		JavaCompiler comp = new JavaCompiler();
-		comp.javac = "c:/Program Files (x86)/Java/jdk1.6.0_17/bin/javac.exe";
+		comp.javac = comp.findJavac();
+		if( comp.javac == null ) {
+			System.err.println("Skipping java compiler test; javac not found");
+			return;
+		}
 		comp.classRoot = new String[] { "bin" };
 		comp.sourceRoot = "junk-src";
 		comp.destClassRoot = "bin";

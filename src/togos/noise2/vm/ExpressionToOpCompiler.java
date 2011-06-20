@@ -1,4 +1,4 @@
-package togos.noise2.vm.stkernel;
+package togos.noise2.vm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.Map;
 import togos.noise2.rdf.ExprUtil;
 import togos.noise2.rdf.Expression;
 import togos.noise2.rdf.TNLNamespace;
-import togos.noise2.vm.OpWriter;
 
 public class ExpressionToOpCompiler
 {
@@ -33,10 +32,21 @@ public class ExpressionToOpCompiler
 		exprUsage.put(exprId,u);
 	}
 	
-	protected boolean shouldInlineExpr( String exprId ) {
+	protected void buildExprUsage( Expression expr ) {
+		markExprUsage( expr.getIdentifier() );
+		for( Iterator i=expr.getAttributeEntries().iterator(); i.hasNext(); ) {
+			Map.Entry en = (Map.Entry)i.next();
+			if( en.getValue() instanceof Expression ) {
+				buildExprUsage( (Expression)en.getValue() );
+			}
+		}
+	}
+	
+	protected boolean shouldInlineExpr( Object expr ) {
+		String exprId = ExprUtil.getIdentifier(expr);
 		Integer u = (Integer)exprUsage.get(exprId);
 		if( u == null ) {
-			throw new RuntimeException("Expression was not counted or something");
+			throw new RuntimeException("Expression "+expr+" was not counted or something");
 		}
 		return u.intValue() == 1;
 	}
@@ -59,7 +69,7 @@ public class ExpressionToOpCompiler
 				throw new RuntimeException( "Zero "+argNames[i]+" arguments provided to "+expr.getTypeName() );
 			}
 			for( Iterator it=values.iterator(); it.hasNext(); ) {
-				args.add( compile( it.next() ) );
+				args.add( _compile( it.next() ) );
 			}
 		}
 		String[] s = new String[args.size()];
@@ -69,22 +79,13 @@ public class ExpressionToOpCompiler
 		return s;
 	}
 	
-	public String compile( Object expr ) {
-		String vn = (String)exprVars.get( ExprUtil.getIdentifier(expr) );
-		if( vn != null ) return vn;
-		
-		if( expr instanceof Expression ) {
-			return compile( (Expression)expr );
-		} else if( expr instanceof Double ) {
-			return w.writeConstant( null, ((Double)expr).doubleValue() );
-		} else {
-			throw new RuntimeException("Don't know how to compile "+expr);
-		}
+	public void bind( Object expr, String var ) {
+		exprVars.put( ExprUtil.getIdentifier(expr), var );	
 	}
 	
-	protected String compile( Expression expr ) {
+	protected String _compile( Expression expr ) {
 		String varName;
-		if( shouldInlineExpr( ExprUtil.getIdentifier(expr) ) ) {
+		if( shouldInlineExpr( expr ) ) {
 			varName = null;
 		} else {
 			// TODO: Could re-use old variables, here.
@@ -94,8 +95,35 @@ public class ExpressionToOpCompiler
 		String typeName = expr.getTypeName();
 		if( TNLNamespace.ADD.equals(typeName) ) {
 			return w.writeOp( varName, typeName, getArgStrings(expr,ADD_ARGS) );
+		} else if( TNLNamespace.SUBTRACT.equals(typeName) ) {
+			return w.writeOp( varName, typeName, getArgStrings(expr,SUBTRACT_ARGS) );
+		} else if( TNLNamespace.MULTIPLY.equals(typeName) ) {
+			return w.writeOp( varName, typeName, getArgStrings(expr,MULTIPLY_ARGS) );
+		} else if( TNLNamespace.DIVIDE.equals(typeName) ) {
+			return w.writeOp( varName, typeName, getArgStrings(expr,DIVIDE_ARGS) );
 		} else {
 			throw new RuntimeException("Unsupported expression type "+typeName);
 		}
+	}
+	
+	protected String _compile( Object expr ) {
+		String vn = (String)exprVars.get( ExprUtil.getIdentifier(expr) );
+		if( vn != null ) return vn;
+		
+		String var;
+		if( expr instanceof Expression ) {
+			var = _compile( (Expression)expr );
+		} else if( expr instanceof Double ) {
+			var = w.writeConstant( null, ((Double)expr).doubleValue() );
+		} else {
+			throw new RuntimeException("Don't know how to compile "+expr);
+		}
+		bind( expr, var );
+		return var;
+	}
+	
+	public String compile( Expression expr ) {
+		buildExprUsage(expr);
+		return _compile((Object)expr);
 	}
 }

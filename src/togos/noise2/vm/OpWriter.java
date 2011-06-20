@@ -10,6 +10,6 @@ public interface OpWriter
 	
 	public String declareInput( String type, String nameSuggestion );
 	public String declareVar( String type, String nameSuggestion );
-	public String writeConstant( String dest, double value  );
+	public String writeConstant( String dest, double value );
 	public String writeOp( String dest, String op, String[] operands );
 }

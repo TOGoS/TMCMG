@@ -15,6 +15,23 @@ public class JavaCompiler
 	public String sourceRoot;
 	public String cpSeparator = ";";
 	
+	public String findJavac() {
+		String home = System.getProperty("java.home");
+		if( new File( home+"/bin/javac" ).exists() ) {
+			return home+"/bin/javac";
+		}
+		if( new File( home+"/../bin/javac" ).exists() ) {
+			return home+"/../bin/javac";
+		}
+		if( new File( home+"/bin/javac.exe" ).exists() ) {
+			return home+"/bin/javac.exe";
+		}
+		if( new File( home+"/../bin/javac.exe" ).exists() ) {
+			return home+"/../bin/javac.exe";
+		}
+		return null;
+	}
+	
 	public void compile( String classname, String source ) throws IOException {
 		String relJavaPath = classname.replace('.', '/') + ".java";
 		File sourceFile = new File( sourceRoot + "/" + relJavaPath );

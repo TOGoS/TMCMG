@@ -1,6 +1,7 @@
 package togos.noise2.rdf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,13 @@ public class BaseExpression implements Expression
 	protected final String typeName;
 	protected final List attributeEntries;
 	
-	protected BaseExpression( String typeName, List attributeEntries ) {
+	public BaseExpression( String typeName, List attributeEntries ) {
 		this.typeName = typeName;
 		this.attributeEntries = attributeEntries;
+	}
+	
+	public BaseExpression( String typeName ) {
+		this( typeName, Collections.EMPTY_LIST );
 	}
 	
 	public String getTypeName() {
@@ -36,5 +41,9 @@ public class BaseExpression implements Expression
 	public String getIdentifier() {
 		if( identifier == null ) identifier = ExprUtil.generateIdentifier(this);
 		return identifier;
+	}
+	
+	public String toString() {
+		return ExprUtil.toString(this);
 	}
 }
