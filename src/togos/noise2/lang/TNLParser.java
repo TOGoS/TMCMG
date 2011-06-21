@@ -2,32 +2,10 @@ package togos.noise2.lang;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class TNLParser
 {
-	static HashMap operatorPrecedence = new HashMap();
-	static int COMMA_PRECEDENCE = 10;
-	static {
-		operatorPrecedence.put("**", new Integer(60));
-		operatorPrecedence.put("*",  new Integer(50));
-		operatorPrecedence.put("/",  new Integer(40));
-		operatorPrecedence.put("+",  new Integer(30));
-		operatorPrecedence.put("-",  new Integer(25));
-		operatorPrecedence.put(">",  new Integer(20));
-		operatorPrecedence.put("<",  new Integer(20));
-		operatorPrecedence.put(">=", new Integer(20));
-		operatorPrecedence.put("<=", new Integer(20));
-		operatorPrecedence.put("==", new Integer(18));
-		operatorPrecedence.put("!=", new Integer(18));
-		operatorPrecedence.put("and", new Integer(17));
-		operatorPrecedence.put("or",  new Integer(16));
-		operatorPrecedence.put("=",  new Integer(15));
-		operatorPrecedence.put(",",  new Integer(COMMA_PRECEDENCE));
-		operatorPrecedence.put(";",  new Integer( 5));
-	}
-	
 	protected TNLTokenizer tokenizer;
 	
 	public TNLParser( TNLTokenizer t ) {
@@ -67,7 +45,7 @@ public class TNLParser
 			while( t != null && !")".equals(t.value) ) {
 				unreadToken(t);
 				
-				ASTNode argNode = readNode(COMMA_PRECEDENCE+1);
+				ASTNode argNode = readNode(Operators.COMMA_PRECEDENCE+1);
 				// Argnode should never be null here?
 				// But just in case I change something:
 				if( argNode != null ) arguments.add(argNode);
@@ -120,7 +98,7 @@ public class TNLParser
 			}
 
 			// Otherwise we must be encountering an operator!
-			oPrec = (Integer)operatorPrecedence.get(op.value);
+			oPrec = (Integer)Operators.PRECEDENCE.get(op.value);
 			if( oPrec == null ) {
 				throw new ParseError("Invalid operator '"+op.value+"' (forget a semicolon?)", op);
 			}
