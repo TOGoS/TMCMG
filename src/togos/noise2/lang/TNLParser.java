@@ -35,9 +35,16 @@ public class TNLParser
 		}
 	}
 	
+	protected String macroName( Token t ) {
+		switch( t.quote ) {
+		case( '"' ): return '"' + t.value;
+		default: return t.value;
+		}
+	}
+	
 	protected ASTNode readMacro() throws IOException, ParseError {
 		Token t0 = readToken();
-		String macroName = t0.value;
+		String macroName = macroName(t0);
 		List arguments = new ArrayList();
 		Token t = readToken();
 		if( t != null && "(".equals(t.value) ) {

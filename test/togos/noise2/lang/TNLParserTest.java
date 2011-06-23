@@ -31,8 +31,21 @@ public class TNLParserTest extends TestCase
 	public void testParseQuotedString() throws ParseError {
 		ASTNode expected = new ASTNode("\"foo", Collections.EMPTY_LIST, NSL);
 		assertEquals( expected, parse("\"foo\"") );
-		expected = new ASTNode("\"foo bar\n\\", Collections.EMPTY_LIST, NSL);
-		assertEquals( expected, parse("\"foo bar\\\n\\\\\"") );
+		expected = new ASTNode("\"foo bar\\\n\\", Collections.EMPTY_LIST, NSL);
+		assertEquals( expected, parse("\"foo bar\\\\\n\\\\\"") ); // newline not ignored
+		expected = new ASTNode("\"foo bar\\", Collections.EMPTY_LIST, NSL);
+		assertEquals( expected, parse("\"foo bar\\\n\\\\\"") ); // newline ignored
+	}
+	
+	public void testParseQuotedIdentifier() throws ParseError {
+		ASTNode expected = new ASTNode("foo\nbar", Collections.EMPTY_LIST, NSL);
+		assertEquals( expected, parse("`foo\nbar`") );
+		ArrayList addArgs = new ArrayList();
+		addArgs.add( new ASTNode("a c",Collections.EMPTY_LIST, NSL) );
+		addArgs.add( new ASTNode("b d",Collections.EMPTY_LIST, NSL) );
+		expected = new ASTNode("+", addArgs, NSL);
+		assertEquals( expected, parse("`a c` `+` `b d`") );
+		assertEquals( expected, parse("`+`(`a c`,`b d`)") );
 	}
 	
 	public void testParseSingleArgument() throws ParseError {

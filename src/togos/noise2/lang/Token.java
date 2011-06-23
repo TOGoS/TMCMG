@@ -8,6 +8,7 @@ public class Token implements SourceLocation
 {
 	public String value;
 	public String filename;
+	public char quote = 0;
 	public int lineNumber, columnNumber;
 	
 	public Token( String token, String filename, int lineNumber, int columnNumber ) {
@@ -26,8 +27,17 @@ public class Token implements SourceLocation
 		return columnNumber;
 	}
 	
+	public String toSource() {
+		if( quote == 0 ) {
+			return value;
+		} else {
+			// @todo: should probably escape \r, \n, etc...
+			return quote + value.replace("\\", "\\\\").replace(""+quote, "\\"+quote) + quote;
+		}
+	}
+	
 	public String toString() {
-		return "("+lineNumber+","+columnNumber+") " + value;
+		return "("+lineNumber+","+columnNumber+") " + toSource();
 		//return value;
 	}
 	

@@ -48,4 +48,26 @@ public class TNLTokenizerTest extends TestCase
 		expectedTokens.add(new Token(")","test-script",3,25));
 		assertEquals(expectedTokens, tokens);
 	}
+	
+	public void testTokenizeQuoted() throws IOException {
+		String tokenizeThis = "`hello\\nworld` \"string with \\\nignored newline\" ;";
+		StringReader sr = new StringReader(tokenizeThis);
+		TNLTokenizer st = new TNLTokenizer(sr,"test-script",1,1);
+		Token t;
+		
+		t = st.readToken();
+		assertNotNull(t);
+		assertEquals( '`', t.quote );
+		assertEquals( "hello\nworld", t.value );
+		
+		t = st.readToken();
+		assertNotNull(t);
+		assertEquals( '"', t.quote );
+		assertEquals( "string with ignored newline", t.value );
+		
+		t = st.readToken();
+		assertNotNull(t);
+		assertEquals( 0, t.quote );
+		assertEquals( ";", t.value );
+	}
 }

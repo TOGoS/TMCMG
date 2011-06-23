@@ -80,27 +80,35 @@ public class TNLTokenizer
 		while( true ) {
 			if( c == -1 ) {
 				return null;
-			} else if( c == '"' ) {
-				String word = "\"";
+			} else if( c == '"' || c == '`') {
+				char quoteChar = (char)c;
+				StringBuilder sb = new StringBuilder();
 				c = readChar();
 				Token t = new Token(null,filename,lastLineNumber,lastColumnNumber);
-				while( c != -1 && c != '"' ) {
+				eachChar: while( c != -1 && c != quoteChar ) {
 					if( c == '\\' ) {
 						c = readChar();
 						switch( c ) {
-						case('n'): word += '\n'; break;
-						case('r'): word += '\r'; break;
-						case('t'): word += '\t'; break;
+						case('n'): sb.append('\n'); break;
+						case('r'): sb.append('\r'); break;
+						case('t'): sb.append('\t'); break;
 						case('\n'):
 							// Don't add newline to word
-						default: word += (char)c;
+							break;
+						case('\r'):
+							c = readChar();
+							if( c == '\n' ) break;
+							continue eachChar;
+						default:
+							sb.append( (char)c );
 						}
 					} else {
-						word += (char)c;
+						sb.append( (char)c );
 					}
 					c = readChar();
 				}
-				t.value = word;
+				t.quote = quoteChar;
+				t.value = sb.toString();
 				return t;
 			} else if( c == '#' ) {
 				while( c != '\n' && c != -1 ) c = readChar();
