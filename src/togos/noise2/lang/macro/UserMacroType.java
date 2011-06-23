@@ -21,7 +21,7 @@ class CurryMacroType implements MacroType
 	public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 		if( oldNode.arguments.size() > 0 && sn.arguments.size() > 0 ) {
 			throw new CompileError("Due to compiler design limitations, can't add additional arguments to non-empty argument list to "+
-				oldNode.macroName+" (original arguments given at "+ScriptUtil.formaLocation(oldNode)+")", sn);
+				oldNode.macroName+" (original arguments given at "+ScriptUtil.formatLocation(oldNode)+")", sn);
 		}
 		if( sn.arguments.size() > 0 ) {
 			MacroType mt = (MacroType)oldContext.get(oldNode.macroName);

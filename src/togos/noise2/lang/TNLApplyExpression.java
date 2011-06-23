@@ -6,10 +6,14 @@ public class TNLApplyExpression extends TNLExpression
 {
 	public TNLExpression functionExpression;
 	public List argumentExpressions;
+	public List namedArgumentExpressionEntries;
 	
-	public TNLApplyExpression( TNLExpression functionExpression, List argumentExpressions, SourceLocation sloc, LexicalScope scope ) {
-		super( sloc, scope );
+	public TNLApplyExpression( TNLExpression functionExpression,
+			List argumentExpressions, List namedArgumentExpressionEntries,
+			SourceLocation sloc, TNLExpression parent ) {
+		super( sloc, parent );
 		this.functionExpression = functionExpression;
 		this.argumentExpressions = argumentExpressions;
+		this.namedArgumentExpressionEntries = namedArgumentExpressionEntries;
 	}
 }

@@ -55,7 +55,7 @@ public class TNLTokenizer
 	// Characters that force a new token, even if they are not surrounded by whitespace
 	protected boolean isDelimiter( int c ) {
 		switch( c ) {
-		case('('): case(')'): case('['): case(']'): case(','): case(';'):
+		case('('): case(')'): case('['): case(']'): case(','): case(';'): case('@'):
 			return true;
 		default:
 			return false;
@@ -75,6 +75,10 @@ public class TNLTokenizer
 		return !isWhitespace(c) && !isDelimiter(c) && c != -1;
 	}
 	
+	public SourceLocation getCurrentLocation() {
+		return new Token(null,filename,lastLineNumber,lastColumnNumber);
+	}
+	
 	public Token readToken() throws IOException {
 		int c = readChar();
 		while( true ) {
@@ -83,8 +87,8 @@ public class TNLTokenizer
 			} else if( c == '"' || c == '`') {
 				char quoteChar = (char)c;
 				StringBuilder sb = new StringBuilder();
-				c = readChar();
 				Token t = new Token(null,filename,lastLineNumber,lastColumnNumber);
+				c = readChar();
 				eachChar: while( c != -1 && c != quoteChar ) {
 					if( c == '\\' ) {
 						c = readChar();

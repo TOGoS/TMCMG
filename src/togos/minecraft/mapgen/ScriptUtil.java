@@ -17,7 +17,7 @@ import togos.noise2.lang.TNLTokenizer;
 
 public class ScriptUtil
 {
-	public static String formaLocation(SourceLocation sloc) {
+	public static String formatLocation(SourceLocation sloc) {
 		if( sloc.getSourceLineNumber() == -1 ) {
 			return sloc.getSourceFilename();
 		} else {
