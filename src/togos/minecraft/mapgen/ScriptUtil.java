@@ -9,40 +9,18 @@ import java.io.StringReader;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.ParseError;
-import togos.noise2.lang.ScriptError;
-import togos.noise2.lang.SourceLocation;
+import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.TNLParser;
 import togos.noise2.lang.TNLTokenizer;
 
 public class ScriptUtil
 {
-	public static String formatLocation(SourceLocation sloc) {
-		if( sloc.getSourceLineNumber() == -1 ) {
-			return sloc.getSourceFilename();
-		} else {
-			return sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
-		}
-	}
-	
-	public static String formatScriptError( ScriptError e ) {
-		SourceLocation sloc = e.sourceLocation;
-		String locMsg = "";
-		if( sloc != null ) {
-			if( sloc.getSourceLineNumber() == -1 ) {
-				locMsg = "\nIn "+sloc.getSourceFilename();
-			} else {
-				locMsg = "\nAt "+sloc.getSourceFilename()+":"+sloc.getSourceLineNumber()+","+sloc.getSourceColumnNumber();
-			}
-		}
-		return "Compile error: "+e.getRawMessage() + locMsg; 
-	}
-	
 	public static Object compileOrExit( TNLCompiler c, ASTNode n ) {
 		try {
 			return c.compile(n);
 		} catch( CompileError e ) {
-			System.err.println(formatScriptError(e));
+			System.err.println(ParseUtil.formatScriptError(e));
 			System.exit(1);
 			return null;
 		}

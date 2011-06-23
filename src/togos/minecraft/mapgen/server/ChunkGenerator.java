@@ -15,6 +15,7 @@ import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.lang.TNLCompiler;
 
@@ -51,7 +52,7 @@ public class ChunkGenerator
 		} catch( IOException e ) {
 			throw new RuntimeException(e);
 		} catch( ScriptError e ) {
-			System.err.println(ScriptUtil.formatScriptError(e));
+			System.err.println(ParseUtil.formatScriptError(e));
 			throw new RuntimeException(e);
 		}
 	}

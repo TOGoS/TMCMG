@@ -2,7 +2,6 @@ package togos.noise2.lang;
 
 import java.io.IOException;
 
-import togos.minecraft.mapgen.ScriptUtil;
 
 /*
  * Syntax:
@@ -74,7 +73,7 @@ public class TNLExpressionParser
 			TNLExpression expr = readBlock( parent );
 			Token endToken = readToken();
 			if( endToken == null ) {
-				throw new ParseError("Encountered end of file before end of expression started at "+ScriptUtil.formatLocation(t), tokenizer.getCurrentLocation());
+				throw new ParseError("Encountered end of file before end of expression started at "+ParseUtil.formatLocation(t), tokenizer.getCurrentLocation());
 			}
 			if( endToken.quote != 0 || !")".equals(endToken.value) ) {
 				throw new ParseError("Expected ')', but encountered "+t.toSource(), t);

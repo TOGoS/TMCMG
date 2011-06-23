@@ -3,9 +3,9 @@ package togos.noise2.lang.macro;
 import java.util.HashMap;
 import java.util.Map;
 
-import togos.minecraft.mapgen.ScriptUtil;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
+import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.TNLCompiler;
 
 class CurryMacroType implements MacroType
@@ -21,7 +21,7 @@ class CurryMacroType implements MacroType
 	public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 		if( oldNode.arguments.size() > 0 && sn.arguments.size() > 0 ) {
 			throw new CompileError("Due to compiler design limitations, can't add additional arguments to non-empty argument list to "+
-				oldNode.macroName+" (original arguments given at "+ScriptUtil.formatLocation(oldNode)+")", sn);
+				oldNode.macroName+" (original arguments given at "+ParseUtil.formatLocation(oldNode)+")", sn);
 		}
 		if( sn.arguments.size() > 0 ) {
 			MacroType mt = (MacroType)oldContext.get(oldNode.macroName);

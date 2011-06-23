@@ -45,6 +45,7 @@ import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.Material;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 
 public class WorldDesigner
@@ -347,7 +348,7 @@ public class WorldDesigner
 					gul.generatorUpdated( Util.readFileToDataRef(scriptFile), worldGenerator );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
-					String errText = ScriptUtil.formatScriptError(e);
+					String errText = ParseUtil.formatScriptError(e);
 					setStatus(true,errText);
 					System.err.println(errText);
 				} catch( FileNotFoundException e ) {

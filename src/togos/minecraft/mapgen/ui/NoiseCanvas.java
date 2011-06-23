@@ -28,6 +28,7 @@ import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.cache.SoftCache;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.function.FunctionDaDa_Ia;
+import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 
 public class NoiseCanvas extends WorldExplorerViewCanvas
@@ -260,7 +261,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
 					gul.generatorUpdated( worldGenerator );
 				} catch( ScriptError e ) {
-					System.err.println(ScriptUtil.formatScriptError(e));
+					System.err.println(ParseUtil.formatScriptError(e));
 				} catch( FileNotFoundException e ) {
 					System.err.println(e.getMessage());
 					System.exit(1);

@@ -18,6 +18,7 @@ import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 
 public class ChunkWriter
@@ -151,7 +152,7 @@ public class ChunkWriter
 				try {
 					worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), new File(scriptFile) );
 				} catch( ScriptError e ) {
-					System.err.println(ScriptUtil.formatScriptError(e));
+					System.err.println(ParseUtil.formatScriptError(e));
 					System.exit(1);
 					return;
 				} catch( FileNotFoundException e ) {
