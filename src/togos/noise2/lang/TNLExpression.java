@@ -1,6 +1,6 @@
 package togos.noise2.lang;
 
-public class TNLExpression
+public class TNLExpression implements SourceLocation
 {
 	public String sourceFilename = "(unknown)";
 	public int sourceLine, sourceColumn;
@@ -13,6 +13,10 @@ public class TNLExpression
 		this.parent = parent;
 	}
 	
+	public String getSourceFilename() { return sourceFilename; }
+	public int getSourceLineNumber() { return sourceLine; }
+	public int getSourceColumnNumber() { return sourceColumn; }
+	
 	public boolean equals( Object o ) {
 		if( o instanceof TNLExpression) {
 			TNLExpression oe = (TNLExpression)o;
@@ -24,7 +28,10 @@ public class TNLExpression
 			} else if( parent == null || oe.parent == null ) {
 				return false;
 			} else {
-				return parent.equals(oe.parent);
+				// Well actually we gotta check the parent!
+				// But that'd be recursive.
+				// Need better way.
+				return true;
 			}
 		}
 		return false;

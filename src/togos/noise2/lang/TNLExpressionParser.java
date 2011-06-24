@@ -61,22 +61,28 @@ public class TNLExpressionParser
 		}
 	}
 	
+	protected boolean isDelimiter( Token t, String d ) {
+		return t.quote == 0 && d.equals(t.value);
+	}
+	
 	protected boolean isSymbol( Token t ) {
 		return t.quote == '`' || t.quote == 0;
 	}
 	
 	public TNLExpression readAtomicExpression( TNLExpression parent ) throws IOException, ParseError {
 		Token t = readToken();
-		if( t.quote == '"' ) {
+		if( t == null || isDelimiter(t, ";") || isDelimiter(t, ")") ) {
+			throw new ParseError("Expected expression but found "+t, tokenizer.getCurrentLocation());
+		} else if( t.quote == '"' ) {
 			return new TNLLiteralExpression(t.value, t, parent);
-		} else if( t.quote == 0 && "(".equals(t.value) ) {
-			TNLExpression expr = readBlock( parent );
+		} else if( isDelimiter(t,"(") ) {
+			TNLExpression expr = readBlock( t, parent );
 			Token endToken = readToken();
 			if( endToken == null ) {
 				throw new ParseError("Encountered end of file before end of expression started at "+ParseUtil.formatLocation(t), tokenizer.getCurrentLocation());
 			}
-			if( endToken.quote != 0 || !")".equals(endToken.value) ) {
-				throw new ParseError("Expected ')', but encountered "+t.toSource(), t);
+			if( !isDelimiter(endToken, ")") ) {
+				throw new ParseError("Expected ')', but encountered "+endToken.toSource(), t);
 			}
 			return expr;
 		} else {
@@ -89,10 +95,37 @@ public class TNLExpressionParser
 		return first;
 	}
 	
-	public TNLExpression readBlock( TNLExpression parent ) throws IOException, ParseError {
-		TNLExpression e1 = readExpression( Operators.EQUALS_PRECEDENCE, parent );
+	public TNLExpression readBlock( SourceLocation begin, TNLExpression parent ) throws IOException, ParseError {
+		TNLBlockExpression block = new TNLBlockExpression(begin, parent);
+		
 		Token t = peekToken();
-		if( t == null || (isSymbol(t) && t.value == ")") ) return e1;
-		return null;
+		while( t != null && !isDelimiter(t, ")") ) {
+			if( isDelimiter(t,";") ) { readToken(); t = peekToken(); continue; } // skip dem semicolons! 
+			
+			TNLExpression e1 = readExpression( Operators.EQUALS_PRECEDENCE, block );
+			t = peekToken();
+			if( t == null || isDelimiter(t, ";") || isDelimiter(t, ")") ) {
+				if( block.value == null ) {
+					block.value = e1;
+				} else {
+					throw new ParseError("Block seems to have more than one value", e1);
+				}
+			} else if( isDelimiter(t, "=") ) {
+				t = readToken(); // skip past the =
+				TNLExpression key = e1;
+				TNLExpression value = readExpression(Operators.EQUALS_PRECEDENCE, block);
+				String keyName;
+				if( key instanceof TNLSymbolExpression ) {
+					keyName = ((TNLSymbolExpression)key).symbol;
+				} else {
+					throw new ParseError("Complex lvalues not yest supported", key);
+				}
+				block.definitions.put(keyName, value);
+			} else {
+				throw new ParseError("Unexpected token "+t.toSource()+" during block parsing", t);
+			}
+			t = peekToken();
+		}
+		return block;
 	}
 }
