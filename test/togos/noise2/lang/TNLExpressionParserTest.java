@@ -156,8 +156,13 @@ public class TNLExpressionParserTest extends TestCase
 		mappingArgs.add( add );
 		map.parent = mapping;
 		plus.parent = add;
-		block.definitions.put("foo", new TNLApplyExpression(map, mappingArgs, Collections.EMPTY_LIST, new Token(null,"test-script",1,8), block) );
-		block.value = new TNLSymbolExpression("3", new Token(null,"test-script",1,20), block);
+		block.definitions.put("foo", new TNLApplyExpression(map, mappingArgs, Collections.EMPTY_LIST, new Token(null,"test-script",1,9), block) );
+		
+		ArrayList valArgs = new ArrayList();
+		TNLApplyExpression val = new TNLApplyExpression(null, valArgs, Collections.EMPTY_LIST, new Token(null,"test-script",1,18), block);
+		val.functionExpression = new TNLSymbolExpression("foo", new Token(null,"test-script",1,18), val);
+		valArgs.add( new TNLLiteralExpression(Integer.valueOf(2), new Token(null,"test-script",1,22), val) );
+		block.value = val;
 		
 		assertEquals( block, parse("(foo(x) = x + 1; foo(2))") );
 	}

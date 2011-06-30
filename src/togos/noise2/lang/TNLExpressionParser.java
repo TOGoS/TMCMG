@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import togos.noise2.rdf.SimpleEntry;
@@ -256,8 +257,39 @@ public class TNLExpressionParser
 				String keyName;
 				if( key instanceof TNLSymbolExpression ) {
 					keyName = ((TNLSymbolExpression)key).symbol;
+				} else if( key instanceof TNLApplyExpression ) {
+					TNLExpression rValue = value;
+					TNLApplyExpression lApply = (TNLApplyExpression)key;
+					if( !(lApply.functionExpression instanceof TNLSymbolExpression) ) {
+						throw new ParseError( "LValue must be symbol or applied symbol", lApply.functionExpression );
+					}
+					keyName = ((TNLSymbolExpression)lApply.functionExpression).symbol;
+					if( lApply.namedArgumentExpressionEntries.size() > 0 ) {
+						throw new ParseError("Default arguments not yet supported",
+							(TNLExpression)((Map.Entry)lApply.namedArgumentExpressionEntries.get(0)).getValue()
+						);
+					}
+					
+					TNLSymbolExpression moperator = new TNLSymbolExpression("->", t, null);
+					ArrayList mappingArgs = new ArrayList();
+					TNLExpression mapping = new TNLApplyExpression( moperator, mappingArgs, Collections.EMPTY_LIST, t, block);
+					moperator.parent = value;
+
+					TNLExpression lValue;
+					if( lApply.argumentExpressions.size() == 1 ) {
+						lValue = (TNLExpression)lApply.argumentExpressions.get(0);
+					} else {
+						lApply.functionExpression = new TNLSymbolExpression(",", lApply.functionExpression, value);
+						lValue = lApply;
+					}
+					lValue.parent = mapping; 
+					rValue.parent = mapping;
+					mappingArgs.add( lValue );
+					mappingArgs.add( rValue );
+					
+					value = mapping;
 				} else {
-					throw new ParseError("Complex lvalues not yest supported", key);
+					throw new ParseError( "LValue must be symbol or applied symbol", key );
 				}
 				block.definitions.put(keyName, value);
 			} else {

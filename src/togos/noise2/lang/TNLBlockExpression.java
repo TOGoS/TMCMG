@@ -18,7 +18,9 @@ public class TNLBlockExpression extends TNLExpression
 		sb.append("( ");
 		for( Iterator i=definitions.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry e = (Map.Entry)i.next();
-			sb.append(e.getKey() + " = " + e.getValue() + "; " );
+			sb.append(
+				e.getKey() + " = " +
+				((TNLExpression)e.getValue()).toString(includeSourceLoc) + "; " );
 		}
 		sb.append( ((TNLExpression)value).toString( includeSourceLoc ) );
 		sb.append( ")" );
