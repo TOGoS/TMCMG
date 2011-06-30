@@ -25,6 +25,63 @@ import java.io.IOException;
  * argument := expression
  */
 
+/*
+ * Semantics:
+ * 
+ * A symbol by itself will be interpreted as an application with no arguments
+ * after all substitutions are done.  So:
+ * 
+ *   foo
+ * 
+ * is equivalent to
+ * 
+ *   foo()
+ * 
+ * but
+ * 
+ *   foo = bar()
+ *   foo()
+ *   
+ * is not allowed, since it is equivalent to
+ * 
+ *   bar()()
+ * 
+ * This MAY be allowed in the future if I decide to support currying.
+ * 
+ * Other function questions:
+ * 
+ * What does this compile to?
+ * 
+ *   get-function(a) = if( a > 0, b -> b + 1, b -> b - 1 );
+ *   
+ *   get-function(x)(y)
+ *   
+ * Good question, let's see...
+ * 
+ *   ( a -> if( a > 0, b -> b + 1, b -> b - 1 ) )(x)(y)
+ *   
+ * becomes
+ * 
+ *   if( y > 0, b -> b + 1, b -> b - 1 )(y)
+ *   
+ * And since if(..) doesn't itself take any more arguments, this is INVALID.
+ * Which makes sense because otherwise you could have different branches of
+ * the if return functions with different argument lists!
+ * 
+ * Instead, write it like this:
+ *  
+ *   get-function(a) = b -> if( a > 0, b + 1, b - 1 );
+ * 
+ * Though in that case you might as well just write a function that takes 2 arguments.
+ * The reason I don't allow this to be called like:
+ * 
+ *   get-function(1,2)
+ * 
+ * is because I don't want to have to figure out what to do with that
+ * extra parameter (the 2) while evaluating the application of get-function.
+ * 
+ */
+
 /**
  * Replacement for TNLParser.
  * This and TNLExpressions should obsolete ASTNode and TNLParser and

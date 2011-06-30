@@ -9,19 +9,11 @@ public class TNLSymbolExpression extends TNLExpression
 	    this.symbol = symbol;
     }
 	
-	public boolean equals( Object o ) {
-		if( o instanceof TNLSymbolExpression) {
-			TNLSymbolExpression oe = (TNLSymbolExpression)o;
-			return symbol.equals(oe.symbol) && super.equals(oe);
-		}
-		return false;
+	protected String symbolString() {
+		return "`" + symbol + "`"; // TODO: escape properly
 	}
 	
-	public int hashCode() {
-		return 2 + super.hashCode() + symbol.hashCode();
-	}
-	
-	public String toString() {
-		return "symbol<"+symbol+">";
+	public String toString(boolean includeSourceLoc) {
+		return includeSourceLoc ? (symbolString() + sourceLocString()) : symbolString();
 	}
 }

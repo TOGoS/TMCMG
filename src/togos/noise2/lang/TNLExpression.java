@@ -1,6 +1,6 @@
 package togos.noise2.lang;
 
-public class TNLExpression implements SourceLocation
+public abstract class TNLExpression implements SourceLocation
 {
 	public String sourceFilename = "(unknown)";
 	public int sourceLine, sourceColumn;
@@ -17,27 +17,40 @@ public class TNLExpression implements SourceLocation
 	public int getSourceLineNumber() { return sourceLine; }
 	public int getSourceColumnNumber() { return sourceColumn; }
 	
-	public boolean equals( Object o ) {
-		if( o instanceof TNLExpression) {
-			TNLExpression oe = (TNLExpression)o;
-			if( !sourceFilename.equals(oe.sourceFilename) ) return false;
-			if( sourceLine != oe.sourceLine ) return false;
-			if( sourceColumn != oe.sourceColumn ) return false;
-			if( parent == oe.parent ) {
-				return true;
-			} else if( parent == null || oe.parent == null ) {
-				return false;
-			} else {
-				// Well actually we gotta check the parent!
-				// But that'd be recursive.
-				// Need better way.
-				return true;
-			}
-		}
-		return false;
+	protected String sourceLocString() {
+		return "[" + getSourceFilename() + ":" + getSourceLineNumber() + "," + getSourceColumnNumber() + "]";
+	}
+	
+	public abstract String toString( boolean includeSourceLoc );
+	
+	/* Big note:
+	 * 
+	 * equals() and hashCode() take all this expression's information, including
+	 * source location, sub-expressions, and parent expressions into account.
+	 * 
+	 * They do this by stringifying this expression, its parent, etc, and
+	 * are therefore slow.  They are here only to help with unit testing.
+	 */
+	
+	public boolean equals( Object otherThing ) {
+		if( otherThing == this ) return true;
+		
+		if( !(otherThing instanceof TNLExpression) ) return false;
+		
+		TNLExpression oe = (TNLExpression)otherThing;
+		
+		if( !toString(true).equals(oe.toString(true)) ) return false;
+		
+		if( parent == oe.parent ) return true;
+		if( parent == null || oe.parent == null ) return false;
+		return parent.equals( oe.parent );
+	}
+	
+	public String toString() {
+		return toString(false);
 	}
 	
 	public int hashCode() {
-		return sourceFilename.hashCode() + sourceLine + sourceColumn + (parent == null ? 0 : parent.hashCode());
+		return 1 + toString().hashCode() + (parent == null ? 0 : parent.hashCode());
 	}
 }

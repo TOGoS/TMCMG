@@ -9,25 +9,15 @@ public class TNLLiteralExpression extends TNLExpression
 		this.value = value;
 	}
 	
-	public boolean equals( Object o ) {
-		if( o instanceof TNLLiteralExpression) {
-			TNLLiteralExpression oe = (TNLLiteralExpression)o;
-			if( value == oe.value ) {
-			} else if( value == null || oe.value == null ) {
-				return false;
-			} else if( !value.equals(oe.value) ) {
-				return false;
-			}
-			return super.equals(o);
+	protected String valueString() {
+		if( value instanceof String ) {
+			return "\"" + value + "\""; // TODO: escape properly
+		} else {
+			return value.toString();
 		}
-		return false;
 	}
 	
-	public int hashCode() {
-		return 1 + super.hashCode() + (value == null ? 0 : value.hashCode());
-	}
-	
-	public String toString() {
-		return "literal<"+value+">";
+	public String toString(boolean includeSourceLoc) {
+		return includeSourceLoc ? (valueString() + sourceLocString()) : valueString();
 	}
 }
