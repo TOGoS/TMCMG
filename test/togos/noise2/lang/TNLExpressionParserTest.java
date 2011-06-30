@@ -27,6 +27,20 @@ public class TNLExpressionParserTest extends TestCase
 		);
 	}
 	
+	public void testParseLiteralInt() throws IOException, ParseError {
+		assertEquals(
+			new TNLLiteralExpression(new Integer(65536), NSL, null ),
+			parse("65536")
+		);
+	}
+	
+	public void testParseHexLiteralInt() throws IOException, ParseError {
+		assertEquals(
+			new TNLLiteralExpression(new Integer(0x100), NSL, null ),
+			parse("0x100")
+		);
+	}
+	
 	public void testParseSymbol() throws IOException, ParseError {
 		assertEquals(
 			new TNLSymbolExpression("yaddah waddah", NSL, null ),
@@ -36,9 +50,9 @@ public class TNLExpressionParserTest extends TestCase
 	
 	public void testParseBlock() throws IOException, ParseError {
 		TNLBlockExpression block = new TNLBlockExpression(new Token(null,"test-script",1,1), null);
-		block.definitions.put("foo", new TNLSymbolExpression("1", new Token(null,"test-script",1,8), block) );
-		block.definitions.put("bar", new TNLSymbolExpression("2", new Token(null,"test-script",1,17), block) );
-		block.value = new TNLSymbolExpression("3", new Token(null,"test-script",1,20), block);
+		block.definitions.put("foo", new TNLLiteralExpression(Integer.valueOf(1), new Token(null,"test-script",1,8), block) );
+		block.definitions.put("bar", new TNLLiteralExpression(Integer.valueOf(2), new Token(null,"test-script",1,17), block) );
+		block.value = new TNLLiteralExpression(Integer.valueOf(3), new Token(null,"test-script",1,20), block);
 		
 		assertEquals( block, parse("(foo = 1; bar = 2; 3)") );
 	}
@@ -126,5 +140,35 @@ public class TNLExpressionParserTest extends TestCase
 		func.parent = apply;
 		
 		assertEquals( apply, parse("some-function(a, x@b, c)") );
+	}
+	
+	public void testParseFuncDef() throws IOException, ParseError {
+		TNLBlockExpression block = new TNLBlockExpression(new Token(null,"test-script",1,1), null);
+		TNLSymbolExpression map = new TNLSymbolExpression("->", new Token(null,"test-script",1,9), null);
+		TNLSymbolExpression plus = new TNLSymbolExpression("+", new Token(null,"test-script",1,13), null);
+		ArrayList mappingArgs = new ArrayList();
+		ArrayList addArgs = new ArrayList();
+		TNLApplyExpression mapping = new TNLApplyExpression(map, mappingArgs, Collections.EMPTY_LIST, new Token(null,"test-script",1,9), block);
+		TNLApplyExpression add = new TNLApplyExpression(plus, addArgs, Collections.EMPTY_LIST, plus, mapping);
+		addArgs.add( new TNLSymbolExpression("x", new Token(null,"test-script",1,11), add) );
+		addArgs.add( new TNLLiteralExpression(new Integer(1), new Token(null,"test-script",1,15), add) );
+		mappingArgs.add( new TNLSymbolExpression("x", new Token(null,"test-script",1,6), mapping ));
+		mappingArgs.add( add );
+		map.parent = mapping;
+		plus.parent = add;
+		block.definitions.put("foo", new TNLApplyExpression(map, mappingArgs, Collections.EMPTY_LIST, new Token(null,"test-script",1,8), block) );
+		block.value = new TNLSymbolExpression("3", new Token(null,"test-script",1,20), block);
+		
+		assertEquals( block, parse("(foo(x) = x + 1; foo(2))") );
+	}
+	
+	public void testParseComplexThing() throws IOException, ParseError {
+		parse("foo = 1; bar = x -> x + 1; bar(foo)");
+	}
+	public void testParseComplexThing2() throws IOException, ParseError {
+		parse("foo = 1; bar(x) = x + 1; bar(foo)");
+	}
+	public void testParseComplexThing3() throws IOException, ParseError {
+		parse("foo = 1; bar(x) = ( y -> x + y ); bar(foo)(3)");
 	}
 }

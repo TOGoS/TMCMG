@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import togos.noise2.rdf.SimpleEntry;
 
@@ -139,6 +140,9 @@ public class TNLExpressionParser
 		return "'"+t.value+"'";
 	}
 	
+	Pattern DECPAT = Pattern.compile("^\\d+$");
+	Pattern HEXPAT = Pattern.compile("^0x[a-fA-F\\d]+$");
+	
 	public TNLExpression readAtomicExpression( TNLExpression parent ) throws IOException, ParseError {
 		Token t = readToken();
 		if( t == null || isDelimiter(t, ";") || isDelimiter(t, ")") ) {
@@ -155,6 +159,12 @@ public class TNLExpressionParser
 				throw new ParseError("Expected ')', but encountered "+endToken.toSource(), t);
 			}
 			return expr;
+		} else if( t.quote == 0 && DECPAT.matcher(t.value).matches() ) {
+			Integer v = Integer.valueOf( t.value );
+			return new TNLLiteralExpression(v, t, parent);
+		} else if( t.quote == 0 && HEXPAT.matcher(t.value).matches() ) {
+			Integer v = Integer.valueOf( t.value.substring(2), 16 );
+			return new TNLLiteralExpression(v, t, parent);
 		} else {
 			return new TNLSymbolExpression(t.value, t, parent);
 		}
