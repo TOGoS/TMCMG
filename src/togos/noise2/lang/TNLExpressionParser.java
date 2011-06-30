@@ -1,7 +1,9 @@
 package togos.noise2.lang;
 
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /*
  * Syntax:
@@ -126,10 +128,15 @@ public class TNLExpressionParser
 		return t.quote == '`' || t.quote == 0;
 	}
 	
+	protected SourceLocation locationOf( Token t ) {
+		if( t == null ) return tokenizer.getCurrentLocation();
+		return t;
+	}
+	
 	public TNLExpression readAtomicExpression( TNLExpression parent ) throws IOException, ParseError {
 		Token t = readToken();
 		if( t == null || isDelimiter(t, ";") || isDelimiter(t, ")") ) {
-			throw new ParseError("Expected expression but found "+t, tokenizer.getCurrentLocation());
+			throw new ParseError("Expected expression but found "+t, locationOf(t));
 		} else if( t.quote == '"' ) {
 			return new TNLLiteralExpression(t.value, t, parent);
 		} else if( isDelimiter(t,"(") ) {
@@ -147,9 +154,45 @@ public class TNLExpressionParser
 		}
 	}
 	
+	protected void readArgumentList( List pArgs, List namedArgEntries, TNLExpression apply ) {
+		
+	}
+	
 	public TNLExpression readExpression( int gtPrecedence, TNLExpression parent ) throws IOException, ParseError {
 		TNLExpression first = readAtomicExpression( parent );
-		return first;
+		while( true ) {
+			Token t = peekToken();
+			Integer prec;
+			if( t != null && isDelimiter(t, "(") ) {
+				readToken(); // skip the '/'
+				ArrayList pArgs = new ArrayList();
+				ArrayList namedArgEntries = new ArrayList();
+				TNLApplyExpression apply = new TNLApplyExpression( first, pArgs, namedArgEntries, first, parent );
+				readArgumentList( pArgs, namedArgEntries, apply );
+				t = readToken();
+				if( t == null || !isDelimiter(t, ")") ) {
+					throw new ParseError("Did not find expected ')' after argument list", locationOf(t) );
+				}
+				first.parent = apply;
+				first = apply;
+			} else if( t != null && isSymbol(t) && (prec = (Integer)Operators.PRECEDENCE.get(t.value)) != null && prec.intValue() > gtPrecedence ) {
+				String operator = t.value;
+				TNLSymbolExpression func = new TNLSymbolExpression(operator, t, null);
+				List operands = new ArrayList();
+				operands.add(first);
+				TNLApplyExpression apply = new TNLApplyExpression( func, operands, Collections.EMPTY_LIST, first, parent );
+				first.parent = apply;
+				func.parent = apply;
+				do {
+					readToken(); // skip the operator
+					operands.add( readExpression(prec.intValue(), apply) );
+					t = peekToken();
+				} while( t != null && isSymbol(t) && operator.equals(t.value) );
+				first = apply;
+			} else {
+				return first;
+			}
+		}
 	}
 	
 	public TNLExpression readBlock( SourceLocation begin, TNLExpression parent ) throws IOException, ParseError {

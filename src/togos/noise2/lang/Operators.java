@@ -18,10 +18,11 @@ public class Operators
 		PRECEDENCE.put("<",  new Integer(20));
 		PRECEDENCE.put(">=", new Integer(20));
 		PRECEDENCE.put("<=", new Integer(20));
-		PRECEDENCE.put("==", new Integer(18));
-		PRECEDENCE.put("!=", new Integer(18));
-		PRECEDENCE.put("and", new Integer(17));
-		PRECEDENCE.put("or",  new Integer(16));
+		PRECEDENCE.put("==", new Integer(19));
+		PRECEDENCE.put("!=", new Integer(19));
+		PRECEDENCE.put("and",new Integer(18));
+		PRECEDENCE.put("or", new Integer(17));
+		PRECEDENCE.put("->", new Integer(16));
 		PRECEDENCE.put("=",  new Integer(EQUALS_PRECEDENCE));
 		PRECEDENCE.put(",",  new Integer(COMMA_PRECEDENCE));
 		PRECEDENCE.put(";",  new Integer( 5));

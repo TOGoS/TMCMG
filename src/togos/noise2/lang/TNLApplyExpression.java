@@ -24,6 +24,7 @@ public class TNLApplyExpression extends TNLExpression
 		sb.append( functionExpression.toString( includeSourceLoc ) );
 		boolean frist = true;
 		if( argumentExpressions.size() > 0 || namedArgumentExpressionEntries.size() > 0 ) {
+			sb.append("(");
 			for( Iterator i=argumentExpressions.iterator(); i.hasNext(); ) {
 				if( !frist ) sb.append(", ");
 				TNLExpression e = ((TNLExpression)i.next());
@@ -40,6 +41,7 @@ public class TNLApplyExpression extends TNLExpression
 				sb.append( e.toString(includeSourceLoc) );
 				frist = false;
 			}
+			sb.append(")");
 		} else {
 			sb.append("()");
 		}
