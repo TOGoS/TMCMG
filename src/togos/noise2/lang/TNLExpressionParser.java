@@ -180,7 +180,7 @@ public class TNLExpressionParser
 				TNLSymbolExpression func = new TNLSymbolExpression(operator, t, null);
 				List operands = new ArrayList();
 				operands.add(first);
-				TNLApplyExpression apply = new TNLApplyExpression( func, operands, Collections.EMPTY_LIST, first, parent );
+				TNLApplyExpression apply = new TNLApplyExpression( func, operands, Collections.EMPTY_LIST, t, parent );
 				first.parent = apply;
 				func.parent = apply;
 				do {

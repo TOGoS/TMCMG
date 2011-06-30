@@ -10,18 +10,23 @@ public class Operators
 	static int APPLY_PRECEDENCE = 70;
 	static {
 		PRECEDENCE.put("**", new Integer(60));
+		
 		PRECEDENCE.put("*",  new Integer(50));
-		PRECEDENCE.put("/",  new Integer(40));
-		PRECEDENCE.put("+",  new Integer(30));
-		PRECEDENCE.put("-",  new Integer(25));
-		PRECEDENCE.put(">",  new Integer(20));
-		PRECEDENCE.put("<",  new Integer(20));
-		PRECEDENCE.put(">=", new Integer(20));
-		PRECEDENCE.put("<=", new Integer(20));
-		PRECEDENCE.put("==", new Integer(19));
-		PRECEDENCE.put("!=", new Integer(19));
-		PRECEDENCE.put("and",new Integer(18));
-		PRECEDENCE.put("or", new Integer(17));
+		PRECEDENCE.put("/",  new Integer(50));
+		
+		PRECEDENCE.put("+",  new Integer(40));
+		PRECEDENCE.put("-",  new Integer(40));
+		
+		PRECEDENCE.put(">",  new Integer(31));
+		PRECEDENCE.put("<",  new Integer(31));
+		PRECEDENCE.put(">=", new Integer(31));
+		PRECEDENCE.put("<=", new Integer(31));
+		PRECEDENCE.put("==", new Integer(30));
+		PRECEDENCE.put("!=", new Integer(30));
+		
+		PRECEDENCE.put("and",new Integer(21));
+		PRECEDENCE.put("or", new Integer(20));
+		
 		PRECEDENCE.put("->", new Integer(16));
 		PRECEDENCE.put("=",  new Integer(EQUALS_PRECEDENCE));
 		PRECEDENCE.put(",",  new Integer(COMMA_PRECEDENCE));
