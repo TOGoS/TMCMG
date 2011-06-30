@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import junit.framework.TestCase;
+import togos.noise2.rdf.SimpleEntry;
 
 public class TNLExpressionParserTest extends TestCase
 {
@@ -97,5 +98,33 @@ public class TNLExpressionParserTest extends TestCase
 		func.parent = apply;
 		
 		assertEquals( apply, parse("some-function()") );
+	}
+
+	public void testParseApplyWithArgs() throws IOException, ParseError {
+		TNLSymbolExpression func = new TNLSymbolExpression("some-function", new Token(null,"test-script",1,1), null);
+		ArrayList argList = new ArrayList();
+		TNLApplyExpression apply = new TNLApplyExpression(func, argList, Collections.EMPTY_LIST, new Token(null,"test-script",1,1), null );
+		argList.add( new TNLSymbolExpression("a", new Token(null,"test-script",1,15), apply) );
+		argList.add( new TNLSymbolExpression("b", new Token(null,"test-script",1,18), apply) );
+		argList.add( new TNLSymbolExpression("c", new Token(null,"test-script",1,21), apply) );
+		func.parent = apply;
+		
+		assertEquals( apply, parse("some-function(a, b, c)") );
+	}
+	
+	public void testParseApplyWithNamedArgs() throws IOException, ParseError {
+		TNLSymbolExpression func = new TNLSymbolExpression("some-function", new Token(null,"test-script",1,1), null);
+		ArrayList argList = new ArrayList();
+		ArrayList namedArgEntries = new ArrayList();
+		TNLApplyExpression apply = new TNLApplyExpression(func, argList, namedArgEntries, new Token(null,"test-script",1,1), null );
+		argList.add( new TNLSymbolExpression("a", new Token(null,"test-script",1,15), apply) );
+		argList.add( new TNLSymbolExpression("c", new Token(null,"test-script",1,23), apply) );
+		namedArgEntries.add( new SimpleEntry(
+				new TNLSymbolExpression("x", new Token(null,"test-script",1,18), apply),
+				new TNLSymbolExpression("b", new Token(null,"test-script",1,20), apply)
+		) );
+		func.parent = apply;
+		
+		assertEquals( apply, parse("some-function(a, x@b, c)") );
 	}
 }

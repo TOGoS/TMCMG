@@ -78,14 +78,14 @@ public class TNLParserTest extends TestCase
 		ASTNode e1 = new ASTNode("+", ea1,NSL);
 
 		ArrayList ea2 = new ArrayList();
+		ea2.add( e1 );
 		ea2.add( new ASTNode("baz",NSL) );
-		ea2.add( new ASTNode("quux",NSL) );
-		ASTNode e2 = new ASTNode("*", ea2, NSL);
+		ASTNode e2 = new ASTNode("/", ea2, NSL);
 
 		ArrayList ea3 = new ArrayList();
-		ea3.add( e1 );
 		ea3.add( e2 );
-		ASTNode e3 = new ASTNode("/", ea3, NSL);
+		ea3.add( new ASTNode("quux",NSL) );
+		ASTNode e3 = new ASTNode("*", ea3, NSL);
 
 		assertEquals( e3, parse("(foo + bar) / baz * quux") );
 	}
@@ -97,18 +97,23 @@ public class TNLParserTest extends TestCase
 		ASTNode e1 = new ASTNode("**", ea1, NSL);
 
 		ArrayList ea2 = new ArrayList();
+		ea2.add( e1 );
 		ea2.add( new ASTNode("baz", NSL) );
-		ea2.add( new ASTNode("quux", NSL) );
-		ea2.add( new ASTNode("grawr", NSL) );
-		ASTNode e2 = new ASTNode("*", ea2, NSL);
-
+		ASTNode e2 = new ASTNode("/", ea2, NSL);
+		
 		ArrayList ea3 = new ArrayList();
-		ea3.add( e1 );
 		ea3.add( e2 );
-		ea3.add( new ASTNode("thing", NSL) );
-		ASTNode e3 = new ASTNode("/", ea3, NSL);
+		ea3.add( new ASTNode("quux", NSL) );
+		ea3.add( new ASTNode("grawr", NSL) );
+		ASTNode e3 = new ASTNode("*", ea3, NSL);
+		
+		ArrayList ea4 = new ArrayList();
+		ea4.add( e3 );
+		ea4.add( new ASTNode("thing", NSL) );
+		ASTNode e4 = new ASTNode("/", ea4, NSL);
 
-		assertEquals( e3, parse("foo ** bar / baz * quux * grawr / thing") );
+		assertEquals( e4, parse("foo ** bar / baz * quux * grawr / thing") );
+		// /( *( /( **(foo,bar), baz), quux, grawr), thing );
 	}
 	
 	public void testParseEquals() throws ParseError {

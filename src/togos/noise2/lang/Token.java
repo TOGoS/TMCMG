@@ -37,8 +37,7 @@ public class Token implements SourceLocation
 	}
 	
 	public String toString() {
-		return "("+lineNumber+","+columnNumber+") " + toSource();
-		//return value;
+		return "token " + toSource() + " at " + filename+":"+lineNumber+","+columnNumber;
 	}
 	
 	public boolean equals( Object oth ) {

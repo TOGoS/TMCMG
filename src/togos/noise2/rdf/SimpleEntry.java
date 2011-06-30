@@ -1,6 +1,3 @@
-/**
- * 
- */
 package togos.noise2.rdf;
 
 import java.util.Map;

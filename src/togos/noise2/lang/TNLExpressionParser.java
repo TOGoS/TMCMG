@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import togos.noise2.rdf.SimpleEntry;
+
 /*
  * Syntax:
  * 
@@ -132,11 +134,15 @@ public class TNLExpressionParser
 		if( t == null ) return tokenizer.getCurrentLocation();
 		return t;
 	}
+	protected String tokenDesc( Token t ) {
+		if( t == null ) return "end of file";
+		return "'"+t.value+"'";
+	}
 	
 	public TNLExpression readAtomicExpression( TNLExpression parent ) throws IOException, ParseError {
 		Token t = readToken();
 		if( t == null || isDelimiter(t, ";") || isDelimiter(t, ")") ) {
-			throw new ParseError("Expected expression but found "+t, locationOf(t));
+			throw new ParseError("Expected expression but found "+tokenDesc(t), locationOf(t));
 		} else if( t.quote == '"' ) {
 			return new TNLLiteralExpression(t.value, t, parent);
 		} else if( isDelimiter(t,"(") ) {
@@ -154,8 +160,31 @@ public class TNLExpressionParser
 		}
 	}
 	
-	protected void readArgumentList( List pArgs, List namedArgEntries, TNLExpression apply ) {
-		
+	protected void readArgumentList( List pArgs, List namedArgEntries, TNLExpression apply ) throws IOException, ParseError {
+		Token t = peekToken();
+		while( t != null && !isDelimiter(t,")") ) {
+			TNLExpression exp = readExpression( Operators.AT_PRECEDENCE, apply );
+			
+			t = peekToken();
+			if( isDelimiter(t,"@") ) {
+				TNLExpression keyExpression = exp;
+				readToken(); // Skip the @
+				exp = readExpression( Operators.COMMA_PRECEDENCE, apply );
+				namedArgEntries.add( new SimpleEntry(keyExpression,exp) );
+				t = peekToken();
+			} else {
+				pArgs.add(exp);
+			}
+			
+			if( isDelimiter(t,",") ) {
+				readToken(); // Skip the ,
+			} else {
+				break; // wth (see below)
+			}
+		}
+		if( t != null && !isDelimiter(t,")") ) {
+			throw new ParseError("Expected ',' or ')' but found "+tokenDesc(t), t);
+		}
 	}
 	
 	public TNLExpression readExpression( int gtPrecedence, TNLExpression parent ) throws IOException, ParseError {
@@ -222,7 +251,7 @@ public class TNLExpressionParser
 				}
 				block.definitions.put(keyName, value);
 			} else {
-				throw new ParseError("Unexpected token "+t.toSource()+" during block parsing", t);
+				throw new ParseError("Unexpected token "+tokenDesc(t)+" during block parsing", t);
 			}
 			t = peekToken();
 		}

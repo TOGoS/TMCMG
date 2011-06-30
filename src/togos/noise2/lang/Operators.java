@@ -5,9 +5,17 @@ import java.util.HashMap;
 public class Operators
 {
 	static HashMap PRECEDENCE = new HashMap();
-	static int COMMA_PRECEDENCE = 10;
-	static int EQUALS_PRECEDENCE = 15;
+	
+	final static int COMMA_PRECEDENCE;
+	final static int AT_PRECEDENCE;
+	final static int EQUALS_PRECEDENCE;
 	static int APPLY_PRECEDENCE = 70;
+	
+	/* 
+	 * Trying to jive as much as possible with
+	 * http://en.wikipedia.org/wiki/Order_of_operations#The_standard_order_of_operations
+	 */
+	
 	static {
 		PRECEDENCE.put("**", new Integer(60));
 		
@@ -27,9 +35,10 @@ public class Operators
 		PRECEDENCE.put("and",new Integer(21));
 		PRECEDENCE.put("or", new Integer(20));
 		
-		PRECEDENCE.put("->", new Integer(16));
-		PRECEDENCE.put("=",  new Integer(EQUALS_PRECEDENCE));
-		PRECEDENCE.put(",",  new Integer(COMMA_PRECEDENCE));
-		PRECEDENCE.put(";",  new Integer( 5));
+		PRECEDENCE.put("->", new Integer(                     16 ));
+		PRECEDENCE.put("=",  new Integer( EQUALS_PRECEDENCE = 15 ));
+		PRECEDENCE.put("@",  new Integer(     AT_PRECEDENCE = 12 ));
+		PRECEDENCE.put(",",  new Integer(  COMMA_PRECEDENCE = 10 ));
+		PRECEDENCE.put(";",  new Integer(                      5 ));
 	}
 }

@@ -8,6 +8,10 @@ public class TNLApplyExpression extends TNLExpression
 {
 	public TNLExpression functionExpression;
 	public List argumentExpressions;
+	/**
+	 * List of Map.Entries
+	 * where key and value are both TNLExpressions.
+	 */
 	public List namedArgumentExpressionEntries;
 	
 	public TNLApplyExpression( TNLExpression functionExpression,
@@ -34,11 +38,11 @@ public class TNLApplyExpression extends TNLExpression
 			for( Iterator i=namedArgumentExpressionEntries.iterator(); i.hasNext(); ) {
 				if( !frist ) sb.append(", ");
 				Map.Entry en = ((Map.Entry)i.next());
-				String name = (String)en.getKey();
-				TNLExpression e = ((TNLExpression)en.getValue());
-				sb.append( name ); // TODO: escape properly
+				TNLExpression name  = ((TNLExpression)en.getKey());
+				TNLExpression value = ((TNLExpression)en.getValue());
+				sb.append( name.toString(includeSourceLoc) ); // TODO: escape properly
 				sb.append( '@' );
-				sb.append( e.toString(includeSourceLoc) );
+				sb.append( value.toString(includeSourceLoc) );
 				frist = false;
 			}
 			sb.append(")");
