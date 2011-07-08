@@ -64,7 +64,7 @@ public class TNLParser
 				t = readToken(); // next token after the comma
 			}
 			if( t == null ) {
-				throw new ParseError("Expected ')', but reached end of source.", new Token("", t0.filename, -1, -1));
+				throw new ParseError("Expected ')', but reached end of source.", new BaseSourceLocation(t0.getSourceFilename(), -1, -1));
 			} else if( !")".equals(t.value) ) {
 				throw new ParseError("Expected ')', but got '"+t+"'.", t);
 			}
