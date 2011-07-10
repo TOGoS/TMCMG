@@ -11,14 +11,14 @@ import togos.noise2.DigestUtil;
 public class ExprUtil
 {
 	public static String getIdentifier( Object o ) {
-		if( o instanceof Expression ) {
-			return ((Expression)o).getIdentifier();
+		if( o instanceof RDFApplyExpression ) {
+			return ((RDFApplyExpression)o).getIdentifier();
 		} else {
 			return o.toString();
 		}
 	}
 	
-	public static String generateIdentifier( Expression e ) {
+	public static String generateIdentifier( RDFApplyExpression e ) {
 		String k = e.getTypeName();
 		for( Iterator i=e.getAttributeEntries().iterator(); i.hasNext(); ) {
 			Map.Entry en = (Map.Entry)i.next();
@@ -34,7 +34,7 @@ public class ExprUtil
 		return Base32.encode(sha1);
 	}
 	
-	public static String toString( Expression e ) {
+	public static String toString( RDFApplyExpression e ) {
 		return e.getTypeName()+"...";
 	}
 }

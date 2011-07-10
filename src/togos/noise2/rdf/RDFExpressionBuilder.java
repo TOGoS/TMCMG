@@ -5,24 +5,24 @@ import java.util.List;
 
 import togos.noise2.lang.SourceLocation;
 
-public class ExpressionBuilder
+public class RDFExpressionBuilder
 {
 	String typeName;
 	List attributeEntries = new ArrayList();
 	SourceLocation sloc = null;
 	
-	public ExpressionBuilder(String typeName) {
+	public RDFExpressionBuilder(String typeName) {
 		this.typeName = typeName;
 	}
-	public ExpressionBuilder create(String typeName) {
-		return new ExpressionBuilder(typeName);
+	public RDFExpressionBuilder create(String typeName) {
+		return new RDFExpressionBuilder(typeName);
 	}
-	public ExpressionBuilder with(String attrName, Object value) {
+	public RDFExpressionBuilder with(String attrName, Object value) {
 		attributeEntries.add(new SimpleEntry(attrName, value));
 		return this;
 	}
 	/** Don't call with(...) any more after this; you'll screw it up! */
-	public Expression toExpression() {
-		return new BaseExpression(typeName, attributeEntries, sloc);
+	public RDFApplyExpression toExpression() {
+		return new BaseRDFApplyExpression(typeName, attributeEntries, sloc);
 	}
 };

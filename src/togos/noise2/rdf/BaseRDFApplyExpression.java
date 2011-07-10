@@ -9,27 +9,27 @@ import java.util.Map;
 import togos.noise2.lang.BaseSourceLocation;
 import togos.noise2.lang.SourceLocation;
 
-public class BaseExpression implements Expression
+public class BaseRDFApplyExpression implements RDFApplyExpression
 {
 	protected final SourceLocation sourceLoc;
 	protected final String typeName;
 	protected final List attributeEntries;
 	
-	public BaseExpression( String typeName, List attributeEntries, SourceLocation sloc ) {
+	public BaseRDFApplyExpression( String typeName, List attributeEntries, SourceLocation sloc ) {
 		this.sourceLoc = sloc;
 		this.typeName = typeName;
 		this.attributeEntries = attributeEntries;
 	}
 	
-	public BaseExpression( String typeName, List attributeEntries ) {
+	public BaseRDFApplyExpression( String typeName, List attributeEntries ) {
 		this( typeName, attributeEntries, BaseSourceLocation.NONE );
 	}
 	
-	public BaseExpression( String typeName, SourceLocation sloc ) {
+	public BaseRDFApplyExpression( String typeName, SourceLocation sloc ) {
 		this( typeName, Collections.EMPTY_LIST, sloc );
 	}
 	
-	public BaseExpression( String typeName ) {
+	public BaseRDFApplyExpression( String typeName ) {
 		this( typeName, BaseSourceLocation.NONE );
 	}
 	

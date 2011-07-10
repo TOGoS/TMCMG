@@ -1,11 +1,9 @@
 package togos.noise2.rdf;
 
 import java.util.List;
-import togos.noise2.lang.SourceLocation;
 
-public interface Expression
+public interface RDFApplyExpression extends RDFExpression
 {
-	public SourceLocation getSourceLocation();
 	public String getTypeName();
 	/** Returns a list of Map.Entry for all arguments */
 	public List getAttributeEntries();

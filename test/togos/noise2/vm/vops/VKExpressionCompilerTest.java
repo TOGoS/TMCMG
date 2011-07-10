@@ -2,15 +2,15 @@ package togos.noise2.vm.vops;
 
 import junit.framework.TestCase;
 import togos.noise2.function.LFunctionDaDaDa_Da;
-import togos.noise2.rdf.BaseExpression;
-import togos.noise2.rdf.Expression;
-import togos.noise2.rdf.ExpressionBuilder;
+import togos.noise2.rdf.BaseRDFApplyExpression;
+import togos.noise2.rdf.RDFApplyExpression;
+import togos.noise2.rdf.RDFExpressionBuilder;
 import togos.noise2.rdf.TNLNamespace;
 
 public class VKExpressionCompilerTest extends TestCase
 {
 	public void testCompileAddConstants() {
-		Expression add = new ExpressionBuilder( TNLNamespace.ADD ).
+		RDFApplyExpression add = new RDFExpressionBuilder( TNLNamespace.ADD ).
 			with( TNLNamespace.TERM, Double.valueOf(4.0) ).
 			with( TNLNamespace.TERM, Double.valueOf(5.0) ).toExpression();
 		
@@ -25,9 +25,9 @@ public class VKExpressionCompilerTest extends TestCase
 	}
 
 	public void testCompileAddXY() {
-		Expression add = new ExpressionBuilder( TNLNamespace.ADD ).
-			with( TNLNamespace.TERM, new BaseExpression(TNLNamespace.X) ).
-			with( TNLNamespace.TERM, new BaseExpression(TNLNamespace.Y) ).toExpression();
+		RDFApplyExpression add = new RDFExpressionBuilder( TNLNamespace.ADD ).
+			with( TNLNamespace.TERM, new BaseRDFApplyExpression(TNLNamespace.X) ).
+			with( TNLNamespace.TERM, new BaseRDFApplyExpression(TNLNamespace.Y) ).toExpression();
 		
 		VKExpressionCompiler vkec = new VKExpressionCompiler();
 		LFunctionDaDaDa_Da addFunc = vkec.expressionToFunction( add );
