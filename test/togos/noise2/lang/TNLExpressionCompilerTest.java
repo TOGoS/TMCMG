@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import togos.noise2.rdf.BaseRDFApplyExpression;
-import togos.noise2.rdf.SimpleEntry;
 import togos.noise2.rdf.RDFApplyExpression;
+import togos.noise2.rdf.SimpleEntry;
 import togos.noise2.rdf.TNLNamespace;
 import junit.framework.TestCase;
 
