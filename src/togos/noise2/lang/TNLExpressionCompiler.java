@@ -2,9 +2,9 @@ package togos.noise2.lang;
 
 import java.util.HashSet;
 
-import togos.noise2.rdf.BaseRDFApplyExpression;
+import togos.noise2.rdf.BaseRDFObjectExpression;
 import togos.noise2.rdf.BaseRDFLiteralExpression;
-import togos.noise2.rdf.RDFExpression;
+import togos.rdf.RDFExpression;
 
 public class TNLExpressionCompiler
 {
@@ -20,7 +20,7 @@ public class TNLExpressionCompiler
 	public RDFExpression compile( TNLSymbolExpression exp ) throws CompileError {
 		String symbol = exp.symbol;
 		if( primitiveSymbols.contains(symbol) ) {
-			return new BaseRDFApplyExpression(symbol, exp);
+			return new BaseRDFObjectExpression(symbol, exp);
 		}
 		TNLExpression e = resolve(symbol,exp);
 		if( e == null ) {

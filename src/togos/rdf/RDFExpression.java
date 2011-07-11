@@ -1,6 +1,6 @@
-package togos.noise2.rdf;
+package togos.rdf;
 
-import togos.noise2.lang.SourceLocation;
+import togos.lang.SourceLocation;
 
 public interface RDFExpression
 {

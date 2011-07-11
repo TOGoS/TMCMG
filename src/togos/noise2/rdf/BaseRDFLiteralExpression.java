@@ -1,8 +1,9 @@
 package togos.noise2.rdf;
 
-import togos.noise2.lang.SourceLocation;
+import togos.lang.SourceLocation;
+import togos.rdf.RDFLiteral;
 
-public class BaseRDFLiteralExpression implements RDFLiteralExpression
+public class BaseRDFLiteralExpression implements RDFLiteral
 {
 	Object value;
 	SourceLocation sloc;

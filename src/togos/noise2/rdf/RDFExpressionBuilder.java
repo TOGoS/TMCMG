@@ -3,7 +3,9 @@ package togos.noise2.rdf;
 import java.util.ArrayList;
 import java.util.List;
 
-import togos.noise2.lang.SourceLocation;
+import togos.lang.SourceLocation;
+import togos.rdf.RDFDescription;
+import togos.rdf.SimpleEntry;
 
 public class RDFExpressionBuilder
 {
@@ -22,7 +24,7 @@ public class RDFExpressionBuilder
 		return this;
 	}
 	/** Don't call with(...) any more after this; you'll screw it up! */
-	public RDFApplyExpression toExpression() {
-		return new BaseRDFApplyExpression(typeName, attributeEntries, sloc);
+	public RDFDescription toExpression() {
+		return new BaseRDFObjectExpression(typeName, attributeEntries, sloc);
 	}
 };

@@ -6,30 +6,31 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import togos.lang.SourceLocation;
 import togos.noise2.lang.BaseSourceLocation;
-import togos.noise2.lang.SourceLocation;
+import togos.rdf.RDFDescription;
 
-public class BaseRDFApplyExpression implements RDFApplyExpression
+public class BaseRDFObjectExpression implements RDFDescription
 {
 	protected final SourceLocation sourceLoc;
 	protected final String typeName;
 	protected final List attributeEntries;
 	
-	public BaseRDFApplyExpression( String typeName, List attributeEntries, SourceLocation sloc ) {
+	public BaseRDFObjectExpression( String typeName, List attributeEntries, SourceLocation sloc ) {
 		this.sourceLoc = sloc;
 		this.typeName = typeName;
 		this.attributeEntries = attributeEntries;
 	}
 	
-	public BaseRDFApplyExpression( String typeName, List attributeEntries ) {
+	public BaseRDFObjectExpression( String typeName, List attributeEntries ) {
 		this( typeName, attributeEntries, BaseSourceLocation.NONE );
 	}
 	
-	public BaseRDFApplyExpression( String typeName, SourceLocation sloc ) {
+	public BaseRDFObjectExpression( String typeName, SourceLocation sloc ) {
 		this( typeName, Collections.EMPTY_LIST, sloc );
 	}
 	
-	public BaseRDFApplyExpression( String typeName ) {
+	public BaseRDFObjectExpression( String typeName ) {
 		this( typeName, BaseSourceLocation.NONE );
 	}
 	

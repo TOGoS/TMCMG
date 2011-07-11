@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import togos.lang.SourceLocation;
 import togos.noise2.lang.CompileError;
-import togos.noise2.lang.SourceLocation;
 
 public class STVKScriptCompiler
 {

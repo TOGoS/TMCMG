@@ -3,6 +3,8 @@ package togos.noise2.lang;
 import java.util.Collections;
 import java.util.List;
 
+import togos.lang.SourceLocation;
+
 /**
  * Holds information about a node in a TNL program.
  * For example...

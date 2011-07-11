@@ -1,4 +1,4 @@
-package togos.noise2.rdf;
+package togos.rdf;
 
 import java.util.Map;
 

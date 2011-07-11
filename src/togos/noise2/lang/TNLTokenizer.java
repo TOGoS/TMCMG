@@ -3,6 +3,8 @@ package togos.noise2.lang;
 import java.io.IOException;
 import java.io.Reader;
 
+import togos.lang.SourceLocation;
+
 public class TNLTokenizer
 {
 	Reader r;

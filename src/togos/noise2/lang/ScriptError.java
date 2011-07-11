@@ -1,5 +1,7 @@
 package togos.noise2.lang;
 
+import togos.lang.SourceLocation;
+
 public class ScriptError extends Exception
 {
 	private static final long serialVersionUID = 1L;

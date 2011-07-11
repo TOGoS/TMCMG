@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import togos.lang.SourceLocation;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
-import togos.noise2.lang.SourceLocation;
 import togos.noise2.lang.TNLCompiler;
 
 public class LanguageMacros

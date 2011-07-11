@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import togos.lang.SourceLocation;
+
 public class TNLBlockExpression extends TNLExpression
 {
 	Map definitions = new HashMap();

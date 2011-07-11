@@ -1,5 +1,7 @@
 package togos.noise2.lang;
 
+import togos.lang.SourceLocation;
+
 public abstract class TNLExpression implements SourceLocation
 {
 	public String sourceFilename = "(unknown)";

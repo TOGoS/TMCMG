@@ -1,6 +1,7 @@
 package togos.noise2.lang;
 
 import junit.framework.TestCase;
+import togos.lang.SourceLocation;
 import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.NoiseMacros;

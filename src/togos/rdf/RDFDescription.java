@@ -1,11 +1,13 @@
-package togos.noise2.rdf;
+package togos.rdf;
 
 import java.util.List;
 
-public interface RDFApplyExpression extends RDFExpression
+public interface RDFDescription extends RDFExpression
 {
 	public String getTypeName();
-	/** Returns a list of Map.Entry for all arguments */
+	/** Returns a list of Map.Entry for all arguments,
+	 * where the entry key is the fully-namespaced attribute name as a string,
+	 * and the value is an RDFExpression */
 	public List getAttributeEntries();
 	public List getAttributeValues(String name);
 	/**

@@ -1,5 +1,7 @@
 package togos.noise2.lang;
 
+import togos.lang.SourceLocation;
+
 public class ParseUtil
 {
 	public static String formatLocation(SourceLocation sloc) {

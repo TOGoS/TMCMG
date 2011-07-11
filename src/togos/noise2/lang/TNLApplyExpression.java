@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 
+import togos.lang.SourceLocation;
+
 public class TNLApplyExpression extends TNLExpression
 {
 	public TNLExpression functionExpression;

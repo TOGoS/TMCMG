@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import togos.lang.SourceLocation;
+
 public class TNLParser
 {
 	protected TNLTokenizer tokenizer;

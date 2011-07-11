@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import togos.noise2.rdf.BaseRDFApplyExpression;
-import togos.noise2.rdf.RDFApplyExpression;
-import togos.noise2.rdf.SimpleEntry;
+import togos.lang.SourceLocation;
+import togos.noise2.rdf.BaseRDFObjectExpression;
 import togos.noise2.rdf.TNLNamespace;
+import togos.rdf.RDFDescription;
+import togos.rdf.SimpleEntry;
 import junit.framework.TestCase;
 
 public class TNLExpressionCompilerTest extends TestCase
@@ -26,7 +27,7 @@ public class TNLExpressionCompilerTest extends TestCase
 	public void testXCompiled() throws CompileError {
 		SourceLocation sl = new BaseSourceLocation("uhm", 1, 1);
 		TNLExpression tExp = new TNLSymbolExpression("x", sl, block);
-		RDFApplyExpression rExp = (RDFApplyExpression)comp.compile(tExp);
+		RDFDescription rExp = (RDFDescription)comp.compile(tExp);
 		assertEquals( TNLNamespace.X, rExp.getTypeName() );
 		assertEquals( 0, rExp.getAttributeEntries().size() );
 		assertEquals( sl, rExp.getSourceLocation() );
@@ -50,13 +51,13 @@ public class TNLExpressionCompilerTest extends TestCase
 		TNLExpression mult = new TNLApplyExpression(times, factors, Collections.EMPTY_LIST, sl, block);
 		x.parent = y.parent = times.parent = mult;
 		
-		RDFApplyExpression rExp = (RDFApplyExpression)comp.compile(mult);
+		RDFDescription rExp = (RDFDescription)comp.compile(mult);
 		assertEquals( TNLNamespace.MULTIPLY, rExp.getTypeName() );
 		assertEquals( 2, rExp.getAttributeEntries().size() );
 		assertEquals( sl, rExp.getSourceLocation() );
 		ArrayList expectedAttrs = new ArrayList();
-		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFApplyExpression(TNLNamespace.X, nsl)) );
-		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFApplyExpression(TNLNamespace.Y, nsl)) );
+		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFObjectExpression(TNLNamespace.X, nsl)) );
+		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFObjectExpression(TNLNamespace.Y, nsl)) );
 		assertEquals( expectedAttrs, rExp.getAttributeEntries() );
 	}
 }

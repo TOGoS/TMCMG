@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import togos.noise2.rdf.ExprUtil;
-import togos.noise2.rdf.RDFApplyExpression;
 import togos.noise2.rdf.TNLNamespace;
+import togos.rdf.RDFDescription;
 
 public class ExpressionToOpCompiler
 {
@@ -32,12 +32,12 @@ public class ExpressionToOpCompiler
 		exprUsage.put(exprId,u);
 	}
 	
-	protected void buildExprUsage( RDFApplyExpression expr ) {
+	protected void buildExprUsage( RDFDescription expr ) {
 		markExprUsage( expr.getIdentifier() );
 		for( Iterator i=expr.getAttributeEntries().iterator(); i.hasNext(); ) {
 			Map.Entry en = (Map.Entry)i.next();
-			if( en.getValue() instanceof RDFApplyExpression ) {
-				buildExprUsage( (RDFApplyExpression)en.getValue() );
+			if( en.getValue() instanceof RDFDescription ) {
+				buildExprUsage( (RDFDescription)en.getValue() );
 			}
 		}
 	}
@@ -51,7 +51,7 @@ public class ExpressionToOpCompiler
 		return u.intValue() == 1;
 	}
 	
-	protected String[] getArgStrings( RDFApplyExpression expr, String[] argNames ) {
+	protected String[] getArgStrings( RDFDescription expr, String[] argNames ) {
 		ArrayList args = new ArrayList();
 		boolean allowZero=false, allowMulti;
 		for( int i=0; i<argNames.length; ++i ) {
@@ -83,7 +83,7 @@ public class ExpressionToOpCompiler
 		exprVars.put( ExprUtil.getIdentifier(expr), var );	
 	}
 	
-	protected String _compile( RDFApplyExpression expr ) {
+	protected String _compile( RDFDescription expr ) {
 		String varName;
 		if( shouldInlineExpr( expr ) ) {
 			varName = null;
@@ -111,8 +111,8 @@ public class ExpressionToOpCompiler
 		if( vn != null ) return vn;
 		
 		String var;
-		if( expr instanceof RDFApplyExpression ) {
-			var = _compile( (RDFApplyExpression)expr );
+		if( expr instanceof RDFDescription ) {
+			var = _compile( (RDFDescription)expr );
 		} else if( expr instanceof Double ) {
 			var = w.writeConstant( null, ((Double)expr).doubleValue() );
 		} else {
@@ -122,7 +122,7 @@ public class ExpressionToOpCompiler
 		return var;
 	}
 	
-	public String compile( RDFApplyExpression expr ) {
+	public String compile( RDFDescription expr ) {
 		buildExprUsage(expr);
 		return _compile((Object)expr);
 	}

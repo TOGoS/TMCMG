@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import junit.framework.TestCase;
-import togos.noise2.rdf.SimpleEntry;
+import togos.lang.SourceLocation;
+import togos.rdf.SimpleEntry;
 
 public class TNLExpressionParserTest extends TestCase
 {

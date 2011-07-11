@@ -1,5 +1,6 @@
 package togos.noise2.lang;
 
+import togos.lang.SourceLocation;
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaDaDa;

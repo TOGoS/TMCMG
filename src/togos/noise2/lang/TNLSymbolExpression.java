@@ -1,5 +1,7 @@
 package togos.noise2.lang;
 
+import togos.lang.SourceLocation;
+
 public class TNLSymbolExpression extends TNLExpression
 {
 	public static TNLSymbolExpression primitive( String symbol ) {
