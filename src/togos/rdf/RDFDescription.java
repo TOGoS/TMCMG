@@ -2,6 +2,9 @@ package togos.rdf;
 
 import java.util.List;
 
+/**
+ * Represents RDF properties of a single subject.
+ */
 public interface RDFDescription extends RDFExpression
 {
 	public String getTypeName();

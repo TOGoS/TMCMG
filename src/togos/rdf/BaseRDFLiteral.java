@@ -1,13 +1,13 @@
-package togos.noise2.rdf;
+package togos.rdf;
 
 import togos.lang.SourceLocation;
-import togos.rdf.RDFLiteral;
 
-public class BaseRDFLiteralExpression implements RDFLiteral
+public class BaseRDFLiteral implements RDFLiteral
 {
 	Object value;
 	SourceLocation sloc;
-	public BaseRDFLiteralExpression( Object value, SourceLocation sloc ) {
+	public BaseRDFLiteral( Object value, SourceLocation sloc ) {
+		this.value = value;
 		this.sloc = sloc;
 	}
 	public Object getValue() {

@@ -6,9 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import togos.noise2.rdf.ExprUtil;
+import togos.noise2.lang.CompileError;
 import togos.noise2.rdf.TNLNamespace;
 import togos.rdf.RDFDescription;
+import togos.rdf.RDFExpression;
+import togos.rdf.RDFExpressionUtil;
+import togos.rdf.RDFLiteral;
 
 public class ExpressionToOpCompiler
 {
@@ -19,11 +22,6 @@ public class ExpressionToOpCompiler
 	public ExpressionToOpCompiler(OpWriter w) {
 		this.w = w;
 	}
-	
-	protected final String[] ADD_ARGS = new String[]{ "+", TNLNamespace.TERM };
-	protected final String[] SUBTRACT_ARGS = new String[]{ TNLNamespace.MINUEND, "+", TNLNamespace.SUBTRAHEND };
-	protected final String[] MULTIPLY_ARGS = new String[]{ "+", TNLNamespace.FACTOR };
-	protected final String[] DIVIDE_ARGS = new String[]{ TNLNamespace.DIVIDEND, "+", TNLNamespace.DIVISOR };
 	
 	protected void markExprUsage( String exprId ) {
 		Integer u = (Integer)exprUsage.get(exprId);
@@ -43,7 +41,7 @@ public class ExpressionToOpCompiler
 	}
 	
 	protected boolean shouldInlineExpr( Object expr ) {
-		String exprId = ExprUtil.getIdentifier(expr);
+		String exprId = RDFExpressionUtil.getIdentifier(expr);
 		Integer u = (Integer)exprUsage.get(exprId);
 		if( u == null ) {
 			throw new RuntimeException("Expression "+expr+" was not counted or something");
@@ -51,7 +49,7 @@ public class ExpressionToOpCompiler
 		return u.intValue() == 1;
 	}
 	
-	protected String[] getArgStrings( RDFDescription expr, String[] argNames ) {
+	protected String[] getArgStrings( RDFDescription expr, String[] argNames ) throws CompileError {
 		ArrayList args = new ArrayList();
 		boolean allowZero=false, allowMulti;
 		for( int i=0; i<argNames.length; ++i ) {
@@ -69,7 +67,7 @@ public class ExpressionToOpCompiler
 				throw new RuntimeException( "Zero "+argNames[i]+" arguments provided to "+expr.getTypeName() );
 			}
 			for( Iterator it=values.iterator(); it.hasNext(); ) {
-				args.add( _compile( it.next() ) );
+				args.add( _compile( (RDFExpression)it.next() ) );
 			}
 		}
 		String[] s = new String[args.size()];
@@ -80,10 +78,10 @@ public class ExpressionToOpCompiler
 	}
 	
 	public void bind( Object expr, String var ) {
-		exprVars.put( ExprUtil.getIdentifier(expr), var );	
+		exprVars.put( RDFExpressionUtil.getIdentifier(expr), var );	
 	}
 	
-	protected String _compile( RDFDescription expr ) {
+	protected String _compileApply( RDFDescription expr ) throws CompileError {
 		String varName;
 		if( shouldInlineExpr( expr ) ) {
 			varName = null;
@@ -94,36 +92,43 @@ public class ExpressionToOpCompiler
 		
 		String typeName = expr.getTypeName();
 		if( TNLNamespace.ADD.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,ADD_ARGS) );
+			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.ADD_ARGS) );
 		} else if( TNLNamespace.SUBTRACT.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,SUBTRACT_ARGS) );
+			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.SUBTRACT_ARGS) );
 		} else if( TNLNamespace.MULTIPLY.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,MULTIPLY_ARGS) );
+			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.MULTIPLY_ARGS) );
 		} else if( TNLNamespace.DIVIDE.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,DIVIDE_ARGS) );
+			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.DIVIDE_ARGS) );
 		} else {
 			throw new RuntimeException("Unsupported expression type "+typeName);
 		}
 	}
 	
-	protected String _compile( Object expr ) {
-		String vn = (String)exprVars.get( ExprUtil.getIdentifier(expr) );
+	protected String _compile( RDFExpression expr ) throws CompileError {
+		String vn = (String)exprVars.get( RDFExpressionUtil.getIdentifier(expr) );
 		if( vn != null ) return vn;
 		
 		String var;
 		if( expr instanceof RDFDescription ) {
-			var = _compile( (RDFDescription)expr );
-		} else if( expr instanceof Double ) {
-			var = w.writeConstant( null, ((Double)expr).doubleValue() );
+			var = _compileApply( (RDFDescription)expr );
+		} else if( expr instanceof RDFLiteral ) {
+			Object val = ((RDFLiteral)expr).getValue();
+			if( val == null ) {
+				throw new CompileError("Don't know how to compile literal NULL", expr.getSourceLocation());
+			} else if( val instanceof Double ) {
+				var = w.writeConstant( null, ((Double)val).doubleValue() );
+			} else {
+				throw new CompileError("Don't know how to compile literal "+val.getClass(), expr.getSourceLocation());
+			}
 		} else {
-			throw new RuntimeException("Don't know how to compile "+expr);
+			throw new CompileError("Don't know how to compile "+expr.getClass(), expr.getSourceLocation());
 		}
 		bind( expr, var );
 		return var;
 	}
 	
-	public String compile( RDFDescription expr ) {
+	public String compile( RDFDescription expr ) throws CompileError {
 		buildExprUsage(expr);
-		return _compile((Object)expr);
+		return _compile( expr );
 	}
 }

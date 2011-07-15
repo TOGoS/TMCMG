@@ -26,13 +26,17 @@ public class BaseSourceLocation implements SourceLocation
 	public int getSourceColumnNumber() {
 		return sourceColumnNumber;
 	}
+
+	public static String toString( SourceLocation sl ) {
+		if( sl.getSourceLineNumber() != 0 ) {
+			return "at "+sl.getSourceFilename()+":"+sl.getSourceLineNumber()+","+sl.getSourceColumnNumber();
+		} else {
+			return "in "+sl.getSourceFilename();
+		}
+	}
 	
 	public String toString() {
-		if( sourceLineNumber != 0 ) {
-			return "at "+sourceFilename+":"+sourceLineNumber+","+sourceColumnNumber;
-		} else {
-			return "in "+sourceFilename;
-		}
+		return toString(this);
 	}
 	
 	public boolean equals( Object oth ) {

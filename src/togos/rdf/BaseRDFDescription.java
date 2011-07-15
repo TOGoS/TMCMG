@@ -1,4 +1,4 @@
-package togos.noise2.rdf;
+package togos.rdf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,29 +8,28 @@ import java.util.Map;
 
 import togos.lang.SourceLocation;
 import togos.noise2.lang.BaseSourceLocation;
-import togos.rdf.RDFDescription;
 
-public class BaseRDFObjectExpression implements RDFDescription
+public class BaseRDFDescription implements RDFDescription
 {
 	protected final SourceLocation sourceLoc;
 	protected final String typeName;
 	protected final List attributeEntries;
 	
-	public BaseRDFObjectExpression( String typeName, List attributeEntries, SourceLocation sloc ) {
+	public BaseRDFDescription( String typeName, List attributeEntries, SourceLocation sloc ) {
 		this.sourceLoc = sloc;
 		this.typeName = typeName;
 		this.attributeEntries = attributeEntries;
 	}
 	
-	public BaseRDFObjectExpression( String typeName, List attributeEntries ) {
+	public BaseRDFDescription( String typeName, List attributeEntries ) {
 		this( typeName, attributeEntries, BaseSourceLocation.NONE );
 	}
 	
-	public BaseRDFObjectExpression( String typeName, SourceLocation sloc ) {
+	public BaseRDFDescription( String typeName, SourceLocation sloc ) {
 		this( typeName, Collections.EMPTY_LIST, sloc );
 	}
 	
-	public BaseRDFObjectExpression( String typeName ) {
+	public BaseRDFDescription( String typeName ) {
 		this( typeName, BaseSourceLocation.NONE );
 	}
 	
@@ -57,11 +56,22 @@ public class BaseRDFObjectExpression implements RDFDescription
 	
 	protected String identifier;
 	public String getIdentifier() {
-		if( identifier == null ) identifier = ExprUtil.generateIdentifier(this);
+		if( identifier == null ) identifier = RDFExpressionUtil.generateIdentifier(this);
 		return identifier;
 	}
 	
+	public boolean equals( Object oth ) {
+		if( oth instanceof RDFDescription ) {
+			return RDFExpressionUtil.equals( this, (RDFDescription)oth );
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		return RDFExpressionUtil.hashCode(this);
+	}
+	
 	public String toString() {
-		return ExprUtil.toString(this);
+		return RDFExpressionUtil.toString(this, true);
 	}
 }

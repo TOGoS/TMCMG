@@ -24,4 +24,8 @@ public class SimpleEntry implements Map.Entry {
 	    }
     	return false;
 	}
+	
+	public String toString() {
+		return "<SimpleEntry " + getKey().toString() + " -> " + getValue().toString() + ">";
+	}
 }

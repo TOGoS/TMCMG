@@ -4,24 +4,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import junit.framework.TestCase;
 import togos.lang.SourceLocation;
-import togos.noise2.rdf.BaseRDFObjectExpression;
 import togos.noise2.rdf.TNLNamespace;
+import togos.rdf.BaseRDFDescription;
 import togos.rdf.RDFDescription;
 import togos.rdf.SimpleEntry;
-import junit.framework.TestCase;
 
 public class TNLExpressionCompilerTest extends TestCase
 {
 	TNLBlockExpression block;
 	TNLExpressionCompiler comp;
 	
+	protected void addsm( TNLBlockExpression block, String shortName, String longName, String[] args ) {
+		block.definitions.put( shortName, new TNLExpressionCompiler.SimpleArgListMacro( longName, args ) );
+	}
+	
 	public void setUp() {
 		block = new TNLBlockExpression(BaseSourceLocation.NONE, null);
-		block.definitions.put("x", TNLSymbolExpression.primitive(TNLNamespace.X));
+		//block.definitions.put("x", TNLSymbolExpression.primitive(TNLNamespace.X));
+		
+		addsm( block, "x", TNLNamespace.X, new String[0] );
+		addsm( block, "y", TNLNamespace.Y, new String[0] );
+		addsm( block, "z", TNLNamespace.Z, new String[0] );
+		addsm( block, "+", TNLNamespace.ADD,      TNLNamespace.ADD_ARGS      );
+		addsm( block, "-", TNLNamespace.SUBTRACT, TNLNamespace.SUBTRACT_ARGS );
+		addsm( block, "*", TNLNamespace.MULTIPLY, TNLNamespace.MULTIPLY_ARGS );
+		addsm( block, "/", TNLNamespace.DIVIDE,   TNLNamespace.DIVIDE_ARGS   );
 		
 		comp = new TNLExpressionCompiler();
-		comp.primitiveSymbols.add(TNLNamespace.X);
 	}
 	
 	public void testXCompiled() throws CompileError {
@@ -56,8 +67,8 @@ public class TNLExpressionCompilerTest extends TestCase
 		assertEquals( 2, rExp.getAttributeEntries().size() );
 		assertEquals( sl, rExp.getSourceLocation() );
 		ArrayList expectedAttrs = new ArrayList();
-		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFObjectExpression(TNLNamespace.X, nsl)) );
-		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFObjectExpression(TNLNamespace.Y, nsl)) );
+		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFDescription(TNLNamespace.X, nsl)) );
+		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFDescription(TNLNamespace.Y, nsl)) );
 		assertEquals( expectedAttrs, rExp.getAttributeEntries() );
 	}
 }
