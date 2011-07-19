@@ -1,0 +1,66 @@
+# From http://www.minecraftforum.net/topic/100820-togoss-programmable-minecraft-map-generator/page__view__findpost__p__6284885
+
+materials.beachtransition = if( simplex > 0.0, materials.sand, 2 );
+
+hillheightmod = 15;
+slopemod = 35;
+
+rocklayer = 60 + fractal(1, slopemod, hillheightmod, 1, 1, 1, simplex );
+
+layered-terrain(
+
+# ceiling rock
+    layer( materials.stone, 0, rocklayer ),
+
+# air space
+    layer( 0, 0, rocklayer - 5 ),
+
+# rock top
+    layer( 1, rocklayer, 70 + fractal(1, 600, 5, 1, 1, 1, simplex ) ),
+
+# top dirt
+    layer( 3, 65 + fractal(1, 600, 5, 1, 1, 1, simplex ), 70 + fractal(1, 600, 5, 1, 1, 1, simplex ) ),
+
+# top grass
+    layer( 2, 70 + fractal(1, 600, 5, 1, 1, 1, simplex ), 71 + fractal(1, 600, 5, 1, 1, 1, simplex ) ),
+
+# stalactites
+    layer( 1, 60 + fractal(1, 5, 45, 1, 1, 1, simplex ), rocklayer ),
+
+# Rooftop Holes
+    layer( 0, 0, -2200 + fractal(1, 40, 700, 1, 1, 1, (perlin * 5)) ),
+
+# water
+   layer( 9, 0, 30 ),
+
+# sandy bottom
+    layer( materials.sand, 0, 3 + fractal(1, 600, 5, 1, 1, 1, simplex ) ),
+
+# Island sand
+    layer( materials.sand, 0 , 10 + fractal(1, 200, 11, 1, 1, 1, perlin * 5 ) ),
+
+# Island rock
+    layer( 1, 0 , 7 + fractal(1, 200, 11, 1, 1, 1, perlin * 5 ) ),
+
+# Beach transition
+    layer( materials.beachtransition, 31, 10 + fractal(1, 200, 11, 1, 1, 1, perlin * 5 ) ),
+
+# Island Grass
+    layer( 2, 32, 10 + fractal(1, 200, 11, 1, 1, 1, perlin * 5 ) ),
+
+# Pillars
+    layer( 1, 0, -300 + fractal(1, 30, 500, 1, 1, 1, (perlin * 2.5 ) ) ),
+
+# air space
+    layer( 0, 71 + fractal(1, 600, 5, 1, 1, 1, simplex ), 128 ),
+
+# Bedrock
+    layer( materials.bedrock, 0, 1 ),
+
+# Post processors
+
+    grassifier,
+    lighter,
+    flag-populated,
+
+)

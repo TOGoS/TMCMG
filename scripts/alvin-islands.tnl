@@ -1,0 +1,53 @@
+# From http://www.minecraftforum.net/topic/100820-togoss-programmable-minecraft-map-generator/page__view__findpost__p__6284885
+
+mountheightmod = 11;
+slopemod = 1000;
+materials.beachtransition = if( simplex > 0.005, materials.sand, materials.dirt );
+sponge = if( simplex > -0.32, 9, 19 );
+
+layered-terrain(
+
+# Sea level
+    layer( materials.water, 0, 60 ),
+
+# Sponges!
+    layer( sponge, 31 + fractal(1, slopemod, 16, 1, 1, 1, simplex ), 32 + fractal(1, slopemod, 16, 1, 1, 1, simplex ) ),
+
+# Kelp leaves!
+    layer( 18, 0, ridge(-1000, -900 + fractal(1, -1000, 10000, 1, 1, 1, perlin * 0.2), fractal(1, 1, 100, 1, 1, 1, simplex * 29) ) ),
+
+# Kelp trimmer
+    layer( 9, 55 + fractal(1, 10, 5, 1, 1, 1, simplex ), 128 ),
+    layer( 9, 60, 64 ),
+    layer( 0, 64, 128 ),
+
+# Sea bottom sand
+    layer( materials.sand, 0, 31 + fractal(1, slopemod, 16, 1, 1, 1, simplex ) ),
+
+# Sea bottom sandstone
+    layer( materials.sandstone, 0, 28 + fractal(1, slopemod, 16, 1, 1, 1, simplex ) ),
+
+# "Beach" sand
+    layer( materials.sand, 31 + fractal(1, slopemod, 16, 1, 1, 1, simplex ) , 28 + fractal(1, slopemod, mountheightmod, 1, 1, 1, perlin * -7 ) ),
+
+# "Beach" sandstone
+    layer( materials.sandstone, 28 + fractal(1, slopemod, 16, 1, 1, 1, simplex ), 25 + fractal(1, slopemod, mountheightmod, 1, 1, 1, perlin * -7 ) ),
+
+# Beach transition
+    layer( materials.beachtransition, 65, 28 + fractal(1, slopemod, mountheightmod, 1, 1, 1, perlin * -7 ) ),
+
+# Dirt
+    layer( materials.dirt, 66, ridge(66, 28 + fractal(1, slopemod, mountheightmod, 1, 1, 1, perlin * -7 ), 28 + fractal(1, slopemod, mountheightmod, 1, 1, 1, perlin * -7 ) ) ),
+
+# Sea mounts
+    layer( materials.stone, 0, 22 + fractal(1, slopemod, mountheightmod, 1, 1, 1, perlin * -7 ) ),
+
+# Bottom rock
+    layer( materials.stone, 0, 25 + fractal(1, slopemod, 16, 1, 1, 1, simplex ) ),
+
+# Bedrock
+    layer( materials.bedrock, 0, 1 ),
+
+    grassifier,
+    lighter,
+)

@@ -1,0 +1,51 @@
+# From http://www.minecraftforum.net/topic/100820-togoss-programmable-minecraft-map-generator/page__st__160__p__6368487#entry6368487
+
+stone-height = ridge( 56, 64, 64 + fractal( 4, 128, 16, 8, 2, 1, perlin) );
+
+topsoil-height = stone-height + ridge( 1, 8, 4 + fractal( 4, 64, 8, 4, 2, 2, perlin) );
+
+biome = ridge( 1, 10, 5 + fractal( 4, 160, 10, 32, 2, 3, perlin) );
+
+#  1 - Taiga
+#  2 - Tundra
+#  3 - Seasonal Forest
+#  4 - Forest
+#  5 - Rain Forest
+#  6 - Shrubland
+#  7 - Swampland
+#  8 - Savanna
+#  9 - Plains
+# 10 - Desert
+
+materials.topsoil = if( biome > 9, materials.sand, materials.dirt);
+
+winter = if( biome < 3, 1, 0);
+
+Taiga-tree = if( biome < 2, 1.5, 0);
+
+Tundra-tree = if( biome > 1 and biome < 3, 0.1, 0);
+
+Forest-tree = if( biome > 2 and biome < 6, 1.5, 0);
+
+Swampshrub-tree = if( biome > 5 and biome < 8, 0.5, 0);
+
+Flatland-tree = if( biome > 5 and biome < 8, 0.1, 0);
+
+common-tree = Forest-tree + Swampshrub-tree + Flatland-tree;
+
+winter-tree = Taiga-tree + Tundra-tree;
+
+desert-cactus = if( biome > 9, 1, 0);
+
+layered-terrain(
+	layer( materials.water, 0, 64),
+	layer( materials.stone, 2, stone-height),
+	layer( materials.topsoil, stone-height, topsoil-height),
+	layer( materials.bedrock, 0, 1),
+	grassifier,
+	tree-populator( tree-types.pine, winter-tree * fractal( 2, 50, 0.01, 2, 2, 3, perlin ), 1 ),
+	tree-populator( tree-types.round, common-tree * fractal( 2, 50, 0.01, 2, 2, -3, perlin ), 2 ),
+	winterizer (winter),
+	lighter,
+	flag-populated,
+)

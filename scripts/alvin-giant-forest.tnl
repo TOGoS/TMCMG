@@ -1,0 +1,46 @@
+# From http://www.minecraftforum.net/topic/100820-togoss-programmable-minecraft-map-generator/page__view__findpost__p__6284885
+
+hillheightmod = 20;
+slopemod = 600;
+
+# rocklayer can be reduced when flag-populated is unused
+rocklayer = 60 + fractal(1, slopemod, hillheightmod, 1, 1, 1, simplex );
+
+materials.woodleafmix = if( simplex > 0.005, 17, 18 );
+
+layered-terrain(
+
+# The forest canopy
+    layer( materials.woodleafmix, 114 + fractal(1, 25, 35, 1, 1, 1, simplex ), 128),
+
+# Forest canopy solid leaf casing
+    layer( 18, 110 + fractal(1, 25, 35, 1, 1, 1, simplex ), 114 + fractal(1, 25, 35, 1, 1, 1, simplex ) ),
+
+# Canopy holes
+    layer( 0, 0, -1000 + fractal(1, 10, 500, 1, 1, 1, (perlin * 5)) ),
+
+# Branches
+    layer( 17, ridge( 90, 95, 20 + fractal(1, 100, 45, 1, 1, 1, simplex ) - 3 ), ridge( 90, 95, 32 + fractal(1, 100, 45, 1, 1, 1, simplex ) ) - 1 ),
+    layer( 18, ridge( 90, 95, 20 + fractal(1, 100, 45, 1, 1, 1, simplex ) - 2 ), ridge( 90, 95, 32 + fractal(1, 100, 45, 1, 1, 1, simplex ) ) - 1 ),
+
+# Grass (instead of dirt because otherwise the forest floor will stay as dirt)
+    layer( 3, 0, 5 + rocklayer ),
+
+# Rock
+    layer( materials.stone, 0, rocklayer ),
+
+# Trunks; second line makes the trunks run all the way to bedrock but then they tend to hit lava when flag-populated is turned off
+    layer( 17, 4 + rocklayer, -1000 + fractal(1, 30, 500, 1, 1, 1, (perlin * 5)) ),
+    # layer( 17, 0, -1000 + fractal(1, 30, 500, 1, 1, 1, (perlin * 5)) ),
+
+# Roots; Disable when not using flag-populated to prevent raging underground fires
+    # layer( 17, ridge( 10, 15, 20 + fractal(1, 200, 45, 1, 1, 1, simplex ) - 3 ), ridge( 10, 15, 32 + fractal(1, 200, 45, 1, 1, 1, simplex ) ) - 1 ),
+
+# Bedrock
+    layer( materials.bedrock, 0, 1 ),
+
+# Post processors
+
+    lighter,
+    
+)
