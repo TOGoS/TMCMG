@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.world.gen;
+package togos.minecraft.mapgen.world;
 
 public class Material {
 	public final int color;

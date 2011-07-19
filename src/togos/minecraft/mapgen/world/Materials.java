@@ -9,7 +9,7 @@ package togos.minecraft.mapgen.world;
 
 import java.util.HashMap;
 
-import togos.minecraft.mapgen.world.gen.Material;
+import togos.minecraft.mapgen.world.Material;
 
 public class Materials
 {
@@ -60,22 +60,22 @@ public class Materials
 		add(new Material( (byte)0x02, (byte)0x00, 0xFF008800, "GD", "Grass" ));
 		add(new Material( (byte)0x03, (byte)0x00, 0xFF884400, "DD", "Dirt" ));
 		add(new Material( (byte)0x04, (byte)0x00, 0xFF666666, "CC", "Cobblestone" ));
-		add(new Material( (byte)0x05, (byte)0x00, 0xFFFF00FF, "? ", "Wooden Plank" ));
-		add(new Material( (byte)0x06, (byte)0x00, 0xFFFF00FF, "? ", "Sapling" ));
+		add(new Material( (byte)0x05, (byte)0x00, 0xFFAA8844, "? ", "Wooden Plank" ));
+		add(new Material( (byte)0x06, (byte)0x00, 0xFF00AA00, "? ", "Sapling" ));
 		add(new Material( (byte)0x07, (byte)0x00, 0xFF444444, "##", "Bedrock" ));
-		add(new Material( (byte)0x08, (byte)0x00, 0xFFFF00FF, "? ", "Moving water" ));
+		add(new Material( (byte)0x08, (byte)0x00, 0xFF0000AA, "? ", "Moving water" ));
 		add(new Material( (byte)0x09, (byte)0x00, 0xFF000088, "WW", "Water" ));
 		add(new Material( (byte)0x0A, (byte)0x00, 0xFFFF4400, "? ", "Moving lava" ));
 		add(new Material( (byte)0x0B, (byte)0x00, 0xFFFF4411, "? ", "Lava" ));
 		add(new Material( (byte)0x0C, (byte)0x00, 0xFFAAAA66, "SS", "Sand" ));
-		add(new Material( (byte)0x0D, (byte)0x00, 0xFFFF00FF, "? ", "Gravel" ));
+		add(new Material( (byte)0x0D, (byte)0x00, 0xFF664444, "? ", "Gravel" ));
 		add(new Material( (byte)0x0E, (byte)0x00, 0xFFFF00FF, "? ", "Gold Ore" ));
 		add(new Material( (byte)0x0F, (byte)0x00, 0xFFFF00FF, "? ", "Iron Ore" ));
 		add(new Material( (byte)0x10, (byte)0x00, 0xFFFF00FF, "? ", "Coal Ore" ));
-		add(new Material( (byte)0x11, (byte)0x00, 0xFFFF00FF, "? ", "Log" ));
+		add(new Material( (byte)0x11, (byte)0x00, 0xFF883322, "? ", "Log" ));
 		add(new Material( (byte)0x12, (byte)0x00, 0xFF006633, "? ", "Leaves" ));
 		add(new Material( (byte)0x13, (byte)0x00, 0xFFFF00FF, "? ", "Sponge" ));
-		add(new Material( (byte)0x14, (byte)0x00, 0xFFFF00FF, "? ", "Glass" ));
+		add(new Material( (byte)0x14, (byte)0x00, 0xFF77AAAA, "? ", "Glass" ));
 		add(new Material( (byte)0x15, (byte)0x00, 0xFF546283, "? ", "Lapis Lazuli Ore" ));
 		add(new Material( (byte)0x16, (byte)0x00, 0xFF1741A9, "? ", "Lapis Lazuli Block" ));
 		add(new Material( (byte)0x17, (byte)0x00, 0xFFFF00FF, "? ", "Dispenser" ));
@@ -84,8 +84,14 @@ public class Materials
 		add(new Material( (byte)0x1A, (byte)0x00, 0xFFFF00FF, "? ", "Bed" ));
 		add(new Material( (byte)0x1B, (byte)0x00, 0xFFFF00FF, "? ", "Powered Rail" ));
 		add(new Material( (byte)0x1C, (byte)0x00, 0xFFFF00FF, "? ", "Detector Rail" ));
-		add(new Material( (byte)0x1E, (byte)0x00, 0xFFFF00FF, "? ", "Web" ));
+		add(new Material( (byte)0x1D, (byte)0x00, 0xFFFF00FF, "? ", "Sticky Piston" ));
+		add(new Material( (byte)0x1E, (byte)0x00, 0xFFFF00FF, "? ", "Cobweb" ));
+		add(new Material( (byte)0x1F, (byte)0x00, 0xFF00AA00, "? ", "Tall Grass" ));
+		add(new Material( (byte)0x20, (byte)0x00, 0xFFFF00FF, "? ", "Dead Shrubs" ));
+		add(new Material( (byte)0x21, (byte)0x00, 0xFFFF00FF, "? ", "Piston" ));
+		add(new Material( (byte)0x22, (byte)0x00, 0xFFFF00FF, "? ", "Piston Extension" ));
 		add(new Material( (byte)0x23, (byte)0x00, 0xFFFF00FF, "? ", "Wool" ));
+		add(new Material( (byte)0x24, (byte)0x00, 0xFFFF00FF, "? ", "Block moved by Piston" ));
 		add(new Material( (byte)0x25, (byte)0x00, 0xFFFF00FF, "? ", "Dandelion" ));
 		add(new Material( (byte)0x26, (byte)0x00, 0xFFFF00FF, "? ", "Rose" ));
 		add(new Material( (byte)0x27, (byte)0x00, 0xFFFF00FF, "? ", "Brown Mushroom" ));
@@ -99,8 +105,8 @@ public class Materials
 		add(new Material( (byte)0x2F, (byte)0x00, 0xFFFF00FF, "? ", "Bookshelf" ));
 		add(new Material( (byte)0x30, (byte)0x00, 0xFFFF00FF, "? ", "Moss Stone" ));
 		add(new Material( (byte)0x31, (byte)0x00, 0xFF442244, "? ", "Obsidian" ));
-		add(new Material( (byte)0x32, (byte)0x00, 0xFFFF00FF, "? ", "Torch" ));
-		add(new Material( (byte)0x33, (byte)0x00, 0xFFFF00FF, "? ", "Fire" ));
+		add(new Material( (byte)0x32, (byte)0x00, 0xFFFFFFEE, "? ", "Torch" ));
+		add(new Material( (byte)0x33, (byte)0x00, 0xFFFFDDCC, "? ", "Fire" ));
 		add(new Material( (byte)0x34, (byte)0x00, 0xFFFF00FF, "? ", "Monster Spawner" ));
 		add(new Material( (byte)0x35, (byte)0x00, 0xFFFF00FF, "? ", "Wooden Stairs" ));
 		add(new Material( (byte)0x36, (byte)0x00, 0xFFFF00FF, "? ", "Chest" ));
@@ -130,7 +136,7 @@ public class Materials
 		add(new Material( (byte)0x4E, (byte)0x00, 0xFFCCCCCC, "? ", "Snow" ));
 		add(new Material( (byte)0x4F, (byte)0x00, 0xFF7799AA, "? ", "Ice" ));
 		add(new Material( (byte)0x50, (byte)0x00, 0xFFEEEEEE, "? ", "Snow Block" ));
-		add(new Material( (byte)0x51, (byte)0x00, 0xFFFF00FF, "? ", "Cactus" ));
+		add(new Material( (byte)0x51, (byte)0x00, 0xFF226622, "? ", "Cactus" ));
 		add(new Material( (byte)0x52, (byte)0x00, 0xFFFF00FF, "? ", "Clay Block" ));
 		add(new Material( (byte)0x53, (byte)0x00, 0xFFFF00FF, "? ", "Sugar Cane" ));
 		add(new Material( (byte)0x54, (byte)0x00, 0xFFFF00FF, "? ", "Jukebox" ));
@@ -145,5 +151,6 @@ public class Materials
 		add(new Material( (byte)0x5D, (byte)0x00, 0xFFFF00FF, "? ", "Redstone Repeater (\"off\" state)" ));
 		add(new Material( (byte)0x5E, (byte)0x00, 0xFFFF00FF, "? ", "Redstone Repeater (\"on\" state)" ));
 		add(new Material( (byte)0x5F, (byte)0x00, 0xFFFF00FF, "? ", "Locked Chest" ));
+		add(new Material( (byte)0x60, (byte)0x00, 0xFFFF00FF, "? ", "Trapdoor" ));
 	}
 }

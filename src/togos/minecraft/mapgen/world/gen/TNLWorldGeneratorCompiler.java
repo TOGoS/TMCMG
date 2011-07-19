@@ -1,5 +1,6 @@
 package togos.minecraft.mapgen.world.gen;
 
+import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.lang.macro.ConstantMacroType;

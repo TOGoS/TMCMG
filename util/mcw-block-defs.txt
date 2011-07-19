@@ -13,7 +13,7 @@
 |-
 | height="27px" | [[File:Wooden Plank.png|25px]] || 05 || 05 || [[Wooden Plank]]
 |-
-| height="27px" | [[File:Sapling.png|25px]] || 06 || 06 || [[Sapling]]  <sup>[[#Saplings|D]]</sup>
+| height="27px" | [[File:Sapling.png|25px]] || 06 || 06 || [[Sapling]]  <sup>[[#Saplings|D]] [[#Saplings|B]]</sup>
 |-
 | height="27px" | [[File:Bedrock.png|25px]] || <span style='color:red'>07</span> || <span style='color:red'>07</span> || [[Bedrock]]
 |-
@@ -35,16 +35,16 @@
 |-
 | height="27px" | [[File:Coal (Ore).png|25px]] || <span style='color:red'>16</span> || <span style='color:red'>10</span> || [[Coal (Ore)|Coal Ore]]
 |-
-| height="27px" | [[File:Wood.png|25px]] || 17 || 11 || [[Wood]] <sup>[[#Wood|D]]</sup> <sup>[[#Wood|B]]
+| height="27px" | [[File:Wood.png|25px]] || 17 || 11 || [[Wood]] <sup>[[#Wood|D]] [[#Wood|B]]
 |-
-| height="27px" | [[File:Leaves.png|25px]] || <span style='color:red'>18</span> || <span style='color:red'>12</span> || [[Leaves]] <sup>[[#Leaves|D]]</sup>
+| height="27px" | [[File:Leaves.png|25px]] || 18 || 12 || [[Leaves]] <sup>[[#Leaves|D]] [[#Leaves|B]]</sup>
 |-
 | height="27px" | [[File:Sponge.png|25px]] || <span style='color:green'>19</span> || <span style='color:green'>13</span> || [[Sponge]]
 |-
 | height="27px" | [[File:Glass.png|25px]] || 20 || 14 || [[Glass]]
 |-
 | height="27px" | [[File:Lapis Lazuli (Ore).png|25px]] || <span style='color:red'>21</span> || <span style='color:red'>15</span> || [[Lapis Lazuli (Ore)|Lapis Lazuli Ore]]
-|-                   
+|-
 | height="27px" | [[File:Lapis Lazuli (Block).png|25px]]  || 22 || 16 || [[Lapis Lazuli (Block)|Lapis Lazuli Block]]
 |-
 | height="27px" | [[File:Dispenser.png|25px]] || 23 || 17 || [[Dispenser]] <sup>[[#Furnaces and Dispensers|D]]</sup>
@@ -53,15 +53,32 @@
 |-
 | height="27px" | [[File:Note Block.png|25px]] || 25 || 19 || [[Note Block]]
 |-
-| height="27px" | [[File:Bed.png|25px]] || <span style='color:red'>26</span> || <span style='color:red'>1A</span> || [[Bed]] <sup>[[#Beds|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Bed.png|25px]] || <span style='color:red'>26</span> || <span style='color:red'>1A</span> || [[Bed]] <sup>[[#Beds|D]] [[#Item_IDs|I]]</sup>
 |-
 | height="27px" | [[File:Powered Rail Off.png|25px]] || 27 || 1B || [[Powered Rail]] <sup>[[#Rails|D]]</sup>
 |-
 | height="27px" | [[File:Detector Rail.png|25px]] || 28 || 1C || [[Detector Rail]] <sup>[[#Rails|D]]</sup>
 |-
-| height="27px" | [[File:WebBlock.png|25px]] || <span style='color:red'>30</span> || <span style='color:red'>1E</span> || [[Web]]
+| height="27px" | [[File:Sticky Piston.png|25px]] || 29 || 1D || [[Sticky Piston]] <sup>[[#Piston Body|D]]</sup>
 |-
-| height="27px" | [[File:White Wool.png|25px]] || 35 || 23 || [[Wool]] <sup>[[#Wool|D]]</sup> <sup>[[#Wool|B]]</sup>
+| height="27px" | [[File:WebBlock.png|25px]] || <span style='color:red'>30</span> || <span style='color:red'>1E</span> || [[Cobweb]]
+|-
+| height="27px" | [[File:Tall_Grass.png|25px]] || <span style='color:red'>31</span> || <span style='color:red'>1F</span> || [[Tall Grass]] <sup>[[#Tall Grass|D]]</sup>
+|-
+| height="27px" | [[File:Grid_Shrubs.png|25px]] || <span style='color:red'>32</span> || <span style='color:red'>20</span> || [[Dead Shrubs]]
+|}
+{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
+! Icon !! Dec !! Hex !! Block type
+|-
+| height="27px" | [[File:Piston.png|25px]] || 33 || 21 || [[Piston]] <sup>[[#Piston Body|D]]</sup>
+|-
+| height="27px" |  || <span style='color:red'>34</span> || <span style='color:red'>22</span> || [[Technical blocks#Block 34|Piston Extension]] <sup>[[#Piston Extension|D]]</sup>
+|-
+| height="27px" | [[File:White Wool.png|25px]] || 35 || 23 || [[Wool]] <sup>[[#Wool|D]] [[#Wool|B]]</sup>
+|-
+<!-- Same texture as grass? -->
+| height="27px" |  || <span style='color:red'>36</span> || <span style='color:red'>24</span> || [[Technical blocks#Block 36|Block moved by Piston]]
+<!-- Same texture as grass? -->
 |-
 | height="27px" | [[File:Dandelion.png|25px]] || 37 || 25 || [[Flowers#Dandelion|Dandelion]]
 |-
@@ -70,17 +87,14 @@
 | height="27px" | [[File:Brown Mushroom.png|25px]] || 39 || 27 || [[Mushrooms#Brown Mushroom|Brown Mushroom]]
 |-
 | height="27px" | [[File:Red Mushroom.png|25px]] || 40 || 28 || [[Mushrooms#Red Mushroom|Red Mushroom]]
-|}
-{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
-! Icon !! Dec !! Hex !! Block type
 |-
 | height="27px" | [[File:Gold (Block).png|25px]] || 41 || 29 || [[Gold (Block)|Gold Block]]
 |-
 | height="27px" | [[File:Iron (Block).png|25px]] || 42 || 2A || [[Iron (Block)|Iron Block]]
 |-
-| height="27px" | [[File:Double Stone Slab.png|25px]] || <span style='color:red'>43</span> || <span style='color:red'>2B</span> || Double [[Slabs]] <sup>[[#Slab and Double Slab material|D]]</sup> <sup>[[#Slab and Double Slab material|B]]
+| height="27px" | [[File:Double Stone Slab.png|25px]] || <span style='color:red'>43</span> || <span style='color:red'>2B</span> || Double [[Slabs]] <sup>[[#Slab and Double Slab material|D]] [[#Slab and Double Slab material|B]]
 |-
-| height="27px" | [[File:Stone Slab.png|25px]] || 44 || 2C || [[Slabs]] <sup>[[#Slab and Double Slab material|D]]</sup> <sup>[[#Slab and Double Slab material|B]]
+| height="27px" | [[File:Stone Slab.png|25px]] || 44 || 2C || [[Slabs]] <sup>[[#Slab and Double Slab material|D]] [[#Slab and Double Slab material|B]]
 |-
 | height="27px" | [[File:Brick (Block).png|25px]] || 45 || 2D || [[Brick (Block)|Brick Block]]
 |-
@@ -102,7 +116,7 @@
 |-
 | height="27px" | [[File:Chest.png|25px]] || 54 || 36 || [[Chest]]
 |-
-| height="27px" | [[File:Redstone (Wire).png|25px]] || <span style='color:red'>55</span> || <span style='color:red'>37</span> || [[Redstone (Wire)|Redstone Wire]] <sup>[[#Redstone Wire|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Redstone (Wire).png|25px]] || <span style='color:red'>55</span> || <span style='color:red'>37</span> || [[Redstone (Wire)|Redstone Wire]] <sup>[[#Redstone Wire|D]] [[#Item_IDs|I]]</sup>
 |-
 | height="27px" | [[File:Diamond (Ore).png|25px]] || <span style='color:red'>56</span> || <span style='color:red'>38</span> || [[Diamond (Ore)|Diamond Ore]]
 |-
@@ -118,28 +132,28 @@
 |-
 | height="27px" | [[File:Furnace (Active).png|25px]] || <span style='color:red'>62</span> || <span style='color:red'>3E</span> || Burning Furnace <sup>[[#Furnaces and Dispensers|D]]</sup>
 |-
-| height="27px" | [[File:Sign.png|25px]] || <span style='color:red'>63</span> || <span style='color:red'>3F</span> || [[Sign]] Post <sup>[[#Sign Posts|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Sign.png|25px]] || <span style='color:red'>63</span> || <span style='color:red'>3F</span> || [[Sign]] Post <sup>[[#Sign Posts|D]] [[#Item_IDs|I]]</sup>
 |-
-| height="27px" | [[File:Wooden Door.png|25px]] || <span style='color:red'>64</span> || <span style='color:red'>40</span> || Wooden [[Doors|Door]] <sup>[[#Doors|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Wooden Door.png|25px]] || <span style='color:red'>64</span> || <span style='color:red'>40</span> || Wooden [[Doors|Door]] <sup>[[#Doors|D]] [[#Item_IDs|I]]</sup>
 |-
 | height="27px" | [[File:Ladders.png|25px]] || 65 || 41 || [[Ladders]] <sup>[[#Ladders|D]]</sup>
+|}
+{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
+! Icon !! Dec !! Hex !! Block type
 |-
 | height="27px" | [[File:Rails.png|25px]] || 66 || 42 || [[Rails]] <sup>[[#Rails|D]]</sup>
 |-
 | height="27px" | [[File:Cobblestone Stairs.png|25px]] || 67 || 43 || Cobblestone [[Stairs]] <sup>[[#Stairs|D]]</sup>
 |-
-| height="27px" | [[File:Wall Sign.png|25px]] || <span style='color:red'>68</span> || <span style='color:red'>44</span> || Wall [[Sign]] <sup>[[#Wall Signs|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Wall Sign.png|25px]] || <span style='color:red'>68</span> || <span style='color:red'>44</span> || Wall [[Sign]] <sup>[[#Wall Signs|D]]
 |-
 | height="27px" | [[File:Lever.png|25px]] || 69 || 45 || [[Lever]] <sup>[[#Levers|D]]</sup>
 |-
 | height="27px" | [[File:Stone Pressure Plate.png|25px]] || 70 || 46 || Stone [[Pressure Plates|Pressure Plate]] <sup>[[#Pressure Plates|D]]</sup> 
 |-
-| height="27px" | [[File:Iron Door.png|25px]] || <span style='color:red'>71</span> || <span style='color:red'>47</span> || Iron [[Doors|Door]] <sup>[[#Doors|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Iron Door.png|25px]] || <span style='color:red'>71</span> || <span style='color:red'>47</span> || Iron [[Doors|Door]] <sup>[[#Doors|D]] [[#Item_IDs|I]]</sup>
 |-
 | height="27px" | [[File:Wooden Pressure Plate.png|25px]] || 72 || 48 || Wooden [[Pressure Plates|Pressure Plate]] <sup>[[#Pressure Plates|D]]</sup>
-|}
-{| align="left" style="margin:2px; border: 1px solid silver; text-align: center;"
-! Icon !! Dec !! Hex !! Block type 
 |-
 | height="27px" | [[File:Redstone (Ore).png|25px]] || <span style='color:red'>73</span> || <span style='color:red'>49</span> || [[Redstone (Ore)|Redstone Ore]]
 |-
@@ -161,7 +175,7 @@
 |-
 | height="27px" | [[File:Clay (Block).png|25px]] || 82 || 52 || [[Clay (Block)|Clay Block]]
 |-
-| height="27px" | [[File:Sugar Cane.png|25px]] || <span style='color:red'>83</span> || <span style='color:red'>53</span> || [[Sugar Cane]] <sup>[[#Sugar Canes|D]], [[#Item IDs|I]]</sup>
+| height="27px" | [[File:Sugar Cane.png|25px]] || <span style='color:red'>83</span> || <span style='color:red'>53</span> || [[Sugar Cane]] <sup>[[#Sugar Canes|D]] [[#Item IDs|I]]</sup>
 |-
 | height="27px" | [[File:Jukebox.png|25px]] || 84 || 54 || [[Jukebox]] <sup>[[#Jukebox|D]]</sup>
 |-
@@ -181,10 +195,12 @@
 |-
 | height="27px" | [[File:Cake.png|25px]] || <span style='color:red'>92</span> || <span style='color:red'>5C</span> || [[Cake|Cake Block]] <sup>[[#Cake|D]]</sup>
 |-
-| height="27px" | [[File:Redstone (Repeater, Inactive).png|25px]] || <span style='color:red'>93</span> || <span style='color:red'>5D</span> || [[Redstone (Repeater)|Redstone Repeater]] ("off" state) <sup>[[#Redstone Repeater|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Redstone (Repeater, Inactive).png|25px]] || <span style='color:red'>93</span> || <span style='color:red'>5D</span> || [[Redstone (Repeater)|Redstone Repeater]] ("off" state) <sup>[[#Redstone Repeater|D]] [[#Item_IDs|I]]</sup>
 |-
-| height="27px" | [[File:Redstone (Repeater, Active).png|25px]] || <span style='color:red'>94</span> || <span style='color:red'>5E</span> || Redstone Repeater ("on" state) <sup>[[#Redstone Repeater|D]]</sup> <sup>[[#Item_IDs|I]]</sup>
+| height="27px" | [[File:Redstone (Repeater, Active).png|25px]] || <span style='color:red'>94</span> || <span style='color:red'>5E</span> || Redstone Repeater ("on" state) <sup>[[#Redstone Repeater|D]] [[#Item_IDs|I]]</sup>
 |-
 | height="27px" | [[File:Chest.png|25px]] || <span style='color:green'>95</span> || <span style='color:green'>5F</span> || [[Locked Chest]]
+|-
+| height="27px" | [[File:Trapdoor.png|25px]] || 96 || 60 || [[Trapdoor]] <sup>[[#Trapdoors|D]]</sup>
 |}
 {{-}}

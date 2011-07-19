@@ -1,7 +1,7 @@
 package togos.minecraft.mapgen.world.structure;
 
+import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
-import togos.minecraft.mapgen.world.gen.Material;
 
 public class Stamp extends MiniChunkData
 {
