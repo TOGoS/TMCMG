@@ -165,7 +165,10 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 						
 						columnBuffer.setRGB(0, 0, 1, colHeight, colColors, 0, 1);
 						synchronized( buffer ) {
-							g.drawImage(columnBuffer, i, height-(int)ceil[i], null);
+							g.drawImage(columnBuffer,
+								i, height-(int)ceil[i], i+1, height-(int)floor[i],
+								0, 0, 1, colHeight,
+								null);
 						}
 						
 						// Request a repaint after every few columns of these ~expensive~ layers
