@@ -77,6 +77,8 @@ public class WorldGeneratorMacros
 				new RoundTreeGenerator()));
 		wgMacros.put("tree-types.pine", new ConstantMacroType(
 				new PineTreeGenerator()));
+		wgMacros.put("tree-types.custom", new ConstantMacroType(
+				new CustomTreeGenerator()));
 		wgMacros.put("tree-populator", new BaseMacroType() {
 			protected int getRequiredArgCount() {
 				return -1;

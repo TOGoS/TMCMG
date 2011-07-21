@@ -36,6 +36,8 @@ public class Blocks
 	public static final byte SNOW = 0x4E;
 	public static final byte ICE = 0x4F;
 	
+	public static final byte CACTUS = 0x51;
+	
 	public static final short COAL = 0x0107;
 	public static final short IRON_INGOT = 0x0109;
 	public static final short DIAMOND_SWORD = 0x0114;
