@@ -11,6 +11,9 @@ import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.structure.MiniChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
 
+/**
+ * This thing sucks.
+ */
 public class CustomTreeGenerator implements StampGenerator
 {
 	static class Boundser {
@@ -68,7 +71,7 @@ public class CustomTreeGenerator implements StampGenerator
 			this.bounds = b;
 		}
 		public void plot( PlotCommand cmd ) {
-			bounds.plot( cmd.x, cmd.y, cmd.z, cmd.w, cmd.d, cmd.h );
+			bounds.plot( cmd.x, cmd.y, cmd.z, cmd.w, cmd.h, cmd.d );
 			commands.add(cmd);
 		}
 		public void plotCenteredCuboid( Material m, int x, int y, int z, int w, int h, int d ) {
@@ -85,15 +88,31 @@ public class CustomTreeGenerator implements StampGenerator
 			
 			for( Iterator i=commands.iterator(); i.hasNext(); ) {
 				PlotCommand pc = (PlotCommand)i.next();
-				// TODO: implement spheroids
+				
 				int startX = pc.x - bounds.minX;
 				int startY = pc.y - bounds.minY;
 				int startZ = pc.z - bounds.minZ;
+				
+				double radX = pc.w/2.0; 
+				double radY = pc.h/2.0;
+				double radZ = pc.d/2.0;
+				
 				for( int z=0; z<pc.d; ++z ) {
 					for( int y=0; y<pc.h; ++y ) {
 						for( int x=0; x<pc.w; ++x ) {
-							mcd.setBlock( x+startX, y+startY, z+startZ,
-								pc.material.blockType, pc.material.blockExtraBits );
+							boolean place;
+							if( pc.shape == PlotCommand.SPHEROID ) {
+								double cx = (x-radX)/radX;
+								double cy = (y-radY)/radY;
+								double cz = (z-radZ)/radZ;
+								place = cx*cx + cy*cy + cz*cz < 1;
+							} else {
+								place = true;
+							}
+							if( place ) {
+								mcd.setBlock( x+startX, y+startY, z+startZ,
+									pc.material.blockType, pc.material.blockExtraBits );
+							}
 						}
 					}
 				}
@@ -106,15 +125,17 @@ public class CustomTreeGenerator implements StampGenerator
 	}
 	
 	// Default to the vanilla ones:
-	Material leafMaterial = Materials.byBlockType[Blocks.LOG];
-	Material trunkMaterial = Materials.byBlockType[Blocks.CACTUS];
+	Material leafMaterial = Materials.byBlockType[Blocks.LEAVES];
+	Material trunkMaterial = Materials.byBlockType[Blocks.LOG];
 	
 	int minTrunkLength = 3;
-	int maxTrunkLength = 6;
+	int maxTrunkLength = 10;
 	int minBallSize = 3;
-	int maxBallSize = 5;
-	int minBallCount = 2;
-	int maxBallCount = 6;
+	int maxBallSize = 6;
+	int minBallCount = 6;
+	int maxBallCount = 16;
+	double ballHeightRatio = 0.75;
+	double leafHorizontalDispersionRatio = 0.5;
 	
 	public Stamp generateStamp( int seed ) {
 		Boundser b = new Boundser();
@@ -128,6 +149,18 @@ public class CustomTreeGenerator implements StampGenerator
 		
 		for( int i=0; i<trunkLength; ++i ) {
 			trunkPlotter.plotCenteredCuboid( trunkMaterial, 0, i, 0, 1, 1, 1 );
+		}
+		for( int i=0; i<ballCount; ++i ) {
+			double hang = r.nextDouble()*Math.PI*2;
+			double vang = r.nextDouble()*Math.PI;
+			double dist = Math.random()*(trunkLength*0.5);
+			double by = trunkLength*0.75 + dist * Math.cos(vang);
+			double hdist = dist* Math.sin(vang)*leafHorizontalDispersionRatio;
+			double bx = hdist * Math.sin(hang);
+			double bz = hdist * Math.cos(hang);
+			trunkPlotter.plotCenteredSpheroid( leafMaterial, (int)bx, (int)by, (int)bz, 1, 1, 1 );
+			int ballSize = rand(r, minBallSize, maxBallSize);
+			leafPlotter.plotCenteredSpheroid( leafMaterial, (int)bx, (int)by, (int)bz, ballSize, (int)(ballSize*ballHeightRatio), ballSize );
 		}
 		
 		Stamp s = b.toStamp();

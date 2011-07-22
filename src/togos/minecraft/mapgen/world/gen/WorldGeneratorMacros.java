@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
+import togos.minecraft.mapgen.world.Material;
 import togos.noise2.cache.SoftCache;
 import togos.noise2.function.FunctionDaDaDa_Ia;
 import togos.noise2.function.FunctionDaDa_Da;
@@ -77,8 +79,57 @@ public class WorldGeneratorMacros
 				new RoundTreeGenerator()));
 		wgMacros.put("tree-types.pine", new ConstantMacroType(
 				new PineTreeGenerator()));
+		/*
 		wgMacros.put("tree-types.custom", new ConstantMacroType(
 				new CustomTreeGenerator()));
+				*/
+		wgMacros.put("pillar-generator", new BaseMacroType() {
+			protected int getRequiredArgCount() {
+	            return -1;
+            }
+			protected Material material( Object from, SourceLocation sl ) throws CompileError {
+				if( from instanceof Integer ) return new Material( ((Integer)from).byteValue(), (byte)0 );
+				if( from instanceof Material ) return (Material)from;
+				throw new CompileError("Can't convert "+from.getClass()+" to Material", sl);
+			}
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
+				PillarGenerator pg = new PillarGenerator();
+				if( compiledArgs.length >= 1 ) {
+					pg.mat = material(compiledArgs[0],argNodes[0]);
+				}
+				if( compiledArgs.length >= 4 ) {
+					pg.protoWidth  = FunctionUtil.toDouble( compiledArgs[1], argNodes[1] );
+					pg.protoHeight = FunctionUtil.toDouble( compiledArgs[2], argNodes[2] );
+					pg.protoDepth  = FunctionUtil.toDouble( compiledArgs[3], argNodes[3] );
+				}
+				if( compiledArgs.length >= 6 ) {
+					pg.minScale = FunctionUtil.toDouble( compiledArgs[3], argNodes[3] );
+					pg.maxScale = FunctionUtil.toDouble( compiledArgs[4], argNodes[4] );
+				}
+				if( compiledArgs.length >= 7 ) {
+					pg.buriedness = FunctionUtil.toInt( compiledArgs[6], argNodes[6] );
+				}
+	            return pg;
+            }
+		});
+		wgMacros.put("material", new BaseMacroType() {
+			protected int getRequiredArgCount() {
+	            return -1;
+            }
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
+				byte blockType;
+				byte extraBits = 0;
+				if( compiledArgs.length >= 1 ) {
+					blockType = (byte)FunctionUtil.toInt(compiledArgs[0], argNodes[0]);
+				} else {
+					throw new CompileError("material requires at least one argument", node);
+				}
+				if( compiledArgs.length >= 2 ) {
+					extraBits = (byte)FunctionUtil.toInt(compiledArgs[1], argNodes[1]);
+				}
+	            return new Material(blockType,extraBits);
+            }
+		});
 		wgMacros.put("tree-populator", new BaseMacroType() {
 			protected int getRequiredArgCount() {
 				return -1;

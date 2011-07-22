@@ -14,4 +14,8 @@ public class Material {
 		this.color = color;
 		this.icon = icon;
 	}
+	
+	public Material( byte blockType, byte extraBits ) {
+		this( blockType, extraBits, 0xFFFF00FF, null, null );
+	}
 }
