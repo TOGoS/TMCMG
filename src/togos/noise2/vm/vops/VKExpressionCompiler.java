@@ -18,7 +18,7 @@ public class VKExpressionCompiler
 {
 	protected void findVars( RDFDescription e, Set dest ) {
 		String typeName = e.getTypeName();
-		if( TNLNamespace.X.equals(typeName) || TNLNamespace.Y.equals(typeName) || TNLNamespace.Z.equals(typeName) ) {
+		if( TNLNamespace.X_VAR.equals(typeName) || TNLNamespace.Y_VAR.equals(typeName) || TNLNamespace.Z_VAR.equals(typeName) ) {
 			dest.add(typeName);
 		}
 		for( Iterator i=e.getAttributeEntries().iterator(); i.hasNext(); ) {
@@ -38,17 +38,17 @@ public class VKExpressionCompiler
 		StringWriter sw = new StringWriter();
 		VKOpWriter stvkow = new VKOpWriter(sw);
 		ExpressionToOpCompiler etopc = new ExpressionToOpCompiler(stvkow);
-		if( variables.contains(TNLNamespace.X) ) {
+		if( variables.contains(TNLNamespace.X_VAR) ) {
 			xVar = stvkow.declareVar("double", "x");
-			etopc.bind( new BaseRDFDescription(TNLNamespace.X, Collections.EMPTY_LIST), xVar );
+			etopc.bind( new BaseRDFDescription(TNLNamespace.X_VAR, Collections.EMPTY_LIST), xVar );
 		}
-		if( variables.contains(TNLNamespace.Y) ) {
+		if( variables.contains(TNLNamespace.Y_VAR) ) {
 			yVar = stvkow.declareVar("double", "y");
-			etopc.bind( new BaseRDFDescription(TNLNamespace.Y, Collections.EMPTY_LIST), yVar );
+			etopc.bind( new BaseRDFDescription(TNLNamespace.Y_VAR, Collections.EMPTY_LIST), yVar );
 		}
-		if( variables.contains(TNLNamespace.Z) ) {
+		if( variables.contains(TNLNamespace.Z_VAR) ) {
 			zVar = stvkow.declareVar("double", "z");
-			etopc.bind( new BaseRDFDescription(TNLNamespace.Z, Collections.EMPTY_LIST), zVar );
+			etopc.bind( new BaseRDFDescription(TNLNamespace.Z_VAR, Collections.EMPTY_LIST), zVar );
 		}
 		resVar = etopc.compile( e );
 		

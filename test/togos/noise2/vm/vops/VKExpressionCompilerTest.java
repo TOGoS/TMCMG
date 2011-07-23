@@ -27,8 +27,8 @@ public class VKExpressionCompilerTest extends TestCase
 
 	public void testCompileAddXY() throws CompileError  {
 		RDFDescription add = new RDFExpressionBuilder( TNLNamespace.ADD ).
-			with( TNLNamespace.TERM, new BaseRDFDescription(TNLNamespace.X) ).
-			with( TNLNamespace.TERM, new BaseRDFDescription(TNLNamespace.Y) ).toExpression();
+			with( TNLNamespace.TERM, new BaseRDFDescription(TNLNamespace.X_VAR) ).
+			with( TNLNamespace.TERM, new BaseRDFDescription(TNLNamespace.Y_VAR) ).toExpression();
 		
 		VKExpressionCompiler vkec = new VKExpressionCompiler();
 		LFunctionDaDaDa_Da addFunc = vkec.expressionToFunction( add );

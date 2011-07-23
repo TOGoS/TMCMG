@@ -24,9 +24,9 @@ public class TNLExpressionCompilerTest extends TestCase
 		block = new TNLBlockExpression(BaseSourceLocation.NONE, null);
 		//block.definitions.put("x", TNLSymbolExpression.primitive(TNLNamespace.X));
 		
-		addsm( block, "x", TNLNamespace.X, new String[0] );
-		addsm( block, "y", TNLNamespace.Y, new String[0] );
-		addsm( block, "z", TNLNamespace.Z, new String[0] );
+		addsm( block, "x", TNLNamespace.X_VAR, new String[0] );
+		addsm( block, "y", TNLNamespace.Y_VAR, new String[0] );
+		addsm( block, "z", TNLNamespace.Z_VAR, new String[0] );
 		addsm( block, "+", TNLNamespace.ADD,      TNLNamespace.ADD_ARGS      );
 		addsm( block, "-", TNLNamespace.SUBTRACT, TNLNamespace.SUBTRACT_ARGS );
 		addsm( block, "*", TNLNamespace.MULTIPLY, TNLNamespace.MULTIPLY_ARGS );
@@ -39,7 +39,7 @@ public class TNLExpressionCompilerTest extends TestCase
 		SourceLocation sl = new BaseSourceLocation("uhm", 1, 1);
 		TNLExpression tExp = new TNLSymbolExpression("x", sl, block);
 		RDFDescription rExp = (RDFDescription)comp.compile(tExp);
-		assertEquals( TNLNamespace.X, rExp.getTypeName() );
+		assertEquals( TNLNamespace.X_VAR, rExp.getTypeName() );
 		assertEquals( 0, rExp.getAttributeEntries().size() );
 		assertEquals( sl, rExp.getSourceLocation() );
 	}
@@ -67,8 +67,8 @@ public class TNLExpressionCompilerTest extends TestCase
 		assertEquals( 2, rExp.getAttributeEntries().size() );
 		assertEquals( sl, rExp.getSourceLocation() );
 		ArrayList expectedAttrs = new ArrayList();
-		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFDescription(TNLNamespace.X, nsl)) );
-		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFDescription(TNLNamespace.Y, nsl)) );
+		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFDescription(TNLNamespace.X_VAR, nsl)) );
+		expectedAttrs.add( new SimpleEntry(TNLNamespace.FACTOR, new BaseRDFDescription(TNLNamespace.Y_VAR, nsl)) );
 		assertEquals( expectedAttrs, rExp.getAttributeEntries() );
 	}
 }

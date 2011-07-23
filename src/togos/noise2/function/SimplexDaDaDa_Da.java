@@ -22,6 +22,7 @@ public class SimplexDaDaDa_Da extends ThreeArgDaDaDa_Da
 		double[] x = inX.apply(in).x;
 		double[] y = inY.apply(in).x;
 		double[] z = inZ.apply(in).x;
+		//sn.apply( in.getLength(), x, y, z, out );
 	    for( int i=in.getLength()-1; i>=0; --i ) {
 	    	out[i] = sn.apply((float)x[i], (float)y[i], (float)z[i]);
 	    }
