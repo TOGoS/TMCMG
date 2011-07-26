@@ -66,7 +66,8 @@ public class LayerTerrainGenerator implements WorldGenerator
 							for( int j=0, ty=flo; ty<cei; ++ty, ++j ) {
 								int blockType = colTypes[j];
 								if( blockType != Blocks.NONE ) {
-									cd.setBlock(tx, ty, tz, (byte)blockType);
+									// Temporary solution for extra bits; see note in MaterialDaDaDa_Ia:
+									cd.setBlock(tx, ty, tz, (byte)blockType, (byte)(blockType>>16));
 								}
 							}
 						}

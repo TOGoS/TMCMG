@@ -4,6 +4,7 @@ import togos.lang.SourceLocation;
 import togos.noise2.data.DataDa;
 import togos.noise2.data.DataDaDa;
 import togos.noise2.data.DataDaDaDa;
+import togos.noise2.data.DataIa;
 import togos.noise2.function.AdaptInXZDaDaDa_DaDa_Da;
 import togos.noise2.function.AdaptOutDaDaDa_Da_Ia;
 import togos.noise2.function.AdaptOutDaDa_Da_Ia;
@@ -99,12 +100,28 @@ public class FunctionUtil
 		return out.x[0];
 	}
 
-	public static double getConstantValue( TNLFunctionDaDaDa_Da da ) {
+	public static int getValue( FunctionDaDaDa_Ia da, double x, double y, double z ) {
+		double[] ax = new double[]{x};
+		double[] ay = new double[]{y};
+		double[] az = new double[]{z};
+		DataIa out = da.apply(new DataDaDaDa(ax,ay,az));
+		return out.v[0];
+	}
+
+	public static double getConstantValue( FunctionDaDaDa_Da da ) {
 		return getValue( da, 0, 0, 0 );
 	}
 	
-	public static Constant_Da getConstantFunction( TNLFunctionDaDaDa_Da f ) {
+	public static int getConstantValue( FunctionDaDaDa_Ia da ) {
+		return getValue( da, 0, 0, 0 );
+	}
+
+	public static Constant_Da getConstantFunction( FunctionDaDaDa_Da f ) {
 		return new Constant_Da( getConstantValue(f) );
+	}
+	
+	public static Constant_Ia getConstantFunction( FunctionDaDaDa_Ia f ) {
+		return new Constant_Ia( getConstantValue(f) );
 	}
 	
 	public static TNLFunctionDaDaDa_Da collapseIfConstant( TNLFunctionDaDaDa_Da f ) {

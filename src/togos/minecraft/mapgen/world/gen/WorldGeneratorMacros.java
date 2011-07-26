@@ -8,6 +8,8 @@ import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.Material;
 import togos.noise2.cache.SoftCache;
+import togos.noise2.function.Constant_Ia;
+import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Ia;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.lang.ASTNode;
@@ -88,7 +90,17 @@ public class WorldGeneratorMacros
 	            return -1;
             }
 			protected Material material( Object from, SourceLocation sl ) throws CompileError {
-				if( from instanceof Integer ) return new Material( ((Integer)from).byteValue(), (byte)0 );
+				if( from instanceof FunctionDaDaDa_Ia ) {
+					return MaterialDaDaDa_Ia.intToMaterial(
+						FunctionUtil.getValue( (FunctionDaDaDa_Ia)from, 0, 0, 0 )
+					);
+				}
+				if( from instanceof FunctionDaDaDa_Da ) {
+					return MaterialDaDaDa_Ia.intToMaterial(
+						FunctionUtil.getValue( (FunctionDaDaDa_Ia)from, 0, 0, 0 )
+					);
+				}
+				if( from instanceof Integer ) return MaterialDaDaDa_Ia.intToMaterial( ((Integer)from).intValue() );
 				if( from instanceof Material ) return (Material)from;
 				throw new CompileError("Can't convert "+from.getClass()+" to Material", sl);
 			}
@@ -117,17 +129,17 @@ public class WorldGeneratorMacros
 	            return -1;
             }
 			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
-				byte blockType;
-				byte extraBits = 0;
+				FunctionDaDaDa_Ia blockType;
+				FunctionDaDaDa_Ia extraBits = Constant_Ia.ZERO;
 				if( compiledArgs.length >= 1 ) {
-					blockType = (byte)FunctionUtil.toInt(compiledArgs[0], argNodes[0]);
+					blockType = FunctionUtil.toDaDaDa_Ia(compiledArgs[0], argNodes[0]);
 				} else {
 					throw new CompileError("material requires at least one argument", node);
 				}
 				if( compiledArgs.length >= 2 ) {
-					extraBits = (byte)FunctionUtil.toInt(compiledArgs[1], argNodes[1]);
+					extraBits = FunctionUtil.toDaDaDa_Ia(compiledArgs[1], argNodes[1]);
 				}
-	            return new Material(blockType,extraBits);
+	            return new MaterialDaDaDa_Ia(blockType,extraBits);
             }
 		});
 		wgMacros.put("tree-populator", new BaseMacroType() {
