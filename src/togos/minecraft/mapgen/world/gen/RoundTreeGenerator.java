@@ -4,14 +4,14 @@ import java.util.Random;
 
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.Stamp;
-import togos.noise2.data.DataDaDaDa;
-import togos.noise2.function.AddOutDaDaDa_Da;
-import togos.noise2.function.DistanceDaDaDa_Da;
-import togos.noise2.function.PerlinDaDaDa_Da;
-import togos.noise2.function.ScaleInDaDaDa_Da;
-import togos.noise2.function.ScaleOutDaDaDa_Da;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
-import togos.noise2.function.TranslateInDaDaDa_Da;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
+import togos.noise2.vm.dftree.func.DistanceDaDaDa_Da;
+import togos.noise2.vm.dftree.func.PerlinDaDaDa_Da;
+import togos.noise2.vm.dftree.func.ScaleInDaDaDa_Da;
+import togos.noise2.vm.dftree.func.ScaleOutDaDaDa_Da;
+import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.func.TranslateInDaDaDa_Da;
 
 public class RoundTreeGenerator implements StampGenerator
 {

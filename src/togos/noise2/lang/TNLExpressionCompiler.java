@@ -1,8 +1,8 @@
 package togos.noise2.lang;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
 import togos.lang.SourceLocation;
 import togos.rdf.BaseRDFDescription;

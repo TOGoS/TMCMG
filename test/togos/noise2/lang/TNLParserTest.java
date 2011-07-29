@@ -5,11 +5,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import togos.lang.SourceLocation;
-import togos.noise2.lang.ASTNode;
-import togos.noise2.lang.TNLParser;
-
 import junit.framework.TestCase;
+import togos.lang.SourceLocation;
 
 public class TNLParserTest extends TestCase
 {

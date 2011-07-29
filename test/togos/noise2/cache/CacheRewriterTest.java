@@ -2,22 +2,22 @@ package togos.noise2.cache;
 
 import junit.framework.TestCase;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
-import togos.noise2.function.AddOutDaDaDa_Da;
-import togos.noise2.function.CacheDaDaDa_Da;
-import togos.noise2.function.Constant_Da;
-import togos.noise2.function.IfDaDaDa_Da;
-import togos.noise2.function.LessThanDaDaDa_Da;
-import togos.noise2.function.MultiplyOutDaDaDa_Da;
-import togos.noise2.function.ReduceOutDaDaDa_Da;
-import togos.noise2.function.SimplexDaDaDa_Da;
-import togos.noise2.function.X;
-import togos.noise2.function.Y;
-import togos.noise2.function.Z;
 import togos.noise2.lang.Expression;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.lang.TNLCompiler;
 import togos.noise2.rewrite.CacheRewriter;
 import togos.noise2.rewrite.ConstantFolder;
+import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
+import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
+import togos.noise2.vm.dftree.func.Constant_Da;
+import togos.noise2.vm.dftree.func.IfDaDaDa_Da;
+import togos.noise2.vm.dftree.func.LessThanDaDaDa_Da;
+import togos.noise2.vm.dftree.func.MultiplyOutDaDaDa_Da;
+import togos.noise2.vm.dftree.func.ReduceOutDaDaDa_Da;
+import togos.noise2.vm.dftree.func.SimplexDaDaDa_Da;
+import togos.noise2.vm.dftree.func.X;
+import togos.noise2.vm.dftree.func.Y;
+import togos.noise2.vm.dftree.func.Z;
 
 public class CacheRewriterTest extends TestCase
 {

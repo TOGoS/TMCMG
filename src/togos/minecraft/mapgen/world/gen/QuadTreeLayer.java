@@ -11,16 +11,16 @@ import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.LayerUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise2.data.DataDa;
-import togos.noise2.data.DataDaDa;
-import togos.noise2.data.DataDaDaDa;
-import togos.noise2.data.DataDaIa;
-import togos.noise2.data.DataIa;
-import togos.noise2.function.Constant_Da;
-import togos.noise2.function.Constant_Ia;
-import togos.noise2.function.FunctionDaDaDa_Ia;
-import togos.noise2.function.FunctionDaDa_Da;
-import togos.noise2.function.FunctionDaDa_DaIa;
+import togos.noise2.vm.dftree.data.DataDa;
+import togos.noise2.vm.dftree.data.DataDaDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.data.DataDaIa;
+import togos.noise2.vm.dftree.data.DataIa;
+import togos.noise2.vm.dftree.func.Constant_Da;
+import togos.noise2.vm.dftree.func.Constant_Ia;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
+import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
+import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
 
 public class QuadTreeLayer implements ChunkMunger
 {

@@ -7,10 +7,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import togos.noise2.function.LFunctionDaDaDa_Da;
 import togos.noise2.lang.CompileError;
 import togos.noise2.rdf.TNLNamespace;
 import togos.noise2.vm.ExpressionToOpCompiler;
+import togos.noise2.vm.dftree.func.LFunctionDaDaDa_Da;
 import togos.rdf.BaseRDFDescription;
 import togos.rdf.RDFDescription;
 

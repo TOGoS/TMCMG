@@ -4,11 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import togos.noise2.lang.CompileError;
-import togos.noise2.vm.vops.STVKScriptCompiler;
-import togos.noise2.vm.vops.STVectorKernel;
-
 import junit.framework.TestCase;
+import togos.noise2.lang.CompileError;
 
 public class STVectorKernelTest extends TestCase
 {

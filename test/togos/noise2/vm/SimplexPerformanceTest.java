@@ -1,9 +1,9 @@
 package togos.noise2.vm;
 
-import togos.noise2.data.DataDaDaDa;
-import togos.noise2.function.SimplexDaDaDa_Da;
-import togos.noise2.function.SimplexNoise;
-import togos.noise2.function.SimplexNoise2;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.func.SimplexDaDaDa_Da;
+import togos.noise2.vm.dftree.func.SimplexNoise;
+import togos.noise2.vm.dftree.func.SimplexNoise2;
 
 public class SimplexPerformanceTest
 {

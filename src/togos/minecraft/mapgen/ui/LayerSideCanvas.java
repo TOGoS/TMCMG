@@ -19,12 +19,12 @@ import java.util.List;
 
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.LayerUtil;
 import togos.minecraft.mapgen.world.Materials;
@@ -33,11 +33,11 @@ import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.noise2.data.DataDaDa;
-import togos.noise2.data.DataDaDaDa;
 import togos.noise2.lang.FunctionUtil;
 import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
+import togos.noise2.vm.dftree.data.DataDaDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
 
 public class LayerSideCanvas extends WorldExplorerViewCanvas
 {

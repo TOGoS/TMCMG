@@ -1,21 +1,21 @@
 package togos.noise2.lang;
 
 import togos.lang.SourceLocation;
-import togos.noise2.data.DataDa;
-import togos.noise2.data.DataDaDa;
-import togos.noise2.data.DataDaDaDa;
-import togos.noise2.data.DataIa;
-import togos.noise2.function.AdaptInXZDaDaDa_DaDa_Da;
-import togos.noise2.function.AdaptOutDaDaDa_Da_Ia;
-import togos.noise2.function.AdaptOutDaDa_Da_Ia;
-import togos.noise2.function.Constant_Da;
-import togos.noise2.function.Constant_Ia;
-import togos.noise2.function.FunctionDaDaDa_Da;
-import togos.noise2.function.FunctionDaDaDa_Ia;
-import togos.noise2.function.FunctionDaDa_Da;
-import togos.noise2.function.FunctionDaDa_Ia;
-import togos.noise2.function.PossiblyConstant;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.data.DataDa;
+import togos.noise2.vm.dftree.data.DataDaDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.data.DataIa;
+import togos.noise2.vm.dftree.func.AdaptInXZDaDaDa_DaDa_Da;
+import togos.noise2.vm.dftree.func.AdaptOutDaDaDa_Da_Ia;
+import togos.noise2.vm.dftree.func.AdaptOutDaDa_Da_Ia;
+import togos.noise2.vm.dftree.func.Constant_Da;
+import togos.noise2.vm.dftree.func.Constant_Ia;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
+import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
+import togos.noise2.vm.dftree.func.FunctionDaDa_Ia;
+import togos.noise2.vm.dftree.func.PossiblyConstant;
+import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
 
 public class FunctionUtil
 {

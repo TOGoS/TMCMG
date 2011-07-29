@@ -6,7 +6,7 @@ import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.MiniChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
 import togos.minecraft.mapgen.world.structure.TileEntityData;
-import togos.noise2.data.DataDaDa;
+import togos.noise2.vm.dftree.data.DataDaDa;
 
 public class ChunkUtil
 {

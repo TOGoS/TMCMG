@@ -9,8 +9,6 @@ package togos.minecraft.mapgen.world;
 
 import java.util.HashMap;
 
-import togos.minecraft.mapgen.world.Material;
-
 public class Materials
 {
 	static final int BLOCK_TYPE_MASK = 0xFF;

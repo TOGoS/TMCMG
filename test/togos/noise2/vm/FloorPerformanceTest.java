@@ -1,7 +1,7 @@
 package togos.noise2.vm;
 
-import togos.noise2.function.SimplexDaDaDa_Da;
-import togos.noise2.function.SimplexNoise;
+import togos.noise2.vm.dftree.func.SimplexDaDaDa_Da;
+import togos.noise2.vm.dftree.func.SimplexNoise;
 
 public class FloorPerformanceTest
 {

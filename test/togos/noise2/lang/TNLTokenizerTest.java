@@ -5,8 +5,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import togos.noise2.lang.TNLTokenizer;
-
 import junit.framework.TestCase;
 
 public class TNLTokenizerTest extends TestCase

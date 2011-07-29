@@ -4,9 +4,6 @@ import java.io.StringWriter;
 
 import junit.framework.TestCase;
 import togos.noise2.rdf.TNLNamespace;
-import togos.noise2.vm.vops.STVKScriptCompiler;
-import togos.noise2.vm.vops.STVectorKernel;
-import togos.noise2.vm.vops.VKOpWriter;
 
 public class VKOpWriterTest extends TestCase
 {

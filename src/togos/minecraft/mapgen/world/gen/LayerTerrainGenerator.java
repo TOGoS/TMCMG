@@ -10,10 +10,10 @@ import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.LayerUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise2.data.DataDaDa;
-import togos.noise2.data.DataDaDaDa;
-import togos.noise2.data.DataDaIa;
-import togos.noise2.function.FunctionDaDa_DaIa;
+import togos.noise2.vm.dftree.data.DataDaDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.data.DataDaIa;
+import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
 
 public class LayerTerrainGenerator implements WorldGenerator
 {	

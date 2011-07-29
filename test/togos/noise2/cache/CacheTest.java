@@ -1,8 +1,7 @@
 package togos.noise2.cache;
 
-import togos.noise2.cache.HardCache;
-import togos.noise2.function.FunctionO_O;
 import junit.framework.TestCase;
+import togos.noise2.vm.dftree.func.FunctionO_O;
 
 public class CacheTest extends TestCase
 {

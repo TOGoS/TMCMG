@@ -26,10 +26,10 @@ import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.cache.SoftCache;
-import togos.noise2.data.DataDaDa;
-import togos.noise2.function.FunctionDaDa_Ia;
 import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
+import togos.noise2.vm.dftree.data.DataDaDa;
+import togos.noise2.vm.dftree.func.FunctionDaDa_Ia;
 
 public class NoiseCanvas extends WorldExplorerViewCanvas
 {

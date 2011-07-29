@@ -2,8 +2,8 @@ package togos.noise2.vm.vops;
 
 import java.io.IOException;
 
-import togos.noise2.function.LFunctionDaDaDa_Da;
 import togos.noise2.lang.CompileError;
+import togos.noise2.vm.dftree.func.LFunctionDaDaDa_Da;
 
 public class VectorKernel implements LFunctionDaDaDa_Da
 {

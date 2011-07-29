@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import togos.noise2.cache.Cache;
-import togos.noise2.function.CacheDaDaDa_Da;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.lang.Expression;
+import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
+import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
 
 /**
  * Wraps common expressions in cache() thingers

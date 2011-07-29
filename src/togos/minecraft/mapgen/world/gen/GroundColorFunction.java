@@ -1,11 +1,11 @@
 package togos.minecraft.mapgen.world.gen;
 
 import togos.minecraft.mapgen.world.Materials;
-import togos.noise2.data.DataDaDa;
-import togos.noise2.data.DataDaIa;
-import togos.noise2.data.DataIa;
-import togos.noise2.function.FunctionDaDa_DaIa;
-import togos.noise2.function.FunctionDaDa_Ia;
+import togos.noise2.vm.dftree.data.DataDaDa;
+import togos.noise2.vm.dftree.data.DataDaIa;
+import togos.noise2.vm.dftree.data.DataIa;
+import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
+import togos.noise2.vm.dftree.func.FunctionDaDa_Ia;
 
 public class GroundColorFunction implements FunctionDaDa_Ia
 {

@@ -1,8 +1,8 @@
 package togos.noise2.lang;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
 import togos.lang.SourceLocation;
 

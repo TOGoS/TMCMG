@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import togos.jobkernel.mf.ActiveFunction;
 import togos.jobkernel.mf.Active;
+import togos.jobkernel.mf.ActiveFunction;
 import togos.jobkernel.uri.ActiveRef;
 import togos.jobkernel.uri.ActiveRequestBuilder;
 import togos.jobkernel.uri.BaseRef;

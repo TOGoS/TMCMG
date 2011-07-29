@@ -1,10 +1,10 @@
 package togos.noise2.rewrite;
 
-import togos.noise2.function.FunctionDaDaDa_Da;
-import togos.noise2.function.FunctionDaDaDa_Ia;
-import togos.noise2.function.PossiblyConstant;
 import togos.noise2.lang.Expression;
 import togos.noise2.lang.FunctionUtil;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
+import togos.noise2.vm.dftree.func.PossiblyConstant;
 
 public class ConstantFolder implements ExpressionRewriter
 {

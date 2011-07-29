@@ -8,10 +8,6 @@ import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.Material;
 import togos.noise2.cache.SoftCache;
-import togos.noise2.function.Constant_Ia;
-import togos.noise2.function.FunctionDaDaDa_Da;
-import togos.noise2.function.FunctionDaDaDa_Ia;
-import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.FunctionUtil;
@@ -21,6 +17,10 @@ import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.MacroType;
 import togos.noise2.rewrite.CacheRewriter;
 import togos.noise2.rewrite.ConstantFolder;
+import togos.noise2.vm.dftree.func.Constant_Ia;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
+import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
 
 public class WorldGeneratorMacros
 {
