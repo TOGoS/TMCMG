@@ -8,12 +8,12 @@ import togos.noise2.function.AdaptInXZDaDaDa_DaDa_Da;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_DaIa;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.ScaleOutDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.TerrainScaleDaDaDa_Da;
 
 public class SimpleWorldGenerator implements WorldGenerator

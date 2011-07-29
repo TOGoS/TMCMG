@@ -3,11 +3,10 @@ package togos.noise2.lang;
 import junit.framework.TestCase;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.Constant_Da;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.MaxOutDaDaDa_Da;
 import togos.noise2.function.MultiplyOutDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
-import togos.noise2.lang.TNLCompiler;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.lang.macro.ConstantMacroType;
 import togos.noise2.lang.macro.DaDaDa_DaArrayArgMacroType;
 

@@ -7,10 +7,10 @@ import togos.minecraft.mapgen.world.structure.Stamp;
 import togos.noise2.data.DataDaDaDa;
 import togos.noise2.function.AddOutDaDaDa_Da;
 import togos.noise2.function.DistanceDaDaDa_Da;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.PerlinDaDaDa_Da;
 import togos.noise2.function.ScaleInDaDaDa_Da;
 import togos.noise2.function.ScaleOutDaDaDa_Da;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.TranslateInDaDaDa_Da;
 
 public class RoundTreeGenerator implements StampGenerator

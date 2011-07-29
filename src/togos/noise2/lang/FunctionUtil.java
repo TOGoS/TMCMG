@@ -12,10 +12,10 @@ import togos.noise2.function.Constant_Da;
 import togos.noise2.function.Constant_Ia;
 import togos.noise2.function.FunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDaDa_Ia;
-import togos.noise2.function.PossiblyConstant;
-import togos.noise2.function.TNLFunctionDaDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Da;
 import togos.noise2.function.FunctionDaDa_Ia;
+import togos.noise2.function.PossiblyConstant;
+import togos.noise2.function.TNLFunctionDaDaDa_Da;
 
 public class FunctionUtil
 {
