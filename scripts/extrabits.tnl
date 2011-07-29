@@ -3,7 +3,7 @@ simple-dirt-height = fractal( 2, 8, 2, 3, 2, 1, perlin );
 layered-terrain(
 	layer( materials.water, 0, 64 ),
 	# This will make birch logs all over:
-	layer( material( materials.log, 2 ), 0, 64 + simple-dirt-height ),    
+	layer( material( materials.log, 2 ), 0, 64 + simple-dirt-height ),
 	layer( materials.stone, 0, 60 + simple-dirt-height ),
 	layer( materials.bedrock, 0, 1 ),
 	grassifier,
