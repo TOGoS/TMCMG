@@ -41,7 +41,7 @@ public class FunctionUtil
 			throw new CompileError("Can't convert "+r.getClass()+" to FunctionDaDaDa_Da", sloc);
 		}
 	}
-
+	
 	public static FunctionDaDa_Ia toDaDa_Ia( Object r, SourceLocation sloc ) throws CompileError {
 		if( r instanceof FunctionDaDaDa_Da ) {
 			r = new AdaptInXZDaDaDa_DaDa_Da( (FunctionDaDaDa_Da)r );

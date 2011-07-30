@@ -14,6 +14,10 @@ import togos.noise2.lang.ScriptError;
 import togos.noise2.lang.TNLTokenizer;
 import togos.noise2.lang.Token;
 import togos.noise2.vm.Compiler;
+import togos.noise2.vm.dftree.data.DataDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.func.LFunctionDaDaDa_Da;
 import togos.noise2.vm.dftree.lang.macro.MacroType;
 
 public class TNLCompiler implements Compiler
@@ -82,6 +86,26 @@ public class TNLCompiler implements Compiler
 	}
 
 	public Object compile( String source, SourceLocation loc, String scriptId, Class preferredType ) throws ScriptError {
-		return compile( source, loc.getSourceFilename() );
+		Object cv = compile( source, loc.getSourceFilename() );
+		
+		if( preferredType.isAssignableFrom(cv.getClass()) ) {
+			return cv;
+		}
+		
+		if( preferredType == LFunctionDaDaDa_Da.class ) {
+			if( cv instanceof FunctionDaDaDa_Da ) {
+				final FunctionDaDaDa_Da dddd = (FunctionDaDaDa_Da)cv;
+				return new LFunctionDaDaDa_Da() {
+					public void apply( int vectorSize, double[] x, double[] y, double[] z, double[] dest ) {
+						DataDa d = dddd.apply( new DataDaDaDa(x,y,z) );
+						for( int i=0; i<vectorSize; ++i ) {
+							dest[i] = d.x[i];
+						}
+                    }
+				};
+			}
+		}
+		
+		return cv;
     }
 }
