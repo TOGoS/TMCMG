@@ -3,12 +3,12 @@ package togos.noise2.vm;
 import java.io.IOException;
 
 import togos.noise2.lang.ScriptError;
-import togos.noise2.lang.TNLCompiler;
-import togos.noise2.lang.macro.LanguageMacros;
-import togos.noise2.lang.macro.NoiseMacros;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.macro.LanguageMacros;
+import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 import togos.noise2.vm.vops.STVKScriptCompiler;
 import togos.noise2.vm.vops.STVectorKernel;
 

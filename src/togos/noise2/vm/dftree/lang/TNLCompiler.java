@@ -1,4 +1,4 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -7,9 +7,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import togos.noise2.lang.macro.MacroType;
+import togos.lang.SourceLocation;
+import togos.noise2.lang.CompileError;
+import togos.noise2.lang.ParseError;
+import togos.noise2.lang.ScriptError;
+import togos.noise2.lang.TNLTokenizer;
+import togos.noise2.lang.Token;
+import togos.noise2.vm.Compiler;
+import togos.noise2.vm.dftree.lang.macro.MacroType;
 
-public class TNLCompiler
+public class TNLCompiler implements Compiler
 {
 	public Map macroTypes = new HashMap();
 	
@@ -73,4 +80,8 @@ public class TNLCompiler
 	public Object compile( String source ) throws ParseError, CompileError {
 		return compile( source, "(unnamed)" );
 	}
+
+	public Object compile( String source, SourceLocation loc, String scriptId, Class preferredType ) throws ScriptError {
+		return compile( source, loc.getSourceFilename() );
+    }
 }

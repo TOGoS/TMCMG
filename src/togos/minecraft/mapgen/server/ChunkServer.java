@@ -32,7 +32,7 @@ import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise2.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 
 public class ChunkServer

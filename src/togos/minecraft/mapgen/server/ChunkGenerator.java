@@ -17,7 +17,7 @@ import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
-import togos.noise2.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 public class ChunkGenerator
 {

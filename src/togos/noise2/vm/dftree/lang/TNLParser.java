@@ -1,10 +1,15 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import togos.lang.SourceLocation;
+import togos.noise2.lang.BaseSourceLocation;
+import togos.noise2.lang.Operators;
+import togos.noise2.lang.ParseError;
+import togos.noise2.lang.TNLTokenizer;
+import togos.noise2.lang.Token;
 
 public class TNLParser
 {

@@ -1,10 +1,10 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.lang.Expression;
 
 /**
  * So called because the outer data's X and Y are mapped to the inner data's X and Z 

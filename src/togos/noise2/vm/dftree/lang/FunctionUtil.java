@@ -1,6 +1,7 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import togos.lang.SourceLocation;
+import togos.noise2.lang.CompileError;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;

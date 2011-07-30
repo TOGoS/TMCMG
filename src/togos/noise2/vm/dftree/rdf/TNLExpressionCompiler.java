@@ -1,10 +1,16 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.rdf;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import togos.lang.SourceLocation;
+import togos.noise2.lang.CompileError;
+import togos.noise2.lang.TNLApplyExpression;
+import togos.noise2.lang.TNLBlockExpression;
+import togos.noise2.lang.TNLExpression;
+import togos.noise2.lang.TNLLiteralExpression;
+import togos.noise2.lang.TNLSymbolExpression;
 import togos.rdf.BaseRDFDescription;
 import togos.rdf.BaseRDFLiteral;
 import togos.rdf.RDFExpression;

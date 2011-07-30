@@ -1,14 +1,18 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import togos.noise2.lang.macro.LanguageMacros;
-import togos.noise2.lang.macro.NoiseMacros;
+import togos.noise2.lang.CompileError;
+import togos.noise2.lang.ScriptError;
 import togos.noise2.rewrite.ConstantFolder;
 import togos.noise2.vm.dftree.func.Constant_Da;
 import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.macro.LanguageMacros;
+import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
 public class UserMacroTest extends TestCase
 {

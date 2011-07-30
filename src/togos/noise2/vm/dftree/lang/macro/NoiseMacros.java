@@ -1,11 +1,9 @@
-package togos.noise2.lang.macro;
+package togos.noise2.vm.dftree.lang.macro;
 
 import java.util.HashMap;
 
 import togos.noise2.cache.SoftCache;
-import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
-import togos.noise2.lang.FunctionUtil;
 import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.AndOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.ArcTanDaDaDa_Da;
@@ -38,6 +36,8 @@ import togos.noise2.vm.dftree.func.TranslateInDaDaDa_Da;
 import togos.noise2.vm.dftree.func.X;
 import togos.noise2.vm.dftree.func.Y;
 import togos.noise2.vm.dftree.func.Z;
+import togos.noise2.vm.dftree.lang.ASTNode;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 public class NoiseMacros
 {

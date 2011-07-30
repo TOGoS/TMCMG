@@ -33,11 +33,11 @@ import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.noise2.lang.FunctionUtil;
 import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 public class LayerSideCanvas extends WorldExplorerViewCanvas
 {

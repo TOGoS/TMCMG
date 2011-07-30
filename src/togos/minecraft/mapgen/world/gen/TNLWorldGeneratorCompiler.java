@@ -2,10 +2,10 @@ package togos.minecraft.mapgen.world.gen;
 
 import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
-import togos.noise2.lang.TNLCompiler;
-import togos.noise2.lang.macro.ConstantMacroType;
-import togos.noise2.lang.macro.LanguageMacros;
-import togos.noise2.lang.macro.NoiseMacros;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.macro.ConstantMacroType;
+import togos.noise2.vm.dftree.lang.macro.LanguageMacros;
+import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
 public class TNLWorldGeneratorCompiler extends TNLCompiler
 {

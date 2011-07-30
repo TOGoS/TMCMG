@@ -1,8 +1,8 @@
 package togos.noise2.vm.dftree.func;
 
 import junit.framework.TestCase;
-import togos.noise2.lang.TNLCompiler;
-import togos.noise2.lang.macro.NoiseMacros;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
 public abstract class NoiseFunctionTest extends TestCase
 {

@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.ParseError;
 import togos.noise2.lang.ParseUtil;
-import togos.noise2.lang.TNLCompiler;
-import togos.noise2.lang.TNLParser;
 import togos.noise2.lang.TNLTokenizer;
+import togos.noise2.vm.dftree.lang.ASTNode;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.TNLParser;
 
 public class ScriptUtil
 {

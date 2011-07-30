@@ -1,10 +1,10 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataIa;
+import togos.noise2.vm.dftree.lang.Expression;
 
 public class AdaptOutDaDa_Da_Ia implements FunctionDaDa_Ia, Expression
 {

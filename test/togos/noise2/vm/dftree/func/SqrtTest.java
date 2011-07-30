@@ -1,10 +1,10 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.noise2.lang.FunctionUtil;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.rewrite.ConstantFolder;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 public class SqrtTest extends NoiseFunctionTest
 {

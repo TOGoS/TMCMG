@@ -3,10 +3,10 @@ package togos.noise2.vm.dftree.func;
 import togos.minecraft.mapgen.server.UriUtil;
 import togos.noise2.DigestUtil;
 import togos.noise2.cache.Cache;
-import togos.noise2.lang.FunctionUtil;
 import togos.noise2.rewrite.ExpressionRewriter;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {

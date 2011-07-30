@@ -4,12 +4,12 @@ import java.util.HashMap;
 
 public class Operators
 {
-	static HashMap PRECEDENCE = new HashMap();
+	public final static HashMap PRECEDENCE = new HashMap();
 	
-	final static int COMMA_PRECEDENCE;
-	final static int AT_PRECEDENCE;
-	final static int EQUALS_PRECEDENCE;
-	static int APPLY_PRECEDENCE = 70;
+	public final static int COMMA_PRECEDENCE;
+	public final static int AT_PRECEDENCE;
+	public final static int EQUALS_PRECEDENCE;
+	public final static int APPLY_PRECEDENCE = 70;
 	
 	/* 
 	 * Trying to jive as much as possible with

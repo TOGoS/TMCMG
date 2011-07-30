@@ -1,6 +1,6 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.noise2.lang.Expression;
+import togos.noise2.vm.dftree.lang.Expression;
 
 public abstract class TNLFunctionDaDaDa_Da
 	implements FunctionDaDaDa_Da, Expression, PossiblyConstant

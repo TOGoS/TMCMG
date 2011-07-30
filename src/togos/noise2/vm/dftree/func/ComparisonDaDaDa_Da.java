@@ -1,6 +1,6 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.noise2.lang.FunctionUtil;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 
 public abstract class ComparisonDaDaDa_Da extends TNLFunctionDaDaDa_Da

@@ -1,4 +1,4 @@
-package togos.noise2.lang;
+package togos.noise2.vm.rdf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import togos.lang.SourceLocation;
+import togos.noise2.lang.BaseSourceLocation;
+import togos.noise2.lang.CompileError;
+import togos.noise2.lang.TNLApplyExpression;
+import togos.noise2.lang.TNLBlockExpression;
+import togos.noise2.lang.TNLExpression;
+import togos.noise2.lang.TNLSymbolExpression;
 import togos.noise2.rdf.TNLNamespace;
+import togos.noise2.vm.dftree.rdf.TNLExpressionCompiler;
 import togos.rdf.BaseRDFDescription;
 import togos.rdf.RDFDescription;
 import togos.rdf.SimpleEntry;

@@ -1,4 +1,4 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -7,6 +7,11 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 import togos.lang.SourceLocation;
+import togos.noise2.lang.ParseError;
+import togos.noise2.lang.TNLTokenizer;
+import togos.noise2.lang.Token;
+import togos.noise2.vm.dftree.lang.ASTNode;
+import togos.noise2.vm.dftree.lang.TNLParser;
 
 public class TNLParserTest extends TestCase
 {

@@ -1,4 +1,4 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import java.util.Collections;
 import java.util.List;

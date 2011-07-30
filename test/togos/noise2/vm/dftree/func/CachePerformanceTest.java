@@ -1,13 +1,13 @@
-package togos.noise2.cache;
+package togos.noise2.vm.dftree.func;
 
 import java.text.DecimalFormat;
 import java.util.Random;
 
 import togos.noise2.lang.ScriptError;
-import togos.noise2.lang.TNLCompiler;
-import togos.noise2.lang.macro.NoiseMacros;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
 public class CachePerformanceTest
 {

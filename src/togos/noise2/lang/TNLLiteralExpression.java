@@ -4,7 +4,7 @@ import togos.lang.SourceLocation;
 
 public class TNLLiteralExpression extends TNLExpression
 {
-	Object value;
+	public final Object value;
 	
 	public TNLLiteralExpression( Object value, SourceLocation sloc, TNLExpression parent ) {
 		super( sloc, parent );

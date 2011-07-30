@@ -1,10 +1,10 @@
-package togos.noise2.lang.macro;
+package togos.noise2.vm.dftree.lang.macro;
 
 import java.lang.reflect.InvocationTargetException;
 
-import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
-import togos.noise2.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.ASTNode;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 public abstract class FixedArgMacroType implements MacroType
 {

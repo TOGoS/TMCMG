@@ -1,10 +1,10 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.noise2.lang.Expression;
 import togos.noise2.rewrite.ExpressionRewriter;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.data.DataIa;
+import togos.noise2.vm.dftree.lang.Expression;
 
 public class Constant_Ia implements FunctionDaDa_Ia, FunctionDaDaDa_Ia, Expression, PossiblyConstant
 {

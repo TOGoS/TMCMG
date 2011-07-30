@@ -1,12 +1,12 @@
-package togos.noise2.lang.macro;
+package togos.noise2.vm.dftree.lang.macro;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.ParseUtil;
-import togos.noise2.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.ASTNode;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 class CurryMacroType implements MacroType
 {

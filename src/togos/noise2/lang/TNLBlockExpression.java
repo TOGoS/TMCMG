@@ -8,8 +8,8 @@ import togos.lang.SourceLocation;
 
 public class TNLBlockExpression extends TNLExpression
 {
-	Map definitions = new HashMap();
-	TNLExpression value;
+	public Map definitions = new HashMap();
+	public TNLExpression value;
 	
 	public TNLBlockExpression( SourceLocation sloc, TNLExpression parent ) {
 		super( sloc, parent );

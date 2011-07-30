@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.Random;
 
 import togos.minecraft.mapgen.world.structure.Stamp;
-import togos.noise2.lang.FunctionUtil;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaIa;
 import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
 import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 public class GroundStampPopulator implements StampPopulator
 {

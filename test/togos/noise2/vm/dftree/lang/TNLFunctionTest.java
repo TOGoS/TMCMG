@@ -1,11 +1,14 @@
-package togos.noise2.lang;
+package togos.noise2.vm.dftree.lang;
 
 import junit.framework.TestCase;
 import togos.lang.SourceLocation;
-import togos.noise2.lang.macro.ConstantMacroType;
-import togos.noise2.lang.macro.NoiseMacros;
+import togos.noise2.lang.ScriptError;
 import togos.noise2.rewrite.ConstantFolder;
 import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
+import togos.noise2.vm.dftree.lang.FunctionUtil;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.macro.ConstantMacroType;
+import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
 public class TNLFunctionTest extends TestCase
 {

@@ -1,10 +1,9 @@
-package togos.noise2.cache;
+package togos.noise2.vm.dftree.lang;
 
 import junit.framework.TestCase;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
-import togos.noise2.lang.Expression;
+import togos.noise2.cache.SoftCache;
 import togos.noise2.lang.ScriptError;
-import togos.noise2.lang.TNLCompiler;
 import togos.noise2.rewrite.CacheRewriter;
 import togos.noise2.rewrite.ConstantFolder;
 import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
@@ -18,6 +17,8 @@ import togos.noise2.vm.dftree.func.SimplexDaDaDa_Da;
 import togos.noise2.vm.dftree.func.X;
 import togos.noise2.vm.dftree.func.Y;
 import togos.noise2.vm.dftree.func.Z;
+import togos.noise2.vm.dftree.lang.Expression;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 public class CacheRewriterTest extends TestCase
 {

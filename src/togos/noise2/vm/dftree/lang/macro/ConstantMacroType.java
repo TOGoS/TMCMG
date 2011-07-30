@@ -1,8 +1,8 @@
-package togos.noise2.lang.macro;
+package togos.noise2.vm.dftree.lang.macro;
 
-import togos.noise2.lang.ASTNode;
 import togos.noise2.lang.CompileError;
-import togos.noise2.lang.TNLCompiler;
+import togos.noise2.vm.dftree.lang.ASTNode;
+import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 /**
  * A macro type that takes no arguments and always expands to the same
