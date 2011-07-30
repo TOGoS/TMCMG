@@ -14,8 +14,8 @@ import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
 public class VMArithmeticPerformanceTest
 {
-	int outerIterations = 10;
-	int innerIterations = 1000;
+	int outerIterations = 20;
+	int innerIterations = 500;
 	int vectorSize = 256;
 	
 	public Map scripts = new HashMap();
@@ -96,6 +96,7 @@ public class VMArithmeticPerformanceTest
 		t.compilers.put("dftree", dftreeCompiler);
 		
 		t.scripts.put("arithmetic", "(x * y) + (y * z) - (x / z)");
+		t.scripts.put("arithmetic2", "(x ** y) + atan(y * z) - sqrt(x / z)");
 		
 		t.run();
 		ArrayList runs = new ArrayList(t.compileTimes.keySet());

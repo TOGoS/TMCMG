@@ -12,6 +12,7 @@ import togos.noise2.vm.dftree.func.ClampOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.CosDaDaDa_Da;
 import togos.noise2.vm.dftree.func.DivideOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.EqualDaDaDa_Da;
+import togos.noise2.vm.dftree.func.ExponentiateOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.FractalDaDaDa_Da;
 import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
 import togos.noise2.vm.dftree.func.GreaterThanDaDaDa_Da;
@@ -107,6 +108,7 @@ public class NoiseMacros
 		// Numeric arithmetic
 		add("+", dddaamt(AddOutDaDaDa_Da.class));
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
+		add("**", dddaamt(ExponentiateOutDaDaDa_Da.class));
 		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
 		
