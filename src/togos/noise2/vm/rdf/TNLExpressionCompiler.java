@@ -1,4 +1,4 @@
-package togos.noise2.vm.dftree.rdf;
+package togos.noise2.vm.rdf;
 
 import java.util.ArrayList;
 import java.util.Collections;

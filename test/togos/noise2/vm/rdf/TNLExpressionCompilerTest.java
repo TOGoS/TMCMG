@@ -13,7 +13,6 @@ import togos.noise2.lang.TNLBlockExpression;
 import togos.noise2.lang.TNLExpression;
 import togos.noise2.lang.TNLSymbolExpression;
 import togos.noise2.rdf.TNLNamespace;
-import togos.noise2.vm.dftree.rdf.TNLExpressionCompiler;
 import togos.rdf.BaseRDFDescription;
 import togos.rdf.RDFDescription;
 import togos.rdf.SimpleEntry;
