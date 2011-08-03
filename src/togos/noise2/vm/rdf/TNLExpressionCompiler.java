@@ -1,16 +1,24 @@
 package togos.noise2.vm.rdf;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import togos.lang.SourceLocation;
+import togos.noise2.lang.BaseSourceLocation;
 import togos.noise2.lang.CompileError;
+import togos.noise2.lang.ParseError;
 import togos.noise2.lang.TNLApplyExpression;
 import togos.noise2.lang.TNLBlockExpression;
 import togos.noise2.lang.TNLExpression;
+import togos.noise2.lang.TNLExpressionParser;
 import togos.noise2.lang.TNLLiteralExpression;
 import togos.noise2.lang.TNLSymbolExpression;
+import togos.noise2.lang.TNLTokenizer;
 import togos.rdf.BaseRDFDescription;
 import togos.rdf.BaseRDFLiteral;
 import togos.rdf.RDFExpression;
@@ -111,6 +119,10 @@ public class TNLExpressionCompiler
 		return compileApply( exp.functionExpression, exp.argumentExpressions, exp.namedArgumentExpressionEntries, exp );
 	}
 
+	public RDFExpression compile( TNLBlockExpression exp ) throws CompileError {
+		return compile( exp.value );
+	}
+	
 	public RDFExpression compile( TNLLiteralExpression exp ) throws CompileError {
 		return new BaseRDFLiteral( exp.value, exp );
 	}
@@ -122,8 +134,27 @@ public class TNLExpressionCompiler
 			return compile( (TNLLiteralExpression)exp );
 		} else if( exp instanceof TNLApplyExpression ) {
 			return compile( (TNLApplyExpression)exp );
+		} else if( exp instanceof TNLBlockExpression ) {
+			return compile( (TNLBlockExpression)exp );
 		} else {
 			throw new CompileError( "Don't know how to RDF-ify "+exp.getClass(), exp );
 		}
+	}
+	
+	// For your convenience:
+	public RDFExpression compile( String tnlSource, SourceLocation sl, Map macros )
+		throws ParseError, CompileError
+	{
+		Reader r = new StringReader(tnlSource);
+		TNLExpressionParser p = new TNLExpressionParser( new TNLTokenizer(r, sl) );
+		TNLBlockExpression parent = new TNLBlockExpression( BaseSourceLocation.NONE, null );
+		parent.definitions = macros;
+		TNLExpression exp;
+		try {
+			exp = p.readBlock( sl, parent );
+		} catch( IOException e ) {
+			throw new RuntimeException("IOException while parsing TNL script", e); 
+		}
+		return compile( exp );
 	}
 }

@@ -1,5 +1,7 @@
 package togos.noise2.rdf;
 
+import java.util.HashMap;
+
 public class TNLNamespace
 {
 	// '+' in argument lists indicates that the following
@@ -44,13 +46,32 @@ public class TNLNamespace
 	public static final String EXPONENT     = TN_NS+"exponent";
 	public static final String[] EXPONENTIATE_ARGS = new String[]{ BASE, EXPONENT };
 	
-	public static final String D5_2PERLIN = TN_NS+"D5.2-Perlin";
+	public static final String D5_2PERLIN = TN_NS+"D5.2Perlin";
 	public static final String SIMPLEX    = TN_NS+"Simplex";
 	public static final String[] NOISE3D_ARGS = new String[]{ X, Y, Z };
+	
+	public static final String SQRT = TN_NS+"SquareRoot";
+	public static final String[] MISC1D_ARGS = new String[]{ X };
 	
 	public static final String SIN  = TN_NS+"Sine";
 	public static final String COS  = TN_NS+"Cosine";
 	public static final String TAN  = TN_NS+"Tangent";
 	public static final String ATAN = TN_NS+"Atctangent";
 	public static final String[] TRIG1D_ARGS = new String[]{ X };
+	
+	public static final HashMap args = new HashMap();
+	static {
+		args.put( ADD, ADD_ARGS );
+		args.put( SUBTRACT, SUBTRACT_ARGS );
+		args.put( MULTIPLY, MULTIPLY_ARGS );
+		args.put( DIVIDE, DIVIDE_ARGS );
+		args.put( EXPONENTIATE, EXPONENTIATE_ARGS );
+		args.put( D5_2PERLIN, NOISE3D_ARGS );
+		args.put( SIMPLEX, NOISE3D_ARGS );
+		args.put( SQRT, MISC1D_ARGS );
+		args.put( SIN, TRIG1D_ARGS );
+		args.put( COS, TRIG1D_ARGS );
+		args.put( TAN, TRIG1D_ARGS );
+		args.put( ATAN, TRIG1D_ARGS );
+	}
 }

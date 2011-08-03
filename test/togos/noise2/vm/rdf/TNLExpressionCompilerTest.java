@@ -6,6 +6,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import togos.lang.SourceLocation;
+import togos.noise2.lang.ArithmeticMacros;
 import togos.noise2.lang.BaseSourceLocation;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.TNLApplyExpression;
@@ -22,22 +23,9 @@ public class TNLExpressionCompilerTest extends TestCase
 	TNLBlockExpression block;
 	TNLExpressionCompiler comp;
 	
-	protected void addsm( TNLBlockExpression block, String shortName, String longName, String[] args ) {
-		block.definitions.put( shortName, new TNLExpressionCompiler.SimpleArgListMacro( longName, args ) );
-	}
-	
 	public void setUp() {
 		block = new TNLBlockExpression(BaseSourceLocation.NONE, null);
-		//block.definitions.put("x", TNLSymbolExpression.primitive(TNLNamespace.X));
-		
-		addsm( block, "x", TNLNamespace.X_VAR, new String[0] );
-		addsm( block, "y", TNLNamespace.Y_VAR, new String[0] );
-		addsm( block, "z", TNLNamespace.Z_VAR, new String[0] );
-		addsm( block, "+", TNLNamespace.ADD,      TNLNamespace.ADD_ARGS      );
-		addsm( block, "-", TNLNamespace.SUBTRACT, TNLNamespace.SUBTRACT_ARGS );
-		addsm( block, "*", TNLNamespace.MULTIPLY, TNLNamespace.MULTIPLY_ARGS );
-		addsm( block, "/", TNLNamespace.DIVIDE,   TNLNamespace.DIVIDE_ARGS   );
-		
+		block.definitions.putAll( ArithmeticMacros.MACROS );
 		comp = new TNLExpressionCompiler();
 	}
 	

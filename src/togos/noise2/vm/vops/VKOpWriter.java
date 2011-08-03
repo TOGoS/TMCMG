@@ -50,6 +50,18 @@ public class VKOpWriter implements OpWriter
 		return result;
 	}
 	
+	protected String _writePrefixOp( String dest, String opName, String[] operands ) {
+		String operandStr = "";
+		if( dest == null ) {
+			dest = declareVar("double","temp");
+		}
+		for( int i=0; i<operands.length; ++i ) {
+			operandStr += " "+operands[i];
+		}
+		println( dest + " = <" + opName + ">" + operandStr );
+		return dest;
+	}
+	
 	public String writeOp( String dest, String op, String[] operands ) {
 		if( TNLNamespace.ADD.equals(op) ) {
 			return _writeOp( dest, "+", operands );
@@ -59,8 +71,10 @@ public class VKOpWriter implements OpWriter
 			return _writeOp( dest, "*", operands );
 		} else if( TNLNamespace.DIVIDE.equals(op) ) {
 			return _writeOp( dest, "/", operands );
+		} else if( TNLNamespace.EXPONENTIATE.equals(op) ) {
+			return _writeOp( dest, "**", operands );
 		} else {
-			throw new RuntimeException( "Don't know how to deal with "+op ); 
+			return _writePrefixOp( dest, op, operands );
 		}
 	}
 }

@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import togos.noise2.lang.ArithmeticMacros;
 import togos.noise2.lang.BaseSourceLocation;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.vm.dftree.func.LFunctionDaDaDa_Da;
 import togos.noise2.vm.dftree.lang.TNLCompiler;
 import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
+import togos.noise2.vm.vops.TNLToVKCompiler;
 
 public class VMArithmeticPerformanceTest
 {
@@ -91,9 +93,13 @@ public class VMArithmeticPerformanceTest
 		TNLCompiler dftreeCompiler = new TNLCompiler();
 		dftreeCompiler.macroTypes.putAll( NoiseMacros.stdNoiseMacros );
 		
+		TNLToVKCompiler vkCompiler = new TNLToVKCompiler();
+		vkCompiler.macros.putAll( ArithmeticMacros.MACROS );
+		
 		VMArithmeticPerformanceTest t = new VMArithmeticPerformanceTest();
 		
 		t.compilers.put("dftree", dftreeCompiler);
+		t.compilers.put("vk", vkCompiler);
 		
 		t.scripts.put("arithmetic", "(x * y) + (y * z) - (x / z)");
 		t.scripts.put("arithmetic2", "(x ** y) + atan(y * z) - sqrt(x / z)");

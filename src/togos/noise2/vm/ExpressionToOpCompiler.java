@@ -91,14 +91,9 @@ public class ExpressionToOpCompiler
 		}
 		
 		String typeName = expr.getTypeName();
-		if( TNLNamespace.ADD.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.ADD_ARGS) );
-		} else if( TNLNamespace.SUBTRACT.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.SUBTRACT_ARGS) );
-		} else if( TNLNamespace.MULTIPLY.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.MULTIPLY_ARGS) );
-		} else if( TNLNamespace.DIVIDE.equals(typeName) ) {
-			return w.writeOp( varName, typeName, getArgStrings(expr,TNLNamespace.DIVIDE_ARGS) );
+		String[] opArgs = (String[])TNLNamespace.args.get(typeName);
+		if( opArgs != null ) {
+			return w.writeOp( varName, typeName, getArgStrings(expr,opArgs) );
 		} else {
 			throw new RuntimeException("Unsupported expression type "+typeName);
 		}

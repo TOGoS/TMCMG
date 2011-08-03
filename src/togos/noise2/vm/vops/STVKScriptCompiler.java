@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import togos.lang.SourceLocation;
 import togos.noise2.lang.CompileError;
+import togos.noise2.rdf.TNLNamespace;
 
 public class STVKScriptCompiler
 {
@@ -80,7 +81,24 @@ public class STVKScriptCompiler
 				}
 				throw new CompileError("Invalid vector type '"+parts[1]+"'", new DumbSourceLocation(filename,lineNumber));
 			}
-			
+			if( parts.length >= 3 && "=".equals(parts[1]) && parts[2].charAt(0) == '<' ) {
+				String op = parts[2].substring(1,parts[2].length()-1);
+				if( TNLNamespace.SQRT.equals(op) ) {
+					ops.add( new STSqrtOp(
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[3], vars, maxVectorSize, filename, lineNumber)
+					));
+					continue;
+				}
+				if( TNLNamespace.ATAN.equals(op) ) {
+					ops.add( new STAtanOp(
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[3], vars, maxVectorSize, filename, lineNumber)
+					));
+					continue;
+				}
+				throw new CompileError("Unrecognised operation: "+op, new DumbSourceLocation(filename,lineNumber));
+			}
 			if( parts.length == 5 && "=".equals(parts[1]) ) {
 				if( "+".equals(parts[3]) ) {
 					ops.add( new STAddOp(
@@ -108,6 +126,14 @@ public class STVKScriptCompiler
 				}
 				if( "/".equals(parts[3]) ) {
 					ops.add( new STDivideOp(
+						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
+						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)
+					));
+					continue;
+				}
+				if( "**".equals(parts[3]) ) {
+					ops.add( new STExponentiateOp(
 						getDoubleVector(parts[0], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[2], vars, maxVectorSize, filename, lineNumber),
 						getDoubleVector(parts[4], vars, maxVectorSize, filename, lineNumber)

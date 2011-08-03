@@ -23,6 +23,10 @@ public class TNLTokenizer
 		this.lineNumber = lineNumber;
 	}
 	
+	public TNLTokenizer( Reader r, SourceLocation sloc ) {
+		this( r, sloc.getSourceFilename(), sloc.getSourceLineNumber(), sloc.getSourceColumnNumber() );
+	}
+	
 	protected int readChar() throws IOException {
 		int c;
 		if( lastChar == -2 ) {
