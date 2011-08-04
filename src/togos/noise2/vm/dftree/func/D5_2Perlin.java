@@ -1,44 +1,9 @@
 package togos.noise2.vm.dftree.func;
 
-public final class D5_2Perlin
+public final class D5_2Perlin implements LFunctionDaDaDa_Da
 {
+	public static final D5_2Perlin instance = new D5_2Perlin();
 	// Based on Java reference implementation of improved noise by Ken Perlin.
-
-	public D5_2Perlin() {
-	}
-
-	public D5_2Perlin(double z) {
-		this.z = z;
-	}
-
-	protected int modX, modY, modZ;
-
-	public void setModX(int modX) {
-		this.modX = modX;
-	}
-
-	public void setModY(int modY) {
-		this.modY = modY;
-	}
-
-	public void setModZ(int modZ) {
-		this.modZ = modZ;
-	}
-
-	public double z = 0;
-
-	public void setZ(double z) {
-		this.z = z;
-	}
-
-	public final double apply(double x, double y) {
-		return get(x, y, z);
-	}
-	
-	protected static final int tmod( int x, int modby ) {
-		if( x < 0 ) return modby+(x%modby);
-		return x%modby;
-	}
 	
 	public final double get(double x, double y, double z) {
 		int X = (int) Math.floor(x) & 255, // FIND UNIT CUBE THAT
@@ -48,24 +13,9 @@ public final class D5_2Perlin
 		y -= Math.floor(y);                // OF POINT IN CUBE.
 		z -= Math.floor(z);
 		final int X1, Y1, Z1;
-		if( modX == 0 ) {
-			X1 = X + 1;
-		} else {
-			X = tmod(X,modX);
-			X1 = tmod(X+1,modX);
-		}
-		if( modY == 0 ) {
-			Y1 = Y + 1;
-		} else {
-			Y = tmod(Y,modY);
-			Y1 = tmod(Y+1,modY);
-		}
-		if( modZ == 0 ) {
-			Z1 = Z + 1;
-		} else {
-			Z = tmod(Z,modZ);
-			Z1 = tmod(Z+1,modZ);
-		}
+		X1 = X + 1;
+		Y1 = Y + 1;
+		Z1 = Z + 1;
 		double u = fade(x), // COMPUTE FADE CURVES
 		       v = fade(y), // FOR EACH OF X,Y,Z.
 		       w = fade(z);
@@ -121,4 +71,10 @@ public final class D5_2Perlin
 		for( int i = 0; i < 256; i++ )
 			p[256 + i] = p[i] = permutation[i];
 	}
+	
+	public void apply( int vectorSize, double[] x, double[] y, double[] z, double[] dest ) {
+	    for( int i=0; i<vectorSize; ++i ) {
+	    	dest[i] = get(x[i],y[i],z[i]);
+	    }
+    }
 }
