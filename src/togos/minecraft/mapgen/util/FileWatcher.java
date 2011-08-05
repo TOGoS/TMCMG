@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import togos.jobkernel.Service;
+
 
 public class FileWatcher implements Runnable, Service
 {

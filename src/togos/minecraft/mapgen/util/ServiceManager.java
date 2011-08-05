@@ -3,6 +3,8 @@ package togos.minecraft.mapgen.util;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import togos.jobkernel.Service;
+
 public class ServiceManager implements Service
 {
 	protected boolean running;

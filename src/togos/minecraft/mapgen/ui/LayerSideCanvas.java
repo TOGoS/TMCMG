@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import togos.jobkernel.Service;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
-import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.Blocks;

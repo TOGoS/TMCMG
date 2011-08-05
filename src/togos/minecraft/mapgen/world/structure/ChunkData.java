@@ -17,6 +17,10 @@ import togos.minecraft.mapgen.TagMap;
 
 public class ChunkData extends MiniChunkData
 {
+	public static final int NORMAL_CHUNK_WIDTH = 16;
+	public static final int NORMAL_CHUNK_HEIGHT = 128;
+	public static final int NORMAL_CHUNK_DEPTH = 16;
+	
 	public ChunkData( long px, long py, long pz, int w, int h, int d ) {
 		super(px,py,pz,w,h,d);
 	}

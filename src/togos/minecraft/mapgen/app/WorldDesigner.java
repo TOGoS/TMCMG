@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.swing.BoxLayout;
 
+import togos.jobkernel.job.JobService;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
@@ -39,7 +40,6 @@ import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.ServiceManager;
-import togos.minecraft.mapgen.util.TMCMGActiveKernel;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
@@ -57,10 +57,10 @@ public class WorldDesigner
 		FileUpdateListener ful;
 		GeneratorUpdateListener gul;
 		boolean autoReloadEnabled = false;
-		TMCMGActiveKernel ak = new TMCMGActiveKernel();
+		JobService jobServ = new JobService();
 		
 		public WorldDesignerKernel() {
-			sm.add(ak);
+			sm.add(jobServ);
 		}
 		
 		public void setFileUpdateListener( FileUpdateListener ful ) {
@@ -212,7 +212,7 @@ public class WorldDesigner
 	}
 	
 	WorldDesignerKernel wdk = new WorldDesignerKernel();
-	ChunkWritingService cws = new ChunkWritingService(wdk.ak);
+	ChunkWritingService cws = new ChunkWritingService(wdk.jobServ.jobQueue);
 	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm,cws);
 	
 	LayerSideCanvas lsc = new LayerSideCanvas();

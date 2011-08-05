@@ -25,7 +25,9 @@ public class ChunkWriter
 {
 	public static ChunkWriter instance = new ChunkWriter();
 	
-	public int chunkWidth = 16, chunkHeight = 128, chunkDepth = 16;
+	public int chunkWidth  = ChunkData.NORMAL_CHUNK_WIDTH;
+	public int chunkHeight = ChunkData.NORMAL_CHUNK_HEIGHT;
+	public int chunkDepth  = ChunkData.NORMAL_CHUNK_DEPTH;
 	
 	public String chunkPath( int x, int z ) {
 		return PathUtil.mcChunkDir(x,z) + "/" + PathUtil.chunkBaseName(x,z);
@@ -99,11 +101,19 @@ public class ChunkWriter
 		return cd;
 	}
 	
+	/**
+	 * This method should be thread-safe, as os.close() calls
+	 * RegionFile.write, which is synchronized
+	 * */
 	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
 		//writeChunkToFile(getChunk(cx,cz,cm), chunkBaseDir);
 		writeChunkToRegionFile(getChunk(cx,cz,cm), chunkBaseDir);
 	}
 	
+	/**
+	 * This method should be thread-safe, as os.close() calls
+	 * RegionFile.write, which is synchronized
+	 * */
 	public void writeChunk( int cx, int cz, byte[] data, int format ) throws IOException {
 		OutputStream os = RegionFileCache.getChunkOutputStream(new File(chunkBaseDir),cx,cz,format);
 		os.write(data);

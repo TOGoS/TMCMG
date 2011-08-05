@@ -15,10 +15,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import togos.jobkernel.Service;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
-import togos.minecraft.mapgen.util.Service;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
 import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;

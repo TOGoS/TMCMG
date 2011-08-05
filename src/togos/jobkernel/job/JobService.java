@@ -18,7 +18,7 @@ public class JobService implements Service
 		return jobRunners;
 	}
 	
-	final BlockingNonBlockingQueue jobQueue;
+	public final BlockingNonBlockingQueue jobQueue;
 	final List jobRunners;
 	
 	protected JobService( BlockingNonBlockingQueue jobQueue, List jobRunners ) {
@@ -74,5 +74,6 @@ public class JobService implements Service
 			((JobRunner)i.next()).halt();
 		}
 		jobQueue.halt();
+		jobQueue.clear();
 	}
 }

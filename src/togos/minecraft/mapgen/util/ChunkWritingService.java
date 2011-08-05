@@ -3,19 +3,13 @@ package togos.minecraft.mapgen.util;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
 
-import togos.jobkernel.mf.Active;
-import togos.mf.api.AsyncCallable;
-import togos.mf.api.Request;
-import togos.mf.api.Response;
-import togos.mf.api.ResponseCodes;
-import togos.mf.api.ResponseHandler;
+import togos.jobkernel.Service;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.io.ChunkWriter;
-import togos.minecraft.mapgen.io.RegionFile;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
-import togos.minecraft.mapgen.world.gen.af.GenerateTNLChunk;
-import togos.minecraft.mapgen.world.gen.af.SerializeChunk;
+import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class ChunkWritingService extends ChunkWriter implements Runnable, Service
 {
@@ -32,11 +26,11 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	protected ChunkMunger cm;
 	
 	public boolean useJobSystem = true;
-	protected AsyncCallable callable;
+	protected BlockingQueue jobQueue;
 	
-	public ChunkWritingService( AsyncCallable callable ) {
+	public ChunkWritingService( BlockingQueue jobQueue ) {
 		super("junk-chunks");
-		this.callable = callable;
+		this.jobQueue = jobQueue;
 	}
 	
 	public void addProgressListener( ChunkWritingProgressListener l ) {
@@ -82,8 +76,6 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	public void writeGrid( int bx, int bz, int bw, int bd, URIRef scriptRef )
 		throws IOException
 	{
-		// This whole thing could be wonderfully multi-threaded if I felt like
-		// taking the half hour to write a job scheduler...
 		written = 0;
 		total = bw*bd;
 		for( int z=0; z<bd; ++z ) {
@@ -93,23 +85,37 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 				final int cx = bx+x, cz = bz+z;
 
 				if( useJobSystem ) {
-					final Request req = Active.mkRequest(
-							SerializeChunk.makeRef(
-								GenerateTNLChunk.makeRef(scriptRef, cx*16, 0, cz*16, 16, 128, 16 ) ) );
-						callable.callAsync(req, new ResponseHandler() {
-							public void setResponse( Response res ) {
-								if( res.getStatus() != ResponseCodes.NORMAL ) {
-									System.err.println("Failed to fetch chunk "+cx+","+cz+" from "+req.getResourceName());
-								} else {
+					try {
+						jobQueue.put(new ChunkGenerationJob(
+							scriptRef.getUri(), cm,
+							cx*ChunkData.NORMAL_CHUNK_WIDTH,
+							0,
+							cz*ChunkData.NORMAL_CHUNK_DEPTH,
+							ChunkData.NORMAL_CHUNK_WIDTH,
+							ChunkData.NORMAL_CHUNK_HEIGHT,
+							ChunkData.NORMAL_CHUNK_DEPTH,
+							new ChunkDataListener() {
+								public void setChunkData(
+									String worldId, long px, long py, long pz,
+									int w, int h, int d, byte[] data, int format
+								) {
+									int cx = (int)(px / ChunkData.NORMAL_CHUNK_WIDTH);
+									int cz = (int)(pz / ChunkData.NORMAL_CHUNK_DEPTH);
+									
 									try {
-										writeChunk( cx, cz, (byte[])res.getContent(), RegionFile.VERSION_DEFLATE );
-										chunkWritten();
+										writeChunk( cx, cz, data, format );
 									} catch( IOException e ) {
-										throw new RuntimeException(e);
+										System.err.println("Error writing chunk "+cx+","+cz+":");
+										e.printStackTrace();
 									}
+									chunkWritten();
 								}
+								
 							}
-						});
+						));
+					} catch( InterruptedException e ) {
+						Thread.currentThread().interrupt();
+					}
 				} else {
 					writeChunk( cx, cz, cm );
 					chunkWritten();

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import togos.jobkernel.Service;
 import togos.jobkernel.job.JobService;
 import togos.jobkernel.mf.ActiveCallable;
 import togos.jobkernel.mf.AggregatingAsyncCallable;
@@ -38,7 +39,6 @@ public class TMCMGActiveKernel implements AsyncCallable, Service
 	}
 	
 	public void callAsync( Request req, ResponseHandler rHandler ) {
-		//System.err.println(" Handling "+req.getResourceName());
 		agg.callAsync(req, rHandler);
 	}
 	

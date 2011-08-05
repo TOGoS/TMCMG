@@ -31,12 +31,12 @@ import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 
+import togos.jobkernel.job.JobService;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.ServiceManager;
-import togos.minecraft.mapgen.util.TMCMGActiveKernel;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 
 public class ChunkExportWindow extends Frame
@@ -300,10 +300,10 @@ public class ChunkExportWindow extends Frame
     }
     
     public static void main( String[] args ) {
-    	final TMCMGActiveKernel ak = new TMCMGActiveKernel();
-    	final ChunkWritingService cws = new ChunkWritingService(ak);
+    	final JobService js = new JobService();
+    	final ChunkWritingService cws = new ChunkWritingService(js.jobQueue);
     	final ServiceManager sm = new ServiceManager();
-    	sm.add(ak);
+    	sm.add(js);
     	sm.add(cws);
     	final ChunkExportWindow cew = new ChunkExportWindow(sm,cws);
     	cew.addWindowListener(new WindowAdapter() {
