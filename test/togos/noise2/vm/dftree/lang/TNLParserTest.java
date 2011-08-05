@@ -10,8 +10,6 @@ import togos.lang.SourceLocation;
 import togos.noise2.lang.ParseError;
 import togos.noise2.lang.TNLTokenizer;
 import togos.noise2.lang.Token;
-import togos.noise2.vm.dftree.lang.ASTNode;
-import togos.noise2.vm.dftree.lang.TNLParser;
 
 public class TNLParserTest extends TestCase
 {

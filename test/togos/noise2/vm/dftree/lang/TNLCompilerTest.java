@@ -8,7 +8,6 @@ import togos.noise2.vm.dftree.func.MaxOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.MultiplyOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.PerlinDaDaDa_Da;
 import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
-import togos.noise2.vm.dftree.lang.TNLCompiler;
 import togos.noise2.vm.dftree.lang.macro.ConstantMacroType;
 import togos.noise2.vm.dftree.lang.macro.DaDaDa_DaArrayArgMacroType;
 

@@ -17,8 +17,6 @@ import togos.noise2.vm.dftree.func.SimplexDaDaDa_Da;
 import togos.noise2.vm.dftree.func.X;
 import togos.noise2.vm.dftree.func.Y;
 import togos.noise2.vm.dftree.func.Z;
-import togos.noise2.vm.dftree.lang.Expression;
-import togos.noise2.vm.dftree.lang.TNLCompiler;
 
 public class CacheRewriterTest extends TestCase
 {
