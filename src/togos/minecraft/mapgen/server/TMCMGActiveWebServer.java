@@ -50,6 +50,13 @@ public class TMCMGActiveWebServer extends WebServer
 	
 	public static void main(String[] args) {
 		TMCMGActiveWebServer ws = new TMCMGActiveWebServer();
+		for( int i=0; i<args.length; ++i ) {
+			if( "-port".equals(args[i]) ) {
+				ws.port = Integer.parseInt(args[++i]);
+			} else {
+				throw new RuntimeException("Unrecognised argument: "+args[i]);
+			}
+		}
 		System.err.println("Running web server on port "+ws.port);
 		ws.run();
 	}
