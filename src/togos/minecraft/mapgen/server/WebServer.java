@@ -1,9 +1,8 @@
 package togos.minecraft.mapgen.server;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -12,9 +11,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import togos.jobkernel.Service;
 import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.Response;
@@ -22,7 +24,7 @@ import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 
-public class WebServer implements Runnable {
+public class WebServer implements Runnable, Service {
 	class ConnectionHandler implements Runnable {
 		protected Socket cs;
 		
@@ -39,38 +41,96 @@ public class WebServer implements Runnable {
 			}
 		}
 		
+		// TODO: something faster
+		// Can't use BufferedReader because it reads too much
+		// and then later content = read(...) misses data.
+		protected String readLine(InputStream is) throws IOException {
+			int byt;
+			String line = "";
+			while( (byt = is.read()) != -1 && byt != '\n' ) {
+				if( byt != '\r' ) line += (char)byt;
+			}
+			return line;
+		}
+		
 		public void run() {
 			try {
-				BufferedReader r = new BufferedReader(new InputStreamReader(cs.getInputStream()));
-				String rl = r.readLine();
+				InputStream is = cs.getInputStream();
+				String rl = readLine(is);
 				if( rl == null ) return;
-				String hl = r.readLine();
+				String hl = readLine(is);
+				HashMap headers = new HashMap();
 				while( hl != null && hl.length() > 0 ) {
-					hl = r.readLine();
-					// ignoring headers for now...
+					String[] kv = hl.trim().split(": ");
+					headers.put(kv[0].toLowerCase(), kv[1]);
+					hl = readLine(is);
 				}
-				String[] rp = rl.split("\\s");
-				Request req = new BaseRequest(rp[0], rp[1]);
-				Response res = handle( req );
 				
+				// Set up content metadata
+				Map reqContentMetadata = new HashMap();
+				String reqContentType = (String)headers.get("content-type");
+				if( reqContentType != null ) {
+					reqContentMetadata.put( "http://purl.org/dc/terms/format", reqContentType );
+				}
+				
+				// Read content
+				String clstr = (String)headers.get("content-length");
+				byte[] reqContent;
+				if( clstr != null ) {
+					int contentLength = Integer.parseInt(clstr);
+					if( contentLength > maxRequestContentLength ) {
+						throw new RuntimeException("Input content length too long: "+contentLength);
+					}
+					reqContent = new byte[contentLength];
+					for( int read=0; read < contentLength; ) {
+						read += is.read( reqContent, read, contentLength-read );
+					}
+				} else {
+					reqContent = null;
+				}
+				
+				String[] rp = rl.split("\\s");
+				Request req = new BaseRequest(rp[0], rp[1], reqContent, reqContentMetadata);
+				
+				Response res = handle( req );
+
+				String contentType = (String)res.getContentMetadata().get(BaseResponse.DC_FORMAT);
+
 				byte[] contentBytes;
 				if( res.getContent() instanceof byte[] ) {
 					contentBytes = (byte[])res.getContent();
+				} else if( res.getContent() instanceof String ) {
+					contentBytes = ((String)res.getContent()).getBytes("UTF-8");
+					if( contentType == null ) contentType = "text/plain";
+					contentType += "; charset=utf-8";
+				} else if( res.getStatus() == 204 || "HEAD".equals(req.getVerb()) ) {
+					contentBytes = null;
 				} else {
+					if( res.getContent() instanceof Exception ) {
+						((Exception)res.getContent()).printStackTrace();
+					}
 					throw new RuntimeException("Response content not a byte array, but "+res.getContent());
 				}
-				String contentType = res.getContentMetadata().get(BaseResponse.DC_FORMAT).toString();
+				
+				int httpStatus = 0;
+				if( res.getStatus() < 100 ) {
+					httpStatus = 404;
+				} else {
+					httpStatus = res.getStatus();
+				}
 				
 				OutputStream o = cs.getOutputStream();
 				String responseHeaders =
-					"HTTP/1.0 "+res.getStatus()+" Hello\r\n"+
-					"Content-Length: "+contentBytes.length+"\r\n";
+					"HTTP/1.0 "+httpStatus+" Hello\r\n";
+				if( contentBytes != null ) {
+					responseHeaders += "Content-Length: "+contentBytes.length+"\r\n";
+				}
 				if( contentType != null ) {
 					responseHeaders += "Content-Type: "+contentType+"\r\n";
 				}
 				responseHeaders += "\r\n";
 				o.write(responseHeaders.getBytes("ASCII"));
-				o.write(contentBytes);
+				if( contentBytes != null ) o.write(contentBytes);
 				o.flush();
 			} catch( UnsupportedEncodingException e ) {
 				System.err.println(getConnectionErrorDescription());
@@ -88,6 +148,7 @@ public class WebServer implements Runnable {
 	
 	protected List requestHandlers = new ArrayList();
 	public int port = 14419;
+	public int maxRequestContentLength = 2*1024*1024; // 2 MiB max (we keep it all in RAM!)
 	
 	public void addRequestHandler( Callable rh ) {
 		this.requestHandlers.add(rh);
@@ -133,6 +194,19 @@ public class WebServer implements Runnable {
 		} catch( IOException e ) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	Thread runThread; 
+	
+	public synchronized void start() {
+		if( runThread != null ) return;
+		runThread = new Thread(this);
+		runThread.start();
+	}
+	public synchronized  void halt() {
+		if( runThread == null ) return;
+		runThread.interrupt();
+		runThread = null;
 	}
 	
 	public static final String USAGE =

@@ -74,6 +74,5 @@ public class JobService implements Service
 			((JobRunner)i.next()).halt();
 		}
 		jobQueue.halt();
-		jobQueue.clear();
 	}
 }

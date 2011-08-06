@@ -64,7 +64,11 @@ public class AsyncCallAggregate implements ResponseHandler
 		synchronized( this ) {
 			oldResponseHandlers = this.responseHandlers;
 			this.responseHandlers = Collections.EMPTY_SET;
-			this.res = new SoftReference(res);
+			if( res.getStatus() >= 100 ) {
+				// Only cache authoritative responses
+				// (this is kind of a workaround to make a certain unit test pass...)
+				this.res = new SoftReference(res);
+			}
 			this.beingFetched = false;
 		}
 		for( Iterator i=oldResponseHandlers.iterator(); i.hasNext(); ) {

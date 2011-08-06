@@ -20,13 +20,17 @@ public class DigestUtil
 		return "urn:sha1:" + Base32.encode(md.digest());
 	}
 	
-	public static String getSha1Urn( String s ) {
+	public static String getSha1Urn( byte[] data ) {
 		MessageDigest md = createSha1Digestor();
+		md.update(data);
+		return getSha1Urn(md);
+	}
+	
+	public static String getSha1Urn( String s ) {
 		try {
-	        md.update(s.getBytes("UTF-8"));
+			return getSha1Urn(s.getBytes("UTF-8"));
         } catch( UnsupportedEncodingException e ) {
         	throw new RuntimeException(e);
         }
-		return getSha1Urn(md);
 	}
 }

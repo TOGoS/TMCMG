@@ -8,6 +8,7 @@ import java.util.concurrent.BlockingQueue;
 import togos.jobkernel.Service;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.io.ChunkWriter;
+import togos.minecraft.mapgen.job.ChunkGenerationJob;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
@@ -87,7 +88,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 				if( useJobSystem ) {
 					try {
 						jobQueue.put(new ChunkGenerationJob(
-							scriptRef.getUri(), cm,
+							scriptRef, cm,
 							cx*ChunkData.NORMAL_CHUNK_WIDTH,
 							0,
 							cz*ChunkData.NORMAL_CHUNK_DEPTH,
