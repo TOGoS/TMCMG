@@ -6,10 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import togos.jobkernel.uri.BaseRef;
-import togos.jobkernel.uri.URIUtil;
 import togos.mf.value.Chunk;
-import togos.mf.value.URIRef;
 
 public class Util
 {
@@ -42,7 +39,7 @@ public class Util
 		return baos.toByteArray();
 	}
 	
-	public static final URIRef readFileToDataRef( File f ) throws IOException {
-		return new BaseRef(URIUtil.makeDataUri(readFile(f)));
+	public static final Script readScript( File f ) throws IOException {
+		return new Script(readFile(f), f.getPath());
 	}
 }

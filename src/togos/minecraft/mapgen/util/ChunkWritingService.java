@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 
 import togos.jobkernel.Service;
-import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.job.ChunkGenerationJob;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
+import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class ChunkWritingService extends ChunkWriter implements Runnable, Service
@@ -23,8 +23,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	int bx=0, bz=0, bw=0, bd=0;
 	protected volatile boolean go = false;
 	protected HashSet progressListeners = new HashSet();
-	protected URIRef scriptRef;
-	protected ChunkMunger cm;
+	protected Script script;
 	
 	public boolean useJobSystem = true;
 	protected BlockingQueue jobQueue;
@@ -49,9 +48,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		this.bd = bd;
 	}
 	
-	public void setWorldGenerator( URIRef scriptRef, ChunkMunger cm ) {
-		this.scriptRef = scriptRef;
-		this.cm = cm;
+	public void setScript( Script s ) {
+		this.script = s;
 	}
 	
 	protected int written, total;
@@ -74,9 +72,11 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		}
 	}
 
-	public void writeGrid( int bx, int bz, int bw, int bd, URIRef scriptRef )
+	public void writeGrid( int bx, int bz, int bw, int bd, Script script )
 		throws IOException
 	{
+		ChunkMunger cm = ((WorldGenerator)script.program).getChunkMunger();
+		
 		written = 0;
 		total = bw*bd;
 		for( int z=0; z<bd; ++z ) {
@@ -88,7 +88,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 				if( useJobSystem ) {
 					try {
 						jobQueue.put(new ChunkGenerationJob(
-							scriptRef, cm,
+							script, cm,
 							cx*ChunkData.NORMAL_CHUNK_WIDTH,
 							0,
 							cz*ChunkData.NORMAL_CHUNK_DEPTH,
@@ -127,11 +127,13 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	
 	public void run() {
 		try {
-			writeGrid( bx, bz, bw, bd, scriptRef );
+			if( script == null ) return;
+			writeGrid( bx, bz, bw, bd, script );
 		} catch( IOException e ) {
 			throw new RuntimeException(e);
+		} finally {
+			go = false;
 		}
-		go = false;
 	}
 	
 	public void start() {

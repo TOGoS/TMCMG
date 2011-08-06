@@ -47,4 +47,10 @@ public class TMCMGActiveWebServer extends WebServer
 		super.halt();
 		kernel.halt();
 	}
+	
+	public static void main(String[] args) {
+		TMCMGActiveWebServer ws = new TMCMGActiveWebServer();
+		System.err.println("Running web server on port "+ws.port);
+		ws.run();
+	}
 }

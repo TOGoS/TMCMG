@@ -21,12 +21,16 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BoxLayout;
 
 import togos.jobkernel.job.JobService;
-import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.job.RemoteJobService;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.HelpWindow;
 import togos.minecraft.mapgen.ui.Icons;
@@ -39,6 +43,7 @@ import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
+import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.Material;
@@ -58,9 +63,11 @@ public class WorldDesigner
 		GeneratorUpdateListener gul;
 		boolean autoReloadEnabled = false;
 		JobService jobServ = new JobService();
+		RemoteJobService remoteJobServ = new RemoteJobService(jobServ.jobQueue);
 		
 		public WorldDesignerKernel() {
 			sm.add(jobServ);
+			sm.add(remoteJobServ);
 		}
 		
 		public void setFileUpdateListener( FileUpdateListener ful ) {
@@ -239,6 +246,9 @@ public class WorldDesigner
 		"  -fullscreen      ; display maximized with no border\n" +
 		"  -normal-shading  ; enable angle-based terrain shading (slow)\n" +
 		"  -height-shading  ; enable height-based terrain shading)\n"+
+		"  -job-system      ; enable job system\n" +
+		"  -remote-generator [n*]<url> ; specify a remote web server to help\n" +
+		"                   ; calculate chunks (requires job system)\n" +
 		"Other commands:\n" +
 		"  -?, -h           ; print help and exit\n" +
 		"  -dump-materials  ; print material list and exit";
@@ -280,6 +290,8 @@ public class WorldDesigner
 			"0x" + alignRight(Integer.toString(m.blockType, 16).toUpperCase(), 2, '0');
 	}
 	
+	protected static Pattern WRPAT = Pattern.compile("^(\\d+)\\*(.*)$");
+	
 	public void run(String[] args) {
 		String scriptFilename = null;
 		boolean autoReload = false;
@@ -287,6 +299,7 @@ public class WorldDesigner
 		boolean normalShade = false;
 		boolean heightShade = false;
 		boolean jobSystem = false;
+		ArrayList remoteGenerators = new ArrayList();
 		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-chunk-dir".equals(args[i]) ) {
@@ -303,6 +316,8 @@ public class WorldDesigner
 				Stat.performanceLoggingEnabled = true;
 			} else if( "-job-system".equals(args[i]) ) {
 				jobSystem = true;
+			} else if( "-remote-generator".equals(args[i]) ) {
+				remoteGenerators.add(args[++i]);
 			} else if( "-dump-materials".equals(args[i]) ) {
 				for( int j=0; j<Materials.byBlockType.length; ++j ) {
 					Material m = Materials.byBlockType[j];
@@ -330,22 +345,37 @@ public class WorldDesigner
 		final WorldExploreKeyListener wekl = new WorldExploreKeyListener(mwev);
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
-			public void generatorUpdated( URIRef wgScriptRef, WorldGenerator wg ) {
-				lsc.setWorldGenerator( wg );
-				noiseCanvas.setWorldGenerator( wg );
-				chunkExportWindow.setWorldGenerator( wgScriptRef, wg );
+			public void generatorUpdated( Script s ) {
+				lsc.setWorldGenerator( (WorldGenerator)s.program );
+				noiseCanvas.setWorldGenerator( (WorldGenerator)s.program );
+				chunkExportWindow.setScript( s );
 			}
 		};
 		
 		cws.useJobSystem = jobSystem;
+		
+		for( Iterator i=remoteGenerators.iterator(); i.hasNext(); ) {
+			String wr = (String)i.next();
+			Matcher m = WRPAT.matcher(wr);
+			int count;
+			if( m.matches() ) {
+				count = Integer.parseInt(m.group(1));
+				wr = m.group(2);
+			} else {
+				count = 2;
+			}
+			wdk.remoteJobServ.addWebResolver( wr, count );
+		}
+			
 		
 		wdk.setAutoReloadEnabled(autoReload);
 		
 		wdk.setFileUpdateListener(new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
-					gul.generatorUpdated( Util.readFileToDataRef(scriptFile), worldGenerator );
+					Script script = Util.readScript(scriptFile);
+					script.program = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
+					gul.generatorUpdated( script );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
 					String errText = ParseUtil.formatScriptError(e);
@@ -409,6 +439,7 @@ public class WorldDesigner
 		menuBar.initState();
 		previewWindow.setVisible(true);
 		
+		chunkExportWindow.initState();
 		chunkExportWindow.pack();
 		
 		lsc.requestFocus();

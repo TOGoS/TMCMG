@@ -32,12 +32,11 @@ import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 
 import togos.jobkernel.job.JobService;
-import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
+import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
 
 public class ChunkExportWindow extends Frame
 {
@@ -89,13 +88,13 @@ public class ChunkExportWindow extends Frame
     
     private static final long serialVersionUID = 1L;
     
-    public URIRef worldGeneratorScriptRef;
-    public WorldGenerator worldGenerator;
+    public Script script;
     public ChunkWritingService cws;
     
     Label outputDirField = new Label();
     TextField xField, zField, widthField, depthField;
     ProgressBar progressBar;
+    Checkbox useJobSystemCheckbox;
     Label levelDatStatusBar = new Label();
     ServiceManager sm;
     FileWatcher levelDatWatcher;
@@ -162,10 +161,13 @@ public class ChunkExportWindow extends Frame
     	initLevelDatWatcher();
     }
     
-    public void setWorldGenerator( URIRef scriptRef, WorldGenerator wg ) {
-    	this.worldGeneratorScriptRef = scriptRef;
-    	this.worldGenerator = wg;
+    public void setScript( Script s ) {
+    	this.script = s;
     }
+    
+	public void initState() {
+		useJobSystemCheckbox.setState(cws.useJobSystem);
+	}
     
     public ChunkExportWindow( ServiceManager _sm, ChunkWritingService _cws ) {
     	super("Export Chunks");
@@ -223,15 +225,14 @@ public class ChunkExportWindow extends Frame
 						int bw = Integer.parseInt(widthField.getText());
 						int bd = Integer.parseInt(depthField.getText());
 
-						URIRef wg = worldGeneratorScriptRef;
-						if( wg == null ) {
-							progressBar.setProgress(-1, "Error: no script generator");
+						if( script == null ) {
+							progressBar.setProgress(-1, "Error: no script");
 							return;
 						}
 						
 						cws.setBounds(bx, bz, bw, bd);
 						cws.setChunkDir(outputDirField.getText());
-						cws.setWorldGenerator(worldGeneratorScriptRef, worldGenerator.getChunkMunger());
+						cws.setScript(script);
 						cws.start();
 					} catch( NumberFormatException e ) {
 						progressBar.setProgress(-1, "Error: "+e.getMessage());
@@ -264,7 +265,7 @@ public class ChunkExportWindow extends Frame
 			}
 		});
     	
-    	Checkbox useJobSystemCheckbox = new Checkbox();
+    	useJobSystemCheckbox = new Checkbox();
     	useJobSystemCheckbox.setLabel("Use job system (possibly faster on multicore)");
     	useJobSystemCheckbox.addItemListener(new ItemListener() {
 			public void itemStateChanged( ItemEvent evt ) {

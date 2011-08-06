@@ -1,11 +1,14 @@
 package togos.minecraft.mapgen;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
+import togos.minecraft.mapgen.util.Script;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.ParseError;
 import togos.noise2.lang.ParseUtil;
@@ -44,6 +47,15 @@ public class ScriptUtil
 		Reader r = new FileReader(f);
 		try {
 			return compile( c, r, f.getName(), 1 );
+		} finally {
+			r.close();
+		}
+	}
+
+	public static Object compile( TNLCompiler c, Script s ) throws IOException, ParseError, CompileError {
+		Reader r = new InputStreamReader(new ByteArrayInputStream(s.source));
+		try {
+			return compile( c, r, s.sourceFilename, 1 );
 		} finally {
 			r.close();
 		}
