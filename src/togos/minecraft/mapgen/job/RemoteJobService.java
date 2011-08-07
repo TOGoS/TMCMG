@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import togos.jobkernel.Service;
 import togos.mf.api.RequestVerbs;
 import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
@@ -14,6 +13,7 @@ import togos.mf.base.BaseRequest;
 import togos.minecraft.mapgen.http.HTTPClient;
 import togos.minecraft.mapgen.server.UriUtil;
 import togos.minecraft.mapgen.util.ServiceManager;
+import togos.service.Service;
 
 public class RemoteJobService extends ServiceManager
 {

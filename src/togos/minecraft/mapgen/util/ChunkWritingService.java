@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 
-import togos.jobkernel.Service;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.job.ChunkGenerationJob;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.service.Service;
 
 public class ChunkWritingService extends ChunkWriter implements Runnable, Service
 {

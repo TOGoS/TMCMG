@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import togos.jobkernel.Service;
+import togos.service.Service;
 
 /**
  * A queue whose BlockingQueue methods (put(), take()) are delegated

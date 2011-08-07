@@ -2,7 +2,7 @@ package togos.jobkernel.job;
 
 import java.util.concurrent.BlockingQueue;
 
-import togos.jobkernel.Service;
+import togos.service.Service;
 
 public class JobRunner implements Runnable, Service
 {

@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import togos.jobkernel.Service;
 import togos.jobkernel.job.JobService;
 import togos.jobkernel.mf.ActiveCallable;
 import togos.jobkernel.mf.ActiveFunction;
@@ -26,6 +25,7 @@ import togos.mf.base.BaseResponse;
 import togos.minecraft.mapgen.world.gen.af.CompileTNLScript;
 import togos.minecraft.mapgen.world.gen.af.GenerateTNLChunk;
 import togos.minecraft.mapgen.world.gen.af.SerializeChunk;
+import togos.service.Service;
 
 public class TMCMGActiveKernel implements Callable, AsyncCallable, Service
 {

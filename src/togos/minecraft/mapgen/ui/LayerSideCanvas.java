@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import togos.jobkernel.Service;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -38,6 +37,7 @@ import togos.noise2.lang.ScriptError;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.lang.FunctionUtil;
+import togos.service.Service;
 
 public class LayerSideCanvas extends WorldExplorerViewCanvas
 {

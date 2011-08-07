@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
-import togos.jobkernel.Service;
 import togos.jobkernel.queue.BlockingNonBlockingQueue;
+import togos.service.Service;
 
 public class JobService implements Service
 {

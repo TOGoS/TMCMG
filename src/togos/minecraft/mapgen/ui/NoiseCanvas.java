@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import togos.jobkernel.Service;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -30,6 +29,7 @@ import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.func.FunctionDaDa_Ia;
+import togos.service.Service;
 
 public class NoiseCanvas extends WorldExplorerViewCanvas
 {

@@ -21,8 +21,8 @@ import togos.mf.value.URIRef;
 
 public class ActiveCallable implements AsyncCallable, PossibleRequestHandler
 {
-	AsyncCallable rootCallable;
 	Map activeFunctions;
+	AsyncCallable rootCallable;
 	BlockingQueue jobQueue;
 	
 	public ActiveCallable( Map activeFunctions, AsyncCallable rc, BlockingQueue jobQueue ) {

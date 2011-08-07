@@ -16,13 +16,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import togos.jobkernel.Service;
 import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
+import togos.service.Service;
 
 public class WebServer implements Runnable, Service {
 	class ConnectionHandler implements Runnable {

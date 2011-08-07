@@ -3,7 +3,7 @@ package togos.minecraft.mapgen.util;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import togos.jobkernel.Service;
+import togos.service.Service;
 
 public class ServiceManager implements Service
 {
