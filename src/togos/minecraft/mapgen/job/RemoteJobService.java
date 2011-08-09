@@ -50,6 +50,7 @@ public class RemoteJobService extends ServiceManager
 					String resUri = (String)e.getKey();
 					if( !sentResources.contains(resUri) ) {
 						client.call( new BaseRequest(RequestVerbs.PUT,n2l(resUri),e.getValue(),Collections.EMPTY_MAP) );
+						sentResources.add(resUri);
 					}
 				}
 				
@@ -62,6 +63,8 @@ public class RemoteJobService extends ServiceManager
 					jobQueue.add(job);
 					return;
 				}
+				
+				job.setResourceData( (byte[])res.getContent() );
 			}
 		}
 		

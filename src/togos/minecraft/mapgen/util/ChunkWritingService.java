@@ -59,19 +59,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		for( Iterator li=progressListeners.iterator(); li.hasNext(); ) {
 			((ChunkWritingProgressListener)li.next()).chunkProgressUpdated(written, total);
 		}
-		if( written == total ) {
-			//System.err.println("Clear region file cache");
-			// HEY WATCH OUT THINGS COULD STILL BE RUNNING
-			// IF WE STARTED THINGS IN WEIRD ORDER
-			// BUT I THINK NEED TO DO THIS TO MAEK SURE
-			// THTA ALL WRITES ARE 'FLUSHED'?
-			// See yayshots/2011/TMCMG/UnwrittenChunks...png
-			// ACKSHULLY NO I THINK THOSE APPEAR BECAUSE MC WAS STILL
-			// RUNNING AND HAD CHUNK DATA CACHED.
-			//RegionFileCache.clear();
-		}
 	}
-
+	
 	public void writeGrid( int bx, int bz, int bw, int bd, Script script )
 		throws IOException
 	{
@@ -79,12 +68,13 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		
 		written = 0;
 		total = bw*bd;
+		
 		for( int z=0; z<bd; ++z ) {
 			for( int x=0; x<bw; ++x ) {
 				if( !go ) return;
 				
 				final int cx = bx+x, cz = bz+z;
-
+				
 				if( useJobSystem ) {
 					try {
 						jobQueue.put(new ChunkGenerationJob(
@@ -111,7 +101,6 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 									}
 									chunkWritten();
 								}
-								
 							}
 						));
 					} catch( InterruptedException e ) {
