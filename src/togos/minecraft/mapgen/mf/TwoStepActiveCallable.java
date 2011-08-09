@@ -9,6 +9,7 @@ import togos.jobkernel.mf.Active;
 import togos.jobkernel.mf.ActiveFunction;
 import togos.jobkernel.mf.PossibleRequestHandler;
 import togos.jobkernel.uri.ActiveRef;
+import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.RequestVerbs;
 import togos.mf.api.Response;
@@ -17,7 +18,7 @@ import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 import togos.mf.value.URIRef;
 
-public class TwoStepActiveCallable implements TwoStepCallable, PossibleRequestHandler
+public class TwoStepActiveCallable implements Callable, TwoStepCallable, PossibleRequestHandler
 {
 	Map activeFunctions; 
 	TwoStepCallable rootCallable;
@@ -71,5 +72,11 @@ public class TwoStepActiveCallable implements TwoStepCallable, PossibleRequestHa
 	public Response readResponse( Object hnd ) {
 		if( hnd == null ) return BaseResponse.RESPONSE_UNHANDLED;
 		return readResponse( (Handle)hnd );
+	}
+	
+	//// Implement Callable ////
+	
+	public Response call( Request req ) {
+		return readResponse(beginRequest(req));
 	}
 }

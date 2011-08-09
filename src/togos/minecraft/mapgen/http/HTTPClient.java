@@ -68,7 +68,7 @@ public class HTTPClient implements Callable {
 		} catch( IOException e ) {
 			e.printStackTrace();  // eh
 			String mess = "I/O error reading " + req.getResourceName();
-			return new BaseResponse(ResponseCodes.DOES_NOT_EXIST, mess, "text/plain");
+			return new BaseResponse(ResponseCodes.SERVER_ERROR, mess, "text/plain");
 		}
 	}
 }

@@ -4,12 +4,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import togos.jobkernel.mf.PossibleRequestHandler;
+import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.api.TwoStepCallable;
 import togos.mf.base.BaseResponse;
 
-public class TwoStepMultiDispatch implements TwoStepCallable, PossibleRequestHandler
+public class TwoStepMultiDispatch implements Callable, TwoStepCallable, PossibleRequestHandler
 {
 	Collection callables;
 
@@ -56,5 +57,9 @@ public class TwoStepMultiDispatch implements TwoStepCallable, PossibleRequestHan
 			res = c.readResponse(c.beginRequest(h.req));
 		}
 		return res;
+	}
+	
+	public Response call( Request req ) {
+		return readResponse(beginRequest(req));
 	}
 }

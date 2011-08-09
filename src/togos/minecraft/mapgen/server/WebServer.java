@@ -93,7 +93,7 @@ public class WebServer implements Runnable, Service {
 				Request req = new BaseRequest(rp[0], rp[1], reqContent, reqContentMetadata);
 				
 				Response res = handle( req );
-
+				
 				String contentType = (String)res.getContentMetadata().get(BaseResponse.DC_FORMAT);
 
 				byte[] contentBytes;
@@ -167,6 +167,8 @@ public class WebServer implements Runnable, Service {
 			return _handle( req );
 		} catch( RuntimeException e ) {
 			try {
+				e.printStackTrace();
+				
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				OutputStreamWriter osw = new OutputStreamWriter(baos, "UTF-8");
 				PrintWriter pw = new PrintWriter(osw);
