@@ -10,17 +10,17 @@ import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
-import togos.jobkernel.mf.Active;
-import togos.jobkernel.mf.ActiveFunction;
-import togos.jobkernel.uri.ActiveRef;
-import togos.jobkernel.uri.ActiveRequestBuilder;
-import togos.jobkernel.uri.BaseRef;
 import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.TMCMGNamespace;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.io.RegionFile;
+import togos.minecraft.mapgen.mf.ActiveFunction;
+import togos.minecraft.mapgen.uri.Active;
+import togos.minecraft.mapgen.uri.ActiveRef;
+import togos.minecraft.mapgen.uri.ActiveRequestBuilder;
+import togos.minecraft.mapgen.uri.BaseRef;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 

@@ -1,7 +1,5 @@
 package togos.mf.api;
 
-import togos.mf.api.Request;
-import togos.mf.api.Response;
 
 public interface TwoStepCallable
 {

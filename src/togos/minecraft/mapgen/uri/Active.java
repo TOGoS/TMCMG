@@ -1,19 +1,10 @@
-package togos.jobkernel.mf;
+package togos.minecraft.mapgen.uri;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import togos.jobkernel.uri.ActiveRef;
-import togos.jobkernel.uri.ActiveRequestBuilder;
-import togos.jobkernel.uri.BaseRef;
-import togos.jobkernel.uri.LazyActiveRef;
-import togos.jobkernel.uri.URIUtil;
-import togos.jobkernel.uri.VanillaActiveRef;
-import togos.mf.api.Request;
-import togos.mf.api.RequestVerbs;
 import togos.mf.value.URIRef;
 
 public class Active
@@ -57,7 +48,6 @@ public class Active
 		    return this;
 		}
 		public ActiveRef toRef() { return new LazyActiveRef(functionName,args); }
-		public Request toRequest() { return new RefRequest(RequestVerbs.GET,toRef()); }
 	};
 	
 	public static ActiveRequestBuilder build( String functionName ) {
@@ -120,18 +110,6 @@ public class Active
 	}
 
 	////
-	
-	public static Request mkRequest( URIRef ref ) {
-		return new RefRequest(RequestVerbs.GET, ref);
-	}
-	
-	public static Request mkActiveRequest( String functionName, List arguments ) {
-		return mkRequest(mkActiveRef(functionName,arguments));
-	}
-	
-	public static Request mkActiveRequest( String functionName ) {
-		return mkActiveRequest( functionName, Collections.EMPTY_LIST );
-	}
 	
 	protected Active() {}
 }

@@ -1,24 +1,20 @@
 package togos.minecraft.mapgen.server;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
-import togos.jobkernel.mf.DataURICallable;
-import togos.jobkernel.uri.URIUtil;
 import togos.mf.api.Callable;
 import togos.mf.api.Request;
-import togos.mf.api.RequestVerbs;
 import togos.mf.api.Response;
 import togos.mf.base.BaseRequest;
 import togos.mf.base.BaseResponse;
 import togos.minecraft.mapgen.mf.ActiveCallable;
+import togos.minecraft.mapgen.mf.DataURICallable;
 import togos.minecraft.mapgen.mf.MultiDispatch;
-import togos.minecraft.mapgen.resource.ResourceHandle;
+import togos.minecraft.mapgen.mf.UnifyingCallable;
+import togos.minecraft.mapgen.uri.URIUtil;
 import togos.minecraft.mapgen.util.DataCacheCallable;
-import togos.minecraft.mapgen.util.TMCMGActiveKernel.ReverseBytes;
+import togos.minecraft.mapgen.util.ReverseBytes;
 import togos.minecraft.mapgen.world.gen.af.CompileTNLScript;
 import togos.minecraft.mapgen.world.gen.af.GenerateTNLChunk;
 import togos.minecraft.mapgen.world.gen.af.SerializeChunk;
@@ -42,45 +38,9 @@ public class TMCMGActiveWebServer extends WebServer
         }
 	}
 	
-	class RequestUnifier implements Callable {
-		Callable next;
-		WeakHashMap handling = new WeakHashMap();
-		
-		public RequestUnifier( Callable next ) {
-			this.next = next;
-		}
-		
-		protected synchronized ResourceHandle getHandle( String name ) {
-			ResourceHandle h = new ResourceHandle(name);
-			
-			Reference hr = (Reference)handling.get(h);
-			if( hr == null || (hr).get() == null ) {
-				handling.put(name, new WeakReference(h));
-			}
-			return h;
-		}
-		
-		public Response call( Request req ) {
-			if( RequestVerbs.GET.equals(req.getVerb()) ) {
-				ResourceHandle rh = getHandle(req.getResourceName());
-				if( rh.getResolvePermission() ) {
-					rh.setValue(next.call(req));
-				}
-				try {
-	                return (Response)rh.waitForValue();
-                } catch( InterruptedException e ) {
-                	Thread.currentThread().interrupt();
-                	throw new RuntimeException(e);
-                }
-			} else {
-				return next.call( req );
-			}
-		}
-	}
-	
 	public TMCMGActiveWebServer() {
 		MultiDispatch md = new MultiDispatch();
-		Callable rootCallable = new RequestUnifier(md);
+		Callable rootCallable = new UnifyingCallable(md);
 		
 		Map afunx = new HashMap();
 		afunx.put(CompileTNLScript.FUNCNAME, CompileTNLScript.instance);

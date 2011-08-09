@@ -6,18 +6,17 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import togos.jobkernel.mf.Active;
-import togos.jobkernel.mf.ActiveFunction;
-import togos.jobkernel.mf.PossibleRequestHandler;
-import togos.jobkernel.uri.ActiveRef;
 import togos.mf.api.Callable;
 import togos.mf.api.Request;
 import togos.mf.api.RequestVerbs;
 import togos.mf.api.Response;
 import togos.mf.base.BaseRequest;
+import togos.mf.base.BaseResponse;
 import togos.mf.value.URIRef;
+import togos.minecraft.mapgen.uri.Active;
+import togos.minecraft.mapgen.uri.ActiveRef;
 
-public class ActiveCallable implements Callable, PossibleRequestHandler
+public class ActiveCallable implements Callable
 {
 	Map activeFunctions; 
 	Callable rootCallable;
@@ -29,6 +28,8 @@ public class ActiveCallable implements Callable, PossibleRequestHandler
 	}
 	
 	public Response call( Request req ) {
+		if( !req.getResourceName().startsWith("active:") ) return BaseResponse.RESPONSE_UNHANDLED;
+		
 		final ActiveRef ref = (ActiveRef)Active.parseRef( req.getResourceName() );
 		final ActiveFunction af = (ActiveFunction)activeFunctions.get(ref.getFunctionName());
 		final Map resources = new HashMap();

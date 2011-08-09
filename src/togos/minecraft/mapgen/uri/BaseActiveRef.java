@@ -1,4 +1,4 @@
-package togos.jobkernel.uri;
+package togos.minecraft.mapgen.uri;
 
 import java.util.ArrayList;
 import java.util.Iterator;

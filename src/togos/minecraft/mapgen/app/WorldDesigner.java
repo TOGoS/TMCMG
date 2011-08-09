@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.BoxLayout;
 
-import togos.jobkernel.job.JobService;
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.job.JobService;
 import togos.minecraft.mapgen.job.RemoteJobService;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.HelpWindow;

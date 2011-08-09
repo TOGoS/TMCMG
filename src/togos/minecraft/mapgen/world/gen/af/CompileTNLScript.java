@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import togos.jobkernel.mf.Active;
-import togos.jobkernel.mf.ActiveFunction;
-import togos.jobkernel.uri.ActiveRef;
 import togos.mf.api.Response;
 import togos.mf.base.BaseResponse;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.TMCMGNamespace;
+import togos.minecraft.mapgen.mf.ActiveFunction;
+import togos.minecraft.mapgen.uri.Active;
+import togos.minecraft.mapgen.uri.ActiveRef;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;

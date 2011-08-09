@@ -1,4 +1,4 @@
-package togos.jobkernel.queue;
+package togos.minecraft.mapgen.queue;
 
 import java.util.Collection;
 import java.util.Iterator;

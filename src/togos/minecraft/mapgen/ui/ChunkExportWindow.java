@@ -31,7 +31,7 @@ import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 
-import togos.jobkernel.job.JobService;
+import togos.minecraft.mapgen.job.JobService;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;

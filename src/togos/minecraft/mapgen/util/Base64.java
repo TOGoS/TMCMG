@@ -41,7 +41,7 @@
  * 2009-09-16: Additional license (BSD) added.<br>
  */
 
-package togos.jobkernel.util;
+package togos.minecraft.mapgen.util;
 
 public class Base64 {
 

@@ -1,8 +1,7 @@
-package togos.jobkernel.mf;
+package togos.minecraft.mapgen.mf;
 
 import java.util.HashMap;
 
-import togos.jobkernel.uri.URIUtil;
 import togos.mf.api.AsyncCallable;
 import togos.mf.api.Callable;
 import togos.mf.api.Request;
@@ -11,8 +10,9 @@ import togos.mf.api.ResponseCodes;
 import togos.mf.api.ResponseHandler;
 import togos.mf.base.BaseResponse;
 import togos.mf.value.Chunk;
+import togos.minecraft.mapgen.uri.URIUtil;
 
-public class DataURICallable implements Callable, AsyncCallable, PossibleRequestHandler
+public class DataURICallable implements Callable, AsyncCallable
 {
 	public static final DataURICallable instance = new DataURICallable();
 

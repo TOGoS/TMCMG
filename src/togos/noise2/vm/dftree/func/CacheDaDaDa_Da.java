@@ -1,9 +1,9 @@
 package togos.noise2.vm.dftree.func;
 
-import togos.minecraft.mapgen.server.UriUtil;
 import togos.noise2.DigestUtil;
 import togos.noise2.cache.Cache;
 import togos.noise2.rewrite.ExpressionRewriter;
+import togos.noise2.uri.URIUtil;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.lang.FunctionUtil;
@@ -35,8 +35,8 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		
 		public String toString() {
 			return "active:apply" +
-				"+operator@"+UriUtil.uriEncode(funcUrn)+
-				"+operand@"+UriUtil.uriEncode(dataUrn);
+				"+operator@"+URIUtil.uriEncode(funcUrn)+
+				"+operand@"+URIUtil.uriEncode(dataUrn);
 		}
 	}
 	

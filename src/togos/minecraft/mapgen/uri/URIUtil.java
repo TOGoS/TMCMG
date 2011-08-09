@@ -1,8 +1,11 @@
-package togos.noise2.uri;
+package togos.minecraft.mapgen.uri;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
-public class UriUtil {
+import togos.minecraft.mapgen.util.Base64;
+
+public class URIUtil {
 	public static final char[] HEXCHARS = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 	
 	protected static final boolean bac( byte[] arr, byte b ) {
@@ -100,4 +103,86 @@ public class UriUtil {
 	public static String uriEncode( String text ) {
 		return uriEncode( text, UNRESERVED_CHARS );
 	}
+	
+	protected static final int hexValue( char digit ) {
+		return digit <= '9' ? digit - '0' : digit <= 'F' ? digit - 'A' + 10 : digit - 'a' + 10;
+	}
+	
+	protected static final int hexValue( char hiDigit, char loDigit ) {
+		return (hexValue(hiDigit) << 4) | hexValue(loDigit);
+	}
+	
+	public static byte[] uriDecodeBytes( String text, boolean plusAsSpace ) {
+		char[] inchars = text.toCharArray();
+		int escapecount = 0;
+		for( int i=inchars.length-1; i>=0; --i ) {
+			if( inchars[i] == '%' ) ++escapecount;
+		}
+		byte[] outbytes = new byte[inchars.length - (escapecount<<1)];
+		int inidx=0, outidx=0;
+		while( inidx < inchars.length ) {
+			char c = inchars[inidx++];
+			if( c == '%' ) {
+				char hiDigit = inchars[inidx++];
+				char loDigit = inchars[inidx++];
+				outbytes[outidx++] = (byte)hexValue(hiDigit, loDigit);
+			} else if( plusAsSpace && c == '+' ) {
+				outbytes[outidx++] = (byte)' ';
+			} else {
+				outbytes[outidx++] = (byte)c;
+			}
+		}
+		return outbytes;
+	}
+	
+	public static String uriDecode( String text, boolean plusAsSpace ) {
+		try {
+			return new String(uriDecodeBytes(text, plusAsSpace), "UTF-8");
+		} catch( UnsupportedEncodingException e ) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String uriDecode( String text ) {
+		return uriDecode( text, false );
+	}
+	
+	//// Data URI stuff
+	
+	public static String makeDataUri( byte[] data ) {
+		return "data:," + uriEncode(data);
+	}
+
+	public static String makeDataUri( String data ) {
+		try {
+			return makeDataUri(data.getBytes("UTF-8"));
+		} catch( UnsupportedEncodingException e ) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static byte[] decodeDataUri(String uri, Map metadataDest) {
+		if( !uri.startsWith("data:") ) return null;
+		int commaPos = uri.indexOf(',');
+		if( commaPos == -1 ) throw new RuntimeException("Invalid data URI has no comma: " + uri);
+		String[] junk = uri.substring("data:".length(),commaPos).split(";");
+		boolean base64Encoded = false;
+		for( int i=0; i<junk.length; ++i ) {
+			String junkPart = junk[i];
+			if( "base64".equals(junkPart) ) {
+				base64Encoded = true;
+				// Someday I might want to handle different charsets and things...
+			} else {
+				metadataDest.put("http://purl.org/dc/terms/format", junkPart);
+			}
+		}
+		byte[] data;
+		if( base64Encoded ) {
+			data = Base64.decode(uri.substring(commaPos+1));
+		} else {
+			data = uriDecodeBytes( uri.substring(commaPos+1), false );
+		}
+		return data;
+	}
+
 }

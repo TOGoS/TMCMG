@@ -11,7 +11,7 @@ import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseRequest;
 import togos.minecraft.mapgen.http.HTTPClient;
-import togos.minecraft.mapgen.server.UriUtil;
+import togos.minecraft.mapgen.server.URIUtil;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.service.Service;
 
@@ -29,7 +29,7 @@ public class RemoteJobService extends ServiceManager
 		}
 		
 		protected String n2l( String urn ) {
-			return resolverUrl+"?"+UriUtil.uriEncode(urn);
+			return resolverUrl+"?"+URIUtil.uriEncode(urn);
 		}
 		
 		public void run() {

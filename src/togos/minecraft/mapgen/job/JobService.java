@@ -1,11 +1,11 @@
-package togos.jobkernel.job;
+package togos.minecraft.mapgen.job;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
-import togos.jobkernel.queue.BlockingNonBlockingQueue;
+import togos.minecraft.mapgen.queue.BlockingNonBlockingQueue;
 import togos.service.Service;
 
 public class JobService implements Service

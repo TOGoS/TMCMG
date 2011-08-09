@@ -1,10 +1,10 @@
-package togos.jobkernel.mf;
+package togos.minecraft.mapgen.mf;
 
 import java.util.Collection;
 import java.util.Map;
 
-import togos.jobkernel.uri.ActiveRef;
 import togos.mf.api.Response;
+import togos.minecraft.mapgen.uri.ActiveRef;
 
 public interface ActiveFunction
 {

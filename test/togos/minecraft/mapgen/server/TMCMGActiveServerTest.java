@@ -1,13 +1,13 @@
 package togos.minecraft.mapgen.server;
 
 import junit.framework.TestCase;
-import togos.jobkernel.mf.Active;
-import togos.jobkernel.uri.BaseRef;
 import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseRequest;
 import togos.minecraft.mapgen.http.HTTPClient;
-import togos.minecraft.mapgen.util.TMCMGActiveKernel;
+import togos.minecraft.mapgen.uri.Active;
+import togos.minecraft.mapgen.uri.BaseRef;
+import togos.minecraft.mapgen.util.ReverseBytes;
 import togos.minecraft.mapgen.world.gen.af.GenerateTNLChunk;
 import togos.minecraft.mapgen.world.gen.af.SerializeChunk;
 import togos.noise2.DigestUtil;
@@ -27,7 +27,7 @@ public class TMCMGActiveServerTest extends TestCase
 	}
 	
 	protected String n2l( String urn ) {
-		return "http://localhost:"+server.port+"/N2R?"+UriUtil.uriEncode(urn);
+		return "http://localhost:"+server.port+"/N2R?"+URIUtil.uriEncode(urn);
 	}
 	
 	public void testSomeSha1Stuff() {
@@ -37,7 +37,7 @@ public class TMCMGActiveServerTest extends TestCase
 		String hwUrn = DigestUtil.getSha1Urn(hwBytes);
 		String hwHttpUri = n2l(hwUrn);
 		String hwrUrn = Active.build(
-			TMCMGActiveKernel.ReverseBytes.FUNCNAME
+			ReverseBytes.FUNCNAME
 		).with("operand",new BaseRef(hwUrn)).toRef().getUri();
 		String hwrHttpUri = n2l(hwrUrn);
 		BaseRequest getRequest = new BaseRequest("GET", hwHttpUri);

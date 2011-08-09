@@ -1,9 +1,8 @@
-package togos.jobkernel.uri;
+package togos.minecraft.mapgen.uri;
 
 import java.util.Collections;
 import java.util.List;
 
-import togos.jobkernel.mf.Active;
 
 /**
  * Doesn't generate a URI until asked to

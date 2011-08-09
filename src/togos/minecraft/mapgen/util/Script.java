@@ -1,7 +1,7 @@
 package togos.minecraft.mapgen.util;
 
-import togos.jobkernel.uri.BaseRef;
 import togos.mf.value.URIRef;
+import togos.minecraft.mapgen.uri.BaseRef;
 import togos.noise2.DigestUtil;
 
 /**

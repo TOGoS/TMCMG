@@ -1,4 +1,4 @@
-package togos.jobkernel.uri;
+package togos.minecraft.mapgen.uri;
 
 public class BaseRef extends AbstractRef
 {

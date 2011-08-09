@@ -7,31 +7,26 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.TestCase;
-import togos.jobkernel.job.JobService;
-import togos.jobkernel.mf.Active;
-import togos.jobkernel.mf.ActiveCallable;
-import togos.jobkernel.mf.AggregatingAsyncCallable;
-import togos.jobkernel.mf.AsyncCallAggregatePool;
-import togos.jobkernel.mf.AsyncMultiDispatch;
-import togos.jobkernel.mf.DataURICallable;
-import togos.jobkernel.uri.BaseRef;
-import togos.jobkernel.uri.URIUtil;
+import togos.mf.api.RequestVerbs;
 import togos.mf.api.Response;
-import togos.mf.api.ResponseHandler;
+import togos.mf.base.BaseRequest;
 import togos.mf.value.URIRef;
+import togos.minecraft.mapgen.mf.ActiveCallable;
+import togos.minecraft.mapgen.mf.DataURICallable;
+import togos.minecraft.mapgen.mf.MultiDispatch;
+import togos.minecraft.mapgen.mf.UnifyingCallable;
+import togos.minecraft.mapgen.uri.BaseRef;
+import togos.minecraft.mapgen.uri.URIUtil;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class GenerateTNLChunkTest extends TestCase
 {
-	// TODO: Use TMCMGActiveKernel for this stuffff
-	
 	Map afunx = new HashMap();
 	
-	AsyncMultiDispatch mdac = new AsyncMultiDispatch(new HashSet());
-	AggregatingAsyncCallable agg = new AggregatingAsyncCallable(new AsyncCallAggregatePool(), mdac);
-	JobService jobServ = new JobService( 2 );
-	ActiveCallable ac = new ActiveCallable( afunx, agg, jobServ.getJobQueue() );
+	MultiDispatch mdac = new MultiDispatch(new HashSet());
+	UnifyingCallable agg = new UnifyingCallable(mdac);
+	ActiveCallable ac = new ActiveCallable( agg, afunx );
 	
 	public void setUp() {
 		afunx.put(CompileTNLScript.FUNCNAME, CompileTNLScript.instance);
@@ -39,12 +34,6 @@ public class GenerateTNLChunkTest extends TestCase
 		
 		mdac.add(ac);
 		mdac.add(DataURICallable.instance);
-		
-		jobServ.start();
-	}
-	
-	public void tearDown() {
-		jobServ.halt();
 	}
 	
 	public void testGenerateSomeChunks() throws InterruptedException {
@@ -60,11 +49,7 @@ public class GenerateTNLChunkTest extends TestCase
 		
 		for( int i=0; i<gcount; ++i ) {
 			URIRef chunkRef = GenerateTNLChunk.makeRef(scriptRef, i*16, 0, i*32, 16, 128, 16);
-			mdac.callAsync(Active.mkRequest(chunkRef), new ResponseHandler() {
-				public void setResponse( Response res ) {
-					q1.add(res);
-				}
-			});
+			q1.add(mdac.call(new BaseRequest(RequestVerbs.GET,chunkRef.getUri())));
 		}
 		
 		int stoneNumber   = Materials.getByName("Stone").blockType;

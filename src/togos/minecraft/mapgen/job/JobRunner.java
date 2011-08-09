@@ -1,4 +1,4 @@
-package togos.jobkernel.job;
+package togos.minecraft.mapgen.job;
 
 import java.util.concurrent.BlockingQueue;
 

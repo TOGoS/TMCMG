@@ -1,4 +1,4 @@
-package togos.jobkernel.uri;
+package togos.minecraft.mapgen.uri;
 
 import togos.mf.value.URIRef;
 
