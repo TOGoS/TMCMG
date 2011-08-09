@@ -25,7 +25,7 @@ public class CachePerformanceTest
 			long begin = System.currentTimeMillis();
 			for( int k=0; k<iter2; ++k ) {
 				z[0] += 1;
-				func.apply(new DataDaDaDa(x,y,z));
+				func.apply(new DataDaDaDa(count,x,y,z));
 			}
 			long end = System.currentTimeMillis();
 			time += (end - begin);

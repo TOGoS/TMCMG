@@ -6,14 +6,14 @@ public class DataDaDaDa extends DataDaDa
 {
 	public double[] z;
 	
-	public DataDaDaDa( double[] x, double[] y, double[] z, String urn ) {
-		super( x, y );
+	public DataDaDaDa( int vectorSize, double[] x, double[] y, double[] z, String urn ) {
+		super( vectorSize, x, y );
 		this.z = z;
 		this.dataId = urn;
 	}
 	
-	public DataDaDaDa( double[] x, double[] y, double[] z ) {
-		this( x, y, z, null );
+	public DataDaDaDa( int vectorSize, double[] x, double[] y, double[] z ) {
+		this( vectorSize, x, y, z, null );
 	}
 	
 	public void digest( MessageDigest md ) {

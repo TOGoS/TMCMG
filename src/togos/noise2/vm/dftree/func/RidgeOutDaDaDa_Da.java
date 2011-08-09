@@ -18,11 +18,12 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
+		final int vectorSize = in.getLength();
 		double[] lower = this.lower.apply(in).x;
 		double[] upper = this.upper.apply(in).x;
 		double[] ridged = this.ridged.apply(in).x;
-		double[] out = new double[in.getLength()];
-		for( int i=in.getLength()-1; i>=0; --i ) {
+		double[] out = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			double d = upper[i]-lower[i];
 
 			// TODO: I'm guessing there's a better way to do this
@@ -47,7 +48,7 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 				out[i] = lower[i] + d*2*(k - 2*Math.floor(2*k)*(k-0.5));
 			}
 		}
-		return new DataDa(out);
+		return new DataDa(vectorSize,out);
 	}
 	
 	public boolean isConstant() {

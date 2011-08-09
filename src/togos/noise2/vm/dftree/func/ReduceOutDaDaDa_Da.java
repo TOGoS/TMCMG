@@ -18,15 +18,16 @@ public abstract class ReduceOutDaDaDa_Da
 	protected abstract void reduce( int count, double[] subOut, double[] out );
 	
 	public DataDa apply( DataDaDaDa in ) {
+		int vectorSize = in.getLength();
 		double[] first = components[0].apply(in).x;
 		double[] out = new double[in.getLength()];
-		for( int j=0; j<first.length; ++j ) {
+		for( int j=0; j<vectorSize; ++j ) {
 			out[j] = first[j];
 		}
 		for( int i=1; i<components.length; ++i ) {
-			reduce( in.getLength(), components[i].apply(in).x, out );
+			reduce( vectorSize, components[i].apply(in).x, out );
 		}
-		return new DataDa(out);
+		return new DataDa(vectorSize,out);
 	}
 	
 	public boolean equals( Object oth ) {

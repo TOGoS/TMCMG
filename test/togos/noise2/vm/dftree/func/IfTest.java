@@ -7,7 +7,7 @@ import togos.noise2.vm.dftree.data.DataDaDaDa;
 
 public class IfTest extends NoiseFunctionTest
 {
-	DataDaDaDa in = new DataDaDaDa(
+	DataDaDaDa in = new DataDaDaDa( 6,
 		new double[]{ 0, 1, 2, 3, 4, 5 },
 		new double[]{ 0, 0, 4, 4, 8, 8 },
 		new double[]{ 0, 0, 0, 0, 4, 4 }

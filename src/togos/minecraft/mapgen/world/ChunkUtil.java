@@ -121,14 +121,15 @@ public class ChunkUtil
 	public static DataDaDa getTileXZCoordinates( ChunkData cd ) {
 		long cwx = cd.getChunkPositionX();
 		long cwz = cd.getChunkPositionZ();
-		double[] x = new double[cd.width*cd.depth];
-		double[] z = new double[cd.width*cd.depth];
+		final int vectorSize = cd.width*cd.depth;
+		double[] x = new double[vectorSize];
+		double[] z = new double[vectorSize];
 		for( int i=0, tz=0; tz<cd.depth; ++tz ) {
 			for( int tx=0; tx<cd.width; ++tx, ++i ) {
 				x[i] = cwx+tx;
 				z[i] = cwz+tz;
 			}
 		}
-		return new DataDaDa(x,z);
+		return new DataDaDa(vectorSize,x,z);
 	}
 }

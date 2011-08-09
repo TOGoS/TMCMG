@@ -30,7 +30,7 @@ public class NPSelectDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		for( int i=0; i<count; ++i ) {
 			resultValues[i] = sValues.x[i] > 0 ? pValues.x[i] : nValues.x[i];
 		}
-		return new DataDa(resultValues);
+		return new DataDa(count,resultValues);
 	}
 	
 	public Object[] directSubExpressions() {

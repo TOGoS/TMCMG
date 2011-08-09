@@ -4,14 +4,16 @@ import java.security.MessageDigest;
 
 public class DataDa extends Data
 {
+	public final int length;
 	public final double[] x;
 	
-	public DataDa( double[] x ) {
+	public DataDa( int length, double[] x ) {
+		this.length = length;
 		this.x = x;
 	}
 	
 	public int getLength() {
-		return x.length;
+		return length;
 	}
 	
 	public void digest( MessageDigest md ) {

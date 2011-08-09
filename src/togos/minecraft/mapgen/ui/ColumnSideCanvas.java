@@ -14,9 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 
+import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -24,27 +23,22 @@ import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.util.Util;
-import togos.minecraft.mapgen.world.Blocks;
-import togos.minecraft.mapgen.world.LayerUtil;
-import togos.minecraft.mapgen.world.Materials;
-import togos.minecraft.mapgen.world.gen.HeightmapLayer;
-import togos.minecraft.mapgen.world.gen.LayerTerrainGenerator;
+import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
-import togos.noise2.vm.dftree.data.DataDaDa;
-import togos.noise2.vm.dftree.data.DataDaDaDa;
-import togos.noise2.vm.dftree.lang.FunctionUtil;
 import togos.service.Service;
 
-public class LayerSideCanvas extends WorldExplorerViewCanvas
+public class ColumnSideCanvas extends WorldExplorerViewCanvas
 {
     private static final long serialVersionUID = 1L;
 	
-	class LayerSideRenderer implements Runnable, Service {
-		List layers;
+    public static final int SKY_COLOR = 0xFF00AAFF;
+    
+	class ColumnSideRenderer implements Runnable, Service {
+		MaterialColumnFunction cFunc;
 		int width, height;
 		double worldX, worldZ, worldXPerPixel;
 		final int worldFloor = 0, worldCeiling = 128;
@@ -52,10 +46,10 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		public volatile BufferedImage buffer;
 		protected volatile boolean stop = false;		
 		
-		public LayerSideRenderer( List layers, int width, int height,
+		public ColumnSideRenderer( MaterialColumnFunction cFunc, int width, int height,
 			double worldX, double worldZ, double worldXPerPixel
 		) {
-			this.layers = layers;
+			this.cFunc = cFunc;
 			this.width = width;
 			this.height = height;
 			this.worldX = worldX;
@@ -82,104 +76,45 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 			buffer = createBuffer();
 			Graphics g = buffer.getGraphics();
 			
-			int[] px = new int[width];
+			final int sectWidth = 32; 
 			
-			double[] wx = new double[width];
-			double[] wz = new double[width];
-			int[] color = new int[width];
+			double[] wx = new double[sectWidth];
+			double[] wy = new double[height];
+			double[] wz = new double[sectWidth];
+			Material[] mat = new Material[sectWidth*height];
+			int[] imgCol = new int[sectWidth*height];
 			
 			synchronized( buffer ) {
-				g.setColor( color(0xFF00AAFF) );
+				g.setColor( color(SKY_COLOR) );
 				g.fillRect(0,0,width,height);
 			}
-			for( Iterator li=layers.iterator(); li.hasNext(); ) {
-				HeightmapLayer layer = (HeightmapLayer)li.next();
-				for( int i=0; i<width; ++i ) {
-					px[i] = i;
-					wx[i] = worldX + px[i]*worldXPerPixel;
+			
+			for( int i=0; i<height; ++i ) {
+				wy[i] = 0 + i;
+			}
+			
+			for( int sx=0; sx<width && !stop; sx+=sectWidth ) {
+				int sw = width - sx;
+				if( sw > sectWidth ) sw = sectWidth;
+				for( int i=0; i<sw; ++i ) {
+					wx[i] = worldX + (sx+i)*worldXPerPixel;
 					wz[i] = worldZ;
 				}
-				DataDaDa input = new DataDaDa(wx,wz);
-				int[] floor = LayerUtil.roundHeights(layer.floorHeightFunction.apply(input).x);
-				int[] ceil  = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(input).x);
-				double[] maxY = LayerUtil.maxY(ceil);
-				if( FunctionUtil.isConstant(layer.typeFunction) ) {
-					// To speed things up, special case when type is constant:
-					// (Would also work if we only knew it was constant wrt. Y)
-					
-					DataDaDaDa typeInput = new DataDaDaDa(wx,maxY,wz);
-					int[] type = layer.typeFunction.apply(typeInput).v;
-					
-					for( int i=0; i<width; ++i ) {
-						if( type[i] == Blocks.NONE ) {
-							color[i] = 0x00000000;
-						} else if( type[i] == Blocks.AIR ) {
-							color[i] = 0xFF0088FF;
-						} else {
-							color[i] = Materials.getByBlockType(type[i]).color;
-						}
+				cFunc.apply( sw, wx, wz, height, wy, mat );
+				
+				for( int x=0; x<sw; ++x ) {
+					for( int y=0; y<height; ++y ) {
+						Material material = mat[x*height+y];
+						int color = material.color == 0 ? SKY_COLOR : material.color;
+						imgCol[x+(height-y-1)*sectWidth] = color;
 					}
-					synchronized( buffer ) {
-						for( int i=0; i<width; ++i ) {
-							if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
-							if( floor[i] < worldFloor ) floor[i] = worldFloor;
-							if( ceil[i] <= floor[i] ) continue;
-							if( color[i] == 0x00000000 ) continue;
-							
-							int c = ((worldCeiling - ceil[i]) * height / (worldCeiling-worldFloor));
-							int f = ((worldCeiling - floor[i]) * height / (worldCeiling-worldFloor));
-							
-							g.setColor( color(color[i]) );
-							g.fillRect( px[i], c, 1, f-c );
-						}
-					}
-				} else {
-					BufferedImage columnBuffer = new BufferedImage(1,height,BufferedImage.TYPE_INT_ARGB);
-					
-					for( int i=0; i<width && !stop; ++i ) {
-						if( ceil[i] > worldCeiling ) ceil[i] = worldCeiling;
-						if( floor[i] < worldFloor ) floor[i] = worldFloor;
-						if( ceil[i] < floor[i] ) continue;
-						
-						int colHeight = (int)ceil[i] - (int)floor[i];
-						double[] colX = new double[colHeight];
-						double[] colY = new double[colHeight];
-						double[] colZ = new double[colHeight];
-						int[] colColors = new int[colHeight];
-						for( int j=0; j<colHeight; ++j ) {
-							colX[j] = wx[i];
-							colY[j] = (int)ceil[i] - j;
-							colZ[j] = wz[i];
-						}
-						DataDaDaDa finput = new DataDaDaDa(colX,colY,colZ);
-						int[] colTypes = layer.typeFunction.apply(finput).v;
-						for( int j=0; j<colHeight; ++j ) {
-							if( colTypes[j] == Blocks.NONE ) {
-								colColors[j] = 0x00000000;
-							} else if( colTypes[j] == Blocks.AIR ) {
-								colColors[j] = 0xFF0088FF;
-							} else {
-								colColors[j] = Materials.getByBlockType(colTypes[j]).color;
-							}
-						}
-						
-						columnBuffer.setRGB(0, 0, 1, colHeight, colColors, 0, 1);
-						synchronized( buffer ) {
-							g.drawImage(columnBuffer,
-								i, height-(int)ceil[i], i+1, height-(int)floor[i],
-								0, 0, 1, colHeight,
-								null);
-						}
-						
-						// Request a repaint after every few columns of these ~expensive~ layers
-						if( i % 32 == 31 ) repaint();
-					}
-					// Request a repaint after every layer is drawn
-					repaint();
 				}
+				
+				synchronized( buffer ) {
+					buffer.setRGB(sx, 0, sw, height, imgCol, 0, sectWidth);
+				}
+				repaint();
 			}
-			// Request a repaint when *done*
-			repaint();
 		}
 		
 		public void halt() {
@@ -191,10 +126,10 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		}
 	}
 	
-	protected List layers;
-	LayerSideRenderer cnr;
+	protected MaterialColumnFunction cFunc;
+	ColumnSideRenderer cnr;
 	
-	public LayerSideCanvas() {
+	public ColumnSideCanvas() {
 		super();
     }
 	
@@ -204,18 +139,17 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		stopRenderer();
 		
 		if( wg == null ) {
-			layers = null;
-		} else if( wg.getGroundFunction() instanceof LayerTerrainGenerator.LayerGroundFunction ) {
-			this.layers = ((LayerTerrainGenerator.LayerGroundFunction)wg.getGroundFunction()).layers;
+			cFunc = null;
 		} else {
-			System.err.println("Aagh this ground function is not of the layered variety");
-			System.err.println("Can't show it in LayerSideCanvas.");
+			cFunc = wg.getColumnFunction();
 		}
 		
-		if( layers != null ) {
-			startRenderer(new LayerSideRenderer(layers,getWidth(),getHeight(),leftX,wy,mpp));
+		if( cFunc != null ) {
+			startRenderer(new ColumnSideRenderer(cFunc,getWidth(),getHeight(),leftX,wy,mpp));
 		}
 	}
+	
+	
 	
 	public void update(Graphics g) {
 		paint(g);
@@ -227,7 +161,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 	 */
 	public void paint(Graphics g) {
 		BufferedImage buf;
-		LayerSideRenderer nr = cnr;
+		ColumnSideRenderer nr = cnr;
 		if( nr != null && (buf = nr.buffer) != null ) {
 			// Not sure if locking is really needed here...
 			synchronized( buf ) {
@@ -247,7 +181,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		}
 	}
 	
-	public void startRenderer( LayerSideRenderer nr ) {
+	public void startRenderer( ColumnSideRenderer nr ) {
 		this.stopRenderer();
 		this.cnr = nr;
 		this.cnr.start();
@@ -269,7 +203,7 @@ public class LayerSideCanvas extends WorldExplorerViewCanvas
 		
 		final ServiceManager sm = new ServiceManager();
 		final Frame f = new Frame("Noise Canvas");
-		final LayerSideCanvas nc = new LayerSideCanvas();
+		final ColumnSideCanvas nc = new ColumnSideCanvas();
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
 			public void generatorUpdated( Script s ) {

@@ -7,11 +7,12 @@ import togos.noise2.vm.dftree.data.DataDaDaDa;
 public class DistanceDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
 	public DataDa apply( DataDaDaDa in ) {
-		double[] out = new double[in.getLength()];
+		final int len = in.getLength();
+		double[] out = new double[len];
 		for( int i=in.getLength()-1; i>=0; --i ) {
 			out[i] = Math.sqrt(in.x[i]*in.x[i]+in.y[i]*in.y[i]+in.z[i]*in.z[i]);
 		}
-		return new DataDa(out);
+		return new DataDa(len, out);
 	}
 	
 	public boolean isConstant() {  return false;  }

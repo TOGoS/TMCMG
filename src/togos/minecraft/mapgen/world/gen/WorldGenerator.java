@@ -2,12 +2,14 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.Map;
 
+import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
 
 public interface WorldGenerator
 {
 	/** Used to color the overhead preview */
 	public FunctionDaDa_DaIa getGroundFunction();
+	public MaterialColumnFunction getColumnFunction();
 	public ChunkMunger getChunkMunger();
 	
 	/**

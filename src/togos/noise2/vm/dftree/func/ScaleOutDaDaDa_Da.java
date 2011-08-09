@@ -14,12 +14,13 @@ public class ScaleOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
+		final int vectorSize = in.getLength();
 		double[] scaled = next.apply(in).x;
-		double[] out = new double[in.getLength()];
-		for( int i=in.getLength()-1; i>=0; --i ) {
+		double[] out = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			out[i] = scaled[i] * scale;
 		}
-		return new DataDa(out);
+		return new DataDa(vectorSize,out);
 	}
 	
 	public boolean isConstant() {

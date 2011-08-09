@@ -18,16 +18,17 @@ public class ClampOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
+		final int len = in.getLength();
 		double[] lower = this.lower.apply(in).x;
 		double[] upper = this.upper.apply(in).x;
 		double[] clamped = this.clamped.apply(in).x;
-		double[] out = new double[in.getLength()];
+		double[] out = new double[len];
 		for( int i=in.getLength()-1; i>=0; --i ) {
 			if( clamped[i] < lower[i] ) out[i] = lower[i];
 			else if( clamped[i] > upper[i] ) out[i] = upper[i];
 			else out[i] = clamped[i];
 		}
-		return new DataDa(out);
+		return new DataDa(len,out);
 	}
 	
 	public boolean isConstant() {

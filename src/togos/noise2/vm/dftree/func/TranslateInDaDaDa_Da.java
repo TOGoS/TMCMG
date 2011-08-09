@@ -17,15 +17,16 @@ public class TranslateInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] tx = new double[in.getLength()];
-		double[] ty = new double[in.getLength()];
-		double[] tz = new double[in.getLength()];
-		for( int i=in.getLength()-1; i>=0; --i ) {
+		final int vectorSize = in.getLength();
+		double[] tx = new double[vectorSize];
+		double[] ty = new double[vectorSize];
+		double[] tz = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			tx[i] = in.x[i]+dx;
 			ty[i] = in.y[i]+dy;
 			tz[i] = in.z[i]+dz;
 		}
-		return next.apply(new DataDaDaDa(tx, ty, tz));
+		return next.apply(new DataDaDaDa(vectorSize, tx, ty, tz));
 	}
 	
 	public boolean isConstant() {

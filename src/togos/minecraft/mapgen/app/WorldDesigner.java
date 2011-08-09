@@ -32,9 +32,9 @@ import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.job.JobService;
 import togos.minecraft.mapgen.job.RemoteJobService;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
+import togos.minecraft.mapgen.ui.ColumnSideCanvas;
 import togos.minecraft.mapgen.ui.HelpWindow;
 import togos.minecraft.mapgen.ui.Icons;
-import togos.minecraft.mapgen.ui.LayerSideCanvas;
 import togos.minecraft.mapgen.ui.MasterWorldExplorerView;
 import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.ui.Stat;
@@ -222,7 +222,7 @@ public class WorldDesigner
 	ChunkWritingService cws = new ChunkWritingService(wdk.jobServ.jobQueue);
 	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm,cws);
 	
-	LayerSideCanvas lsc = new LayerSideCanvas();
+	ColumnSideCanvas lsc = new ColumnSideCanvas();
 	NoiseCanvas noiseCanvas = new NoiseCanvas();
 	Label statusLabel = new Label();
 	MasterWorldExplorerView mwev = new MasterWorldExplorerView() {

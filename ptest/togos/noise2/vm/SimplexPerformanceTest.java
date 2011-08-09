@@ -40,7 +40,7 @@ public class SimplexPerformanceTest
 			y[i] = Math.random()*1024;
 			z[i] = Math.random()*1024;
 		}
-		hlInput = new DataDaDaDa(x,y,z);
+		hlInput = new DataDaDaDa(vectorSize, x,y,z);
 	}
 	
 	public void run() {

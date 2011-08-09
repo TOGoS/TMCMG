@@ -89,7 +89,7 @@ public class FunctionUtil
 	public static double getValue( FunctionDaDa_Da da, double x, double y ) {
 		double[] ax = new double[]{x};
 		double[] ay = new double[]{y};
-		DataDa out = da.apply(new DataDaDa(ax,ay));
+		DataDa out = da.apply(new DataDaDa(1,ax,ay));
 		return out.x[0];
 	}
 
@@ -97,7 +97,7 @@ public class FunctionUtil
 		double[] ax = new double[]{x};
 		double[] ay = new double[]{y};
 		double[] az = new double[]{z};
-		DataDa out = da.apply(new DataDaDaDa(ax,ay,az));
+		DataDa out = da.apply(new DataDaDaDa(1,ax,ay,az));
 		return out.x[0];
 	}
 
@@ -105,7 +105,7 @@ public class FunctionUtil
 		double[] ax = new double[]{x};
 		double[] ay = new double[]{y};
 		double[] az = new double[]{z};
-		DataIa out = da.apply(new DataDaDaDa(ax,ay,az));
+		DataIa out = da.apply(new DataDaDaDa(1,ax,ay,az));
 		return out.v[0];
 	}
 

@@ -6,8 +6,8 @@ public class DataDaDa extends DataDa
 {
 	public double[] y;
 	
-	public DataDaDa( double[] x, double[] y ) {
-		super(x);
+	public DataDaDa( int length, double[] x, double[] y ) {
+		super(length, x);
 		this.y = y;
 	}
 	

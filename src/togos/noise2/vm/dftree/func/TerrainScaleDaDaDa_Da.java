@@ -16,18 +16,19 @@ public class TerrainScaleDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] scaledX = new double[in.getLength()];
-		double[] scaledY = new double[in.getLength()];
-		double[] scaledZ = new double[in.getLength()];
-		double[] out = new double[in.getLength()];
-		for( int i=in.getLength()-1; i>=0; --i ) {
+		final int vectorSize=in.getLength();
+		double[] scaledX = new double[vectorSize];
+		double[] scaledY = new double[vectorSize];
+		double[] scaledZ = new double[vectorSize];
+		double[] out = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			scaledX[i] = in.x[i]/hScale;
 			scaledY[i] = in.y[i]/hScale;
 			scaledZ[i] = in.z[i]/hScale;
 		}
-		double[] subOut = next.apply(new DataDaDaDa(scaledX,scaledY,scaledZ)).x;
+		double[] subOut = next.apply(new DataDaDaDa(vectorSize,scaledX,scaledY,scaledZ)).x;
 		for( int i=in.getLength()-1; i>=0; --i ) out[i] = subOut[i] * vScale;
-		return new DataDa(subOut);
+		return new DataDa(vectorSize,subOut);
 	}
 	
 	public boolean isConstant() {

@@ -246,8 +246,8 @@ public class WorldGeneratorMacros
 				
 				chunkMungers.add(0, lm.getChunkMunger());
 				return new SimpleWorldGenerator(
-						new ChunkMungeList(chunkMungers), lm
-								.getGroundFunction(), components);
+					new ChunkMungeList(chunkMungers), lm.getGroundFunction(),
+					lm.getColumnFunction(), components);
 			}
 		});
 	}

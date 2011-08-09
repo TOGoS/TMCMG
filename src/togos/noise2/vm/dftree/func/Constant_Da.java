@@ -28,7 +28,7 @@ public class Constant_Da extends TNLFunctionDaDaDa_Da implements FunctionDaDa_Da
 		for( int j=0; j<count; ++j ) {
 			out[j] = value;
 		}
-		return new DataDa(out);
+		return new DataDa(count,out);
 	}
 	
 	public DataDa apply( DataDaDa in ) {

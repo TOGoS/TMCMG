@@ -20,6 +20,6 @@ public class CosDaDaDa_Da extends OneArgDaDaDa_Da
 		for (int i = 0; i < len; i++) {
 			out[i] = Math.cos(dat[i]);
 		}
-		return new DataDa( out );
+		return new DataDa( len, out );
 	}
 }

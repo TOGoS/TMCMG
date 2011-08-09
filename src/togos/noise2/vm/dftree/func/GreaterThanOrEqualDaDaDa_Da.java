@@ -15,13 +15,14 @@ public class GreaterThanOrEqualDaDaDa_Da extends ComparisonDaDaDa_Da
 	}
 
 	public DataDa apply( DataDaDaDa in ) {
+		final int vectorSize = in.getLength();
 		double[] oa = a.apply(in).x;
 		double[] ob = b.apply(in).x;
-		double[] res = new double[oa.length];
-		for( int i=res.length-1; i>=0; --i ) {
+		double[] res = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			res[i] = oa[i] >= ob[i] ? 1 : 0; 
 		}
-		return new DataDa(res);
+		return new DataDa(vectorSize,res);
 	}
 
 	public Object rewriteSubExpressions( ExpressionRewriter rw ) {

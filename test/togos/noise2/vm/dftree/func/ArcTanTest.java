@@ -9,7 +9,7 @@ import togos.noise2.vm.dftree.lang.FunctionUtil;
 public class ArcTanTest extends NoiseFunctionTest
 {
 	public void testSqrt() throws ScriptError {
-		DataDaDaDa in = new DataDaDaDa(
+		DataDaDaDa in = new DataDaDaDa( 4,
 			new double[]{ -2, -1, 0, 3 },
 			new double[]{ -1,  0, 1, 4 },
 			new double[]{  0,  0, 0, 0 }

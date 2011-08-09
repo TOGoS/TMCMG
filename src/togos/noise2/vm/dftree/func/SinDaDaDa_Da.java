@@ -14,12 +14,12 @@ public class SinDaDaDa_Da extends OneArgDaDaDa_Da
     }
 
 	public DataDa apply( DataDaDaDa in ) {
-		int len = in.getLength();
+		int vectorSize = in.getLength();
 		double[] dat = arg.apply(in).x;
-		double[] out = new double[len];
-		for (int i = 0; i < len; i++) {
+		double[] out = new double[vectorSize];
+		for( int i=0; i<vectorSize; i++ ) {
 			out[i] = Math.sin(dat[i]);
 		}
-		return new DataDa( out );
+		return new DataDa(vectorSize,out);
 	}
 }

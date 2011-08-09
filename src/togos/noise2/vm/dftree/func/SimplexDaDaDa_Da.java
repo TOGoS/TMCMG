@@ -16,16 +16,13 @@ public class SimplexDaDaDa_Da extends ThreeArgDaDaDa_Da
 	public String getMacroName() {  return "simplex";  }
 	
 	public DataDa apply( DataDaDaDa in ) {
+		final int vectorSize = in.getLength();
 		SimplexNoise sn = new SimplexNoise();
-		
-		double[] out = new double[in.getLength()];
+		double[] out = new double[vectorSize];
 		double[] x = inX.apply(in).x;
 		double[] y = inY.apply(in).x;
 		double[] z = inZ.apply(in).x;
-		//sn.apply( in.getLength(), x, y, z, out );
-	    for( int i=in.getLength()-1; i>=0; --i ) {
-	    	out[i] = sn.apply((float)x[i], (float)y[i], (float)z[i]);
-	    }
-	    return new DataDa(out);
+		sn.apply( vectorSize, x, y, z, out );
+	    return new DataDa(vectorSize,out);
 	}
 }

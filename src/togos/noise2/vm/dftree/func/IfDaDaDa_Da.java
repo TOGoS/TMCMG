@@ -17,16 +17,16 @@ public class IfDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
-		int len = in.getLength();
+		int vectorSize = in.getLength();
 		boolean anyFalses;
-		boolean[] capturedList = new boolean[len];
-		DataDa res = new DataDa(new double[len]);
+		boolean[] capturedList = new boolean[vectorSize];
+		DataDa res = new DataDa(vectorSize, new double[vectorSize]);
 		int condi;
 		for( condi=0; condi<funx.length-1; condi+=2 ) {
 			DataDa condData = funx[condi].apply(in);
 			DataDa resData  = funx[condi+1].apply(in);
 			anyFalses = false;
-			for( int i=len-1; i>=0; --i ) {
+			for( int i=vectorSize-1; i>=0; --i ) {
 				if( !capturedList[i] && condData.x[i] > 0 ) {
 					res.x[i] = resData.x[i];
 					capturedList[i] = true;
@@ -37,7 +37,7 @@ public class IfDaDaDa_Da extends TNLFunctionDaDaDa_Da
 			if( !anyFalses ) return res;
 		}
 		DataDa elseResData = funx[condi].apply(in);
-		for( int i=len-1; i>=0; --i ) {
+		for( int i=vectorSize-1; i>=0; --i ) {
 			if( !capturedList[i] ) {
 				res.x[i] = elseResData.x[i];
 			}

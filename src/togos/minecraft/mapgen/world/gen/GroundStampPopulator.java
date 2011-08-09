@@ -55,7 +55,7 @@ public class GroundStampPopulator implements StampPopulator
 			x[i] = cwx + r.nextInt(cw);
 			z[i] = cwz + r.nextInt(cd);
 		}
-		DataDaIa ground = groundFunction.apply(new DataDaDa(x,z));
+		DataDaIa ground = groundFunction.apply(new DataDaDa(count,x,z));
 		for( int i=0; i<count; ++i ) {
 			boolean allowPlacement = false;
 			for( int j=0; j<allowedGroundTypes.length; ++j ) {

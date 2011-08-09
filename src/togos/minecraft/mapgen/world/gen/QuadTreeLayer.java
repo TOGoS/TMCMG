@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Collections;
 
 import togos.minecraft.mapgen.ui.NoiseCanvas;
 import togos.minecraft.mapgen.ui.WorldExploreKeyListener;
@@ -126,11 +127,11 @@ public class QuadTreeLayer implements ChunkMunger
 				}
 				
 				if( n != null ) {
-					DataDaDa nodeIn = new DataDaDa(inX, inZ);
+					DataDaDa nodeIn = new DataDaDa(len, inX, inZ);
 					DataDa floor = n.floorHeightFunction.apply(nodeIn);
 					DataDa ceiling = n.ceilingHeightFunction.apply(nodeIn);
 					double[] topY = LayerUtil.maxY(ceiling.x);
-					DataIa type = n.typeFunction.apply(new DataDaDaDa(inX, topY, inZ));
+					DataIa type = n.typeFunction.apply(new DataDaDaDa(len, inX, topY, inZ));
 					
 					int[] rFloor = LayerUtil.roundHeights(floor.x);
 					int[] rCeil = LayerUtil.roundHeights(ceiling.x);
@@ -182,7 +183,7 @@ public class QuadTreeLayer implements ChunkMunger
 			)
 		);
 		
-		WorldGenerator wg = new SimpleWorldGenerator(null, qtl.getGroundFunction() );
+		WorldGenerator wg = new SimpleWorldGenerator(null, qtl.getGroundFunction(), null, Collections.EMPTY_MAP );
 		
 		nc.setWorldGenerator( wg );
 		

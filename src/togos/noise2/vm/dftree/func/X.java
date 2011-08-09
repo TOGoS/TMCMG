@@ -9,7 +9,7 @@ public class X extends TNLFunctionDaDaDa_Da
 	public static final X instance = new X();
 	
 	public DataDa apply(DataDaDaDa in) {
-		return new DataDa(in.x);
+		return new DataDa(in.getLength(),in.x);
 	}
 	
 	public boolean isConstant() {  return false;  }

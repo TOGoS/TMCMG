@@ -17,15 +17,16 @@ public class ScaleInDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] scaledX = new double[in.getLength()];
-		double[] scaledY = new double[in.getLength()];
-		double[] scaledZ = new double[in.getLength()];
-		for( int i=in.getLength()-1; i>=0; --i ) {
+		final int vectorSize = in.getLength();
+		double[] scaledX = new double[vectorSize];
+		double[] scaledY = new double[vectorSize];
+		double[] scaledZ = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			scaledX[i] = in.x[i]*scaleX;
 			scaledY[i] = in.y[i]*scaleY;
 			scaledZ[i] = in.z[i]*scaleZ;
 		}
-		return next.apply(new DataDaDaDa(scaledX, scaledY, scaledZ));
+		return next.apply(new DataDaDaDa(vectorSize, scaledX, scaledY, scaledZ));
 	}
 	
 	public boolean isConstant() {

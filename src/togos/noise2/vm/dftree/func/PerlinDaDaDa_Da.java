@@ -16,8 +16,9 @@ public class PerlinDaDaDa_Da extends ThreeArgDaDaDa_Da
 	public String getMacroName() {  return "perlin";  }
 	
 	public DataDa apply( DataDaDaDa in ) {
-		double[] out = new double[in.getLength()];
-		D5_2Perlin.instance.apply( in.getLength(), inX.apply(in).x, inY.apply(in).x, inZ.apply(in).x, out );
-		return new DataDa(out);
+		final int vectorSize = in.getLength();
+		double[] out = new double[vectorSize];
+		D5_2Perlin.instance.apply( vectorSize, inX.apply(in).x, inY.apply(in).x, inZ.apply(in).x, out );
+		return new DataDa(vectorSize,out);
 	}
 }

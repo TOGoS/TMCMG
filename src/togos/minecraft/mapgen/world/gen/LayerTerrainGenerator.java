@@ -6,13 +6,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.LayerUtil;
+import togos.minecraft.mapgen.world.Material;
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.vm.dftree.data.DataDaDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.data.DataDaIa;
+import togos.noise2.vm.dftree.data.DataIa;
 import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
 
 public class LayerTerrainGenerator implements WorldGenerator
@@ -60,7 +64,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 								colY[j] = flo+j;
 								colZ[j] = in.y[i];
 							}
-							DataDaDaDa finput = new DataDaDaDa(colX,colY,colZ);
+							DataDaDaDa finput = new DataDaDaDa(colHeight,colX,colY,colZ);
 							int[] colTypes = layer.typeFunction.apply(finput).v;
 							
 							for( int j=0, ty=flo; ty<cei; ++ty, ++j ) {
@@ -105,7 +109,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
 				double[] lFloor = l.floorHeightFunction.apply(in).x;
 				double[] lTopY = LayerUtil.maxY(lCeil);
-				DataDaDaDa typeInput = new DataDaDaDa(in.x,lTopY,in.y);
+				DataDaDaDa typeInput = new DataDaDaDa(count,in.x,lTopY,in.y);
 				int[] lType = l.typeFunction.apply(typeInput).v;
 				for( int j=in.getLength()-1; j>=0; --j ) {
 					boolean subtract = false;
@@ -146,6 +150,51 @@ public class LayerTerrainGenerator implements WorldGenerator
 		}
 	}
 	
+	public static class LayerColumnFunction implements MaterialColumnFunction {
+		List layers;
+		public LayerColumnFunction( List layers ) {
+			this.layers = layers;
+		}
+		
+		public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, Material[] dest ) {
+			DataDaDa in = new DataDaDa(xzCount,x,z);
+			
+			for( int i=0; i<xzCount*yCount; ++i ) {
+				dest[i] = Materials.getByBlockType(Blocks.AIR);
+			}
+			
+			for( Iterator li=layers.iterator(); li.hasNext(); ) {
+				HeightmapLayer l = (HeightmapLayer)li.next();
+				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
+				double[] lFloor = l.floorHeightFunction.apply(in).x;
+				
+				for( int i=0; i<xzCount; ++i ) {
+					int[] colIdx = new int[yCount];
+					double[] colX = new double[yCount];
+					double[] colY = new double[yCount];
+					double[] colZ = new double[yCount];
+					int colSize=0;
+					for( int j=0; j<yCount; ++j ) {
+						if( y[j] >= lFloor[i] && y[j] < lCeil[i] ) {
+							colIdx[colSize] = j;
+							colX[colSize] = x[i];
+							colY[colSize] = y[j];
+							colZ[colSize] = z[i];
+							++colSize;
+						}
+					}
+					DataIa type = l.typeFunction.apply( new DataDaDaDa(colSize,colX,colY,colZ,null) );
+					for( int j=0; j<colSize; ++j ) {
+						int t = type.v[j];
+						if( t == -1 ) continue;
+						int yIdx = colIdx[j];
+						dest[yIdx+i*yCount] = Materials.getByBlockType(t);
+					}
+				}
+			}
+        }
+	}
+	
 	public ChunkMunger getChunkMunger() {
 		return new LayerChunkMunger(layers);
 	}
@@ -153,6 +202,10 @@ public class LayerTerrainGenerator implements WorldGenerator
 	public FunctionDaDa_DaIa getGroundFunction() {
 		return new LayerGroundFunction(layers, LayerGroundFunction.AIR_SUBTRACT);
 	}
+	
+	public MaterialColumnFunction getColumnFunction() {
+		return new LayerColumnFunction(layers);
+    }
 	
 	public Map getComponents() {
 		return components;

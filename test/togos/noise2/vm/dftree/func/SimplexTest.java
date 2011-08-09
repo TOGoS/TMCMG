@@ -7,7 +7,7 @@ import togos.noise2.vm.dftree.data.DataDaDaDa;
 public class SimplexTest extends NoiseFunctionTest
 {
 	public void testSimplex() throws ScriptError {
-		DataDaDaDa in = new DataDaDaDa(
+		DataDaDaDa in = new DataDaDaDa( 4,
 			new double[]{  -0.250,  0.750,  1.750,  2.750 },
 			new double[]{   0.500,  1.500,  2.500,  3.500 },
 			new double[]{  -2.125, -1.125, -0.125, +0.875 }

@@ -78,7 +78,7 @@ public class PerformanceTest
 	
 	public DataDa runTree( double startx, double starty, double startz, int vectorSize ) {
 		initData( x, y, z, startx, starty, startz, vectorSize );
-		DataDaDaDa dat = new DataDaDaDa(x, y, z);
+		DataDaDaDa dat = new DataDaDaDa(vectorSize, x, y, z);
 		return tree.apply(dat);
 	}
 	

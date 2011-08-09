@@ -97,7 +97,7 @@ public class TNLCompiler implements Compiler
 				final FunctionDaDaDa_Da dddd = (FunctionDaDaDa_Da)cv;
 				return new LFunctionDaDaDa_Da() {
 					public void apply( int vectorSize, double[] x, double[] y, double[] z, double[] dest ) {
-						DataDa d = dddd.apply( new DataDaDaDa(x,y,z) );
+						DataDa d = dddd.apply( new DataDaDaDa(vectorSize,x,y,z) );
 						for( int i=0; i<vectorSize; ++i ) {
 							dest[i] = d.x[i];
 						}

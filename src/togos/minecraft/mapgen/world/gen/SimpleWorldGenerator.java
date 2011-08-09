@@ -1,8 +1,8 @@
 package togos.minecraft.mapgen.world.gen;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.noise2.vm.dftree.func.AdaptInXZDaDaDa_DaDa_Da;
 import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
@@ -19,6 +19,7 @@ import togos.noise2.vm.dftree.func.TerrainScaleDaDaDa_Da;
 public class SimpleWorldGenerator implements WorldGenerator
 {
 	public FunctionDaDa_DaIa groundFunction;
+	public MaterialColumnFunction columnFunction;
 	public ChunkMunger chunkMunger;
 	public Map components;
 	
@@ -89,22 +90,23 @@ public class SimpleWorldGenerator implements WorldGenerator
 		);
 		cmList.addMunger( new StampPopulatorChunkMunger(tsp) );
 		
-		DEFAULT = new SimpleWorldGenerator(cmList, lm.getGroundFunction());
+		DEFAULT = new SimpleWorldGenerator(cmList, lm.getGroundFunction(), lm.getColumnFunction(), lm.getComponents());
 	}
 	
-	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction, Map components ) {
+	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction, MaterialColumnFunction columnFunction, Map components ) {
 		this.chunkMunger = chunkMunger;
 		this.groundFunction = groundFunction;
+		this.columnFunction = columnFunction;
 		this.components = components;
 	}
-	
-	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction ) {
-		this( chunkMunger, groundFunction, new HashMap() );
-	}
-	
+		
 	public FunctionDaDa_DaIa getGroundFunction() {
 		return groundFunction;
 	}
+	
+	public MaterialColumnFunction getColumnFunction() {
+		return columnFunction;
+    }
 	
 	public ChunkMunger getChunkMunger() {
 		return chunkMunger;

@@ -29,15 +29,16 @@ public class NormalShadingGroundColorFunction extends GroundColorFunction
 	}
 		
 	public DataIa apply( DataDaDa in ) {
-		double[] sx = new double[in.getLength()];
-		double[] sy = new double[in.getLength()];
-		for( int i=in.getLength()-1; i>=0; --i ) {
+		final int vectorSize = in.getLength();
+		double[] sx = new double[vectorSize];
+		double[] sy = new double[vectorSize];
+		for( int i=vectorSize-1; i>=0; --i ) {
 			sx[i] = in.x[i] + dx;
 			sy[i] = in.y[i] + dy;
 		}
 
 		DataDaIa ground = groundFunction.apply(in);
-		DataDaDa sin = new DataDaDa(sx,sy);
+		DataDaDa sin = new DataDaDa(vectorSize,sx,sy);
 		DataDaIa sground = groundFunction.apply(sin);
 		
 		int[] color = new int[ground.getLength()];

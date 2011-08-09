@@ -129,7 +129,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					wy[i] = worldY + py[i]*worldYPerPixel;
 				}
 				long beginTime = System.currentTimeMillis();
-				int[] color = colorFunction.apply(new DataDaDa(wx,wy)).v;
+				int[] color = colorFunction.apply(new DataDaDa(batchSize,wx,wy)).v;
 				long endTime = System.currentTimeMillis();
 				elapsedMs += (endTime - beginTime);
 				samples += batchSize;

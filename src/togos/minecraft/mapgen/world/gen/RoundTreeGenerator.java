@@ -55,7 +55,7 @@ public class RoundTreeGenerator implements StampGenerator
 				}
 			}
 		}
-		double[] leafDensity = leafDensityFunction.apply(new DataDaDaDa(x,y,z)).x;
+		double[] leafDensity = leafDensityFunction.apply(new DataDaDaDa(volume,x,y,z)).x;
 		for( i=0; i<volume; ++i ) {
 			if( leafDensity[i] < 1 ) {
 				s.setBlock((int)x[i],(int)y[i],(int)z[i], Blocks.LEAVES);

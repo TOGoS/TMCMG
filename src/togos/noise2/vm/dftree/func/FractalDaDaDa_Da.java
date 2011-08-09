@@ -24,13 +24,14 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply(DataDaDaDa in) {
-		double[] xfX = new double[in.getLength()];
-		double[] xfY = new double[in.getLength()];
-		double[] xfZ = new double[in.getLength()];
-		double[] out = new double[in.getLength()];
+		final int len = in.getLength();
+		double[] xfX = new double[len];
+		double[] xfY = new double[len];
+		double[] xfZ = new double[len];
+		double[] out = new double[len];
 		double hs = this.inithscale;
 		double vs = this.initvscale;
-		for( int j=in.getLength()-1; j>=0; --j ) {
+		for( int j=len-1; j>=0; --j ) {
 			out[j] = 0;
 		}
 		for( int i=0; i<iterations; ++i ) {
@@ -39,14 +40,14 @@ public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 				xfY[j] = in.y[j]/hs+ztrans*i;
 				xfZ[j] = in.z[j]/hs+ztrans*i;
 			}
-			double[] subOut = next.apply(new DataDaDaDa(xfX,xfY,xfZ)).x;
-			for( int j=in.getLength()-1; j>=0; --j ) {
+			double[] subOut = next.apply(new DataDaDaDa(len,xfX,xfY,xfZ)).x;
+			for( int j=len-1; j>=0; --j ) {
 				out[j] += subOut[j] * vs;
 			}
 			hs *= hscale;
 			vs *= vscale;
 		}
-		return new DataDa(out);
+		return new DataDa(len,out);
 	}
 	
 	public boolean isConstant() {
