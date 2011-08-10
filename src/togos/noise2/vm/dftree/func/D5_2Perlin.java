@@ -73,8 +73,8 @@ public final class D5_2Perlin implements LFunctionDaDaDa_Da
 	}
 	
 	public void apply( int vectorSize, double[] x, double[] y, double[] z, double[] dest ) {
-	    for( int i=0; i<vectorSize; ++i ) {
-	    	dest[i] = get(x[i],y[i],z[i]);
+		for( int j=vectorSize-1; j>=0; --j ) {
+	    	dest[j] = get(x[j],y[j],z[j]);
 	    }
     }
 }

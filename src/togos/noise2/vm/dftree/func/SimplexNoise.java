@@ -80,8 +80,8 @@ public final class SimplexNoise implements LFunctionDaDaDa_Da
     }
 
 	public void apply( int vectorSize, double[] x, double[] y, double[] z, double[] dest ) {
-		for( int i=0; i<vectorSize; ++i ) {
-			dest[i] = apply( (float)x[i], (float)y[i], (float)z[i] );
+		for( int j=vectorSize-1; j>=0; --j ) {
+			dest[j] = apply( (float)x[j], (float)y[j], (float)z[j] );
 		}
     }
 }

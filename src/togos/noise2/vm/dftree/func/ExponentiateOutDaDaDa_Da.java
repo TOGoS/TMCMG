@@ -7,7 +7,7 @@ public class ExponentiateOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 	}
 	
 	protected void reduce( int count, double[] subOut, double[] out ) {
-		for( int j=0; j<count; ++j ) {
+		for( int j=count-1; j>=0; --j ) {
 			out[j] = Math.pow(out[j],subOut[j]);
 		}
 	}
