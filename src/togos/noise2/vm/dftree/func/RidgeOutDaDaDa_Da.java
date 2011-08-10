@@ -17,35 +17,25 @@ public class RidgeOutDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		this.ridged = ridged;
 	}
 	
+	private static final long fastfloor(double n) {
+		return n > 0 ? (long) n : (long) n - 1;
+	}
+	
 	public DataDa apply( DataDaDaDa in ) {
 		final int vectorSize = in.getLength();
 		double[] lower = this.lower.apply(in).x;
 		double[] upper = this.upper.apply(in).x;
-		double[] ridged = this.ridged.apply(in).x;
+		double[] input = this.ridged.apply(in).x;
 		double[] out = new double[vectorSize];
 		for( int i=vectorSize-1; i>=0; --i ) {
-			double d = upper[i]-lower[i];
-
-			// TODO: I'm guessing there's a better way to do this
-			if( d == 0 ) {
-				out[i] = lower[i];
-			} else {
-				/*
-				// coorect but presumably slow:
-				while( out[i] > upper[i] || out[i] < lower[i] ) {
-					if( out[i] > upper[i] ) {
-						out[i] = upper[i]-(out[i]-upper[i]);
-					}
-					if( out[i] < lower[i] ) {
-						out[i] = lower[i]+(lower[i]-out[i]);
-					}
-				}
-				*/
-				
-				double k = (ridged[i]-lower[i])/(d*2);
-				double c = Math.floor(k);
+			if( upper[i] > lower[i] ) {
+				double d = upper[i]-lower[i];
+				double k = (input[i]-lower[i])/(d*2);
+				double c = fastfloor(k);
 				k -= c;
-				out[i] = lower[i] + d*2*(k - 2*Math.floor(2*k)*(k-0.5));
+				out[i] = lower[i] + d*2*(k - 2*fastfloor(2*k)*(k-0.5));
+			} else {
+				out[i] = (lower[i] + upper[i]) / 2;
 			}
 		}
 		return new DataDa(vectorSize,out);
