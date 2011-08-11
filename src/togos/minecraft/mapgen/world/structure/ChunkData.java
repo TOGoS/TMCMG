@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jnbt.ByteArrayTag;
 import org.jnbt.ByteTag;
@@ -80,5 +81,25 @@ public class ChunkData extends MiniChunkData
 		levelTags.add(new IntTag("zPos", (int)(getChunkPositionZ()/getChunkDepth())));
 		levelTags.add(new ByteTag("TerrainPopulated", (byte)(terrainPopulated ? 1 : 0)));
 		return new CompoundTag("Level", levelTags);
+	}
+	
+	public static ChunkData fromTag( CompoundTag t ) {
+		Map m = t.getValue();
+		IntTag xPos = (IntTag)m.get( "xPos" );
+		IntTag zPos = (IntTag)m.get( "zPos" );
+		
+		ChunkData cd = new ChunkData(
+			16*xPos.getValue().intValue(), 0, 16*zPos.getValue().intValue(),
+			16, 128, 16
+		);
+		
+		cd.blockData = ((ByteArrayTag)m.get("Blocks")).getValue();
+		cd.blockExtraBits = ((ByteArrayTag)m.get("Data")).getValue();
+		cd.skyLightData = ((ByteArrayTag)m.get("SkyLight")).getValue();
+		cd.blockLightData = ((ByteArrayTag)m.get("BlockLight")).getValue();
+		cd.lightHeightData = ((ByteArrayTag)m.get("HeightMap")).getValue();
+		// TODO: this part
+		//cd.tileEntityData = ((CompoundTag)m.get("TileEntities")).getValue();
+		return cd;
 	}
 }
