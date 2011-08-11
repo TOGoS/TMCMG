@@ -91,7 +91,7 @@ public class ChunkExportWindow extends Frame
     public Script script;
     public ChunkWritingService cws;
     
-    Label outputDirField = new Label();
+    TextField outputDirField = new TextField();
     TextField xField, zField, widthField, depthField;
     ProgressBar progressBar;
     Checkbox useJobSystemCheckbox;
@@ -185,8 +185,7 @@ public class ChunkExportWindow extends Frame
     	};
     	
     	Button browseDirButton = new Button("Output Dir");
-    	outputDirField.setPreferredSize(new Dimension(200,0));
-    	outputDirField.setAlignment(Label.RIGHT);
+    	outputDirField.setPreferredSize(new Dimension(400,0));
     	browseDirButton.addActionListener(new ActionListener() {
     		public void actionPerformed( ActionEvent arg0 ) {
     			FileDialog picker = new FileDialog((Frame)null, "    Find level.dat");
@@ -298,6 +297,14 @@ public class ChunkExportWindow extends Frame
     	
     	validate();
     	pack();
+    	
+    	this.setMaximumSize(new Dimension(
+    		Integer.MAX_VALUE,
+    		getHeight()
+    	));
+    	
+    	browseDirButton.setPreferredSize(browseDirButton.getSize());
+    	browseDirButton.setMaximumSize(new Dimension(browseDirButton.getWidth(), Integer.MAX_VALUE));
     }
     
     public static void main( String[] args ) {

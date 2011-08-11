@@ -1,6 +1,5 @@
 package togos.minecraft.mapgen.job;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,8 +7,10 @@ import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 
 import togos.mf.value.URIRef;
+import togos.minecraft.mapgen.io.BetterByteArrayOutputStream;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.io.RegionFile;
+import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.util.ChunkDataListener;
 import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
@@ -50,7 +51,7 @@ public class ChunkGenerationJob implements Runnable, RemoteJob
 		return m;
 	}
 	
-	public void setResourceData( byte[] data ) {
+	public void setResourceData( ByteChunk data ) {
 		onComplete.setChunkData( script.sourceRef.getUri(), px, py, pz, width, height, depth,
 				data, serializationFormat );
 	}
@@ -58,7 +59,7 @@ public class ChunkGenerationJob implements Runnable, RemoteJob
 	public void run() {
 		ChunkData cd = new ChunkData(px,py,pz,width,height,depth);
 		generator.mungeChunk(cd);
-		ByteArrayOutputStream dataGoesHere = new ByteArrayOutputStream();
+		BetterByteArrayOutputStream dataGoesHere = new BetterByteArrayOutputStream(1024);
 		DataOutputStream dos = new DataOutputStream(new DeflaterOutputStream(dataGoesHere));
 		try {
 			ChunkWriter.writeChunk( cd, dos );
@@ -67,6 +68,6 @@ public class ChunkGenerationJob implements Runnable, RemoteJob
 			System.err.println("Error while serializing chunk!");
 			e.printStackTrace();
 		}
-		setResourceData( dataGoesHere.toByteArray() );
+		setResourceData( dataGoesHere );
 	}
 }

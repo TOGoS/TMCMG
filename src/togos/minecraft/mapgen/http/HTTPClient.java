@@ -15,6 +15,7 @@ import togos.mf.api.Request;
 import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.base.BaseResponse;
+import togos.minecraft.mapgen.util.Util;
 
 public class HTTPClient implements Callable {
 	public Response call(Request req) {
@@ -32,7 +33,7 @@ public class HTTPClient implements Callable {
 			if( req.getContent() instanceof byte[] && (!"GET".equals(req.getVerb()) || !"HEAD".equals(req.getVerb())) ) {
 				urlConn.setDoOutput(true);
 				OutputStream os = urlConn.getOutputStream();
-				os.write( (byte[])req.getContent() );
+				Util.write( Util.byteBuffer(req.getContent()), os );
 				os.close();
 			}
 			urlConn.connect();

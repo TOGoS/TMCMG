@@ -1,8 +1,8 @@
 package togos.minecraft.mapgen.util;
 
-public interface ByteBuffer
+public interface ByteChunk
 {
 	public int getOffset();
 	public int getSize();
-	public byte[] getData();
+	public byte[] getBuffer();
 }

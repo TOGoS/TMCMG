@@ -1,6 +1,6 @@
 package togos.minecraft.mapgen.util;
 
-public class SimpleByteBuffer implements ByteBuffer
+public class SimpleByteBuffer implements ByteChunk
 {
 	public final byte[] data;
 	public final int offset;
@@ -16,7 +16,7 @@ public class SimpleByteBuffer implements ByteBuffer
 		this( buf, 0, buf.length );
 	}
 
-	public byte[] getData() { return data; }
+	public byte[] getBuffer() { return data; }
 	public int getOffset() { return offset; }
 	public int getSize() { return length; }
 }

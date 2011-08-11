@@ -13,8 +13,8 @@ import org.jnbt.CompoundTag;
 
 import togos.minecraft.mapgen.io.BetterNBTInputStream;
 import togos.minecraft.mapgen.io.RegionFile;
-import togos.minecraft.mapgen.util.ByteBuffer;
-import togos.minecraft.mapgen.util.ByteBufferList;
+import togos.minecraft.mapgen.util.ByteBlob;
+import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
@@ -72,7 +72,7 @@ public class RegionGeneratorTest extends TestCase
 		};
 		RegionGenerator rg = new RegionGenerator();
 		
-		ByteBufferList bbl = rg.generateRegion( cm, 10, 14, (int)(System.currentTimeMillis()/1000) );
+		ByteBlob bbl = rg.generateRegion( cm, 10, 14, (int)(System.currentTimeMillis()/1000) );
 		
 		assertEquals( 1026*4096, bbl.getSize() );
 		
@@ -80,8 +80,8 @@ public class RegionGeneratorTest extends TestCase
 		f.deleteOnExit();
 		FileOutputStream fos = new FileOutputStream(f);
 		for( Iterator i=bbl.bufferIterator(); i.hasNext(); ) {
-			ByteBuffer bb = (ByteBuffer)i.next();
-			fos.write( bb.getData(), bb.getOffset(), bb.getSize() );
+			ByteChunk bb = (ByteChunk)i.next();
+			fos.write( bb.getBuffer(), bb.getOffset(), bb.getSize() );
 		}
 		fos.close();
 		

@@ -13,6 +13,7 @@ import togos.mf.base.BaseRequest;
 import togos.minecraft.mapgen.http.HTTPClient;
 import togos.minecraft.mapgen.server.URIUtil;
 import togos.minecraft.mapgen.util.ServiceManager;
+import togos.minecraft.mapgen.util.Util;
 import togos.service.Service;
 
 public class RemoteJobService extends ServiceManager
@@ -64,7 +65,7 @@ public class RemoteJobService extends ServiceManager
 					return;
 				}
 				
-				job.setResourceData( (byte[])res.getContent() );
+				job.setResourceData( Util.byteBuffer(res.getContent()) );
 			}
 		}
 		

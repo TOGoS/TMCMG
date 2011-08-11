@@ -1,42 +1,87 @@
 package togos.minecraft.mapgen.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import togos.mf.value.Chunk;
 
 public class Util
 {
-	public static final Charset UTF8 = Charset.forName("UTF-8");
+	public static final String string( byte[] b, int offset, int length ) {
+		try {
+			return new String( b, offset, length, "UTF-8" );
+		} catch( UnsupportedEncodingException e ) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static final byte[] bytes( String s ) {
+		try {
+			return s.getBytes("UTF-8");
+		} catch( UnsupportedEncodingException e ) {
+			throw new RuntimeException(e);
+		}
+	}
 	
 	public static final String string( Object o ) {
 		if( o instanceof String ) {
 			return (String)o;
 		} else if( o instanceof byte[] ) {
-			return new String( (byte[])o, UTF8 );
+			return string( (byte[])o, 0, ((byte[])o).length );
+		} else if( o instanceof ByteChunk ) {
+			ByteChunk c = (ByteChunk)o;
+			return string( c.getBuffer(), c.getOffset(), c.getSize() );
 		} else if( o instanceof Chunk ) {
 			Chunk c = (Chunk)o;
-			return new String( c.data, c.offset, c.length, UTF8 );
+			return string( c.data, c.offset, c.length );
 		} else if( o == null ) {
 			return null;
 		} else {
-			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a string");
+			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a String");
 		}
 	}
 	
-	public static final byte[] readFile( File f ) throws IOException {
-		FileInputStream fis = new FileInputStream(f);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int r;
-		while( (r = fis.read(buffer)) > 0 ) {
-			baos.write(buffer, 0, r);
+	public static final ByteChunk byteBuffer( Object o ) {
+		if( o == null ) {
+			return null;
+		} else if( o instanceof ByteChunk ) {
+			return (ByteChunk)o;
+		} else if( o instanceof byte[] ) {
+			byte[] b = (byte[])o;
+			return new SimpleByteBuffer( b, 0, b.length );
+		} else if( o instanceof Chunk ) {
+			Chunk c = (Chunk)o;
+			return new SimpleByteBuffer( c.data, c.offset, c.length );
+		} else if( o instanceof String ) {
+			byte[] b = bytes((String)o);
+			return new SimpleByteBuffer( b, 0, b.length );
+		} else {
+			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a ByteBuffer");
 		}
-		fis.close();
-		return baos.toByteArray();
+	}
+	
+	public static final void write( ByteChunk bb, OutputStream os ) throws IOException {
+		os.write( bb.getBuffer(), bb.getOffset(), bb.getSize() );
+	}
+	
+	public static final byte[] readFile( File f ) throws IOException {
+		long length = f.length();
+		if( length > 1<<24 ) { // Arbitrary limit
+			throw new RuntimeException("File "+f+" is too big to load into memory");
+		}
+		FileInputStream fis = new FileInputStream(f);
+		byte[] buffer = new byte[(int)length];
+		for( int read=0; read<length; ) {
+			int rr = fis.read(buffer,read,(int)length-read);
+			if( rr < 1 ) {
+				throw new RuntimeException("File "+f+" was shortened during reading");
+			}
+			read += rr;
+		}
+		return buffer;
 	}
 	
 	public static final Script readScript( File f ) throws IOException {

@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.job.ChunkGenerationJob;
+import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
@@ -38,7 +39,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	}
 	
 	public void setChunkDir( String chunkBaseDir ) {
-		this.chunkBaseDir = chunkBaseDir;
+		this.worldDir = chunkBaseDir;
 	}
 	
 	public void setBounds( int bx, int bz, int bw, int bd ) {
@@ -65,6 +66,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		throws IOException
 	{
 		ChunkMunger cm = ((WorldGenerator)script.program).getChunkMunger();
+		ChunkGenerator cg = new ChunkGenerator( cm );
 		
 		written = 0;
 		total = bw*bd;
@@ -88,13 +90,13 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 							new ChunkDataListener() {
 								public void setChunkData(
 									String worldId, long px, long py, long pz,
-									int w, int h, int d, byte[] data, int format
+									int w, int h, int d, ByteChunk data, int format
 								) {
 									int cx = (int)(px / ChunkData.NORMAL_CHUNK_WIDTH);
 									int cz = (int)(pz / ChunkData.NORMAL_CHUNK_DEPTH);
 									
 									try {
-										writeChunk( cx, cz, data, format );
+										saveChunk( cx, cz, data, format );
 									} catch( IOException e ) {
 										System.err.println("Error writing chunk "+cx+","+cz+":");
 										e.printStackTrace();
@@ -107,7 +109,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 						Thread.currentThread().interrupt();
 					}
 				} else {
-					writeChunk( cx, cz, cm );
+					saveChunk( cg.generateChunk(cx,cz) );
 					chunkWritten();
 				}
 			}

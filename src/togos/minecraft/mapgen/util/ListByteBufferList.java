@@ -3,7 +3,7 @@ package togos.minecraft.mapgen.util;
 import java.util.Iterator;
 import java.util.List;
 
-public class ListByteBufferList implements ByteBufferList
+public class ListByteBufferList implements ByteBlob
 {
 	List l;
 	long size;

@@ -289,7 +289,7 @@ public class RegionFile
     }
 
     /* write a chunk at (x,z) with length bytes of data to disk */
-    protected synchronized void write(int x, int z, byte[] data, int length, int format) {
+    public synchronized void write(int x, int z, byte[] data, int length, int format) {
         try {
             int offset = getOffset(x, z);
             int sectorNumber = offset >> 8;

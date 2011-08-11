@@ -5,15 +5,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.jnbt.CompoundTag;
 
 import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.world.gen.ChunkMunger;
+import togos.minecraft.mapgen.util.ByteChunk;
+import togos.minecraft.mapgen.util.SimpleByteBuffer;
+import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
@@ -23,15 +25,12 @@ import togos.noise2.lang.ScriptError;
 
 public class ChunkWriter
 {
-	public static ChunkWriter instance = new ChunkWriter();
-	
-	public int chunkWidth  = ChunkData.NORMAL_CHUNK_WIDTH;
-	public int chunkHeight = ChunkData.NORMAL_CHUNK_HEIGHT;
-	public int chunkDepth  = ChunkData.NORMAL_CHUNK_DEPTH;
-	
-	public String chunkPath( int x, int z ) {
+	public static String chunkPath( int x, int z ) {
 		return PathUtil.mcChunkDir(x,z) + "/" + PathUtil.chunkBaseName(x,z);
 	}
+	
+	public static int chunkX( ChunkData cd ) { return (int)(cd.getChunkPositionX()/cd.getChunkWidth()); }
+	public static int chunkZ( ChunkData cd ) { return (int)(cd.getChunkPositionZ()/cd.getChunkDepth()); }
 	
 	public static void writeChunk( ChunkData cd, DataOutputStream os ) throws IOException {
 		BetterNBTOutputStream nbtos = new BetterNBTOutputStream(os);
@@ -44,11 +43,20 @@ public class ChunkWriter
 		nbtos.close();
 	}
 	
-	public void writeChunkToFile( ChunkData cd, String baseDir ) throws IOException {
-		String fullPath = baseDir + "/" + chunkPath(
-			(int)(cd.getChunkPositionX()/cd.getChunkWidth()),
-			(int)(cd.getChunkPositionZ()/cd.getChunkDepth())
-		);
+	public static ByteChunk serializeChunk( ChunkData cd, int format ) {
+		BetterByteArrayOutputStream baos = new BetterByteArrayOutputStream();
+		try {
+			writeChunk( cd, new DataOutputStream(
+				format == RegionFile.VERSION_GZIP ? new GZIPOutputStream(baos) : new DeflaterOutputStream(baos)
+			) );
+		} catch( IOException e ) {
+			throw new RuntimeException("IOException while serializing chunk", e);
+		}
+		return new SimpleByteBuffer( baos.getBuffer(), 0, baos.size() );
+	}
+	
+	public static void writeChunkToFile( ChunkData cd, String worldDir ) throws IOException {
+		String fullPath = worldDir + "/" + chunkPath( chunkX(cd), chunkZ(cd) );
 		File f = new File(fullPath);
 		File dir = f.getParentFile();
 		if( dir != null && !dir.exists() ) dir.mkdirs();
@@ -60,18 +68,26 @@ public class ChunkWriter
 		}
 	}
 	
-	public void writeChunkToRegionFile( ChunkData cd, String baseDir ) throws IOException {
-		DataOutputStream dos = RegionFileCache.getChunkDataOutputStream(new File(baseDir),
-			(int)(cd.getChunkPositionX()/cd.getChunkWidth()),
-			(int)(cd.getChunkPositionZ()/cd.getChunkDepth())
-		);
-		writeChunk(cd, dos);
-		dos.close();
+	public static void writeChunkToRegionFile( int cx, int cz, ByteChunk data, int format, String baseDir ) throws IOException {
+		RegionFileCache.getRegionFile(new File(baseDir), cx, cz).write( cx&31, cz&31, data.getBuffer(), data.getSize(), format );
 	}
 	
-	protected String chunkBaseDir;
-	public ChunkWriter( String baseDir ) {
-		this.chunkBaseDir = baseDir;
+	public static void writeChunkToRegionFile( ChunkData cd, String baseDir, int format ) throws IOException {
+		int cx = (int)(cd.getChunkPositionX()/cd.getChunkWidth());
+		int cz = (int)(cd.getChunkPositionZ()/cd.getChunkDepth());
+		writeChunkToRegionFile( cx, cz, serializeChunk(cd,RegionFile.VERSION_DEFLATE), RegionFile.VERSION_DEFLATE, baseDir );
+	}
+	
+	////
+	
+	public static final int FORMAT_CHUNKS = 1;
+	public static final int FORMAT_REGION = 2;
+	
+	protected String worldDir;
+	int worldFormat = FORMAT_REGION;
+	
+	public ChunkWriter( String worldDir ) {
+		this.worldDir = worldDir;
 	}
 	
 	public ChunkWriter() {
@@ -79,52 +95,47 @@ public class ChunkWriter
 	}
 	
 	/**
-	 * @param cx number of chunks south of origin
-	 * @param cz number of chunks west of origin
-	 * @return new chunkdata object with coordinate stuff filled out
-	 */
-	public ChunkData createChunk( int cx, int cz ) {
-		return new ChunkData(
-			cx*chunkWidth, 0, cz*chunkDepth,
-			chunkWidth, chunkHeight, chunkDepth
-		);
-	}
-	
-	/**
-	 * @param cx number of chunks south of origin
-	 * @param cz number of chunks west of origin
-	 * @return new chunkdata object munged by cm
-	 */
-	public ChunkData getChunk( int cx, int cz, ChunkMunger cm ) {
-		ChunkData cd = createChunk( cx, cz );
-		cm.mungeChunk(cd);
-		return cd;
+	 * This method should be thread-safe, as os.close() calls
+	 * RegionFile.write, which is synchronized
+	 * */
+	public void saveChunk( int cx, int cz, ByteChunk data, int format ) throws IOException {
+		switch( worldFormat ) {
+		case( FORMAT_CHUNKS ):
+			if( format != RegionFile.VERSION_GZIP ) {
+				throw new RuntimeException("Can't save non-region-format chunk in non-gzip format");
+			}
+			throw new UnsupportedOperationException("Saving chunk data to files not supported");
+		case( FORMAT_REGION ):
+			writeChunkToRegionFile( cx, cz, data, format, worldDir );
+			break;
+		default:
+			throw new RuntimeException("Unsupported world format: "+worldFormat);
+		}
 	}
 	
 	/**
 	 * This method should be thread-safe, as os.close() calls
 	 * RegionFile.write, which is synchronized
 	 * */
-	public void writeChunk( int cx, int cz, ChunkMunger cm ) throws IOException {
-		//writeChunkToFile(getChunk(cx,cz,cm), chunkBaseDir);
-		writeChunkToRegionFile(getChunk(cx,cz,cm), chunkBaseDir);
-	}
-	
-	/**
-	 * This method should be thread-safe, as os.close() calls
-	 * RegionFile.write, which is synchronized
-	 * */
-	public void writeChunk( int cx, int cz, byte[] data, int format ) throws IOException {
-		OutputStream os = RegionFileCache.getChunkOutputStream(new File(chunkBaseDir),cx,cz,format);
-		os.write(data);
-		os.close();
+	public void saveChunk( ChunkData cd ) throws IOException {
+		switch( worldFormat ) {
+		case( FORMAT_CHUNKS ):
+			// Slight shortcut (writes directly instead of serializing first)
+			writeChunkToFile( cd, worldDir );
+			break;
+		case( FORMAT_REGION ):
+			saveChunk( chunkX(cd), chunkZ(cd), serializeChunk(cd,RegionFile.VERSION_DEFLATE), RegionFile.VERSION_DEFLATE );
+			break;
+		default:
+			throw new RuntimeException("Unsupported world format: "+worldFormat);
+		}
 	}
 	
 	public static String USAGE =
 		"Usage: ChunkWriter [options]\n" +
 		"\n" +
 		"Options:\n" +
-		"  -chunk-dir <dir>  ; directory under which to store chunk data\n" +
+		"  -world-dir <dir>  ; directory under which to store chunk data\n" +
 		"  -x, -z, -width, -depth  ; bounds of area to generate";
 	
 	public static void main(String[] args) {
@@ -132,11 +143,11 @@ public class ChunkWriter
 		int boundsZ = 0;
 		int boundsWidth = 1;
 		int boundsDepth = 1;
-		String chunkDir = ".";
+		String worldDir = ".";
 		String scriptFile = null;
 		for( int i=0; i<args.length; ++i ) {
-			if( "-chunk-dir".equals(args[i]) ) {
-				chunkDir = args[++i];
+			if( "-world-dir".equals(args[i]) ) {
+				worldDir = args[++i];
 			} else if( "-x".equals(args[i]) ) {
 				boundsX = Integer.parseInt(args[++i]);
 			} else if( "-z".equals(args[i]) ) {
@@ -155,8 +166,6 @@ public class ChunkWriter
 		}
 		
 		try {
-			ChunkWriter chunkWriter = new ChunkWriter(chunkDir);
-			
 			WorldGenerator worldGenerator;
 			if( scriptFile != null ) {
 				try {
@@ -176,11 +185,12 @@ public class ChunkWriter
 				worldGenerator = SimpleWorldGenerator.DEFAULT;
 			}
 			
-			ChunkMunger cfunc = worldGenerator.getChunkMunger();
+			ChunkGenerator cg = new ChunkGenerator(worldGenerator.getChunkMunger());
+			ChunkWriter cw = new ChunkWriter(worldDir);
 			for( int z=0; z<boundsDepth; ++z ) {
 				for( int x=0; x<boundsWidth; ++x ) {
-					ChunkData cd = chunkWriter.getChunk(boundsX+x,boundsZ+z,cfunc);
-					chunkWriter.writeChunkToFile(cd, chunkDir);
+					ChunkData cd = cg.generateChunk(boundsX+x,boundsZ+z);
+					cw.saveChunk(cd);
 				}
 			}
 		} catch( IOException e ) {

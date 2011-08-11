@@ -9,8 +9,8 @@ import java.util.zip.DeflaterOutputStream;
 
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.io.RegionFile;
-import togos.minecraft.mapgen.util.ByteBuffer;
-import togos.minecraft.mapgen.util.ByteBufferList;
+import togos.minecraft.mapgen.util.ByteBlob;
+import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.util.ListByteBufferList;
 import togos.minecraft.mapgen.util.SimpleByteBuffer;
 import togos.minecraft.mapgen.world.structure.ChunkData;
@@ -42,7 +42,7 @@ public class RegionGenerator
 		}
 	}
 	
-	protected static final long add( List bufList, long offset, ByteBuffer buf ) {
+	protected static final long add( List bufList, long offset, ByteChunk buf ) {
 		bufList.add(buf);
 		return offset + buf.getSize();
 	}
@@ -60,7 +60,7 @@ public class RegionGenerator
 		dest[offset+3] = (byte)(i>> 0);
 	}
 	
-	protected static final ByteBuffer encodeChunkHeader( int size, byte format ) {
+	protected static final ByteChunk encodeChunkHeader( int size, byte format ) {
 		byte[] data = new byte[5];
 		encodeInt( data, 0, size );
 		data[4] = format;
@@ -76,8 +76,8 @@ public class RegionGenerator
 		return (sectorNumber << 8) | sectorsNeeded;
 	}
 	
-	protected static final long addChunk( int[] offsetCodes, int idx, List bufList, long offset, ByteBuffer chunkData, byte format ) {
-		ByteBuffer header = encodeChunkHeader(chunkData.getSize(),format);
+	protected static final long addChunk( int[] offsetCodes, int idx, List bufList, long offset, ByteChunk chunkData, byte format ) {
+		ByteChunk header = encodeChunkHeader(chunkData.getSize(),format);
 		offset = padSector( bufList, offset );
 		offsetCodes[idx] = chunkOffsetCode( offset, header.getSize()+chunkData.getSize() );
 		offset = add( bufList, offset, header );
@@ -86,7 +86,7 @@ public class RegionGenerator
 		return offset;
 	}
 	
-	protected static ByteBuffer encodeInts( int[] values ) {
+	protected static ByteChunk encodeInts( int[] values ) {
 		byte[] buf = new byte[values.length*4];
 		for( int i=values.length-1; i>=0; --i ) {
 			encodeInt(buf,i*4,values[i]);
@@ -94,7 +94,7 @@ public class RegionGenerator
 		return new SimpleByteBuffer(buf);
 	}
 	
-	public ByteBufferList createRegionData( int[] timestamps, byte[][] chunkData ) {
+	public ByteBlob createRegionData( int[] timestamps, byte[][] chunkData ) {
 		List bufList = new ArrayList(CHUNKS_PER_REGION*3+2);
 		
 		bufList.add(null);
@@ -119,7 +119,7 @@ public class RegionGenerator
 	 * @param timestamp unix timestamp (in seconds)
 	 * @return
 	 */
-	public ByteBufferList generateRegion( ChunkMunger cm, int rx, int rz, int timestamp ) {
+	public ByteBlob generateRegion( ChunkMunger cm, int rx, int rz, int timestamp ) {
 		byte[][] chunkData = new byte[CHUNKS_PER_REGION][];
 		int[] timestamps = new int[CHUNKS_PER_REGION];
 		
