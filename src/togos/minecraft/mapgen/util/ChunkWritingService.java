@@ -92,8 +92,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 									String worldId, long px, long py, long pz,
 									int w, int h, int d, ByteChunk data, int format
 								) {
-									int cx = (int)(px / ChunkData.NORMAL_CHUNK_WIDTH);
-									int cz = (int)(pz / ChunkData.NORMAL_CHUNK_DEPTH);
+									int cx = (int)(px / w);
+									int cz = (int)(pz / d);
 									
 									try {
 										saveChunk( cx, cz, data, format );
