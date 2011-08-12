@@ -128,15 +128,9 @@ public class RegionGenerator
 			for( int rcx=0; rcx<CHUNKS_PER_REGION_SIDE; ++rcx, ++i ) {
 				int cx = CHUNKS_PER_REGION_SIDE*rx+rcx;
 				
-				ChunkData cd = new ChunkData(
-					cx*ChunkData.NORMAL_CHUNK_WIDTH,
-					0,
-					cz*ChunkData.NORMAL_CHUNK_DEPTH,
-					ChunkData.NORMAL_CHUNK_WIDTH,
-					ChunkData.NORMAL_CHUNK_HEIGHT,
-					ChunkData.NORMAL_CHUNK_DEPTH
-				);
+				ChunkData cd = ChunkData.forChunkCoords(cx,cz);
 				cm.mungeChunk(cd);
+				
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(new DeflaterOutputStream(baos));
 				try {

@@ -61,6 +61,8 @@ public class ChunkData extends MiniChunkData
 		lightHeightData[z*width+x] = (byte)(height);
 	}
 	
+	//// Saving/loading ////
+	
 	public Tag toTag() {
 		TagMap levelTags = new TagMap();
 		levelTags.add(new ByteArrayTag("Blocks", blockData));
@@ -83,14 +85,21 @@ public class ChunkData extends MiniChunkData
 		return new CompoundTag("Level", levelTags);
 	}
 	
+	public static ChunkData forChunkCoords( long cx, long cz ) {
+		return new ChunkData(
+			cx*NORMAL_CHUNK_WIDTH, 0, cz*NORMAL_CHUNK_DEPTH,
+			NORMAL_CHUNK_WIDTH, NORMAL_CHUNK_HEIGHT, NORMAL_CHUNK_DEPTH
+		);
+	}
+	
 	public static ChunkData fromTag( CompoundTag t ) {
 		Map m = t.getValue();
 		IntTag xPos = (IntTag)m.get( "xPos" );
 		IntTag zPos = (IntTag)m.get( "zPos" );
 		
-		ChunkData cd = new ChunkData(
-			16*xPos.getValue().intValue(), 0, 16*zPos.getValue().intValue(),
-			16, 128, 16
+		ChunkData cd = forChunkCoords(
+			xPos.getValue().intValue(),
+			zPos.getValue().intValue()
 		);
 		
 		cd.blockData = ((ByteArrayTag)m.get("Blocks")).getValue();
