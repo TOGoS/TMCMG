@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.world.gen;
+package togos.minecraft.mapgen.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 
-import togos.minecraft.mapgen.io.ChunkWriter;
-import togos.minecraft.mapgen.io.RegionFile;
 import togos.minecraft.mapgen.util.ByteBlob;
 import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.util.ListByteBufferList;
 import togos.minecraft.mapgen.util.SimpleByteBuffer;
+import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 /**
  * Generates an entire region file in one go.
  */
-public class RegionGenerator
+public class RegionWriter
 {
 	protected static final int SECTOR_SIZE = 4096;
 	protected static final int CHUNKS_PER_REGION_SIDE = 32;
@@ -119,7 +118,7 @@ public class RegionGenerator
 	 * @param timestamp unix timestamp (in seconds)
 	 * @return
 	 */
-	public ByteBlob generateRegion( ChunkMunger cm, int rx, int rz, int timestamp ) {
+	public ByteBlob generateRegion( ChunkGenerator cg, int rx, int rz, int timestamp ) {
 		byte[][] chunkData = new byte[CHUNKS_PER_REGION][];
 		int[] timestamps = new int[CHUNKS_PER_REGION];
 		
@@ -128,8 +127,7 @@ public class RegionGenerator
 			for( int rcx=0; rcx<CHUNKS_PER_REGION_SIDE; ++rcx, ++i ) {
 				int cx = CHUNKS_PER_REGION_SIDE*rx+rcx;
 				
-				ChunkData cd = ChunkData.forChunkCoords(cx,cz);
-				cm.mungeChunk(cd);
+				ChunkData cd = cg.generateChunk(cx,cz);
 				
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(new DeflaterOutputStream(baos));

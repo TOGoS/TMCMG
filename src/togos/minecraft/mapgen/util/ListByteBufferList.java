@@ -13,7 +13,7 @@ public class ListByteBufferList implements ByteBlob
 		this.size = size;
 	}
 	
-	public Iterator bufferIterator() {
+	public Iterator chunkIterator() {
 		return l.iterator();
 	}
 	

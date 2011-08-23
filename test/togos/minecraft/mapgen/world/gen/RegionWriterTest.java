@@ -13,12 +13,13 @@ import org.jnbt.CompoundTag;
 
 import togos.minecraft.mapgen.io.BetterNBTInputStream;
 import togos.minecraft.mapgen.io.RegionFile;
+import togos.minecraft.mapgen.io.RegionWriter;
 import togos.minecraft.mapgen.util.ByteBlob;
 import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
-public class RegionGeneratorTest extends TestCase
+public class RegionWriterTest extends TestCase
 {
 	protected ChunkData getChunkData( RegionFile rf, int cx, int cz ) throws IOException {
 		DataInputStream dis = rf.getChunkDataInputStream( cx, cz );
@@ -70,16 +71,17 @@ public class RegionGeneratorTest extends TestCase
 				encodeInt( cd, 1, cd.height/2, 3, cz, 8, Blocks.AIR, Blocks.LOG );
             }
 		};
-		RegionGenerator rg = new RegionGenerator();
+		ChunkGenerator cg = new ChunkGenerator(cm);
+		RegionWriter rw = new RegionWriter();
 		
-		ByteBlob bbl = rg.generateRegion( cm, 10, 14, (int)(System.currentTimeMillis()/1000) );
+		ByteBlob bbl = rw.generateRegion( cg, 10, 14, (int)(System.currentTimeMillis()/1000) );
 		
 		assertEquals( 1026*4096, bbl.getSize() );
 		
 		File f = File.createTempFile("test-generated-region","mcr");
 		f.deleteOnExit();
 		FileOutputStream fos = new FileOutputStream(f);
-		for( Iterator i=bbl.bufferIterator(); i.hasNext(); ) {
+		for( Iterator i=bbl.chunkIterator(); i.hasNext(); ) {
 			ByteChunk bb = (ByteChunk)i.next();
 			fos.write( bb.getBuffer(), bb.getOffset(), bb.getSize() );
 		}

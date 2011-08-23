@@ -18,16 +18,20 @@ public class JobService implements Service
 		return jobRunners;
 	}
 	
-	public final BlockingNonBlockingQueue jobQueue;
+	public final BlockingQueue jobQueue;
 	final List jobRunners;
 	
-	protected JobService( BlockingNonBlockingQueue jobQueue, List jobRunners ) {
+	protected JobService( BlockingQueue jobQueue, List jobRunners ) {
 		this.jobQueue = jobQueue;
 		this.jobRunners = jobRunners;
 	}
 	
-	protected JobService( BlockingNonBlockingQueue jobQueue, int nThreads ) {
+	public JobService( BlockingQueue jobQueue, int nThreads ) {
 		this( jobQueue, buildJobRunners(jobQueue,nThreads) );
+	}
+	
+	public JobService( BlockingQueue jobQueue ) {
+		this( jobQueue, Runtime.getRuntime().availableProcessors() );
 	}
 	
 	public JobService( int nThreads ) {
@@ -56,7 +60,7 @@ public class JobService implements Service
 		return jobQueue.offer(r);
 	}
 	
-	public BlockingNonBlockingQueue getJobQueue() {
+	public BlockingQueue getJobQueue() {
 		return jobQueue;
 	}
 	
@@ -66,13 +70,17 @@ public class JobService implements Service
 		for( Iterator i=jobRunners.iterator(); i.hasNext(); ) {
 			((JobRunner)i.next()).start();
 		}
-		jobQueue.start();
+		if( jobQueue instanceof Service ) {
+			((Service)jobQueue).start();
+		}
 	}
 	
 	public synchronized void halt() {
 		for( Iterator i=jobRunners.iterator(); i.hasNext(); ) {
 			((JobRunner)i.next()).halt();
 		}
-		jobQueue.halt();
+		if( jobQueue instanceof Service ) {
+			((Service)jobQueue).halt();
+		}
 	}
 }

@@ -7,7 +7,7 @@ import java.util.Iterator;
  */
 public interface ByteBlob
 {
-	public Iterator bufferIterator();
+	public Iterator chunkIterator();
 	
 	/**
 	 * Total number of bytes in this blob.
