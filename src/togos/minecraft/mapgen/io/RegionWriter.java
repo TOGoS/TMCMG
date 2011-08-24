@@ -9,8 +9,9 @@ import java.util.zip.DeflaterOutputStream;
 
 import togos.minecraft.mapgen.util.ByteBlob;
 import togos.minecraft.mapgen.util.ByteChunk;
-import togos.minecraft.mapgen.util.ListByteBufferList;
-import togos.minecraft.mapgen.util.SimpleByteBuffer;
+import togos.minecraft.mapgen.util.ListByteBlob;
+import togos.minecraft.mapgen.util.SimpleByteChunk;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
@@ -26,7 +27,7 @@ public class RegionWriter
 	
 	protected static final int PAD_SIZE = 1024;
 	protected static final byte[] PAD_BYTES = new byte[PAD_SIZE];
-	protected static final SimpleByteBuffer PAD_BUFFER = new SimpleByteBuffer(PAD_BYTES, 0, PAD_SIZE);
+	protected static final SimpleByteChunk PAD_BUFFER = new SimpleByteChunk(PAD_BYTES, 0, PAD_SIZE);
 	
 	protected static final void addEmptyBuffers( List bufList, long length ) {
 		if( length < 0 ) {
@@ -37,7 +38,7 @@ public class RegionWriter
 			length -= 1024;
 		}
 		if( length != 0 ) {
-			bufList.add(new SimpleByteBuffer(PAD_BYTES,0,(int)length));
+			bufList.add(new SimpleByteChunk(PAD_BYTES,0,(int)length));
 		}
 	}
 	
@@ -52,18 +53,11 @@ public class RegionWriter
 		return offset+padding;
 	}
 	
-	protected static final void encodeInt( byte[] dest, int offset, int i ) {
-		dest[offset+0] = (byte)(i>>24);
-		dest[offset+1] = (byte)(i>>16);
-		dest[offset+2] = (byte)(i>> 8);
-		dest[offset+3] = (byte)(i>> 0);
-	}
-	
 	protected static final ByteChunk encodeChunkHeader( int size, byte format ) {
 		byte[] data = new byte[5];
-		encodeInt( data, 0, size );
+		Util.encodeInt32( size, data, 0 );
 		data[4] = format;
-		return new SimpleByteBuffer(data);
+		return new SimpleByteChunk(data);
 	}
 	
 	protected static final int chunkOffsetCode( long offset, int length ) {
@@ -88,9 +82,9 @@ public class RegionWriter
 	protected static ByteChunk encodeInts( int[] values ) {
 		byte[] buf = new byte[values.length*4];
 		for( int i=values.length-1; i>=0; --i ) {
-			encodeInt(buf,i*4,values[i]);
+			Util.encodeInt32( values[i], buf, i<<2 );
 		}
-		return new SimpleByteBuffer(buf);
+		return new SimpleByteChunk(buf);
 	}
 	
 	public ByteBlob createRegionData( int[] timestamps, byte[][] chunkData ) {
@@ -103,12 +97,12 @@ public class RegionWriter
 		int[] offsetCodes = new int[CHUNKS_PER_REGION];
 		
 		for( int i=0; i<CHUNKS_PER_REGION; ++i ) {
-			offset = addChunk( offsetCodes, i, bufList, offset, new SimpleByteBuffer(chunkData[i]), FORMAT );
+			offset = addChunk( offsetCodes, i, bufList, offset, new SimpleByteChunk(chunkData[i]), FORMAT );
 		}
 		bufList.set(0, encodeInts(offsetCodes));
 		bufList.set(1, encodeInts(timestamps));
 		
-		return new ListByteBufferList(bufList, offset);
+		return new ListByteBlob(bufList, offset);
 	}
 	
 	/**

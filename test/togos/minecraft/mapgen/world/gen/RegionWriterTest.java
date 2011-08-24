@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -15,7 +14,7 @@ import togos.minecraft.mapgen.io.BetterNBTInputStream;
 import togos.minecraft.mapgen.io.RegionFile;
 import togos.minecraft.mapgen.io.RegionWriter;
 import togos.minecraft.mapgen.util.ByteBlob;
-import togos.minecraft.mapgen.util.ByteChunk;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
@@ -81,10 +80,7 @@ public class RegionWriterTest extends TestCase
 		File f = File.createTempFile("test-generated-region","mcr");
 		f.deleteOnExit();
 		FileOutputStream fos = new FileOutputStream(f);
-		for( Iterator i=bbl.chunkIterator(); i.hasNext(); ) {
-			ByteChunk bb = (ByteChunk)i.next();
-			fos.write( bb.getBuffer(), bb.getOffset(), bb.getSize() );
-		}
+		Util.write( bbl, fos );
 		fos.close();
 		
 		DataInputStream dis = new DataInputStream(new FileInputStream(f));
