@@ -1,4 +1,4 @@
-package togos.minecraft.mapgen.world.gen;
+package togos.minecraft.mapgen.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -11,14 +11,14 @@ import togos.mf.base.ListByteBlob;
 import togos.mf.base.SimpleByteChunk;
 import togos.mf.value.ByteBlob;
 import togos.mf.value.ByteChunk;
-import togos.minecraft.mapgen.io.ChunkWriter;
-import togos.minecraft.mapgen.io.RegionFile;
+import togos.minecraft.mapgen.util.Util;
+import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
 /**
  * Generates an entire region file in one go.
  */
-public class RegionGenerator
+public class RegionWriter
 {
 	protected static final int SECTOR_SIZE = 4096;
 	protected static final int CHUNKS_PER_REGION_SIDE = 32;
@@ -53,16 +53,9 @@ public class RegionGenerator
 		return offset+padding;
 	}
 	
-	protected static final void encodeInt( byte[] dest, int offset, int i ) {
-		dest[offset+0] = (byte)(i>>24);
-		dest[offset+1] = (byte)(i>>16);
-		dest[offset+2] = (byte)(i>> 8);
-		dest[offset+3] = (byte)(i>> 0);
-	}
-	
 	protected static final ByteChunk encodeChunkHeader( int size, byte format ) {
 		byte[] data = new byte[5];
-		encodeInt( data, 0, size );
+		Util.encodeInt32( size, data, 0 );
 		data[4] = format;
 		return new SimpleByteChunk(data);
 	}
@@ -89,7 +82,7 @@ public class RegionGenerator
 	protected static ByteChunk encodeInts( int[] values ) {
 		byte[] buf = new byte[values.length*4];
 		for( int i=values.length-1; i>=0; --i ) {
-			encodeInt(buf,i*4,values[i]);
+			Util.encodeInt32( values[i], buf, i<<2 );
 		}
 		return new SimpleByteChunk(buf);
 	}
@@ -119,7 +112,7 @@ public class RegionGenerator
 	 * @param timestamp unix timestamp (in seconds)
 	 * @return
 	 */
-	public ByteBlob generateRegion( ChunkMunger cm, int rx, int rz, int timestamp ) {
+	public ByteBlob generateRegion( ChunkGenerator cg, int rx, int rz, int timestamp ) {
 		byte[][] chunkData = new byte[CHUNKS_PER_REGION][];
 		int[] timestamps = new int[CHUNKS_PER_REGION];
 		
@@ -128,8 +121,7 @@ public class RegionGenerator
 			for( int rcx=0; rcx<CHUNKS_PER_REGION_SIDE; ++rcx, ++i ) {
 				int cx = CHUNKS_PER_REGION_SIDE*rx+rcx;
 				
-				ChunkData cd = ChunkData.forChunkCoords(cx,cz);
-				cm.mungeChunk(cd);
+				ChunkData cd = cg.generateChunk(cx,cz);
 				
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(new DeflaterOutputStream(baos));
