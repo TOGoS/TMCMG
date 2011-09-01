@@ -2,7 +2,7 @@ package togos.minecraft.mapgen.io;
 
 import java.io.ByteArrayOutputStream;
 
-import togos.minecraft.mapgen.util.ByteChunk;
+import togos.mf.value.ByteChunk;
 
 /**
  * Extends ByteArrayOutputStream to provides direct access to the backing buffer.

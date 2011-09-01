@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 
+import togos.mf.value.ByteChunk;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.job.ChunkGenerationJob;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;

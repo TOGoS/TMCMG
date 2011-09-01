@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 
+import togos.mf.value.ByteChunk;
 import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.io.BetterByteArrayOutputStream;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.io.RegionFile;
-import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.util.ChunkDataListener;
 import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;

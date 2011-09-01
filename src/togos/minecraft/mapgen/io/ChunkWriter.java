@@ -11,10 +11,10 @@ import java.util.zip.GZIPOutputStream;
 
 import org.jnbt.CompoundTag;
 
+import togos.mf.base.SimpleByteChunk;
+import togos.mf.value.ByteChunk;
 import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.util.ByteChunk;
-import togos.minecraft.mapgen.util.SimpleByteBuffer;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
@@ -52,7 +52,7 @@ public class ChunkWriter
 		} catch( IOException e ) {
 			throw new RuntimeException("IOException while serializing chunk", e);
 		}
-		return new SimpleByteBuffer( baos.getBuffer(), 0, baos.size() );
+		return new SimpleByteChunk( baos.getBuffer(), 0, baos.size() );
 	}
 	
 	public static void writeChunkToFile( ChunkData cd, String worldDir ) throws IOException {

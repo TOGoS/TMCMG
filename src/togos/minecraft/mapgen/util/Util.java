@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import togos.mf.base.SimpleByteChunk;
+import togos.mf.value.ByteChunk;
 import togos.mf.value.Chunk;
 
 public class Util
@@ -51,13 +53,13 @@ public class Util
 			return (ByteChunk)o;
 		} else if( o instanceof byte[] ) {
 			byte[] b = (byte[])o;
-			return new SimpleByteBuffer( b, 0, b.length );
+			return new SimpleByteChunk( b, 0, b.length );
 		} else if( o instanceof Chunk ) {
 			Chunk c = (Chunk)o;
-			return new SimpleByteBuffer( c.data, c.offset, c.length );
+			return new SimpleByteChunk( c.data, c.offset, c.length );
 		} else if( o instanceof String ) {
 			byte[] b = bytes((String)o);
-			return new SimpleByteBuffer( b, 0, b.length );
+			return new SimpleByteChunk( b, 0, b.length );
 		} else {
 			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a ByteBuffer");
 		}

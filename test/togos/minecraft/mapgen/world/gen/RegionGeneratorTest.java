@@ -11,10 +11,10 @@ import junit.framework.TestCase;
 
 import org.jnbt.CompoundTag;
 
+import togos.mf.value.ByteBlob;
+import togos.mf.value.ByteChunk;
 import togos.minecraft.mapgen.io.BetterNBTInputStream;
 import togos.minecraft.mapgen.io.RegionFile;
-import togos.minecraft.mapgen.util.ByteBlob;
-import togos.minecraft.mapgen.util.ByteChunk;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 

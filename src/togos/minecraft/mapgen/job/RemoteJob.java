@@ -2,8 +2,8 @@ package togos.minecraft.mapgen.job;
 
 import java.util.Map;
 
+import togos.mf.value.ByteChunk;
 import togos.mf.value.URIRef;
-import togos.minecraft.mapgen.util.ByteChunk;
 
 public interface RemoteJob
 {
