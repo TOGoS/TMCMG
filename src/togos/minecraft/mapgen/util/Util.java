@@ -11,7 +11,6 @@ import java.util.Iterator;
 import togos.mf.base.SimpleByteChunk;
 import togos.mf.value.ByteBlob;
 import togos.mf.value.ByteChunk;
-import togos.mf.value.Chunk;
 
 public class Util
 {
@@ -39,9 +38,6 @@ public class Util
 		} else if( o instanceof ByteChunk ) {
 			ByteChunk c = (ByteChunk)o;
 			return string( c.getBuffer(), c.getOffset(), c.getSize() );
-		} else if( o instanceof Chunk ) {
-			Chunk c = (Chunk)o;
-			return string( c.data, c.offset, c.length );
 		} else if( o == null ) {
 			return null;
 		} else {
@@ -57,9 +53,6 @@ public class Util
 		} else if( o instanceof byte[] ) {
 			byte[] b = (byte[])o;
 			return new SimpleByteChunk( b, 0, b.length );
-		} else if( o instanceof Chunk ) {
-			Chunk c = (Chunk)o;
-			return new SimpleByteChunk( c.data, c.offset, c.length );
 		} else if( o instanceof String ) {
 			byte[] b = bytes((String)o);
 			return new SimpleByteChunk( b, 0, b.length );

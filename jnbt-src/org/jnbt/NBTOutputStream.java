@@ -1,34 +1,13 @@
-package togos.minecraft.mapgen.io;
+package org.jnbt;
 
 import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
-
-import org.jnbt.ByteArrayTag;
-import org.jnbt.ByteTag;
-import org.jnbt.CompoundTag;
-import org.jnbt.DoubleTag;
-import org.jnbt.EndTag;
-import org.jnbt.FloatTag;
-import org.jnbt.IntTag;
-import org.jnbt.ListTag;
-import org.jnbt.LongTag;
-import org.jnbt.NBTConstants;
-import org.jnbt.NBTUtils;
-import org.jnbt.ShortTag;
-import org.jnbt.StringTag;
-import org.jnbt.Tag;
-
-/*
- * Based on jnbt.io.NBTOutputStream.
- * Modifications by TOGoS:
- *  - take a DataOutputStream constructor argument to work with the region file format.
- *  - Altered source to be Java 1.4 compatible.
- * 
- * Below copyright notices are copied from original org.jnbt code.
- */
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 /*
  * JNBT License
@@ -60,7 +39,7 @@ import org.jnbt.Tag;
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * POSSIBILITY OF SUCH DAMAGE. 
  */
 
 /**
@@ -72,10 +51,10 @@ import org.jnbt.Tag;
  * be found at <a href="http://www.minecraft.net/docs/NBT.txt">
  * http://www.minecraft.net/docs/NBT.txt</a>.</p>
  * @author Graham Edgecombe
- *
+ * @author TOGoS (minor alterations)
  */
-public final class BetterNBTOutputStream implements Closeable {
-	
+public final class NBTOutputStream implements Closeable
+{
 	/**
 	 * The output stream.
 	 */
@@ -87,8 +66,18 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @param os The output stream.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	public BetterNBTOutputStream(DataOutputStream os) throws IOException {
+	public NBTOutputStream(DataOutputStream os) throws IOException {
 		this.os = os;
+	}
+	
+	/**
+	 * Creates a new <code>NBTOutputStream</code>, which will write data to the
+	 * specified underlying output stream.
+	 * @param os The output stream.
+	 * @throws IOException if an I/O error occurs.
+	 */
+	public NBTOutputStream(OutputStream os) throws IOException {
+		this( new DataOutputStream(new GZIPOutputStream(os)) );
 	}
 	
 	/**
@@ -164,7 +153,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeByteTagPayload(ByteTag tag) throws IOException {
-		os.writeByte(tag.getValue().byteValue());
+		os.writeByte( tag.getByteValue() );
 	}
 
 	/**
@@ -173,7 +162,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeByteArrayTagPayload(ByteArrayTag tag) throws IOException {
-		byte[] bytes = tag.getValue();
+		byte[] bytes = (byte[])tag.getValue();
 		os.writeInt(bytes.length);
 		os.write(bytes);
 	}
@@ -184,7 +173,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeCompoundTagPayload(CompoundTag tag) throws IOException {
-		for( Iterator i=tag.getValue().values().iterator(); i.hasNext(); ) {
+		for( Iterator i=((Map)tag.getValue()).values().iterator(); i.hasNext(); ) {
 			Tag childTag = (Tag)i.next();
 			writeTag(childTag);
 		}
@@ -198,7 +187,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 */
 	private void writeListTagPayload(ListTag tag) throws IOException {
 		Class clazz = tag.getType();
-		List tags = tag.getValue();
+		List tags = (List)tag.getValue();
 		int size = tags.size();
 		
 		os.writeByte(NBTUtils.getTypeCode(clazz));
@@ -214,7 +203,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeStringTagPayload(StringTag tag) throws IOException {
-		byte[] bytes = tag.getValue().getBytes(NBTConstants.CHARSET);
+		byte[] bytes = tag.getStringValue().getBytes(NBTConstants.CHARSET);
 		os.writeShort(bytes.length);
 		os.write(bytes);
 	}
@@ -225,7 +214,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeDoubleTagPayload(DoubleTag tag) throws IOException {
-		os.writeDouble(tag.getValue().doubleValue());
+		os.writeDouble( tag.getDoubleValue() );
 	}
 
 	/**
@@ -234,7 +223,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeFloatTagPayload(FloatTag tag) throws IOException {
-		os.writeFloat(tag.getValue().floatValue());
+		os.writeFloat( tag.getFloatValue() );
 	}
 
 	/**
@@ -243,7 +232,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeLongTagPayload(LongTag tag) throws IOException {
-		os.writeLong(tag.getValue().longValue());
+		os.writeLong( tag.getLongValue() );
 	}
 
 	/**
@@ -252,7 +241,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeIntTagPayload(IntTag tag) throws IOException {
-		os.writeInt(tag.getValue().intValue());
+		os.writeInt( tag.getIntValue() );
 	}
 
 	/**
@@ -261,7 +250,7 @@ public final class BetterNBTOutputStream implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	private void writeShortTagPayload(ShortTag tag) throws IOException {
-		os.writeShort(tag.getValue().shortValue());
+		os.writeShort( tag.getShortValue() );
 	}
 
 	/**
@@ -272,9 +261,8 @@ public final class BetterNBTOutputStream implements Closeable {
 	private void writeEndTagPayload(EndTag tag) {
 		/* empty */
 	}
-
+	
 	public void close() throws IOException {
 		os.close();
 	}
-
 }

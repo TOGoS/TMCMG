@@ -1,0 +1,11 @@
+name: TMCMG
+main: togos.minecraft.mapgen.bukkit.TMCMGBukkitPlugin
+version: 2011-09-06
+website: http://www.nuke24.net/projects/TMCMG/
+author: TOGoS
+description: User-programmable terrain generator
+commands:
+  tmcmg-debug:
+    description: enable/disable blathering about chunk generation details
+    usage: /tmcmd-debug {on|off}
+load: startup

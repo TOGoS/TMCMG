@@ -3,8 +3,10 @@
 	<classpathentry excluding="togos/minecraft/mapgen/nbt/" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="ptest"/>
-	<classpathentry kind="lib" path="ext-lib/JNBT.jar"/>
-	<classpathentry kind="lib" path="ext-lib/togos.mf-2011.05.10.jar"/>
+	<classpathentry kind="src" path="bukkit-plugin-src"/>
+	<classpathentry kind="src" path="jnbt-src"/>
+	<classpathentry kind="src" path="togosmf-src"/>
+	<classpathentry kind="lib" path="ext-lib/bukkit-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="output" path="bin"/>

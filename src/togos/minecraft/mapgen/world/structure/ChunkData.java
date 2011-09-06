@@ -93,20 +93,20 @@ public class ChunkData extends MiniChunkData
 	}
 	
 	public static ChunkData fromTag( CompoundTag t ) {
-		Map m = t.getValue();
+		Map m = t.getComponents();
 		IntTag xPos = (IntTag)m.get( "xPos" );
 		IntTag zPos = (IntTag)m.get( "zPos" );
 		
 		ChunkData cd = forChunkCoords(
-			xPos.getValue().intValue(),
-			zPos.getValue().intValue()
+			xPos.getIntValue(),
+			zPos.getIntValue()
 		);
 		
-		cd.blockData = ((ByteArrayTag)m.get("Blocks")).getValue();
-		cd.blockExtraBits = ((ByteArrayTag)m.get("Data")).getValue();
-		cd.skyLightData = ((ByteArrayTag)m.get("SkyLight")).getValue();
-		cd.blockLightData = ((ByteArrayTag)m.get("BlockLight")).getValue();
-		cd.lightHeightData = ((ByteArrayTag)m.get("HeightMap")).getValue();
+		cd.blockData = ((ByteArrayTag)m.get("Blocks")).getBytes();
+		cd.blockExtraBits = ((ByteArrayTag)m.get("Data")).getBytes();
+		cd.skyLightData = ((ByteArrayTag)m.get("SkyLight")).getBytes();
+		cd.blockLightData = ((ByteArrayTag)m.get("BlockLight")).getBytes();
+		cd.lightHeightData = ((ByteArrayTag)m.get("HeightMap")).getBytes();
 		// TODO: this part
 		//cd.tileEntityData = ((CompoundTag)m.get("TileEntities")).getValue();
 		return cd;

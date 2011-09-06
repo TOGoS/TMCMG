@@ -9,7 +9,7 @@ import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.api.ResponseHandler;
 import togos.mf.base.BaseResponse;
-import togos.mf.value.Chunk;
+import togos.mf.base.SimpleByteChunk;
 import togos.minecraft.mapgen.uri.URIUtil;
 
 public class DataURICallable implements Callable, AsyncCallable
@@ -23,7 +23,7 @@ public class DataURICallable implements Callable, AsyncCallable
 		
 		HashMap metadata = new HashMap();
 		byte[] data = URIUtil.decodeDataUri(req.getResourceName(), metadata);
-		return new BaseResponse(ResponseCodes.NORMAL,new Chunk(data,0,data.length),metadata);
+		return new BaseResponse(ResponseCodes.NORMAL,new SimpleByteChunk(data,0,data.length),metadata);
 	}
 
 	public void callAsync( Request req, ResponseHandler rHandler ) {

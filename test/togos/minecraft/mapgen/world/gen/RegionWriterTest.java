@@ -9,9 +9,9 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.jnbt.CompoundTag;
+import org.jnbt.NBTInputStream;
 
 import togos.mf.value.ByteBlob;
-import togos.minecraft.mapgen.io.BetterNBTInputStream;
 import togos.minecraft.mapgen.io.RegionFile;
 import togos.minecraft.mapgen.io.RegionWriter;
 import togos.minecraft.mapgen.util.Util;
@@ -22,10 +22,10 @@ public class RegionWriterTest extends TestCase
 {
 	protected ChunkData getChunkData( RegionFile rf, int cx, int cz ) throws IOException {
 		DataInputStream dis = rf.getChunkDataInputStream( cx, cz );
-		BetterNBTInputStream nis = new BetterNBTInputStream(dis);
+		NBTInputStream nis = new NBTInputStream(dis);
 		CompoundTag rootTag = (CompoundTag)nis.readTag();
 		nis.close();
-		CompoundTag levelTag = (CompoundTag)rootTag.getValue().get("Level");
+		CompoundTag levelTag = (CompoundTag)rootTag.getComponents().get("Level");
 		return ChunkData.fromTag( levelTag );
 	}
 	

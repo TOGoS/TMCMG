@@ -10,6 +10,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.jnbt.CompoundTag;
+import org.jnbt.NBTOutputStream;
 
 import togos.mf.value.ByteChunk;
 import togos.minecraft.mapgen.PathUtil;
@@ -31,8 +32,8 @@ public class ChunkWriter
 	public static int chunkX( ChunkData cd ) { return (int)(cd.getChunkPositionX()/cd.getChunkWidth()); }
 	public static int chunkZ( ChunkData cd ) { return (int)(cd.getChunkPositionZ()/cd.getChunkDepth()); }
 	
-	public static void writeChunk( ChunkData cd, DataOutputStream os ) throws IOException {
-		BetterNBTOutputStream nbtos = new BetterNBTOutputStream(os);
+	public static void writeChunk( ChunkData cd, DataOutputStream dos ) throws IOException {
+		NBTOutputStream nbtos = new NBTOutputStream(dos);
 		
 		HashMap levelRootTags = new HashMap();
 		levelRootTags.put("Level",cd.toTag());
