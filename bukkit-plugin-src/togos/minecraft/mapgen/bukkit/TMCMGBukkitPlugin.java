@@ -2,26 +2,24 @@ package togos.minecraft.mapgen.bukkit;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.event.world.WorldListener;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.world.Blocks;
-import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.lang.CompileError;
 import togos.noise2.lang.ParseError;
-import togos.noise2.vm.dftree.data.DataDaDa;
-import togos.noise2.vm.dftree.data.DataDaIa;
-import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
 
 public class TMCMGBukkitPlugin extends JavaPlugin
 {
@@ -30,6 +28,13 @@ public class TMCMGBukkitPlugin extends JavaPlugin
 	
 	public void onEnable() {
 		System.out.println(getDescription().getName() + " version " + getDescription().getVersion() + " enabled!");
+		
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvent(Event.Type.WORLD_INIT, new WorldListener() {
+			public void onWorldInit(WorldInitEvent event) {
+				TMCMGBukkitPlugin.this.onWorldInit(event.getWorld());
+			}
+		}, Event.Priority.High, this);
 	}
 	
 	protected boolean debug = false;
@@ -60,6 +65,22 @@ public class TMCMGBukkitPlugin extends JavaPlugin
 		return null;
 	}
 	
+	public void onWorldInit( World world ) {
+		ChunkGenerator cg = world.getGenerator();
+		if( !(cg instanceof TMCMGBukkitChunkGenerator) ) return; // not ours!
+		if( !(world instanceof CraftWorld) ) {
+			System.err.println("Can't override biomes in "+world.getName()+" because it is not a CraftWorld");
+		}
+		/*
+		 * This is an attempt at overriding climate functions;
+		 * it should be conditional on the script providing overrides,
+		 * and right now it doesn't work anyway, so commented out.
+		net.minecraft.server.World mcWorld = ((CraftWorld)world).getHandle();
+		System.out.println("Setting worldProvider.b to TMCMGWorldChunkManager");
+		mcWorld.worldProvider.b = new TMCMGWorldChunkManager();
+		*/
+	}
+	
 	public ChunkGenerator getDefaultWorldGenerator(final String worldName, String id) {
 		File tnlFile = findScript(worldName, id);
 		if( !tnlFile.exists() ) {
@@ -83,31 +104,6 @@ public class TMCMGBukkitPlugin extends JavaPlugin
 	        return null;
         }
         
-        final FunctionDaDa_DaIa groundFunction = wg.getGroundFunction();
-		final ChunkMunger cm = wg.getChunkMunger();
-		
-		return new ChunkGenerator() {
-			public boolean canSpawn( World world, int x, int z ) {
-				DataDaDa coords = new DataDaDa( 1, new double[] { x }, new double[] { z } );
-				DataDaIa gnd = groundFunction.apply(coords);
-				boolean cs = gnd.d[0] > 32 && gnd.d[0] < 96 && gnd.i[0] != Blocks.WATER && gnd.i[0] != Blocks.LAVA;
-				System.out.println("Can spawn at "+worldName+":"+x+","+z+"?    "+cs);
-				return cs;
-			}
-			
-			public byte[] generate( World world, Random r, int cx, int cz ) {
-				if( debug ) {
-					System.out.println("Generating chunk "+worldName+"/"+cx+","+cz+"...");
-				}
-				ChunkData cd = ChunkData.forChunkCoords( cx, cz );
-				long beginTime = System.currentTimeMillis();
-				cm.mungeChunk( cd );
-				long endTime = System.currentTimeMillis();
-				if( debug ) {
-					System.out.println("Generated chunk "+worldName+"/"+cx+","+cz+" in "+(endTime-beginTime)+"ms");
-				}
-				return cd.blockData;
-            }
-		};
+        return new TMCMGBukkitChunkGenerator( worldName, wg );
 	}
 }
