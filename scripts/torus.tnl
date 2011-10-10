@@ -48,6 +48,6 @@ layered-terrain(
     torus( materials.stone, 0, 64, 0, 96, 128 ),
     torus( materials.stone, 192, 56, 64, 96, 128 ),
     layer( materials.bedrock, 0, 1),
-    
+    depositor( materials.sand, 2 ),
     flag-populated,
 );

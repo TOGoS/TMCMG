@@ -74,6 +74,20 @@ public class WorldGeneratorMacros
 				return new Winterizer(FunctionUtil.toDaDa_Da(compiledArgs[0], argNodes[0]));
 			}
 		});
+		wgMacros.put("depositor", new BaseMacroType() {
+			protected int getRequiredArgCount() {
+				return 2;
+			}
+
+			protected Object instantiate( ASTNode node, ASTNode[] argNodes,
+					Object[] compiledArgs ) throws CompileError {
+				
+				return new Depositor(
+					FunctionUtil.toDaDaDa_Ia(compiledArgs[0], argNodes[0]),
+					FunctionUtil.toDaDaDa_Da(compiledArgs[1], argNodes[1])
+				);
+			}
+		});
 		wgMacros.put("lighter", new ConstantMacroType(new Lighter()));
 		wgMacros.put("flag-populated", new ConstantMacroType(
 				new TerrainPopulatedSetter()));

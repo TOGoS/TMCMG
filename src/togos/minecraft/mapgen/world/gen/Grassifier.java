@@ -21,5 +21,4 @@ public class Grassifier implements ChunkMunger
 			}
 		}
 	}
-
 }
