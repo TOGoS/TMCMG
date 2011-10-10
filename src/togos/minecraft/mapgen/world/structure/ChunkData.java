@@ -58,7 +58,7 @@ public class ChunkData extends MiniChunkData
 	//// Light height ////
 	
 	public void setLightHeight( int x, int z, int height ) {
-		lightHeightData[z*width+x] = (byte)(height);
+		lightHeightData[x*depth+z] = (byte)(height);
 	}
 	
 	//// Saving/loading ////

@@ -18,7 +18,7 @@ dome( cx, cz, height, rad, div ) = (
 
 wlf = simplex( x / 16, y / 16, z / 16 );
 
-dome-rad = region-width * 0.5;
+dome-rad = region-width * 0.6;
 inner-dome-rad = dome-rad * 0.5;
 dome-insides = if( simplex( x / 16, y / 32, z / 16 ) > 0, materials.stone, materials.none );
 dome-insides2 = if( simplex( x / 8, y / 8, z / 8 ) < ((63 - y) / 512),
@@ -43,7 +43,8 @@ layered-terrain(
 	layer( dome-insides, 32, dome( dome-x, dome-z, 96, dome-rad, 2048 ) ),
 	layer( materials.stone, 8, dome( dome-x, dome-z, 88, inner-dome-rad, 2048 ) ),
 	layer( dome-insides2, 8, dome( dome-x, dome-z, 80, inner-dome-rad, 2048 ) ),
-	depositor( if( z < 68 + simplex( x / 16, y, z / 16 ), materials.sand, materials.dirt ), 3 ),
+	depositor( if( y < 68 + simplex( x / 16, y, z / 16 ), materials.sand, materials.dirt ), 3 ),
+	lighter,
 	grassifier,
 	layer( materials.bedrock, 0, 2 ),
 );
