@@ -134,7 +134,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 						throw new RuntimeException("Floor height is NaN for layer "+l);
 					}
 					if( lCeil[j] < highest[j] ) continue;
-					if( lCeil[j] < lFloor[j] ) continue;
+					if( lCeil[j] <= lFloor[j] ) continue;
 					
 					if( subtract ) {
 						if( highest[j] <= lCeil[j] && highest[j] >= lFloor[j] ) {

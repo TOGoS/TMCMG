@@ -1,0 +1,53 @@
+# Def
+#sphere( latka, x0, y0, z0, R) = (
+#	dx = x - x0;
+#	dz = z - z0;
+#	dx2 = dx * dx;
+#	dz2 = dz * dz;
+#	R2 = R * R;
+#	layer( latka,
+#		if( dx2 + dz2 < R2, y0 - sqrt( R2 - dx2 - dz2), y0),
+#		if( dx2 + dz2 < R2, y0 + sqrt( R2 - dx2 - dz2) + 1, y0)
+#	)
+#);
+
+#inf = 4000;
+
+#circlex = if( (x * x + z * z < 101 * 101) * (x * x + z * z > 99 * 99), x, inf);
+#circlez = if( (x * x + z * z < 101 * 101) * (x * x + z * z > 99 * 99), z, inf);
+
+torus( mat, cx, cy, cz, innerRad, outerRad ) = (
+	ringDiam = outerRad - innerRad;
+	ringRad = ringDiam / 2;
+	ringRad2 = ringRad * ringRad;
+	
+	outerRad2 = outerRad * outerRad;
+	innerRad2 = outerRad * outerRad;
+	
+	dx = x - cx;
+	dz = z - cz;
+	dx2 = dx * dx;
+	dz2 = dz * dz;
+	dist2 = dx2 + dz2;
+	
+	dist = sqrt( dist2 );
+	innerDist = dist - ( innerRad + ringRad );
+	innerDist2 = innerDist * innerDist;
+	
+	layer(
+		mat,
+		cy - sqrt( ringRad2 - innerDist2 ),
+		cy + sqrt( ringRad2 - innerDist2 ) 
+	)
+);
+
+# Code
+layered-terrain(
+    layer( materials.water, 0, 63 ),
+    # sphere(1, circlex, 40, circlez, 10),
+    torus( materials.stone, 0, 64, 0, 96, 128 ),
+    torus( materials.stone, 192, 56, 64, 96, 128 ),
+    layer( materials.bedrock, 0, 1),
+    
+    flag-populated,
+);
