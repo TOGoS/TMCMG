@@ -1,0 +1,49 @@
+region-width = 32 * 16;
+
+region-center( rx ) = region-width * (rx + 0.5); 
+
+dist( x1, z1, x2, z2 ) = (
+	dx = x1 - x2;
+	dz = z1 - z2;
+	sqrt( dx * dx + dz * dz )
+);
+
+target-region-x = 3;
+target-region-z = 8;
+
+dome( cx, cz, height, rad, div ) = (
+	ddc = dist( cx, cz, x, z );
+	if( ddc > rad, 0, height - div / (rad - ddc) )
+);
+
+wlf = simplex( x / 16, y / 16, z / 16 );
+
+dome-rad = region-width * 0.5;
+inner-dome-rad = dome-rad * 0.5;
+dome-insides = if( simplex( x / 16, y / 32, z / 16 ) > 0, materials.stone, materials.none );
+dome-insides2 = if( simplex( x / 8, y / 8, z / 8 ) < ((63 - y) / 512),
+	if( y < 16,
+		if( wlf > +0.1, materials.lava,
+		    wlf < -0.1, materials.water,
+		    materials.obsidian
+		), 
+		materials.air
+	),
+	if( y < 24, materials.netherrack, materials.none )
+);
+dome-x = region-center( target-region-x );
+dome-z = region-center( target-region-z );
+
+layered-terrain(
+	layer( materials.water, 0, 63 ),
+	layer( materials.stone, 0, 32 ),
+	layer( materials.sand, 32, 36 ),
+	# layer( materials.dirt, 32, dome( dome-x, dome-z, 100, dome-rad, 2048 ) ),
+	# layer( materials.stone, 32, dome( dome-x, dome-z, 96, dome-rad, 2048 ) ),
+	layer( dome-insides, 32, dome( dome-x, dome-z, 96, dome-rad, 2048 ) ),
+	layer( materials.stone, 8, dome( dome-x, dome-z, 88, inner-dome-rad, 2048 ) ),
+	layer( dome-insides2, 8, dome( dome-x, dome-z, 80, inner-dome-rad, 2048 ) ),
+	depositor( if( z < 68 + simplex( x / 16, y, z / 16 ), materials.sand, materials.dirt ), 3 ),
+	grassifier,
+	layer( materials.bedrock, 0, 2 ),
+);
