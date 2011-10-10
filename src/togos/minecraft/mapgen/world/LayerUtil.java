@@ -18,6 +18,10 @@ public class LayerUtil
 		return maxY;
 	}
 	
+	/**
+	 * Finds the Y positions (bottom) of the topmost blocks
+	 * in a layer with ceiling at topHeight.
+	 */
 	public static final double[] maxY( double[] topHeight ) {
 		return maxY( roundHeights(topHeight) );
 	}
