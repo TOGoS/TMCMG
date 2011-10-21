@@ -15,7 +15,12 @@ public class ModOutDaDaDa_Da extends ReduceOutDaDaDa_Da
 	}
 	
     private static final long fastFloor(double n) {
-        return n > 0 ? (long) n : (long) n - 1;
+    	if( n < 0 ) {
+    		long add = (long)(n-1);
+    		return (long)(n-add)+add;
+    	} else {
+    		return (long)n;
+    	}
     }
 	
 	protected void reduce( int count, double[] subOut, double[] out ) {

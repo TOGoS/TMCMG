@@ -7,10 +7,11 @@ public class FloorPerformanceTest
 {
 	long totalFFTime;
 	long totalFDITime;
+	long totalCFDLTime;
 	long totalFDLTime;
 	long totalSFTime;
 	long totalSDTime;
-	int innerIter  = 100;
+	int innerIter  = 200;
 	int outerIter  = 500;
 	final int vectorSize = 256; 
 	
@@ -41,6 +42,15 @@ public class FloorPerformanceTest
 	
     private static final int fastfloor(double n) {
         return n > 0 ? (int) n : (int) n - 1;
+    }
+    
+    private static final long morecorrectfastfloor(double n) {
+    	if( n < 0 ) {
+    		long add = (long)(n-1);
+    		return (long)(n-add)+add;
+    	} else {
+    		return (long)n;
+    	}
     }
 	
     private static final long fastfloorlong(double n) {
@@ -87,6 +97,15 @@ public class FloorPerformanceTest
 			bt = System.currentTimeMillis();
 			for( int i=0; i<innerIter; ++i ) {
 				for( int j=0; j<vectorSize; ++j ) {
+					morecorrectfastfloor( dvals[i] );
+				}
+			}
+			et = System.currentTimeMillis();
+			totalCFDLTime += (et - bt);
+
+			bt = System.currentTimeMillis();
+			for( int i=0; i<innerIter; ++i ) {
+				for( int j=0; j<vectorSize; ++j ) {
 					fastfloorlong( dvals[i] );
 				}
 			}
@@ -120,6 +139,7 @@ public class FloorPerformanceTest
 		System.err.println("Vector size = " + vectorSize);
 		System.err.println("FDI time  = " + format(totalFDITime, 6) + "ms" );
 		System.err.println("FDL time  = " + format(totalFDLTime, 6) + "ms" );
+		System.err.println("CFDL time = " + format(totalCFDLTime, 6) + "ms" );
 		System.err.println("SD time   = " + format(totalSDTime, 6) + "ms" );
 		System.err.println("FF time   = " + format(totalFFTime, 6) + "ms" );
 		System.err.println("SF time   = " + format(totalSFTime, 6) + "ms" );
