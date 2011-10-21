@@ -1,0 +1,31 @@
+package togos.noise2.vm.dftree.func;
+
+/**
+ * Calculates 'floored division' remainders.  i.e.:
+ * 
+ *    13 %  10 =  3 
+ *   -13 %  10 =  7
+ *    13 % -10 = -7
+ *   -13 % -10 = -3
+ */
+public class ModOutDaDaDa_Da extends ReduceOutDaDaDa_Da
+{
+	public ModOutDaDaDa_Da( FunctionDaDaDa_Da[] components ) {
+		super(components);
+	}
+	
+    private static final long fastFloor(double n) {
+        return n > 0 ? (long) n : (long) n - 1;
+    }
+	
+	protected void reduce( int count, double[] subOut, double[] out ) {
+		for( int j=count-1; j>=0; --j ) {
+			double d = fastFloor(out[j] / subOut[j]);
+			out[j] = out[j] - d*subOut[j];
+		}
+	}
+	
+	protected String getOperatorSymbol() {
+		return "%";
+	}
+}

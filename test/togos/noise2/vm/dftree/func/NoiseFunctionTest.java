@@ -1,6 +1,8 @@
 package togos.noise2.vm.dftree.func;
 
 import junit.framework.TestCase;
+import togos.noise2.lang.BaseSourceLocation;
+import togos.noise2.lang.ScriptError;
 import togos.noise2.vm.dftree.lang.TNLCompiler;
 import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
 
@@ -21,4 +23,8 @@ public abstract class NoiseFunctionTest extends TestCase
 	}
 
 	TNLCompiler comp = mkCompiler();
+	
+	protected LFunctionDaDaDa_Da compileLDDDF( String source ) throws ScriptError {
+		return (LFunctionDaDaDa_Da)comp.compile(source,new BaseSourceLocation("test-script",1,1),"test-script",LFunctionDaDaDa_Da.class);
+	}
 }

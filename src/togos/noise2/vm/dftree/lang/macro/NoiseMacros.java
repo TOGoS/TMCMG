@@ -22,6 +22,7 @@ import togos.noise2.vm.dftree.func.LessThanDaDaDa_Da;
 import togos.noise2.vm.dftree.func.LessThanOrEqualDaDaDa_Da;
 import togos.noise2.vm.dftree.func.MaxOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.MinOutDaDaDa_Da;
+import togos.noise2.vm.dftree.func.ModOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.MultiplyOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.NotEqualDaDaDa_Da;
 import togos.noise2.vm.dftree.func.OrOutDaDaDa_Da;
@@ -106,11 +107,12 @@ public class NoiseMacros
 		add("or",  dddaamt(OrOutDaDaDa_Da.class));
 				
 		// Numeric arithmetic
-		add("+", dddaamt(AddOutDaDaDa_Da.class));
 		add("*", dddaamt(MultiplyOutDaDaDa_Da.class));
 		add("**", dddaamt(ExponentiateOutDaDaDa_Da.class));
-		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		add("/", dddaamt(DivideOutDaDaDa_Da.class));
+		add("%", dddaamt(ModOutDaDaDa_Da.class));
+		add("+", dddaamt(AddOutDaDaDa_Da.class));
+		add("-", dddaamt(SubtractOutDaDaDa_Da.class));
 		
 		// Power fimctopms
 		add("sqrt", xArgMacroType(SqrtDaDaDa_Da.class));

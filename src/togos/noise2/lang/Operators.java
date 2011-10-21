@@ -21,6 +21,7 @@ public class Operators
 		
 		PRECEDENCE.put("*",  new Integer(50));
 		PRECEDENCE.put("/",  new Integer(50));
+		PRECEDENCE.put("%",  new Integer(50));
 		
 		PRECEDENCE.put("+",  new Integer(40));
 		PRECEDENCE.put("-",  new Integer(40));
