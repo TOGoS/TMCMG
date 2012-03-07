@@ -56,7 +56,8 @@ public final class CompoundTag extends Tag
 	 */
 	public CompoundTag(String name, Map value) {
 		super(name);
-		this.value = Collections.unmodifiableMap(value);
+		//this.value = Collections.unmodifiableMap(value);
+		this.value = value;
 	}
 	
 	public Map getComponents() {
