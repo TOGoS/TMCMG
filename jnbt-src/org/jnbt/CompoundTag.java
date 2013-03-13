@@ -34,40 +34,36 @@ package org.jnbt;
  */
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
  * The <code>TAG_Compound</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class CompoundTag extends Tag
-{
+public final class CompoundTag extends Tag {
+	
 	/**
 	 * The value.
 	 */
-	private final Map value;
+	private final Map<String, Tag> value;
 	
 	/**
 	 * Creates the tag.
 	 * @param name The name.
 	 * @param value The value.
 	 */
-	public CompoundTag(String name, Map value) {
+	public CompoundTag(String name, Map<String, Tag> value) {
 		super(name);
-		//this.value = Collections.unmodifiableMap(value);
-		this.value = value;
+		this.value = Collections.unmodifiableMap(value);
 	}
-	
-	public Map getComponents() {
+
+	@Override
+	public Map<String, Tag> getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return value;
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";
@@ -76,8 +72,7 @@ public final class CompoundTag extends Tag
 		}
 		StringBuilder bldr = new StringBuilder();
 		bldr.append("TAG_Compound" + append + ": " + value.size() + " entries\r\n{\r\n");
-		for( Iterator i=value.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry entry = (Map.Entry)i.next();
+		for(Map.Entry<String, Tag> entry : value.entrySet()) {
 			bldr.append("   " + entry.getValue().toString().replaceAll("\r\n", "\r\n   ") + "\r\n");
 		}
 		bldr.append("}");

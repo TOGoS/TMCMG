@@ -38,10 +38,10 @@ import java.nio.charset.Charset;
 /**
  * A class which holds constant values.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class NBTConstants
-{
+public final class NBTConstants {
+	
 	/**
 	 * The character set used by NBT (UTF-8).
 	 */
@@ -60,7 +60,8 @@ public final class NBTConstants
 		TYPE_BYTE_ARRAY = 7,
 		TYPE_STRING = 8,
 		TYPE_LIST = 9,
-		TYPE_COMPOUND = 10;
+		TYPE_COMPOUND = 10,
+		TYPE_INT_ARRAY = 11;
 	
 	/**
 	 * Default private constructor.

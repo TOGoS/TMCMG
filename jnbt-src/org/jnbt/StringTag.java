@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_String</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class StringTag extends Tag
-{
+public final class StringTag extends Tag {
+
 	/**
 	 * The value.
 	 */
@@ -55,14 +55,12 @@ public final class StringTag extends Tag
 		this.value = value;
 	}
 	
-	public String getStringValue() {
+	@Override
+	public String getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return value;
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";

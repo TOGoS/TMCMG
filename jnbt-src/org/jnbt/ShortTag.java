@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_Short</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class ShortTag extends Tag
-{
+public final class ShortTag extends Tag {
+
 	/**
 	 * The value.
 	 */
@@ -55,14 +55,12 @@ public final class ShortTag extends Tag
 		this.value = value;
 	}
 	
-	public short getShortValue() {
+	@Override
+	public Short getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return new Short(value);
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";

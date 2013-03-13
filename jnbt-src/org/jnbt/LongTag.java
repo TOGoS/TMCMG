@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_Long</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class LongTag extends Tag
-{
+public final class LongTag extends Tag {
+
 	/**
 	 * The value.
 	 */
@@ -55,14 +55,12 @@ public final class LongTag extends Tag
 		this.value = value;
 	}
 	
-	public long getLongValue() {
+	@Override
+	public Long getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return new Long(value);
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";

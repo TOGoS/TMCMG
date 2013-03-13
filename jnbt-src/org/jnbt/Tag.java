@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * Represents a single NBT tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public abstract class Tag
-{
+public abstract class Tag {
+	
 	/**
 	 * The name of this tag.
 	 */
@@ -66,4 +66,5 @@ public abstract class Tag
 	 * @return The value of this tag.
 	 */
 	public abstract Object getValue();
+
 }

@@ -1,9 +1,13 @@
 package togos.minecraft.mapgen;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.jnbt.NBTInputStream;
 import org.jnbt.NBTOutputStream;
@@ -31,7 +35,7 @@ public class Dumper
 			FileInputStream is = new FileInputStream(new File(readFile));
 			Tag t;
 			try {
-				NBTInputStream nis = new NBTInputStream(is);
+				NBTInputStream nis = NBTInputStream.gzipOpen(is);
 				t = nis.readTag();
 				nis.close();
 			} finally {
@@ -42,7 +46,7 @@ public class Dumper
 			if( writeFile != null ) {
 				FileOutputStream os = new FileOutputStream(new File(writeFile));
 				try {
-					NBTOutputStream nbtos = new NBTOutputStream(os);
+					NBTOutputStream nbtos = NBTOutputStream.gzipOpen(os);
 					nbtos.writeTag(t);
 					nbtos.close();
 				} finally {

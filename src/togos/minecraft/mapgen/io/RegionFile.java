@@ -176,7 +176,7 @@ public class RegionFile
 
     // various small debug printing helpers
     private void debug(String in) {
-//        System.out.print(in);
+        //System.err.print(in);
     }
 
     private void debugln(String in) {
@@ -184,15 +184,15 @@ public class RegionFile
     }
 
     private void debug(String mode, int x, int z, String in) {
-        debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] = " + in);
+        debugln("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] = " + in);
     }
 
     private void debug(String mode, int x, int z, int count, String in) {
-        debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] " + count + "B = " + in);
+        debugln("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] " + count + "B = " + in);
     }
 
     private void debugln(String mode, int x, int z, String in) {
-        debug(mode, x, z, in + "\n");
+        debugln(mode, x, z, in);
     }
 
     /*
@@ -284,17 +284,17 @@ public class RegionFile
         }
 
         public void close() {
-            RegionFile.this.write(x, z, buf, count, format);
+            RegionFile.this.write(x, z, buf, 0, count, format);
         }
     }
 
     /* write a chunk at (x,z) with length bytes of data to disk */
-    public synchronized void write(int x, int z, byte[] data, int length, int format) {
+    public synchronized void write(int x, int z, byte[] data, int dataOffset, int dataLength, int dataFormat) {
         try {
             int offset = getOffset(x, z);
             int sectorNumber = offset >> 8;
             int sectorsAllocated = offset & 0xFF;
-            int sectorsNeeded = (length + CHUNK_HEADER_SIZE) / SECTOR_BYTES + 1;
+            int sectorsNeeded = (dataLength + CHUNK_HEADER_SIZE) / SECTOR_BYTES + 1;
 
             // maximum chunk size is 1MB
             if (sectorsNeeded >= 256) {
@@ -303,8 +303,8 @@ public class RegionFile
 
             if (sectorNumber != 0 && sectorsAllocated == sectorsNeeded) {
                 /* we can simply overwrite the old sectors */
-                debug("SAVE", x, z, length, "rewrite");
-                write(sectorNumber, data, length, format);
+                debug("SAVE", x, z, dataLength, "rewrite");
+                write(sectorNumber, data, dataOffset, dataLength, dataFormat);
             } else {
                 /* we need to allocate new sectors */
 
@@ -333,19 +333,19 @@ public class RegionFile
 
                 if (runLength >= sectorsNeeded) {
                     /* we found a free space large enough */
-                    debug("SAVE", x, z, length, "reuse");
+                    debug("SAVE", x, z, dataLength, "reuse");
                     sectorNumber = runStart;
                     setOffset(x, z, (sectorNumber << 8) | sectorsNeeded);
                     for (int i = 0; i < sectorsNeeded; ++i) {
                         sectorFree.set(sectorNumber + i, Boolean.FALSE);
                     }
-                    write(sectorNumber, data, length, format);
+                    write(sectorNumber, data, dataOffset, dataLength, dataFormat);
                 } else {
                     /*
                      * no free space large enough found -- we need to grow the
                      * file
                      */
-                    debug("SAVE", x, z, length, "grow");
+                    debug("SAVE", x, z, dataLength, "grow");
                     file.seek(file.length());
                     sectorNumber = sectorFree.size();
                     for (int i = 0; i < sectorsNeeded; ++i) {
@@ -354,7 +354,7 @@ public class RegionFile
                     }
                     sizeDelta += SECTOR_BYTES * sectorsNeeded;
 
-                    write(sectorNumber, data, length, format);
+                    write(sectorNumber, data, dataOffset, dataLength, dataFormat);
                     setOffset(x, z, (sectorNumber << 8) | sectorsNeeded);
                 }
             }
@@ -365,12 +365,12 @@ public class RegionFile
     }
 
     /* write a chunk data to the region file at specified sector number */
-    private void write(int sectorNumber, byte[] data, int length, int format) throws IOException {
-        debugln(" " + sectorNumber);
+    private void write(int sectorNumber, byte[] data, int offset, int length, int format) throws IOException {
+    	debugln("Writing "+length+"-byte chunk at sector "+sectorNumber);
         file.seek(sectorNumber * SECTOR_BYTES);
         file.writeInt(length + 1); // chunk length
         file.writeByte(format); // chunk version number
-        file.write(data, 0, length); // chunk data
+        file.write(data, offset, length); // chunk data
     }
 
     /* is this an invalid chunk coordinate? */

@@ -46,6 +46,6 @@ public class TMCMGBukkitChunkGenerator extends ChunkGenerator
 		if( debugStream != null ) {
 			debugStream.println("Generated chunk "+worldName+"/"+cx+","+cz+" in "+(endTime-beginTime)+"ms");
 		}
-		return cd.blockData;
+		return cd.blockIds;
     }
 };

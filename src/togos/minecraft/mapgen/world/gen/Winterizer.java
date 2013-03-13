@@ -22,7 +22,7 @@ public class Winterizer implements ChunkMunger
 				if( winterness[i] <= 0 ) continue;
 				
 				yLoop: for( int y=cd.height-1; y>0; --y ) {
-					switch( cd.getBlock(x, y, z) ) {
+					switch( cd.getBlockId(x, y, z) ) {
 					case( Blocks.AIR ): continue yLoop;
 					case( Blocks.WATER ):
 						cd.setBlock(x, y, z, Blocks.ICE);

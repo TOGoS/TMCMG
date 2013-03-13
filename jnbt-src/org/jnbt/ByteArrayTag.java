@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_Byte_Array</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class ByteArrayTag extends Tag
-{
+public final class ByteArrayTag extends Tag {
+	
 	/**
 	 * The value.
 	 */
@@ -55,18 +55,16 @@ public final class ByteArrayTag extends Tag
 		this.value = value;
 	}
 	
-	public byte[] getBytes() {
+	@Override
+	public byte[] getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return value;
-	}
-	
+	@Override
 	public String toString() {
 		StringBuilder hex = new StringBuilder();
-		for( int i=0; i<value.length; ++i ) {
-			String hexDigits = Integer.toHexString(value[i]).toUpperCase();
+		for(byte b : value) {
+			String hexDigits = Integer.toHexString(b).toUpperCase();
 			if(hexDigits.length() == 1) {
 				hex.append("0");
 			}

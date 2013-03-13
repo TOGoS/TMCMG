@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_Int</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class IntTag extends Tag
-{
+public final class IntTag extends Tag {
+
 	/**
 	 * The value.
 	 */
@@ -54,15 +54,17 @@ public final class IntTag extends Tag
 		super(name);
 		this.value = value;
 	}
+
+	@Override
+	public Integer getValue() {
+		return value;
+	}
 	
 	public int getIntValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return new Integer(value);
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";

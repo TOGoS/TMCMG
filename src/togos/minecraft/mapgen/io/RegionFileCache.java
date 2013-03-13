@@ -47,7 +47,6 @@ public class RegionFileCache {
 
     private static final int MAX_CACHE_SIZE = 256;
 
-
     private static final Map cache = new HashMap();
 
     private RegionFileCache() {
@@ -55,7 +54,7 @@ public class RegionFileCache {
 
     public static synchronized RegionFile getRegionFile(File basePath, int chunkX, int chunkZ) {
         File regionDir = new File(basePath, "region");
-        File file = new File(regionDir, "r." + (chunkX >> 5) + "." + (chunkZ >> 5) + ".mcr");
+        File file = new File(regionDir, "r." + (chunkX >> 5) + "." + (chunkZ >> 5) + ".mca");
 
         Reference ref = (Reference)cache.get(file);
 

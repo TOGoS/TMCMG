@@ -25,7 +25,7 @@ public class RegionWriterTest extends TestCase
 		NBTInputStream nis = new NBTInputStream(dis);
 		CompoundTag rootTag = (CompoundTag)nis.readTag();
 		nis.close();
-		CompoundTag levelTag = (CompoundTag)rootTag.getComponents().get("Level");
+		CompoundTag levelTag = (CompoundTag)rootTag.getValue().get("Level");
 		return ChunkData.fromTag( levelTag );
 	}
 	
@@ -38,7 +38,7 @@ public class RegionWriterTest extends TestCase
 	protected int decodeInt( ChunkData cd, int x, int y, int z, int bits, byte b0, byte b1 ) {
 		int number = 0;
 		for( ; bits>0; ++x ) {
-			number |= ((cd.getBlock(x,y,z) == b1 ? 1 : 0) << --bits);
+			number |= ((cd.getBlockId(x,y,z) == b1 ? 1 : 0) << --bits);
 		}
 		return number;
 	}

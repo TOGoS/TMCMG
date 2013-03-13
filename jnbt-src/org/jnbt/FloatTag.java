@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_Float</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class FloatTag extends Tag
-{
+public final class FloatTag extends Tag {
+
 	/**
 	 * The value.
 	 */
@@ -55,14 +55,12 @@ public final class FloatTag extends Tag
 		this.value = value;
 	}
 	
-	public float getFloatValue() {
+	@Override
+	public Float getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return new Float(value);
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";
@@ -71,4 +69,5 @@ public final class FloatTag extends Tag
 		}
 		return "TAG_Float" + append + ": " + value;
 	}
+
 }

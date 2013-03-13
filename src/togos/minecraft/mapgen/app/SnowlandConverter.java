@@ -25,26 +25,26 @@ public class SnowlandConverter
 	void moveChunk( CompoundTag level, int cdx, int cdz ) {
 		int tdx = 16*cdx, tdz = 16*cdz;
 		
-        IntTag xPosTag = (IntTag)level.getComponents().get("xPos");
-        IntTag zPosTag = (IntTag)level.getComponents().get("zPos");
+        IntTag xPosTag = (IntTag)level.getValue().get("xPos");
+        IntTag zPosTag = (IntTag)level.getValue().get("zPos");
 		
-        level.getComponents().put("xPos", new IntTag("xPos",xPosTag.getIntValue()+cdx));
-        level.getComponents().put("zPos", new IntTag("zPos",zPosTag.getIntValue()+cdz));
+        level.getValue().put("xPos", new IntTag("xPos",xPosTag.getIntValue()+cdx));
+        level.getValue().put("zPos", new IntTag("zPos",zPosTag.getIntValue()+cdz));
         
-        List tileEntities = ((ListTag)level.getComponents().get("TileEntities")).getChildren();
+        List tileEntities = ((ListTag)level.getValue().get("TileEntities")).getValue();
         for( int i=tileEntities.size()-1; i>=0; --i ) {
         	CompoundTag tileEntity = (CompoundTag)tileEntities.get(i);
-        	int tileX = ((IntTag)tileEntity.getComponents().get("x")).getIntValue();
-        	int tileZ = ((IntTag)tileEntity.getComponents().get("z")).getIntValue();
+        	int tileX = ((IntTag)tileEntity.getValue().get("x")).getIntValue();
+        	int tileZ = ((IntTag)tileEntity.getValue().get("z")).getIntValue();
         	
-        	tileEntity.getComponents().put("x", new IntTag("x", tileX+tdx) );
-        	tileEntity.getComponents().put("z", new IntTag("z", tileZ+tdz) );
+        	tileEntity.getValue().put("x", new IntTag("x", tileX+tdx) );
+        	tileEntity.getValue().put("z", new IntTag("z", tileZ+tdz) );
         }
 
-        List entities = ((ListTag)level.getComponents().get("Entities")).getChildren();
+        List entities = ((ListTag)level.getValue().get("Entities")).getValue();
         for( int i=entities.size()-1; i>=0; --i ) {
         	CompoundTag entity = (CompoundTag)entities.get(i);
-        	List pos = ((ListTag)entity.getComponents().get("Pos")).getChildren();
+        	List pos = ((ListTag)entity.getValue().get("Pos")).getValue();
         	pos.set( 0, new DoubleTag(null, ((DoubleTag)pos.get(0)).getDoubleValue()+tdx ) );
         	pos.set( 2, new DoubleTag(null, ((DoubleTag)pos.get(2)).getDoubleValue()+tdx ) );
         }
@@ -64,17 +64,17 @@ public class SnowlandConverter
 			NBTInputStream nbtInputStream = null;
 			CompoundTag t;
 			try {
-		        nbtInputStream = new NBTInputStream(new DataInputStream(new GZIPInputStream(new FileInputStream(chunkFile))));
+		        nbtInputStream = NBTInputStream.gzipOpen(new FileInputStream(chunkFile));
 		        t = (CompoundTag)nbtInputStream.readTag();
 			} finally {
 				if( nbtInputStream != null ) nbtInputStream.close();
 			}
-	        CompoundTag level = (CompoundTag)t.getComponents().get("Level");
+	        CompoundTag level = (CompoundTag)t.getValue().get("Level");
 	        
 	        moveChunk( level, 32, -64 );
 	        
-	        IntTag xPosTag = (IntTag)level.getComponents().get("xPos");
-	        IntTag zPosTag = (IntTag)level.getComponents().get("zPos");
+	        IntTag xPosTag = (IntTag)level.getValue().get("xPos");
+	        IntTag zPosTag = (IntTag)level.getValue().get("zPos");
 	        int cx = xPosTag.getIntValue();
 	        int cz = zPosTag.getIntValue();
 	        
@@ -104,7 +104,7 @@ public class SnowlandConverter
 	        RegionFile f = RegionFileCache.getRegionFile( new File("/home/stevens/backup/git/games/minecraft/saves/omntland2"), cx, cz);
 	        NBTOutputStream nos = null;
 	        try {
-	        	nos = new NBTOutputStream( f.getChunkDataOutputStream( tmod(cx,32), tmod(cz,32) ) );
+	        	nos = NBTOutputStream.rawOpen( f.getChunkDataOutputStream( tmod(cx,32), tmod(cz,32) ) );
 	        	nos.writeTag( t );
 	        } finally { 
 	        	if( nos != null ) nos.close();

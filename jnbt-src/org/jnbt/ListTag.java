@@ -34,25 +34,24 @@ package org.jnbt;
  */
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * The <code>TAG_List</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class ListTag extends Tag
-{
+public final class ListTag<T extends Tag> extends Tag {
+
 	/**
 	 * The type.
 	 */
-	private final Class type;
+	private final Class<? extends T> type;
 	
 	/**
 	 * The value.
 	 */
-	private final List value;
+	private final List<T> value;
 	
 	/**
 	 * Creates the tag.
@@ -60,29 +59,26 @@ public final class ListTag extends Tag
 	 * @param type The type of item in the list.
 	 * @param value The value.
 	 */
-	public ListTag(String name, Class type, List value) {
+	public ListTag(String name, Class<? extends T> type, List<T> value) {
 		super(name);
 		this.type = type;
-		//this.value = Collections.unmodifiableList(value);
-		this.value = value;
+		this.value = Collections.<T>unmodifiableList(value);
 	}
 	
 	/**
 	 * Gets the type of item in this list.
 	 * @return The type of item in this list.
 	 */
-	public Class getType() {
+	public Class<? extends T> getType() {
 		return type;
 	}
 	
-	public List getChildren() {
+	@Override
+	public List<T> getValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return value;
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";
@@ -91,8 +87,7 @@ public final class ListTag extends Tag
 		}
 		StringBuilder bldr = new StringBuilder();
 		bldr.append("TAG_List" + append + ": " + value.size() + " entries of type " + NBTUtils.getTypeName(type) + "\r\n{\r\n");
-		for( Iterator i=value.iterator(); i.hasNext(); ) {
-			Tag t = (Tag)i.next();
+		for(Tag t : value) {
 			bldr.append("   " + t.toString().replaceAll("\r\n", "\r\n   ") + "\r\n");
 		}
 		bldr.append("}");

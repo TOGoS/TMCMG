@@ -33,10 +33,10 @@ public class ChunkWriter
 	public static int chunkZ( ChunkData cd ) { return (int)(cd.getChunkPositionZ()/cd.getChunkDepth()); }
 	
 	public static void writeChunk( ChunkData cd, DataOutputStream dos ) throws IOException {
-		NBTOutputStream nbtos = new NBTOutputStream(dos);
+		NBTOutputStream nbtos = NBTOutputStream.rawOpen(dos);
 		
 		HashMap levelRootTags = new HashMap();
-		levelRootTags.put("Level",cd.toTag());
+		levelRootTags.put("Level",cd.toLevelTag());
 		CompoundTag fileRootTag = new CompoundTag("",levelRootTags);
 		
 		nbtos.writeTag(fileRootTag);
@@ -69,7 +69,7 @@ public class ChunkWriter
 	}
 	
 	public static void writeChunkToRegionFile( int cx, int cz, ByteChunk data, int format, String baseDir ) throws IOException {
-		RegionFileCache.getRegionFile(new File(baseDir), cx, cz).write( cx&31, cz&31, data.getBuffer(), data.getSize(), format );
+		RegionFileCache.getRegionFile(new File(baseDir), cx, cz).write( cx&31, cz&31, data.getBuffer(), data.getOffset(), data.getSize(), format );
 	}
 	
 	public static void writeChunkToRegionFile( ChunkData cd, String baseDir, int format ) throws IOException {
@@ -132,7 +132,7 @@ public class ChunkWriter
 	}
 	
 	public static String USAGE =
-		"Usage: ChunkWriter [options]\n" +
+		"Usage: ChunkWriter [options] <script>\n" +
 		"\n" +
 		"Options:\n" +
 		"  -world-dir <dir>  ; directory under which to store chunk data\n" +

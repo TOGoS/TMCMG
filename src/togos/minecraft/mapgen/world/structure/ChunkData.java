@@ -2,19 +2,19 @@ package togos.minecraft.mapgen.world.structure;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.jnbt.ByteArrayTag;
 import org.jnbt.ByteTag;
 import org.jnbt.CompoundTag;
+import org.jnbt.IntArrayTag;
 import org.jnbt.IntTag;
 import org.jnbt.ListTag;
 import org.jnbt.LongTag;
 import org.jnbt.Tag;
 
 import togos.minecraft.mapgen.TagMap;
+import togos.minecraft.mapgen.world.ChunkUtil;
 
 public class ChunkData extends MiniChunkData
 {
@@ -24,6 +24,7 @@ public class ChunkData extends MiniChunkData
 	
 	public ChunkData( long px, long py, long pz, int w, int h, int d ) {
 		super(px,py,pz,w,h,d);
+		for( int i=0; i<width*depth; ++i ) biomeData[i] = -1;
 	}
 	
 	/*
@@ -46,16 +47,25 @@ public class ChunkData extends MiniChunkData
 	
 	public byte[] skyLightData   = new byte[(height*depth*width+1)/2];
 	public byte[] blockLightData = new byte[(height*depth*width+1)/2];
-	public byte[] lightHeightData = new byte[depth*width];
+	public int[] lightHeightData = new int[depth*width];
+	public byte[] biomeData      = new byte[depth*width];
 	public boolean terrainPopulated = false;
 	
-	//// Sky light ////
+	//// light ////
 	
+	public byte getSkyLight( int x, int y, int z ) {
+		return ChunkUtil.getNybble(skyLightData, blockIndex(x,y,z));
+	}
 	public void setSkyLight( int x, int y, int z, int value ) {
-		putNybble(skyLightData, blockIndex(x,y,z), value);
+		ChunkUtil.putNybble(skyLightData, blockIndex(x,y,z), value);
 	}
 	
-	//// Light height ////
+	public byte getBlockLight( int x, int y, int z ) {
+		return ChunkUtil.getNybble(blockLightData, blockIndex(x,y,z));
+	}
+	public void setBlockLight( int x, int y, int z, int value ) {
+		ChunkUtil.putNybble(blockLightData, blockIndex(x,y,z), value);
+	}
 	
 	public void setLightHeight( int x, int z, int height ) {
 		lightHeightData[x*depth+z] = (byte)(height);
@@ -63,20 +73,91 @@ public class ChunkData extends MiniChunkData
 	
 	//// Saving/loading ////
 	
-	public Tag toTag() {
-		TagMap levelTags = new TagMap();
-		levelTags.add(new ByteArrayTag("Blocks", blockData));
-		levelTags.add(new ByteArrayTag("Data", blockExtraBits));
-		levelTags.add(new ByteArrayTag("SkyLight", skyLightData));
-		levelTags.add(new ByteArrayTag("BlockLight", blockLightData));
-		levelTags.add(new ByteArrayTag("HeightMap", lightHeightData));
-		levelTags.add(new ListTag("Entities", CompoundTag.class, Collections.EMPTY_LIST));
+	static class Section {
+		final byte index; // multiply by 16 to get y-position of bottom
+		final int w, h, d;
+		final byte[] blockIdsLow;
+		final byte[] blockIdsHigh;
+		final byte[] blockData;
+		final byte[] skyLight;
+		final byte[] blockLight;
+		boolean hasHighBlockIds;
+		boolean isNotEmpty;
 		
-		List tileEntityTags = new ArrayList();
-		for( Iterator tidi=tileEntityData.iterator(); tidi.hasNext(); ) {
-			tileEntityTags.add( ((TileEntityData)tidi.next()).toTag() );
+		public Section( byte index, int w, int h, int d ) {
+			this.index = index;
+			this.w = w; this.h = h; this.d = d;
+			this.blockIdsLow  = new byte[w*h*d];
+			this.blockIdsHigh = new byte[w*h*d/2];
+			this.blockData    = new byte[w*h*d/2];
+			this.skyLight     = new byte[w*h*d/2];
+			this.blockLight   = new byte[w*h*d/2];
+			hasHighBlockIds = false;
 		}
-		levelTags.add(new ListTag("TileEntities", CompoundTag.class, tileEntityTags));
+		
+		public void copyFrom( ChunkData cd ) {
+			hasHighBlockIds = false;
+			isNotEmpty = false;
+			for( int idx=0, y=0; y<h; ++y ) {
+				int absY = y+index*16;
+				for( int z=0; z<d; ++z ) {
+					for( int x=0; x<w; ++x, ++idx ) {
+						short blockId = cd.getBlockId(x,absY,z);
+						if( blockId != 0 ) isNotEmpty = true;
+						byte highId = (byte)(blockId >> 8);
+						if( highId != 0 ) hasHighBlockIds = true;
+
+						blockIdsLow[idx] = (byte)blockId;
+						ChunkUtil.putNybble( blockIdsHigh, idx, highId );
+						ChunkUtil.putNybble( blockData , idx, cd.getBlockData(x,absY,z) );
+						ChunkUtil.putNybble( skyLight  , idx, cd.getSkyLight(x,absY,z) );
+						ChunkUtil.putNybble( blockLight, idx, cd.getBlockLight(x,absY,z) );
+					}
+				}
+			}
+		}
+		
+		public CompoundTag toTag() {
+			TagMap<Tag> components = new TagMap<Tag>();
+			components.add(new ByteTag("Y", index));
+			components.add(new ByteArrayTag("Blocks", blockIdsLow));
+			if( hasHighBlockIds ) components.add(new ByteArrayTag("Data", blockIdsHigh));
+			components.add(new ByteArrayTag("Data", blockData));
+			components.add(new ByteArrayTag("SkyLight", skyLight));
+			components.add(new ByteArrayTag("BlockLight", blockLight));
+			return new CompoundTag("Section", components);
+		}
+	}
+	
+	public Tag toLevelTag() {
+		TagMap<Tag> levelTags = new TagMap<Tag>();
+		//levelTags.add(new ByteArrayTag("Blocks", blockIds));
+		
+		ArrayList<CompoundTag> sectionTags = new ArrayList<CompoundTag>();
+		final int sectionHeight = 16;
+		for( int i=0; i<height/sectionHeight; ++i ) {
+			Section s = new Section((byte)i, width, sectionHeight, depth);
+			s.copyFrom(this);
+			if( s.isNotEmpty ) {
+				sectionTags.add( s.toTag() );
+			}
+		}
+		
+		levelTags.add( new ListTag<CompoundTag>("Sections", CompoundTag.class, sectionTags) );
+		
+		//levelTags.add(new ByteArrayTag("Data", blockData));
+		//levelTags.add(new ByteArrayTag("SkyLight", skyLightData));
+		//levelTags.add(new ByteArrayTag("BlockLight", blockLightData));
+		
+		levelTags.add(new ByteArrayTag("Biomes", biomeData));
+		levelTags.add(new IntArrayTag("HeightMap", lightHeightData));
+		levelTags.add(new ListTag<CompoundTag>("Entities", CompoundTag.class, Collections.<CompoundTag>emptyList()));
+		
+		List<CompoundTag> tileEntityTags = new ArrayList<CompoundTag>();
+		for( TileEntityData ted : tileEntityData ) {
+			tileEntityTags.add( ted.toTag() );
+		}
+		levelTags.add(new ListTag<CompoundTag>("TileEntities", CompoundTag.class, tileEntityTags));
 		
 		levelTags.add(new LongTag("LastUpdate", 23392));//System.currentTimeMillis()));
 		levelTags.add(new IntTag("xPos", (int)(getChunkPositionX()/getChunkWidth())));
@@ -92,8 +173,9 @@ public class ChunkData extends MiniChunkData
 		);
 	}
 	
+	/*
 	public static ChunkData fromTag( CompoundTag t ) {
-		Map m = t.getComponents();
+		Map<String,Tag> m = t.getValue();
 		IntTag xPos = (IntTag)m.get( "xPos" );
 		IntTag zPos = (IntTag)m.get( "zPos" );
 		
@@ -102,13 +184,19 @@ public class ChunkData extends MiniChunkData
 			zPos.getIntValue()
 		);
 		
-		cd.blockData = ((ByteArrayTag)m.get("Blocks")).getBytes();
-		cd.blockExtraBits = ((ByteArrayTag)m.get("Data")).getBytes();
-		cd.skyLightData = ((ByteArrayTag)m.get("SkyLight")).getBytes();
-		cd.blockLightData = ((ByteArrayTag)m.get("BlockLight")).getBytes();
-		cd.lightHeightData = ((ByteArrayTag)m.get("HeightMap")).getBytes();
+		byte[] blockLowIds = ((ByteArrayTag)m.get("Blocks")).getValue(); 
+		cd.blockIds = new short[blockLowIds.length];
+		for( int i=blockLowIds.length-1; i>=0; --i ) {
+			cd.blockIds[i] = blockLowIds[i];
+		}
+		// TODO: read Add (high block ID nybbles)
+		cd.blockData = ((ByteArrayTag)m.get("Data")).getValue();
+		cd.skyLightData = ((ByteArrayTag)m.get("SkyLight")).getValue();
+		cd.blockLightData = ((ByteArrayTag)m.get("BlockLight")).getValue();
+		cd.lightHeightData = ((IntArrayTag)m.get("HeightMap")).getInts();
 		// TODO: this part
 		//cd.tileEntityData = ((CompoundTag)m.get("TileEntities")).getValue();
 		return cd;
 	}
+	*/
 }

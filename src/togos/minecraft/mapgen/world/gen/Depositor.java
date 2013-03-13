@@ -31,7 +31,7 @@ public class Depositor implements ChunkMunger
 			for( int x=0; x<cd.width; ++x, ++i ) {
 				baseY[i] = Double.NEGATIVE_INFINITY;
 				yLoop: for( int y=cd.height-1; y>0; --y ) {
-					switch( cd.getBlock(x, y, z) ) {
+					switch( cd.getBlockId(x, y, z) ) {
 					case( Blocks.AIR ): case( Blocks.WATER ):
 						continue yLoop;
 					default:

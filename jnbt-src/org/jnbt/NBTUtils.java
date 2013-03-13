@@ -36,16 +36,16 @@ package org.jnbt;
 /**
  * A class which contains NBT-related utility methods.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class NBTUtils
-{
+public final class NBTUtils {
+	
 	/**
 	 * Gets the type name of a tag.
 	 * @param clazz The tag class.
 	 * @return The type name.
 	 */
-	public static String getTypeName(Class clazz) {
+	public static String getTypeName(Class<? extends Tag> clazz) {
 		if(clazz.equals(ByteArrayTag.class)) {
 			return "TAG_Byte_Array";
 		} else if(clazz.equals(ByteTag.class)) {
@@ -79,7 +79,7 @@ public final class NBTUtils
 	 * @return The type code.
 	 * @throws IllegalArgumentException if the tag class is invalid.
 	 */
-	public static int getTypeCode(Class clazz) {
+	public static int getTypeCode(Class<? extends Tag> clazz) {
 		if(clazz.equals(ByteArrayTag.class)) {
 			return NBTConstants.TYPE_BYTE_ARRAY;
 		} else if(clazz.equals(ByteTag.class)) {
@@ -102,6 +102,8 @@ public final class NBTUtils
 			return NBTConstants.TYPE_SHORT;
 		} else if(clazz.equals(StringTag.class)) {
 			return NBTConstants.TYPE_STRING;
+		} else if(clazz.equals(IntArrayTag.class)) {
+			return NBTConstants.TYPE_INT_ARRAY;
 		} else {
 			throw new IllegalArgumentException("Invalid tag classs (" + clazz.getName() + ").");
 		}
@@ -113,7 +115,7 @@ public final class NBTUtils
 	 * @return The class.
 	 * @throws IllegalArgumentException if the tag type is invalid.
 	 */
-	public static Class getTypeClass(int type) {
+	public static Class<? extends Tag> getTypeClass(int type) {
 		switch(type) {
 		case NBTConstants.TYPE_END:
 			return EndTag.class;
@@ -137,6 +139,8 @@ public final class NBTUtils
 			return ListTag.class;
 		case NBTConstants.TYPE_COMPOUND:
 			return CompoundTag.class;
+		case NBTConstants.TYPE_INT_ARRAY:
+			return IntArrayTag.class;
 		default:
 			throw new IllegalArgumentException("Invalid tag type : " + type + ".");
 		}

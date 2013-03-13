@@ -62,12 +62,12 @@ public class GenerateTNLChunkTest extends TestCase
 				throw new RuntimeException((Exception)res.getContent());
 			}
 			ChunkData cd = (ChunkData)res.getContent();
-			assertEquals( 16*16*128, cd.blockData.length );
+			assertEquals( 16*16*128, cd.blockIds.length );
 			assertEquals( 0, cd.getChunkPositionY() );
 			assertEquals( cd.getChunkPositionX() * 2, cd.getChunkPositionZ() );
-			assertEquals( bedrockNumber, cd.blockData[0] );
-			assertEquals( stoneNumber, cd.blockData[1] );
-			assertEquals( airNumber, cd.blockData[127] );
+			assertEquals( bedrockNumber, cd.blockIds[0] );
+			assertEquals( stoneNumber, cd.blockIds[1] );
+			assertEquals( airNumber, cd.blockIds[127] );
 		}
 	}
 }

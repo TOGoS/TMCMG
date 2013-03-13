@@ -8,7 +8,7 @@ dist( x1, z1, x2, z2 ) = (
 	sqrt( dx * dx + dz * dz )
 );
 
-target-region-x = 3;
+target-region-x = 4;
 target-region-z = 8;
 
 dome( cx, cz, height, rad, div ) = (

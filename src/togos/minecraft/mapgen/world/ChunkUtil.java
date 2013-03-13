@@ -10,6 +10,25 @@ import togos.noise2.vm.dftree.data.DataDaDa;
 
 public class ChunkUtil
 {
+	public static final void putNybble( byte[] data, int index, int value ) {
+		int byteIndex = index>>1;
+		byte oldValue = data[byteIndex];
+		if( (index & 0x1) == 0 ) {
+			data[ byteIndex ] = (byte)((oldValue & 0xF0) | (value & 0x0F));
+		} else {
+			data[ byteIndex ] = (byte)((oldValue & 0x0F) | ((value<<4) & 0xF0));
+		}
+	}
+	
+	public static final byte getNybble( byte[] data, int index ) {
+		int byteIndex = index>>1;
+		if( (index & 0x1) == 0 ) {
+			return (byte)((data[ byteIndex ] >> 4) & 0x0F);
+		} else {
+			return (byte)((data[ byteIndex ] >> 0) & 0x0F);
+		}
+	}
+	
 	public static void calculateLighting( ChunkData cd, int maxLight ) {
 		for( int z=0; z<cd.depth; ++z ) {
 			for( int x=0; x<cd.width; ++x ) {
@@ -18,7 +37,7 @@ public class ChunkUtil
 				boolean shadowed = false;
 				int groundHeight = 127;
 				for( y = 127; y>=0; --y ) {
-					byte block = cd.getBlock(x,y,z);
+					short block = cd.getBlockId(x,y,z);
 					switch( block ) {
 					case(Blocks.AIR): case(Blocks.SNOW):
 					case(Blocks.ICE): case(Blocks.GLASS):
@@ -99,7 +118,7 @@ public class ChunkUtil
 					if( dy < 0 || dy >= dest.height ) continue;
 					if( !s.getMask(x,y,z) ) continue;
 					
-					dest.setBlock(dx, dy, dz, s.getBlock(x,y,z), s.getBlockExtraBits(x,y,z));
+					dest.setBlock(dx, dy, dz, s.getBlockId(x,y,z), s.getBlockData(x,y,z));
 				}
 			}
 		}

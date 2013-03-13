@@ -36,10 +36,10 @@ package org.jnbt;
 /**
  * The <code>TAG_Double</code> tag.
  * @author Graham Edgecombe
- * @author TOGoS (minor alterations)
+ *
  */
-public final class DoubleTag extends Tag
-{
+public final class DoubleTag extends Tag {
+	
 	/**
 	 * The value.
 	 */
@@ -55,14 +55,16 @@ public final class DoubleTag extends Tag
 		this.value = value;
 	}
 	
+	@Override
+	public Double getValue() {
+		return value;
+	}
+	
 	public double getDoubleValue() {
 		return value;
 	}
 	
-	public Object getValue() {
-		return new Double(value);
-	}
-	
+	@Override
 	public String toString() {
 		String name = getName();
 		String append = "";

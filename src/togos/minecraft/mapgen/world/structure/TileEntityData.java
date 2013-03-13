@@ -15,15 +15,15 @@ public abstract class TileEntityData implements Cloneable
 	
 	public abstract byte getBlockId();
 	
-	protected void toTag( TagMap m ) {
+	protected void toTag( TagMap<Tag> m ) {
 		m.add(new StringTag("id", getTypeId()));
 		m.add(new IntTag("x", x));
 		m.add(new IntTag("y", y));
 		m.add(new IntTag("z", z));
 	}
 	
-	public Tag toTag() {
-		TagMap m = new TagMap();
+	public CompoundTag toTag() {
+		TagMap<Tag> m = new TagMap<Tag>();
 		toTag(m);
 		return new CompoundTag("", m);
 	}

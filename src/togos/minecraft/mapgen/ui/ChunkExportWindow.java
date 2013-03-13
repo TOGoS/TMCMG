@@ -108,12 +108,12 @@ public class ChunkExportWindow extends Frame
     	try {
 			FileInputStream is = new FileInputStream(f);
 			try {
-				NBTInputStream nis = new NBTInputStream(is);
+				NBTInputStream nis = NBTInputStream.gzipOpen(is);
 				CompoundTag t = (CompoundTag)nis.readTag();
-				CompoundTag d = (CompoundTag)t.getComponents().get("Data");
-				CompoundTag p = (CompoundTag)d.getComponents().get("Player");
-				ListTag pos = (ListTag)p.getComponents().get("Pos");
-				List posValues = pos.getChildren();
+				CompoundTag d = (CompoundTag)t.getValue().get("Data");
+				CompoundTag p = (CompoundTag)d.getValue().get("Player");
+				ListTag<DoubleTag> pos = (ListTag<DoubleTag>)p.getValue().get("Pos");
+				List<DoubleTag> posValues = pos.getValue();
 				long x = (long)((DoubleTag)posValues.get(0)).getDoubleValue();
 				long y = (long)((DoubleTag)posValues.get(1)).getDoubleValue();
 				long z = (long)((DoubleTag)posValues.get(2)).getDoubleValue();
