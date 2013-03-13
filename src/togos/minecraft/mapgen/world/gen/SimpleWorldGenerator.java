@@ -21,7 +21,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 	public FunctionDaDa_DaIa groundFunction;
 	public MaterialColumnFunction columnFunction;
 	public ChunkMunger chunkMunger;
-	public Map components;
+	public Map<String,Object> components;
 	
 	public static SimpleWorldGenerator DEFAULT;
 	static {
@@ -93,7 +93,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 		DEFAULT = new SimpleWorldGenerator(cmList, lm.getGroundFunction(), lm.getColumnFunction(), lm.getComponents());
 	}
 	
-	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction, MaterialColumnFunction columnFunction, Map components ) {
+	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction, MaterialColumnFunction columnFunction, Map<String,Object> components ) {
 		this.chunkMunger = chunkMunger;
 		this.groundFunction = groundFunction;
 		this.columnFunction = columnFunction;
@@ -112,7 +112,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 		return chunkMunger;
 	}
 	
-	public Map getComponents() {
+	public Map<String,Object> getComponents() {
 		return components;
 	}
 }

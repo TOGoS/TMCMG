@@ -2,7 +2,6 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
@@ -35,7 +34,7 @@ public class WorldGeneratorMacros
 		}
 	}
 
-	static HashMap wgMacros = new HashMap();
+	static HashMap<String,MacroType> wgMacros = new HashMap<String,MacroType>();
 	static {
 		wgMacros.put("layer", new MacroType() {
 			public Object instantiate( TNLCompiler c, ASTNode sn )
@@ -194,14 +193,13 @@ public class WorldGeneratorMacros
 				ConstantFolder cf = ConstantFolder.instance;
 				CacheRewriter crw = new CacheRewriter(SoftCache.getInstance());
 
-				ArrayList chunkMungers = new ArrayList();
+				ArrayList<ChunkMunger> chunkMungers = new ArrayList<ChunkMunger>();
 				LayerTerrainGenerator lm = new LayerTerrainGenerator();
-				HashMap components = new HashMap();
-				for( Iterator i = sn.arguments.iterator(); i.hasNext(); ) {
-					ASTNode argNode = (ASTNode) i.next();
+				HashMap<String,Object> components = new HashMap<String,Object>();
+				for( ASTNode argNode : sn.arguments ) {
 					Object node = c.compile(argNode);
 					if( node instanceof HeightmapLayer ) {
-						lm.layers.add(node);
+						lm.layers.add( (HeightmapLayer)node );
 						continue;
 					}
 					if( node instanceof ComponentDef ) {
@@ -219,7 +217,7 @@ public class WorldGeneratorMacros
 								(StampPopulator) node);
 					}
 					if( node instanceof ChunkMunger ) {
-						chunkMungers.add(node);
+						chunkMungers.add( (ChunkMunger)node );
 						continue;
 					}
 					throw new CompileError("Don't know how to incorporate "
@@ -227,9 +225,7 @@ public class WorldGeneratorMacros
 							argNode);
 				}
 				
-				for( Iterator li=lm.layers.iterator(); li.hasNext(); ) {
-					HeightmapLayer layer = (HeightmapLayer)li.next();
-					
+				for( HeightmapLayer layer : lm.layers ) {
 					layer.floorHeightFunction   = (FunctionDaDa_Da)cf.rewrite( layer.floorHeightFunction );
 					layer.ceilingHeightFunction = (FunctionDaDa_Da)cf.rewrite( layer.ceilingHeightFunction );
 					layer.typeFunction        = (FunctionDaDaDa_Ia)cf.rewrite( layer.typeFunction );
@@ -241,8 +237,7 @@ public class WorldGeneratorMacros
 				
 				//crw.dumpCounts(System.out);
 				
-				for( Iterator li=lm.layers.iterator(); li.hasNext(); ) {
-					HeightmapLayer layer = (HeightmapLayer)li.next();
+				for( HeightmapLayer layer : lm.layers ) {
 					//System.err.println("   "+layer.floorHeightFunction.toString());
 					//System.err.println("   "+layer.ceilingHeightFunction.toString());
 					//System.err.println("   "+layer.typeFunction.toString());

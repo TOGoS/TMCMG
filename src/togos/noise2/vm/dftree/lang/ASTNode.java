@@ -25,9 +25,9 @@ public class ASTNode implements SourceLocation
 	public int sourceLine, sourceColumn;
 	
 	public String macroName;
-	public List arguments;
+	public List<ASTNode> arguments;
 	
-	public ASTNode( String macroName, List arguments, SourceLocation sloc ) {
+	public ASTNode( String macroName, List<ASTNode> arguments, SourceLocation sloc ) {
 		this.macroName = macroName;
 		this.arguments = arguments;
 		this.sourceFilename = sloc.getSourceFilename();
@@ -36,7 +36,7 @@ public class ASTNode implements SourceLocation
 	}
 	
 	public ASTNode( String macroName, SourceLocation sloc ) {
-		this( macroName, Collections.EMPTY_LIST, sloc );
+		this( macroName, Collections.<ASTNode>emptyList(), sloc );
 	}
 	
 	public boolean equals( Object o ) {

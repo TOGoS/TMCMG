@@ -2,7 +2,6 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,63 +20,56 @@ import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
 
 public class LayerTerrainGenerator implements WorldGenerator
 {	
-	public Map components = new HashMap();
-	public List layers = new ArrayList();
-	protected HeightmapLayer[] layerArray( List layers ) {
+	public final HashMap<String,Object> components = new HashMap<String,Object>();
+	public final ArrayList<HeightmapLayer> layers = new ArrayList<HeightmapLayer>();
+	
+	protected HeightmapLayer[] layerArray( List<HeightmapLayer> layers ) {
 		HeightmapLayer[] larr = new HeightmapLayer[layers.size()];
 		int n=0;
-		for( Iterator i=layers.iterator(); i.hasNext(); ) {
-			larr[n++] = (HeightmapLayer)i.next();
-		}
+		for( HeightmapLayer l : layers ) larr[n++] = l;
 		return larr;
 	}
 	
 	class LayerChunkMunger implements ChunkMunger {
-		protected List layers;
+		protected List<HeightmapLayer> layers;
 		
-		public LayerChunkMunger( List layers ) {
+		public LayerChunkMunger( List<HeightmapLayer> layers ) {
 			this.layers = layers;
 		}
 		
 		public void mungeChunk( ChunkData cd ) {
 			DataDaDa in = ChunkUtil.getTileXZCoordinates( cd );
-			for( Iterator li=layers.iterator(); li.hasNext();  ) {
-				Object o = li.next();
-				if( o instanceof HeightmapLayer ) {
-					HeightmapLayer layer = (HeightmapLayer)o;
-					int[] ceiling = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(in).x);
-					int[] floor   = LayerUtil.roundHeights(layer.floorHeightFunction.apply(in).x);
-					for( int i=0, tz=0; tz<cd.depth; ++tz ) {
-						for( int tx=0; tx<cd.width; ++tx, ++i ) {
-							int flo = floor[i];
-							if( flo < 0 ) flo = 0;
-							int cei = ceiling[i];
-							if( cei > cd.height ) cei = cd.height;
-							if( cei <= flo ) continue;
-							
-							int colHeight = cei-flo;
-							double[] colX = new double[colHeight];
-							double[] colY = new double[colHeight];
-							double[] colZ = new double[colHeight];
-							for( int j=0; j<colHeight; ++j ) {
-								colX[j] = in.x[i];
-								colY[j] = flo+j;
-								colZ[j] = in.y[i];
-							}
-							DataDaDaDa finput = new DataDaDaDa(colHeight,colX,colY,colZ);
-							int[] colTypes = layer.typeFunction.apply(finput).v;
-							
-							for( int j=0, ty=flo; ty<cei; ++ty, ++j ) {
-								int blockType = colTypes[j];
-								if( blockType != Blocks.NONE ) {
-									// Temporary solution for extra bits; see note in MaterialDaDaDa_Ia:
-									cd.setBlock(tx, ty, tz, (byte)blockType, (byte)(blockType>>16));
-								}
+			for( HeightmapLayer layer : layers ) {
+				int[] ceiling = LayerUtil.roundHeights(layer.ceilingHeightFunction.apply(in).x);
+				int[] floor   = LayerUtil.roundHeights(layer.floorHeightFunction.apply(in).x);
+				for( int i=0, tz=0; tz<cd.depth; ++tz ) {
+					for( int tx=0; tx<cd.width; ++tx, ++i ) {
+						int flo = floor[i];
+						if( flo < 0 ) flo = 0;
+						int cei = ceiling[i];
+						if( cei > cd.height ) cei = cd.height;
+						if( cei <= flo ) continue;
+						
+						int colHeight = cei-flo;
+						double[] colX = new double[colHeight];
+						double[] colY = new double[colHeight];
+						double[] colZ = new double[colHeight];
+						for( int j=0; j<colHeight; ++j ) {
+							colX[j] = in.x[i];
+							colY[j] = flo+j;
+							colZ[j] = in.y[i];
+						}
+						DataDaDaDa finput = new DataDaDaDa(colHeight,colX,colY,colZ);
+						int[] colTypes = layer.typeFunction.apply(finput).v;
+						
+						for( int j=0, ty=flo; ty<cei; ++ty, ++j ) {
+							int blockType = colTypes[j];
+							if( blockType != Blocks.NONE ) {
+								// Temporary solution for extra bits; see note in MaterialDaDaDa_Ia:
+								cd.setBlock(tx, ty, tz, (byte)blockType, (byte)(blockType>>16));
 							}
 						}
 					}
-				} else {
-					throw new RuntimeException("Don't know how to apply layer: "+o.getClass());
 				}
 			}
 		}
@@ -88,9 +80,9 @@ public class LayerTerrainGenerator implements WorldGenerator
 		public static final int AIR_SUBTRACT = 1;
 		public static final int AIR_NORMAL = 2;
 		
-		public List layers;
+		public List<HeightmapLayer> layers;
 		public int airTreatment;
-		public LayerGroundFunction( List layers, int airTreatment ) {
+		public LayerGroundFunction( List<HeightmapLayer> layers, int airTreatment ) {
 			this.layers = layers;
 			this.airTreatment = airTreatment;
 		}
@@ -104,8 +96,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 				highest[j] = Double.NEGATIVE_INFINITY;
 				outT[j] = Blocks.AIR;
 			}
-			for( Iterator li=layers.iterator(); li.hasNext(); ) {
-				HeightmapLayer l = (HeightmapLayer)li.next();
+			for( HeightmapLayer l : layers ) {
 				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
 				double[] lFloor = l.floorHeightFunction.apply(in).x;
 				double[] lTopY = LayerUtil.maxY(lCeil);
@@ -151,8 +142,8 @@ public class LayerTerrainGenerator implements WorldGenerator
 	}
 	
 	public static class LayerColumnFunction implements MaterialColumnFunction {
-		List layers;
-		public LayerColumnFunction( List layers ) {
+		List<HeightmapLayer> layers;
+		public LayerColumnFunction( List<HeightmapLayer> layers ) {
 			this.layers = layers;
 		}
 		
@@ -163,8 +154,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 				dest[i] = Materials.getByBlockType(Blocks.AIR);
 			}
 			
-			for( Iterator li=layers.iterator(); li.hasNext(); ) {
-				HeightmapLayer l = (HeightmapLayer)li.next();
+			for( HeightmapLayer l : layers ) {
 				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
 				double[] lFloor = l.floorHeightFunction.apply(in).x;
 				
@@ -207,7 +197,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 		return new LayerColumnFunction(layers);
     }
 	
-	public Map getComponents() {
+	public Map<String,Object> getComponents() {
 		return components;
 	}
 }
