@@ -4,9 +4,7 @@ TOGoS's Minecraft Map Generator (TMCMG) is a Java application for
 generating terrain data (chunk files) for Minecraft Alpha based on
 user-defined terrain functions.  It includes a GUI for previewing
 the generated terrain before exporting it, and can also be run from
-the command-line.  It can also be used as a GenerateFS server and
-generate chunks as needed to generate infinite terrain (see end of
-this document for instructions for use with GenerateFS).
+the command-line.
 
 
 
@@ -250,64 +248,8 @@ tree-populator( <tree-type>, <density-function> )
   - for now, <tree-type> is limited to the constants:
     tree-types.round
     tree-types.pine
-
-    
-== Using with GeneratorFS ==
-
-If you are running minecraft on Linux you can use TMCMG as a GenerateFS
-server and generate new chunks on-the-fly.  At this point there are probably
-a lot of bugs and performance issues, but you can try it.
-
-On Ubuntu (possibly other Debian-based distros), make sure you have the
-FUSE dependencies:
-
-  sudo apt-get install libfuse-dev pkg-config
-
-Check out the GenerateFS source from github:
-
-  git clone git://github.com/TOGoS/GenerateFS.git
-
-Enter the GenerateFS directory and 'make test' to make sure it works.
-
-  cd GenerateFS
-  make test
-
-(While it's compiling you may see a few warnings like:
-src/fusetest.c:146: warning: initialization from incompatible pointer type
-I haven't figured out what's up with those, but it doesn't seem to cause
-any problems).
-
-Choose a directory on the server where minecraft is running to store
-generated terrain data OUTSIDE OF minecraft's saves directory/the directory
-Minecraft stores level data in, for example let's say
-  /home/ted/World1-backing-data.
-Create that directory with mkdir if it does not exist.
-
-Run genfs (unless you copy it to your a directory on your command path you
-will have to write out the whole thing, such as
-/home/ted/programs/GenerateFS/build/genfs), giving the world directory
-(such as World1) as an argument.  The world directory should be *empty*
-before you run this command, as its contents will be mapped to the fake
-filesystem.
-
-  genfs -f /home/ted/minecraft-server/World1
-
--f means to run the filesystem in the foreground.  This isn't required but
-makes it easy to kill the process in case it starts misbehaving.
-
-You can also specify --server-host=<host> and --server-port=<port>, but
-for this example we'll use the default 127.0.0.1, port 23823.
-
-In another console, run the TMCMG server...
-
-  java -cp TMCMG.jar togos.minecraft.mapgen.server.ChunkServer -data-root /home/ted/World1-backing-data -gfs-port 23823 DIM-0=example.tnl
-
-DIM-0=example.tnl tells it to use the terrain function defined by example.tnl
-for the overland world.  DIM-1=somescript.tnl should allow you to define
-one for the Neath but I haven't tested that yet...
-
-Now run minecraft or minecraft_server and try loading up that world!
-
+  - I don't recommend using this anymore.  Just leave flag-populated
+    off and let Minecraft add trees.
 
 
 
@@ -316,3 +258,6 @@ Now run minecraft or minecraft_server and try loading up that world!
 If it doesn't work, e-mail bug reports and complaints to
 
   togos zero zero at gee male daught com.
+
+You may also use the ticketing system on GitHub to request
+features or add them yourself: http://github.com/TOGoS/TMCMG/
