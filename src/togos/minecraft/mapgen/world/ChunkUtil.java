@@ -10,11 +10,17 @@ import togos.noise2.vm.dftree.data.DataDaDa;
 
 public class ChunkUtil
 {
+	/*
+	 * Confusingly (since multi-byte ints are stored big-endian),
+	 * Minecraft stores nybbles little-endian.  i.e. the high bits
+	 * of each byte are the second nybble, and the low bits are the first. 
+	 */
+	
 	public static final void putNybble( byte[] data, int index, int value ) {
 		int byteIndex = index>>1;
 		byte oldValue = data[byteIndex];
 		if( (index & 0x1) == 0 ) {
-			data[ byteIndex ] = (byte)((oldValue & 0xF0) | (value & 0x0F));
+			data[ byteIndex ] = (byte)((oldValue & 0xF0) | ((value<<0) & 0x0F));
 		} else {
 			data[ byteIndex ] = (byte)((oldValue & 0x0F) | ((value<<4) & 0xF0));
 		}
@@ -23,9 +29,9 @@ public class ChunkUtil
 	public static final byte getNybble( byte[] data, int index ) {
 		int byteIndex = index>>1;
 		if( (index & 0x1) == 0 ) {
-			return (byte)((data[ byteIndex ] >> 4) & 0x0F);
-		} else {
 			return (byte)((data[ byteIndex ] >> 0) & 0x0F);
+		} else {
+			return (byte)((data[ byteIndex ] >> 1) & 0x0F);
 		}
 	}
 	
