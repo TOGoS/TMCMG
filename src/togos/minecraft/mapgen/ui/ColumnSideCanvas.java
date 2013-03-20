@@ -27,6 +27,7 @@ import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise2.lang.ParseUtil;
 import togos.noise2.lang.ScriptError;
 import togos.service.Service;
@@ -36,12 +37,12 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
     private static final long serialVersionUID = 1L;
 	
     public static final int SKY_COLOR = 0xFF00AAFF;
+	public final int worldFloor = 0, worldCeiling = ChunkData.NORMAL_CHUNK_HEIGHT;
     
 	class ColumnSideRenderer implements Runnable, Service {
 		MaterialColumnFunction cFunc;
 		int width, height;
 		double worldX, worldZ, worldXPerPixel;
-		final int worldFloor = 0, worldCeiling = 128;
 		
 		public volatile BufferedImage buffer;
 		protected volatile boolean stop = false;		

@@ -1,12 +1,16 @@
-basis = simplex * 3;
+basis = simplex( x, y, z ) * 3;
 # basis = perlin * 1.5;
 
-simple-dirt-height = fractal( 1, 32, 32, 2, 2, 0, clamp( clamp( -0.2, 0.2, simplex( x / 4, y, z / 4)), +0.3, basis ) );
+simple-dirt-height = clamp( clamp( -0.2, 0.2, simplex( x / 4, y, z / 4)), +0.3, basis );
+simple-dirt-height-frac = fractal( 2, 32, 16, 2, 2, 1, simple-dirt-height );
+
+base-level(_x,_y,_z) = clamp(0, 64, 512 * simplex( _x / 128, 0, _z / 128 ));
 
 layered-terrain(
-	layer( materials.water, 0, 64 ),
-	layer( material( 3, 3 ), 0, 64 + simple-dirt-height ),    
-	layer( materials.stone, 0, 60 + simple-dirt-height ),
+	layer( materials.water,  0, 63 ),
+	layer( materials.sand, 0, 63 + 64 * simplex( x / 128, y / 128, z / 128 ) ),
+	layer( material( 3, 3 ), 0, base-level(x,y,z) + 60 + simple-dirt-height-frac ),    
+	layer( materials.stone,  0, base-level(x,y,z) + 56 + simple-dirt-height-frac ),
 	layer( materials.bedrock, 0, 1 ),
 	grassifier,
 	tree-populator( tree-types.pine, 0.01 ),

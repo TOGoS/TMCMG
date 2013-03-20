@@ -5,6 +5,7 @@ import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.lang.FunctionUtil;
 
+// TODO: Remove this function, define as a 2nd-order function in TNL
 public class FractalDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
 	int iterations;

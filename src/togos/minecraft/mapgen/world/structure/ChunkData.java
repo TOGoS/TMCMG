@@ -18,9 +18,9 @@ import togos.minecraft.mapgen.world.ChunkUtil;
 
 public class ChunkData extends MiniChunkData
 {
-	public static final int NORMAL_CHUNK_WIDTH = 16;
-	public static final int NORMAL_CHUNK_HEIGHT = 128;
-	public static final int NORMAL_CHUNK_DEPTH = 16;
+	public static final int NORMAL_CHUNK_WIDTH  =  16;
+	public static final int NORMAL_CHUNK_HEIGHT = 256;
+	public static final int NORMAL_CHUNK_DEPTH  =  16;
 	
 	public ChunkData( long px, long py, long pz, int w, int h, int d ) {
 		super(px,py,pz,w,h,d);
@@ -135,6 +135,8 @@ public class ChunkData extends MiniChunkData
 		
 		ArrayList<CompoundTag> sectionTags = new ArrayList<CompoundTag>();
 		final int sectionHeight = 16;
+		// Note: if height is not evenly divisible by sectionHeight,
+		// your top section will be missing.
 		for( int i=0; i<height/sectionHeight; ++i ) {
 			Section s = new Section((byte)i, width, sectionHeight, depth);
 			s.copyFrom(this);

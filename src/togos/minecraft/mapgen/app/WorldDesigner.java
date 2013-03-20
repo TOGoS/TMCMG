@@ -380,8 +380,8 @@ public class WorldDesigner
 		final WorldDesignerMenuBar menuBar = new WorldDesignerMenuBar(wdk);
 		mwev.addSubView(noiseCanvas);
 		mwev.addSubView(lsc);
-		lsc.setPreferredSize(new Dimension(640,128));
-		lsc.setMaximumSize(new Dimension(Integer.MAX_VALUE,128));
+		lsc.setPreferredSize(new Dimension(640, lsc.worldCeiling));
+		lsc.setMaximumSize(new Dimension(Integer.MAX_VALUE, lsc.worldCeiling));
 		noiseCanvas.setPreferredSize(new Dimension(640,384));
 		noiseCanvas.normalShadingEnabled = normalShade;
 		noiseCanvas.heightShadingEnabled = heightShade;
