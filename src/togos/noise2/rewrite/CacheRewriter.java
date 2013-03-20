@@ -2,11 +2,13 @@ package togos.noise2.rewrite;
 
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import togos.noise2.cache.Cache;
+import togos.noise2.vm.dftree.data.DataDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
+import togos.noise2.vm.dftree.func.CacheDaDaDa_Da.Pair;
 import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
 import togos.noise2.vm.dftree.lang.Expression;
 
@@ -15,15 +17,15 @@ import togos.noise2.vm.dftree.lang.Expression;
  */
 public class CacheRewriter implements ExpressionRewriter
 {
-	Cache cache;
-	HashMap uteCounts = new HashMap();
+	Cache<Pair<String,DataDaDaDa>,DataDa> cache;
+	HashMap<String,Integer> uteCounts = new HashMap<String,Integer>();
 	
-	public CacheRewriter( Cache cache ) {
+	public CacheRewriter( Cache<Pair<String,DataDaDaDa>,DataDa> cache ) {
 		this.cache = cache;
 	}
 	
 	protected void incr( String tnl ) {
-		Integer c = (Integer)uteCounts.get(tnl);
+		Integer c = uteCounts.get(tnl);
 		if( c == null ) {
 			c = new Integer(1);
 		} else {
@@ -47,8 +49,7 @@ public class CacheRewriter implements ExpressionRewriter
 	}
 	
 	public void dumpCounts( PrintStream out ) {
-		for( Iterator i = uteCounts.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry me = (Map.Entry)i.next();
+		for( Map.Entry<String,Integer> me : uteCounts.entrySet() ) {
 			System.err.println( me.getValue() + " times - " + me.getKey().toString() );
 		}
 	}

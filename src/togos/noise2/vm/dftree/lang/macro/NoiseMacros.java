@@ -2,7 +2,6 @@ package togos.noise2.vm.dftree.lang.macro;
 
 import java.util.HashMap;
 
-import togos.noise2.cache.SoftCache;
 import togos.noise2.lang.CompileError;
 import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.AndOutDaDaDa_Da;
@@ -201,7 +200,7 @@ public class NoiseMacros
 			protected int getRequiredArgCount() { return 1; }			
 			protected Object instantiate( ASTNode node, ASTNode[] argNodes, Object[] compiledArgs ) throws CompileError {
 				return new CacheDaDaDa_Da(
-					SoftCache.getInstance(),
+					CacheDaDaDa_Da.GLOBAL_CACHE,
 					FunctionUtil.toDaDaDa_Da(compiledArgs[0], argNodes[0])
 				);
 			}

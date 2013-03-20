@@ -6,10 +6,10 @@ import java.util.HashMap;
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.Material;
-import togos.noise2.cache.SoftCache;
 import togos.noise2.lang.CompileError;
 import togos.noise2.rewrite.CacheRewriter;
 import togos.noise2.rewrite.ConstantFolder;
+import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
 import togos.noise2.vm.dftree.func.Constant_Ia;
 import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
 import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
@@ -191,7 +191,7 @@ public class WorldGeneratorMacros
 		wgMacros.put("layered-terrain", new MacroType() {
 			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				ConstantFolder cf = ConstantFolder.instance;
-				CacheRewriter crw = new CacheRewriter(SoftCache.getInstance());
+				CacheRewriter crw = new CacheRewriter(CacheDaDaDa_Da.GLOBAL_CACHE);
 
 				ArrayList<ChunkMunger> chunkMungers = new ArrayList<ChunkMunger>();
 				LayerTerrainGenerator lm = new LayerTerrainGenerator();

@@ -6,6 +6,8 @@ import togos.noise2.cache.SoftCache;
 import togos.noise2.lang.ScriptError;
 import togos.noise2.rewrite.CacheRewriter;
 import togos.noise2.rewrite.ConstantFolder;
+import togos.noise2.vm.dftree.data.DataDa;
+import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
 import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
 import togos.noise2.vm.dftree.func.Constant_Da;
@@ -17,16 +19,23 @@ import togos.noise2.vm.dftree.func.SimplexDaDaDa_Da;
 import togos.noise2.vm.dftree.func.X;
 import togos.noise2.vm.dftree.func.Y;
 import togos.noise2.vm.dftree.func.Z;
+import togos.noise2.vm.dftree.func.CacheDaDaDa_Da.Pair;
 
 public class CacheRewriterTest extends TestCase
 {
+	SoftCache<Pair<String,DataDaDaDa>,DataDa> cache = new SoftCache<Pair<String,DataDaDaDa>,DataDa>();
+	
+	public void setUp() {
+		cache = new SoftCache<Pair<String,DataDaDaDa>,DataDa>();
+	}
+	
 	public void testRewrite() throws ScriptError {
 		String src = "simplex + 2 * simplex + 2 + 3 + 4 * simplex + 4 * simplex";
 		
 		TNLCompiler comp = new TNLWorldGeneratorCompiler();
 		
 		Object o = comp.compile(src, "test source");
-		CacheRewriter cw = new CacheRewriter(SoftCache.getInstance());
+		CacheRewriter cw = new CacheRewriter(cache);
 		cw.initCounts((Expression)o);
 		// cw.dumpCounts(System.err);
 
@@ -50,7 +59,7 @@ public class CacheRewriterTest extends TestCase
 		TNLCompiler comp = new TNLWorldGeneratorCompiler();
 		
 		Object o = comp.compile(src, "test source");
-		CacheRewriter cw = new CacheRewriter(SoftCache.getInstance());
+		CacheRewriter cw = new CacheRewriter(cache);
 		cw.initCounts((Expression)o);
 		// cw.dumpCounts(System.err);
 
@@ -74,7 +83,7 @@ public class CacheRewriterTest extends TestCase
 		TNLCompiler comp = new TNLWorldGeneratorCompiler();
 		
 		Object o = comp.compile(src, "test source");
-		CacheRewriter cw = new CacheRewriter(SoftCache.getInstance());
+		CacheRewriter cw = new CacheRewriter(cache);
 		cw.initCounts((Expression)o);
 		// cw.dumpCounts(System.err);
 		

@@ -4,17 +4,17 @@ import java.util.HashMap;
 
 import togos.noise2.vm.dftree.func.Function;
 
-public class HardCache implements Cache
+public class HardCache<K,V> implements Cache<K,V>
 {
-	protected class Handle {
-		final Object key;
-		volatile Object value = null;
+	protected static class Handle<K,V> {
+		final K key;
+		volatile V value = null;
 		
-		public Handle( Object key ) {
+		public Handle( K key ) {
 			this.key = key;
 		}
 		
-		synchronized Object getValue( Function generator ) {
+		synchronized V getValue( Function<K,V> generator ) {
 			if( value == null ) {
 				value = generator.apply(key);
 			}
@@ -22,26 +22,26 @@ public class HardCache implements Cache
 		}
 	}
 	
-	protected HashMap handles = new HashMap();
+	protected HashMap<K,Handle<K,V>> handles = new HashMap<K,Handle<K,V>>();
 	
-	protected synchronized Handle getHandle( Object key ) {
-		Handle h = (Handle)handles.get(key);
+	protected synchronized Handle<K,V> getHandle( K key ) {
+		Handle<K,V> h = handles.get(key);
 		if( h == null ) {
-			h = new Handle(key);
+			h = new Handle<K,V>(key);
 			handles.put(key,h);
 		}
 		return h;
 	}
 	
-	public Object get( Object key ) {
+	public V get( K key ) {
 		return getHandle(key).value;
 	}
 	
-	public Object get( Object key, Function generator ) {
+	public V get( K key, Function<K,V> generator ) {
 		return getHandle(key).getValue(generator);
 	}
 	
-	public void put( Object key, Object obj ) {
+	public void put( K key, V obj ) {
 		getHandle(key).value = obj;
 	}
 }
