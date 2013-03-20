@@ -31,15 +31,15 @@ public class MaterialDaDaDa_Ia implements FunctionDaDaDa_Ia, Expression, Possibl
 		this.extraBits = extraBits;
 	}
 	
-	public DataIa apply( DataDaDaDa in ) {
-		
-		int[] out = new int[in.getLength()];
+	public DataIa apply( final DataDaDaDa in ) {
+		final int vectorSize = in.getLength(); 
+		int[] out = new int[vectorSize];
 		DataIa type = blockType.apply(in);
 		DataIa extra = extraBits.apply(in);
-	    for( int i=0; i<out.length; ++i ) {
+	    for( int i=vectorSize-1; i>=0; --i ) {
 	    	out[i] = materialToInt( type.v[i], extra.v[i] );
 	    }
-	    return new DataIa(out);
+	    return new DataIa(vectorSize, out);
     }
 	public Object[] directSubExpressions() {
 	    return new Object[]{blockType,extraBits};

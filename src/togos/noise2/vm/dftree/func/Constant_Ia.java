@@ -24,12 +24,12 @@ public class Constant_Ia implements FunctionDaDa_Ia, FunctionDaDaDa_Ia, Expressi
 		this.value = value;
 	}
 	
-	public DataIa apply( int count ) {
-		int[] out = new int[count];
-		for( int j=0; j<count; ++j ) {
+	public DataIa apply( final int vectorSize ) {
+		int[] out = new int[vectorSize];
+		for( int j=0; j<vectorSize; ++j ) {
 			out[j] = value;
 		}
-		return new DataIa(out);
+		return new DataIa( vectorSize, out );
 	}
 	
 	public DataIa apply( DataDaDa in ) {

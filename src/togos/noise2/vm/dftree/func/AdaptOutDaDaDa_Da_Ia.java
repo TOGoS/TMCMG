@@ -13,13 +13,14 @@ public class AdaptOutDaDaDa_Da_Ia implements FunctionDaDaDa_Ia, Expression
 		this.next = next;
 	}
 	
-	public DataIa apply( DataDaDaDa in ) {
-		int[] out = new int[in.getLength()];
+	public DataIa apply( final DataDaDaDa in ) {
+		final int vectorSize = in.getLength();
+		int[] out = new int[vectorSize];
 		DataDa d = next.apply(in);
-		for( int i=d.getLength()-1; i>=0; --i ) {
+		for( int i=vectorSize-1; i>=0; --i ) {
 			out[i] = (int)Math.floor(d.x[i]);
 		}
-		return new DataIa(out);
+		return new DataIa(vectorSize, out);
 	}
 	
 	public Object[] directSubExpressions() {

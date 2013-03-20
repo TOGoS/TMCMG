@@ -104,16 +104,16 @@ public class QuadTreeLayer implements ChunkMunger
 		}
 		
 		public DataDaIa apply( DataDaDa in ) {
-			int len = in.getLength();
+			int vectorSize = in.getLength();
 			
-			double[] outCeiling = new double[len];
-			int[] outType = new int[len];
+			double[] outCeiling = new double[vectorSize];
+			int[] outType = new int[vectorSize];
 			
-			double[] inX = new double[len];
-			double[] inZ = new double[len];
+			double[] inX = new double[vectorSize];
+			double[] inZ = new double[vectorSize];
 			
 			int beginIdx = 0;
-			while( beginIdx < len) {
+			while( beginIdx < vectorSize) {
 				Node n = getLeafNode(in.x[beginIdx], in.y[beginIdx]);
 				Node n2 = n;
 				int j = 0;
@@ -122,16 +122,16 @@ public class QuadTreeLayer implements ChunkMunger
 					inZ[j] = in.y[j+beginIdx];
 					
 					++j;
-					if( j+beginIdx == len ) break;
+					if( j+beginIdx == vectorSize ) break;
 					n2 = getLeafNode(in.x[j+beginIdx], in.y[j+beginIdx]);
 				}
 				
 				if( n != null ) {
-					DataDaDa nodeIn = new DataDaDa(len, inX, inZ);
+					DataDaDa nodeIn = new DataDaDa(vectorSize, inX, inZ);
 					DataDa floor = n.floorHeightFunction.apply(nodeIn);
 					DataDa ceiling = n.ceilingHeightFunction.apply(nodeIn);
 					double[] topY = LayerUtil.maxY(ceiling.x);
-					DataIa type = n.typeFunction.apply(new DataDaDaDa(len, inX, topY, inZ));
+					DataIa type = n.typeFunction.apply(new DataDaDaDa(vectorSize, inX, topY, inZ));
 					
 					int[] rFloor = LayerUtil.roundHeights(floor.x);
 					int[] rCeil = LayerUtil.roundHeights(ceiling.x);
@@ -149,7 +149,7 @@ public class QuadTreeLayer implements ChunkMunger
 				beginIdx += j;
 			}
 			
-			return new DataDaIa( outCeiling, outType );
+			return new DataDaIa( vectorSize, outCeiling, outType );
 		}
 	}
 	

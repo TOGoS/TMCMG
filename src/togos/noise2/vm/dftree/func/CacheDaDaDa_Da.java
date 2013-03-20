@@ -3,57 +3,47 @@ package togos.noise2.vm.dftree.func;
 import togos.noise2.DigestUtil;
 import togos.noise2.cache.Cache;
 import togos.noise2.rewrite.ExpressionRewriter;
-import togos.noise2.uri.URIUtil;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.lang.FunctionUtil;
 
 public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 {
-	final static class CacheKey {
-		public final String funcUrn;
-		public final String dataUrn;
+	final static class CacheKey<T0,T1> {
+		public final T0 item0;
+		public final T1 item1;
 		public final int hashCode;
 		
-		public CacheKey( String funcUrn, String dataUrn ) {
-			this.funcUrn = funcUrn;
-			this.dataUrn = dataUrn;
-			this.hashCode = funcUrn.hashCode() ^ dataUrn.hashCode();
+		public CacheKey( T0 item0, T1 item1 ) {
+			this.item0 = item0;
+			this.item1 = item1;
+			this.hashCode = item0.hashCode() ^ item1.hashCode();
 		}
 		
-		public boolean equals( Object othre ) {
-			if( othre instanceof CacheKey ) {
-				CacheKey ok = (CacheKey)othre;
-				return funcUrn.equals(ok.funcUrn) && dataUrn.equals(ok.dataUrn);
-			}
-			return false;
+		public boolean equals( CacheKey<T0,T1> othre ) {
+			if( othre == this ) return true;
+			return item0.equals(othre.item0) && item1.equals(othre.item1);
 		}
 		
 		public int hashCode() {
 			return hashCode;
 		}
-		
-		public String toString() {
-			return "active:apply" +
-				"+operator@"+URIUtil.uriEncode(funcUrn)+
-				"+operand@"+URIUtil.uriEncode(dataUrn);
-		}
 	}
 	
-	protected final Cache cache;
+	protected final Cache<CacheKey<String,DataDaDaDa>,DataDa> cache;
 	public final FunctionDaDaDa_Da wrapped;
 	protected final String wrappedExpressionUrn;
 	
-	public CacheDaDaDa_Da( Cache cache, FunctionDaDaDa_Da next ) {
+	public CacheDaDaDa_Da( Cache<CacheKey<String,DataDaDaDa>,DataDa> cache, FunctionDaDaDa_Da next ) {
 		this.cache = cache;
 		this.wrapped = next;
 		this.wrappedExpressionUrn = DigestUtil.getSha1Urn( FunctionUtil.toTnl(next) );
 	}
 	
 	public DataDa apply( final DataDaDaDa in ) {
-	    return (DataDa)cache.get(new CacheKey( wrappedExpressionUrn, in.getDataId() ), new FunctionO_O() {
-	    	public Object apply( Object cacheKey ) {
-	    		return wrapped.apply(in);
+	    return cache.get(new CacheKey<String,DataDaDaDa>( wrappedExpressionUrn, in ), new Function<CacheKey<String,DataDaDaDa>,DataDa>() {
+	    	public DataDa apply( CacheKey<String,DataDaDaDa> cacheKey ) {
+	    		return wrapped.apply( cacheKey.item1 );
 	    	}
 	    });
 	}

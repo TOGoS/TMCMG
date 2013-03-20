@@ -87,11 +87,11 @@ public class LayerTerrainGenerator implements WorldGenerator
 			this.airTreatment = airTreatment;
 		}
 		
-		public DataDaIa apply( DataDaDa in ) {
-			int count = in.getLength();
+		public DataDaIa apply( final DataDaDa in ) {
+			final int vectorSize = in.getLength();
 			
-			double[] highest = new double[in.getLength()];
-			int[] outT = new int[count];
+			double[] highest = new double[vectorSize];
+			int[] outT = new int[vectorSize];
 			for( int j=in.getLength()-1; j>=0; --j ) {
 				highest[j] = Double.NEGATIVE_INFINITY;
 				outT[j] = Blocks.AIR;
@@ -100,7 +100,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
 				double[] lFloor = l.floorHeightFunction.apply(in).x;
 				double[] lTopY = LayerUtil.maxY(lCeil);
-				DataDaDaDa typeInput = new DataDaDaDa(count,in.x,lTopY,in.y);
+				DataDaDaDa typeInput = new DataDaDaDa(vectorSize,in.x,lTopY,in.y);
 				int[] lType = l.typeFunction.apply(typeInput).v;
 				for( int j=in.getLength()-1; j>=0; --j ) {
 					boolean subtract = false;
@@ -137,7 +137,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 					}
 				}
 			}
-			return new DataDaIa( highest, outT );
+			return new DataDaIa( vectorSize, highest, outT );
 		}
 	}
 	
@@ -173,7 +173,7 @@ public class LayerTerrainGenerator implements WorldGenerator
 							++colSize;
 						}
 					}
-					DataIa type = l.typeFunction.apply( new DataDaDaDa(colSize,colX,colY,colZ,null) );
+					DataIa type = l.typeFunction.apply( new DataDaDaDa(colSize,colX,colY,colZ) );
 					for( int j=0; j<colSize; ++j ) {
 						int t = type.v[j];
 						if( t == -1 ) continue;

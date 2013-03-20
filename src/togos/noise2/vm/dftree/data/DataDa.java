@@ -1,31 +1,11 @@
 package togos.noise2.vm.dftree.data;
 
-import java.security.MessageDigest;
-
-public class DataDa extends Data
+public class DataDa extends DataArray
 {
-	public final int length;
 	public final double[] x;
 	
-	public DataDa( int length, double[] x, String dataId ) {
-		super( dataId );
-		this.length = length;
+	public DataDa( int length, double[] x ) {
+		super( length );
 		this.x = x;
     }
-
-	public DataDa( int length, double[] x ) {
-		this( length, x, null );
-	}
-	
-	public int getLength() {
-		return length;
-	}
-	
-	public void digest( MessageDigest md ) {
-		byte[] dbuf = new byte[8];
-		for( int i=0; i<x.length; ++i ) {
-			doubleBytes( x[i], dbuf,  0 );
-			md.update(dbuf);
-		}
-	}
 }

@@ -28,7 +28,7 @@ public class NormalShadingGroundColorFunction extends GroundColorFunction
 		this.normalShadeMax = max;
 	}
 		
-	public DataIa apply( DataDaDa in ) {
+	public DataIa apply( final DataDaDa in ) {
 		final int vectorSize = in.getLength();
 		double[] sx = new double[vectorSize];
 		double[] sy = new double[vectorSize];
@@ -59,6 +59,6 @@ public class NormalShadingGroundColorFunction extends GroundColorFunction
 			}
 			color[i] = col;
 		}
-		return new DataIa(color);
+		return new DataIa(vectorSize, color);
 	}
 }

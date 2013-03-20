@@ -7,8 +7,11 @@ import togos.noise2.vm.dftree.data.DataDaDaDa;
 import togos.noise2.vm.dftree.lang.Expression;
 
 /**
- * So called because the outer data's X and Y are mapped to the inner data's X and Z 
+ * So called because the outer data's X and Y are mapped to the inner data's X and Z
+ * This is deprecated because it depends on x, y, and z having strange scope.
+ * Scripts that depend on it should be rewritten to pass them explicitly. 
  */
+@Deprecated
 public class AdaptInXZDaDaDa_DaDa_Da implements FunctionDaDa_Da, Expression
 {
 	static Constant_Da Y = new Constant_Da(0); 
@@ -21,7 +24,7 @@ public class AdaptInXZDaDaDa_DaDa_Da implements FunctionDaDa_Da, Expression
 
 	public DataDa apply( DataDaDa in ) {
 		DataDa y = Y.apply(in);
-		return next.apply(new DataDaDaDa(in.getLength(),in.x, y.x, in.y, "adaptX0Y:"+in.getDataId()));
+		return next.apply(new DataDaDaDa(in.getLength(),in.x, y.x, in.y));
 	}
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {

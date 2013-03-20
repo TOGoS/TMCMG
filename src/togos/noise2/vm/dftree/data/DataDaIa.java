@@ -2,27 +2,14 @@ package togos.noise2.vm.dftree.data;
 
 import java.security.MessageDigest;
 
-public class DataDaIa extends Data
+public class DataDaIa extends DataArray
 {
 	public final double[] d;
 	public final int[] i;
 	
-	public DataDaIa( double[] d, int[] i ) {
-		super( null );
+	public DataDaIa( int length, double[] d, int[] i ) {
+		super( length );
 		this.d = d;
 		this.i = i;
-	}
-	
-	public int getLength() {
-		return d.length;
-	}
-	
-	public void digest( MessageDigest md ) {
-		byte[] dbuf = new byte[12];
-		for( int j=0; j<d.length; ++j ) {
-			doubleBytes( d[j], dbuf,  0 );
-			intBytes( i[j], dbuf, 8 );
-			md.update(dbuf);
-		}
 	}
 }

@@ -55,10 +55,11 @@ public class GroundColorFunction implements FunctionDaDa_Ia
 	
 	////
 	
-	public DataIa apply( DataDaDa in ) {
+	public DataIa apply( final DataDaDa in ) {
+		final int vectorSize = in.getLength();
 		DataDaIa ground = groundFunction.apply(in);
 		int[] type = ground.i;
-		int[] color = new int[type.length];
+		int[] color = new int[vectorSize];
 		for( int i=0; i<color.length; ++i ) {
 			int col = Materials.getByBlockType(type[i]).color;
 			if( heightShadingEnabled ) {
@@ -66,6 +67,6 @@ public class GroundColorFunction implements FunctionDaDa_Ia
 			}
 			color[i] = col;
 		}
-		return new DataIa(color);
+		return new DataIa(vectorSize, color);
 	}
 }

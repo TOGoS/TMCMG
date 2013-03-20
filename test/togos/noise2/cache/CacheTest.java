@@ -1,7 +1,7 @@
 package togos.noise2.cache;
 
 import junit.framework.TestCase;
-import togos.noise2.vm.dftree.func.FunctionO_O;
+import togos.noise2.vm.dftree.func.Function;
 
 public class CacheTest extends TestCase
 {
@@ -18,7 +18,7 @@ public class CacheTest extends TestCase
 		assertEquals("box", c.get("sox"));
 		assertEquals("shox", c.get("rox"));
 		
-		assertEquals("ghoti", c.get("fish", new FunctionO_O() {
+		assertEquals("ghoti", c.get("fish", new Function() {
 			public Object apply( Object input ) {
 				assertEquals("fish", input);
 				return "ghoti";

@@ -2,7 +2,7 @@ package togos.noise2.cache;
 
 import java.util.HashMap;
 
-import togos.noise2.vm.dftree.func.FunctionO_O;
+import togos.noise2.vm.dftree.func.Function;
 
 public class HardCache implements Cache
 {
@@ -14,7 +14,7 @@ public class HardCache implements Cache
 			this.key = key;
 		}
 		
-		synchronized Object getValue( FunctionO_O generator ) {
+		synchronized Object getValue( Function generator ) {
 			if( value == null ) {
 				value = generator.apply(key);
 			}
@@ -37,7 +37,7 @@ public class HardCache implements Cache
 		return getHandle(key).value;
 	}
 	
-	public Object get( Object key, FunctionO_O generator ) {
+	public Object get( Object key, Function generator ) {
 		return getHandle(key).getValue(generator);
 	}
 	
