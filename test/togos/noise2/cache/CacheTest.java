@@ -36,9 +36,22 @@ public class CacheTest extends TestCase
 	}
 	
 	public void testSoftCache() {
-		// While it's *possible* for this to fail due to things
-		// getting garbage collected immediately, that ought to
-		// be an extremely rare occurence...
 		testCache(new SoftCache<String,String>());
+	}
+	
+	public void testWeakCache() {
+		// The purpose of this test is actually to test that
+		// SoftCache entries will eventually get collected,
+		// since it's more likely to have actually happened
+		// after System.gc() with WeakReferences.
+		
+		WeakCache<String,String> c = new WeakCache<String,String>();
+		
+		c.put("heck", new String("neck"));
+		assertEquals("neck", c.get("heck"));
+		
+		System.gc();
+		
+		assertNull(c.get("heck"));
 	}
 }

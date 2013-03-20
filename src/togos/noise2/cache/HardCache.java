@@ -6,22 +6,6 @@ import togos.noise2.vm.dftree.func.Function;
 
 public class HardCache<K,V> implements Cache<K,V>
 {
-	protected static class Handle<K,V> {
-		final K key;
-		volatile V value = null;
-		
-		public Handle( K key ) {
-			this.key = key;
-		}
-		
-		synchronized V getValue( Function<K,V> generator ) {
-			if( value == null ) {
-				value = generator.apply(key);
-			}
-			return value;
-		}
-	}
-	
 	protected HashMap<K,Handle<K,V>> handles = new HashMap<K,Handle<K,V>>();
 	
 	protected synchronized Handle<K,V> getHandle( K key ) {
