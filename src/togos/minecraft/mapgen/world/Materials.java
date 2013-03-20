@@ -9,14 +9,16 @@ package togos.minecraft.mapgen.world;
 
 import java.util.HashMap;
 
+// TODO: Remove this entirely; use TMCMR-style text files to define colors
+// and some way to import aliases into TNL scripts.
 public class Materials
 {
 	static final int BLOCK_TYPE_MASK = 0xFF;
 	static final int BLOCK_TYPE_COUNT = 256;
 	
 	public static Material[] byBlockType = new Material[BLOCK_TYPE_COUNT];
-	static HashMap byName = new HashMap();
-	static HashMap byIcon = new HashMap();
+	static HashMap<String,Material> byName = new HashMap<String,Material>();
+	static HashMap<String,Material> byIcon = new HashMap<String,Material>();
 	
 	public static String normalizeName(String name) {
 		name = name.replace("state", "");
@@ -41,11 +43,11 @@ public class Materials
 	}
 	
 	public static Material getByName(String name) {
-		return (Material)byName.get(normalizeName(name));
+		return byName.get(normalizeName(name));
 	}
 	
 	public static Material getByIcon(String icon) {
-		return (Material)byIcon.get(icon);
+		return byIcon.get(icon);
 	}
 	
 	static {
