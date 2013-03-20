@@ -7,9 +7,14 @@ public class DataDa extends Data
 	public final int length;
 	public final double[] x;
 	
-	public DataDa( int length, double[] x ) {
+	public DataDa( int length, double[] x, String dataId ) {
+		super( dataId );
 		this.length = length;
 		this.x = x;
+    }
+
+	public DataDa( int length, double[] x ) {
+		this( length, x, null );
 	}
 	
 	public int getLength() {

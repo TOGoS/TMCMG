@@ -6,9 +6,13 @@ public class DataDaDa extends DataDa
 {
 	public double[] y;
 	
-	public DataDaDa( int length, double[] x, double[] y ) {
-		super(length, x);
+	public DataDaDa( int length, double[] x, double[] y, String dataId ) {
+		super(length, x, dataId);
 		this.y = y;
+	}
+
+	public DataDaDa( int length, double[] x, double[] y ) {
+		this( length, x, y, null );
 	}
 	
 	public void digest( MessageDigest md ) {

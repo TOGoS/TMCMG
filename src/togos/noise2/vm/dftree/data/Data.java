@@ -15,20 +15,25 @@ public abstract class Data
 		guidPfx = Long.toString(d ^ r.nextLong(),16) + "-";
 	}
 	static long guidIncr = 1;
+	
 	protected static synchronized String nextGuid() {
 		return guidPfx + Long.toString(guidIncr++,16);
 	}
 	
-	public String dataId = null;
+	private String dataId = null;
 	
-	protected void intBytes( long l, byte[] b, int o ) {
+	public Data( String dataId ) {
+		this.dataId = dataId;
+    }
+	
+	protected static void intBytes( long l, byte[] b, int o ) {
 		b[o+0] = (byte)((l >> 24) & 0xFF);
 		b[o+1] = (byte)((l >> 16) & 0xFF);
 		b[o+2] = (byte)((l >>  8) & 0xFF);
 		b[o+3] = (byte)((l >>  0) & 0xFF);
 	}
 	
-	protected void longBytes( long l, byte[] b, int o ) {
+	protected static void longBytes( long l, byte[] b, int o ) {
 		b[o+0] = (byte)((l >> 56) & 0xFF);
 		b[o+1] = (byte)((l >> 48) & 0xFF);
 		b[o+2] = (byte)((l >> 40) & 0xFF);
@@ -39,7 +44,7 @@ public abstract class Data
 		b[o+7] = (byte)((l >>  0) & 0xFF);
 	}
 	
-	protected void doubleBytes( double d, byte[] b, int o ) {
+	protected static void doubleBytes( double d, byte[] b, int o ) {
 		longBytes( Double.doubleToLongBits(d), b, o );
 	}
 	
@@ -58,9 +63,7 @@ public abstract class Data
 	}
 	
 	public synchronized String getDataId() {
-		if( dataId == null ) {
-			dataId = generateDataId();
-		}
+		if( dataId == null ) dataId = generateDataId();
 		return dataId;
 	}
 }

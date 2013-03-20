@@ -8,6 +8,7 @@ public class DataDaIa extends Data
 	public final int[] i;
 	
 	public DataDaIa( double[] d, int[] i ) {
+		super( null );
 		this.d = d;
 		this.i = i;
 	}

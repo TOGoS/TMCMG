@@ -6,10 +6,9 @@ public class DataDaDaDa extends DataDaDa
 {
 	public double[] z;
 	
-	public DataDaDaDa( int vectorSize, double[] x, double[] y, double[] z, String urn ) {
-		super( vectorSize, x, y );
+	public DataDaDaDa( int vectorSize, double[] x, double[] y, double[] z, String dataId ) {
+		super( vectorSize, x, y, dataId );
 		this.z = z;
-		this.dataId = urn;
 	}
 	
 	public DataDaDaDa( int vectorSize, double[] x, double[] y, double[] z ) {

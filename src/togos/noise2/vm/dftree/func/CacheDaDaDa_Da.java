@@ -40,41 +40,41 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 		}
 	}
 	
-	protected Cache cache;
-	public FunctionDaDaDa_Da next;
-	protected String nextUrn;
+	protected final Cache cache;
+	public final FunctionDaDaDa_Da wrapped;
+	protected final String wrappedExpressionUrn;
 	
 	public CacheDaDaDa_Da( Cache cache, FunctionDaDaDa_Da next ) {
 		this.cache = cache;
-		this.next = next;
-		this.nextUrn = DigestUtil.getSha1Urn( FunctionUtil.toTnl(next) );
+		this.wrapped = next;
+		this.wrappedExpressionUrn = DigestUtil.getSha1Urn( FunctionUtil.toTnl(next) );
 	}
 	
 	public DataDa apply( final DataDaDaDa in ) {
-	    return (DataDa)cache.get(new CacheKey( nextUrn, in.getDataId() ), new FunctionO_O() {
+	    return (DataDa)cache.get(new CacheKey( wrappedExpressionUrn, in.getDataId() ), new FunctionO_O() {
 	    	public Object apply( Object cacheKey ) {
-	    		return next.apply(in);
+	    		return wrapped.apply(in);
 	    	}
 	    });
 	}
 	
 	public boolean isConstant() {
-		return FunctionUtil.isConstant(next);
+		return FunctionUtil.isConstant(wrapped);
 	}
 	
 	public Object rewriteSubExpressions( ExpressionRewriter v ) {
-		return new CacheDaDaDa_Da( cache, (TNLFunctionDaDaDa_Da)v.rewrite(next) );
+		return new CacheDaDaDa_Da( cache, (TNLFunctionDaDaDa_Da)v.rewrite(wrapped) );
 	}
 	
 	public Object[] directSubExpressions() {
-		return new Object[]{ next };
+		return new Object[]{ wrapped };
 	}
 	
 	public String toString() {
-		return "cache("+next.toString()+")";
+		return "cache("+wrapped.toString()+")";
 	}
 	
 	public String toTnl() {
-	    return FunctionUtil.toTnl(next);
+	    return FunctionUtil.toTnl(wrapped);
 	}
 }

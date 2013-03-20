@@ -7,6 +7,7 @@ public class DataIa extends Data
 	public int[] v;
 	
 	public DataIa( int[] v ) {
+		super(null);
 		this.v = v;
 	}
 	

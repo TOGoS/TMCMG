@@ -22,7 +22,7 @@ public abstract class NoiseFunctionTest extends TestCase
 		assertTrue( "Expected not "+a+", but was.", a != b );
 	}
 
-	TNLCompiler comp = mkCompiler();
+	protected TNLCompiler comp = mkCompiler();
 	
 	protected LFunctionDaDaDa_Da compileLDDDF( String source ) throws ScriptError {
 		return (LFunctionDaDaDa_Da)comp.compile(source,new BaseSourceLocation("test-script",1,1),"test-script",LFunctionDaDaDa_Da.class);
