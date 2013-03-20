@@ -2,23 +2,18 @@ package togos.minecraft.mapgen.job;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 
 import togos.mf.value.ByteChunk;
-import togos.mf.value.URIRef;
 import togos.minecraft.mapgen.io.BetterByteArrayOutputStream;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.io.RegionFile;
 import togos.minecraft.mapgen.util.ChunkDataListener;
 import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
-import togos.minecraft.mapgen.world.gen.af.GenerateTNLChunk;
-import togos.minecraft.mapgen.world.gen.af.SerializeChunk;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 
-public class ChunkGenerationJob implements Runnable, RemoteJob
+public class ChunkGenerationJob implements Runnable
 {
 	public final Script script;
 	public final ChunkMunger generator; 
@@ -38,21 +33,8 @@ public class ChunkGenerationJob implements Runnable, RemoteJob
 		this.onComplete = onComplete;
 	}
 	
-	public URIRef getResourceRef() {
-		return SerializeChunk.makeRef(
-			GenerateTNLChunk.makeRef( script.sourceRef, px, py, pz, width, height, depth ),
-			SerializeChunk.formatIdToName( serializationFormat )
-		);
-	}
-	
-	public Map getRequiredResources() {
-		Map m = new HashMap();
-		m.put( script.sourceRef.getUri(), script.source );
-		return m;
-	}
-	
 	public void setResourceData( ByteChunk data ) {
-		onComplete.setChunkData( script.sourceRef.getUri(), px, py, pz, width, height, depth,
+		onComplete.setChunkData( px, py, pz, width, height, depth,
 				data, serializationFormat );
 	}
 	

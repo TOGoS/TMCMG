@@ -1,16 +1,14 @@
 package togos.minecraft.mapgen.app;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import org.jnbt.CompoundTag;
-import org.jnbt.ListTag;
-import org.jnbt.IntTag;
 import org.jnbt.DoubleTag;
+import org.jnbt.IntTag;
+import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 import org.jnbt.NBTOutputStream;
 

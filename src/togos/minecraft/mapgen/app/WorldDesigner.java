@@ -21,16 +21,12 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.BoxLayout;
 
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.job.JobService;
-import togos.minecraft.mapgen.job.RemoteJobService;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.ColumnSideCanvas;
 import togos.minecraft.mapgen.ui.HelpWindow;
@@ -63,11 +59,9 @@ public class WorldDesigner
 		GeneratorUpdateListener gul;
 		boolean autoReloadEnabled = false;
 		JobService jobServ = new JobService();
-		RemoteJobService remoteJobServ = new RemoteJobService(jobServ.jobQueue);
 		
 		public WorldDesignerKernel() {
 			sm.add(jobServ);
-			sm.add(remoteJobServ);
 		}
 		
 		public void setFileUpdateListener( FileUpdateListener ful ) {
@@ -299,7 +293,6 @@ public class WorldDesigner
 		boolean normalShade = false;
 		boolean heightShade = false;
 		boolean jobSystem = false;
-		ArrayList remoteGenerators = new ArrayList();
 		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-chunk-dir".equals(args[i]) ) {
@@ -316,8 +309,6 @@ public class WorldDesigner
 				Stat.performanceLoggingEnabled = true;
 			} else if( "-job-system".equals(args[i]) ) {
 				jobSystem = true;
-			} else if( "-remote-generator".equals(args[i]) ) {
-				remoteGenerators.add(args[++i]);
 			} else if( "-dump-materials".equals(args[i]) ) {
 				for( int j=0; j<Materials.byBlockType.length; ++j ) {
 					Material m = Materials.byBlockType[j];
@@ -353,20 +344,6 @@ public class WorldDesigner
 		};
 		
 		cws.useJobSystem = jobSystem;
-		
-		for( Iterator i=remoteGenerators.iterator(); i.hasNext(); ) {
-			String wr = (String)i.next();
-			Matcher m = WRPAT.matcher(wr);
-			int count;
-			if( m.matches() ) {
-				count = Integer.parseInt(m.group(1));
-				wr = m.group(2);
-			} else {
-				count = 2;
-			}
-			wdk.remoteJobServ.addWebResolver( wr, count );
-		}
-			
 		
 		wdk.setAutoReloadEnabled(autoReload);
 		

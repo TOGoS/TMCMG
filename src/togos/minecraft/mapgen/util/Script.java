@@ -1,24 +1,16 @@
 package togos.minecraft.mapgen.util;
 
-import togos.mf.value.URIRef;
-import togos.minecraft.mapgen.uri.BaseRef;
-import togos.noise2.DigestUtil;
-
 /**
- * For tracking script source, source URN, filename, 
- * and compiled 
- *
+ * For tracking script source, filename, and compiled value
  */
 public class Script
 {
 	public final byte[] source;
 	public final String sourceFilename;
-	public final URIRef sourceRef;
 	public Object program;
 	
 	public Script( byte[] source, String sourceFilename ) {
 		this.source = source;
 		this.sourceFilename = sourceFilename;
-		this.sourceRef = new BaseRef(DigestUtil.getSha1Urn(source));
 	}
 }

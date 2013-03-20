@@ -2,7 +2,6 @@ package togos.minecraft.mapgen.util;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 
 import togos.mf.value.ByteChunk;
@@ -24,13 +23,13 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	// it won't do anything, since bounds are all zero:
 	int bx=0, bz=0, bw=0, bd=0;
 	protected volatile boolean go = false;
-	protected HashSet progressListeners = new HashSet();
+	protected HashSet<ChunkWritingProgressListener> progressListeners = new HashSet<ChunkWritingProgressListener>();
 	protected Script script;
 	
 	public boolean useJobSystem = true;
-	protected BlockingQueue jobQueue;
+	protected BlockingQueue<Runnable> jobQueue;
 	
-	public ChunkWritingService( BlockingQueue jobQueue ) {
+	public ChunkWritingService( BlockingQueue<Runnable> jobQueue ) {
 		super("junk-chunks");
 		this.jobQueue = jobQueue;
 	}
@@ -58,8 +57,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	
 	protected synchronized void chunkWritten() {
 		++written;
-		for( Iterator li=progressListeners.iterator(); li.hasNext(); ) {
-			((ChunkWritingProgressListener)li.next()).chunkProgressUpdated(written, total);
+		for( ChunkWritingProgressListener pi : progressListeners ) {
+			pi.chunkProgressUpdated(written, total);
 		}
 	}
 	
@@ -90,7 +89,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 							ChunkData.NORMAL_CHUNK_DEPTH,
 							new ChunkDataListener() {
 								public void setChunkData(
-									String worldId, long px, long py, long pz,
+									long px, long py, long pz,
 									int w, int h, int d, ByteChunk data, int format
 								) {
 									int cx = (int)(px / w);

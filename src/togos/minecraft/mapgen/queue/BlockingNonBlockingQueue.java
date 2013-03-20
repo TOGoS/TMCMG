@@ -20,18 +20,18 @@ import togos.service.Service;
  * Operations that take items off the head of the queue are all delegated to the destination.
  * Many operations not commonly needed for queues throw UnsupportedOperationExceptions.
  */
-public class BlockingNonBlockingQueue implements BlockingQueue, Runnable, Service
+public class BlockingNonBlockingQueue<Item> implements BlockingQueue<Item>, Runnable, Service
 {
-	BlockingQueue dest;
-	BlockingQueue list = new LinkedBlockingQueue();
+	BlockingQueue<Item> dest;
+	BlockingQueue<Item> list = new LinkedBlockingQueue<Item>();
 	Thread drainThread;
 	
-	public BlockingNonBlockingQueue( BlockingQueue dest ) {
+	public BlockingNonBlockingQueue( BlockingQueue<Item> dest ) {
 		this.dest = dest;
 	}
 	
 	public BlockingNonBlockingQueue( int capacity ) {
-		this( new ArrayBlockingQueue(capacity) );
+		this( new ArrayBlockingQueue<Item>(capacity) );
 	}
 
 	public void run() {
@@ -60,13 +60,13 @@ public class BlockingNonBlockingQueue implements BlockingQueue, Runnable, Servic
 	
 	////
 	
-	public boolean add( Object item ) {
+	public boolean add( Item item ) {
 		if( !dest.offer(item) ) {
 			list.add( item );
 		}
 		return true;
 	}
-	public boolean addAll( Collection items ) {
+	public boolean addAll( Collection<? extends Item> items ) {
 		return list.addAll( items );
 	}
 	public void clear() {
@@ -75,30 +75,30 @@ public class BlockingNonBlockingQueue implements BlockingQueue, Runnable, Servic
 	public boolean contains( Object o ) {
 		throw new UnsupportedOperationException();
 	}
-	public boolean containsAll( Collection o ) {
+	public boolean containsAll( Collection<?> o ) {
 		throw new UnsupportedOperationException();
 	}
-	public int drainTo( Collection col ) {
+	public int drainTo( Collection<? super Item> col ) {
 	    return dest.drainTo( col );
 	}
-	public int drainTo( Collection arg0, int arg1 ) {
+	public int drainTo( Collection<? super Item> arg0, int arg1 ) {
 		return dest.drainTo(arg0, arg1);
 	}
-	public Object element() {
+	public Item element() {
 	    return dest.element();
 	}
-	public boolean offer( Object item ) {
+	public boolean offer( Item item ) {
 		return dest.offer(item);
     }
-	public boolean offer( Object arg0, long arg1, TimeUnit arg2 )
+	public boolean offer( Item arg0, long arg1, TimeUnit arg2 )
             throws InterruptedException {
 	    return dest.offer(arg0, arg1, arg2);
     }
-	public Object poll( long timeout, TimeUnit unit )
+	public Item poll( long timeout, TimeUnit unit )
             throws InterruptedException {
 	    return dest.poll(timeout, unit);
     }
-	public void put( Object item ) throws InterruptedException {
+	public void put( Item item ) throws InterruptedException {
 		dest.put(item);
     }
 	public int remainingCapacity() {
@@ -107,37 +107,37 @@ public class BlockingNonBlockingQueue implements BlockingQueue, Runnable, Servic
 	public boolean remove( Object o ) {
 		throw new UnsupportedOperationException();
     }
-	public Object take() throws InterruptedException {
+	public Item take() throws InterruptedException {
 	    return dest.take();
     }
-	public Object peek() {
+	public Item peek() {
 	    return dest.peek();
     }
-	public Object poll() {
+	public Item poll() {
 	    return dest.poll();
     }
-	public Object remove() {
+	public Item remove() {
 		return dest.remove();
     }
 	public boolean isEmpty() {
 	    return dest.isEmpty() && list.isEmpty();
     }
-	public Iterator iterator() {
+	public Iterator<Item> iterator() {
 	    return dest.iterator();
     }
-	public boolean removeAll( Collection arg0 ) {
+	public boolean removeAll( Collection<?> arg0 ) {
 		throw new UnsupportedOperationException();
     }
-	public boolean retainAll( Collection arg0 ) {
+	public boolean retainAll( Collection<?> arg0 ) {
 		throw new UnsupportedOperationException();
     }
 	public int size() {
 	    return dest.size() + list.size();
     }
-	public Object[] toArray() {
+	public Item[] toArray() {
 		throw new UnsupportedOperationException();
     }
-	public Object[] toArray( Object[] arg0 ) {
+	public <T> T[] toArray( T[] arg0 ) {
 		throw new UnsupportedOperationException();
     }
 }
