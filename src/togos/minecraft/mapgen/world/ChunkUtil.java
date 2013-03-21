@@ -31,7 +31,7 @@ public class ChunkUtil
 		if( (index & 0x1) == 0 ) {
 			return (byte)((data[ byteIndex ] >> 0) & 0x0F);
 		} else {
-			return (byte)((data[ byteIndex ] >> 1) & 0x0F);
+			return (byte)((data[ byteIndex ] >> 4) & 0x0F);
 		}
 	}
 	
@@ -128,8 +128,7 @@ public class ChunkUtil
 				}
 			}
 		}
-		for( Iterator tei=s.tileEntityData.iterator(); tei.hasNext(); ) {
-			TileEntityData ted = (TileEntityData)tei.next();
+		for( TileEntityData ted : s.tileEntityData ) {
 			ted = ted.duplicate(
 					(int)(ted.x + sx-s.originX - s.getChunkPositionX() + dest.getChunkPositionX()),
 				ted.y + sy-s.originY,
