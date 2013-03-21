@@ -14,23 +14,42 @@ statement:
 lvalue:
 	<symbol>
 	or
-	<symbol>( <argument-list> )
+	<symbol>( <parameter-list> )
 
-argument-list:
-	<symbol>, <symbol>, .... <symbol>
+parameter-list:
+	[<parameter>[, <parameter>]*]
+
+parameter:
+	<symbol>
+	or
+	<symbol> = <expression>     (parameter with default value)
+	or
+	<symbol>...                 (parameter slurping multiple arguments)
 
 function-application:
 	<expression>( <argument-list> )
+
+argument-list:
+	[<argument>[, <argument]*]
+
+argument:
+	<expression>
+	or
+	<symbol> @ <expression>     (named argument)
 
 expression:
 	<function-application>
 	or
 	<expression> <infix-operator> <expression>
+	or
+	([<statement>; ]* <expression>)     (creates inner scope)
 
-infix operators: ** * / - + ->
+infix operators (from highest to lowest precedence):
+	** * / - + -> @
+	
 
+== Syntactic sugar simplifications ==
 
-== Simplifications ==
 (To be done before any symbols are evaluated)
 
 	<expression> <infix-operator> <expression>
@@ -40,6 +59,68 @@ infix operators: ** * / - + ->
 	<x>( <arguments> ) = <y>
 	is equivalent to
 	<x> = ( <arguments> ) -> <y>
+
+
+== S-expression equivalence ==
+
+At this point the program is equivalent to an S-expression.
+
+	x = 123;
+	y = 456;
+	foo(x,y) = (x + y) / 2;
+	foo(x,y);
+
+Would be equivalent to:
+
+	(with-defs ((x 123)
+	            (y 456)
+	            (foo (func ((x) (y))
+	                       (/ (+ x y) 2))))
+	           (foo x y))
+
+(There would be more verbose function application syntax to handle the general case
+allowing named arguments)
+
+
+
+== Symbol resolution ==
+
+Symbols are defined in their lexical scope.  So e.g.
+
+	x = 20;
+	
+	y(f) = x + f;
+	
+	(
+		x = 10;
+		y(5)
+	)
+
+evaluates to 25, not 15.
+
+Symbols may be defined after they are appear used.
+The innermost scope is always used, which allows functiosn to reference themselves.
+e.g.
+
+	x(f) = f*2;
+	
+	(
+		x(v) = if(v == 1, v, v * x(v - 1));
+		x(10);
+	)
+
+Gives you 10!, not 18. 
+
+
+At this point you could evaluate your program.
+But it's probably a good idea to do the following steps, first:
+- Symbol resolution (so you don't need to keep track of lexical scope at run-time)
+- Function argument validation
+- Compile to a more interpretation-friendly format
+
+
+
+
 
 == Equivalent S-expressions ==
 
