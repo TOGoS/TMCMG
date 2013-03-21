@@ -1,0 +1,48 @@
+Goal: Rewrite TNL to be strictly-defined functional language.
+
+== Syntax ==
+
+block:
+	<statement>;
+	<statement>;
+	...
+	<expression>
+
+statement:
+	<lvalue> = <expression>
+
+lvalue:
+	<symbol>
+	or
+	<symbol>( <argument-list> )
+
+argument-list:
+	<symbol>, <symbol>, .... <symbol>
+
+function-application:
+	<expression>( <argument-list> )
+
+expression:
+	<function-application>
+	or
+	<expression> <infix-operator> <expression>
+
+infix operators: ** * / - + ->
+
+
+== Simplifications ==
+(To be done before any symbols are evaluated)
+
+	<expression> <infix-operator> <expression>
+	is equivalent to
+	<operator>( <expression>, <expresion> )
+
+	<x>( <arguments> ) = <y>
+	is equivalent to
+	<x> = ( <arguments> ) -> <y>
+
+== Equivalent S-expressions ==
+
+== Equivalent RDF? ==
+
+Let's not care about it this time around.
