@@ -1,14 +1,13 @@
 package togos.noise2.lang;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import togos.lang.SourceLocation;
 
 public class TNLBlockExpression extends TNLExpression
 {
-	public Map definitions = new HashMap();
+	public Map<String, TNLExpression> definitions = new HashMap<String, TNLExpression>();
 	public TNLExpression value;
 	
 	public TNLBlockExpression( SourceLocation sloc, TNLExpression parent ) {
@@ -18,11 +17,10 @@ public class TNLBlockExpression extends TNLExpression
 	public String toString( boolean includeSourceLoc ) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("( ");
-		for( Iterator i=definitions.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry e = (Map.Entry)i.next();
+		for( Map.Entry<String,TNLExpression> e : definitions.entrySet() ) {
 			sb.append(
 				e.getKey() + " = " +
-				((TNLExpression)e.getValue()).toString(includeSourceLoc) + "; " );
+				e.getValue().toString(includeSourceLoc) + "; " );
 		}
 		sb.append( ((TNLExpression)value).toString( includeSourceLoc ) );
 		sb.append( ")" );

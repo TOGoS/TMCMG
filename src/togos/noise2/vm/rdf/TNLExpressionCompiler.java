@@ -142,7 +142,7 @@ public class TNLExpressionCompiler
 	}
 	
 	// For your convenience:
-	public RDFExpression compile( String tnlSource, SourceLocation sl, Map macros )
+	public RDFExpression compile( String tnlSource, SourceLocation sl, Map<String, TNLExpression> macros )
 		throws ParseError, CompileError
 	{
 		Reader r = new StringReader(tnlSource);

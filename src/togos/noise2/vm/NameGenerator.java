@@ -3,7 +3,7 @@ package togos.noise2.vm;
 import java.util.HashSet;
 
 class NameGenerator {
-	HashSet usedNames = new HashSet();
+	HashSet<String> usedNames = new HashSet<String>();
 	
 	public String nextVar(String suggest) {
 		if( suggest == null ) suggest = "var";

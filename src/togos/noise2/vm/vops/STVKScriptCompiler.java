@@ -28,7 +28,7 @@ public class STVKScriptCompiler
 	
 	Pattern NUMPAT = Pattern.compile("[+-]?\\d+(\\.\\d+)?([eE][+-]?\\d+)?");
 	
-	protected double[] getDoubleVector( String name, Map vars, int maxVectorSize, String filename, int lineNumber ) throws CompileError {
+	protected double[] getDoubleVector( String name, Map<String,Object> vars, int maxVectorSize, String filename, int lineNumber ) throws CompileError {
 		if( NUMPAT.matcher(name).matches() ) {
 			double value = Double.parseDouble(name);
 			name = "const_"+name;
@@ -50,8 +50,8 @@ public class STVKScriptCompiler
 		String line;
 		int lineNumber = 0;
 		
-		HashMap vars = new HashMap();
-		ArrayList ops = new ArrayList();
+		HashMap<String,Object> vars = new HashMap<String,Object>();
+		ArrayList<STVectorOp> ops = new ArrayList<STVectorOp>();
 		
 		while( (line = r.readLine()) != null ) {
 			++lineNumber;

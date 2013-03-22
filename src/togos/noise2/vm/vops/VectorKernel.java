@@ -21,8 +21,8 @@ public class VectorKernel implements LFunctionDaDaDa_Da
 		this.resVar = resVar;
 	}
 	
-	protected ThreadLocal stvk = new ThreadLocal() {
-		protected Object initialValue() {
+	protected ThreadLocal<STVectorKernel> stvk = new ThreadLocal<STVectorKernel>() {
+		@Override protected STVectorKernel initialValue() {
 			try {
 				STVKScriptCompiler compiler = new STVKScriptCompiler();
 				return compiler.compile(script, filename, maxVectorSize);

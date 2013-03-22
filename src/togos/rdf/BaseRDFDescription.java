@@ -2,7 +2,6 @@ package togos.rdf;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,20 +12,20 @@ public class BaseRDFDescription implements RDFDescription
 {
 	protected final SourceLocation sourceLoc;
 	protected final String typeName;
-	protected final List attributeEntries;
+	protected final List<Map.Entry<String,Object>> attributeEntries;
 	
-	public BaseRDFDescription( String typeName, List attributeEntries, SourceLocation sloc ) {
+	public BaseRDFDescription( String typeName, List<Map.Entry<String,Object>> attributeEntries, SourceLocation sloc ) {
 		this.sourceLoc = sloc;
 		this.typeName = typeName;
 		this.attributeEntries = attributeEntries;
 	}
 	
-	public BaseRDFDescription( String typeName, List attributeEntries ) {
+	public BaseRDFDescription( String typeName, List<Map.Entry<String,Object>> attributeEntries ) {
 		this( typeName, attributeEntries, BaseSourceLocation.NONE );
 	}
 	
 	public BaseRDFDescription( String typeName, SourceLocation sloc ) {
-		this( typeName, Collections.EMPTY_LIST, sloc );
+		this( typeName, Collections.<Map.Entry<String,Object>>emptyList(), sloc );
 	}
 	
 	public BaseRDFDescription( String typeName ) {
@@ -41,14 +40,13 @@ public class BaseRDFDescription implements RDFDescription
 		return typeName;
 	}
 	
-	public List getAttributeEntries() {
+	public List<Map.Entry<String,Object>> getAttributeEntries() {
 		return attributeEntries;
 	}
 	
-	public List getAttributeValues( String name ) {
-		List values = new ArrayList();
-		for( Iterator i=attributeEntries.iterator(); i.hasNext(); ) {
-			Map.Entry kv = (Map.Entry)i.next();
+	public List<Object> getAttributeValues( String name ) {
+		List<Object> values = new ArrayList<Object>();
+		for( Map.Entry<String,Object> kv : attributeEntries ) {
 			if( name.equals(kv.getKey()) ) values.add( kv.getValue() );
 		}
 		return values;

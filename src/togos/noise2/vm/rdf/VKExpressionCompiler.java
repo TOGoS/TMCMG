@@ -1,9 +1,8 @@
-package togos.noise2.vm.vops;
+package togos.noise2.vm.rdf;
 
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,18 +10,26 @@ import togos.noise2.lang.CompileError;
 import togos.noise2.rdf.TNLNamespace;
 import togos.noise2.vm.ExpressionToOpCompiler;
 import togos.noise2.vm.dftree.func.LFunctionDaDaDa_Da;
+import togos.noise2.vm.vops.VKOpWriter;
+import togos.noise2.vm.vops.VectorKernel;
 import togos.rdf.BaseRDFDescription;
 import togos.rdf.RDFDescription;
 
+/**
+ * Compiles those RDF expression things to VectorKernels.
+ */
 public class VKExpressionCompiler
 {
-	protected void findVars( RDFDescription e, Set dest ) {
+	/**
+	 * Finds which of the X, Y, and Z variables are used
+	 * anywhere in this expression, and adds their names to dest
+	 */
+	protected void findVars( RDFDescription e, Set<String> dest ) {
 		String typeName = e.getTypeName();
 		if( TNLNamespace.X_VAR.equals(typeName) || TNLNamespace.Y_VAR.equals(typeName) || TNLNamespace.Z_VAR.equals(typeName) ) {
 			dest.add(typeName);
 		}
-		for( Iterator i=e.getAttributeEntries().iterator(); i.hasNext(); ) {
-			Map.Entry en = (Map.Entry)i.next();
+		for( Map.Entry<String, Object> en : e.getAttributeEntries() ) {
 			if( en.getValue() instanceof RDFDescription ) {
 				findVars( (RDFDescription)en.getValue(), dest );
 			}
@@ -30,7 +37,7 @@ public class VKExpressionCompiler
 	}
 	
 	public LFunctionDaDaDa_Da expressionToFunction( RDFDescription e ) throws CompileError {
-		HashSet variables = new HashSet();
+		HashSet<String> variables = new HashSet<String>();
 		findVars( e, variables );
 		
 		String xVar=null, yVar=null, zVar=null, resVar;

@@ -8,6 +8,7 @@ import togos.rdf.RDFDescription;
 public class ExpressionCompiler
 {
 	public String compileExpression( RDFDescription e, Writer w ) {
+		// TODO: Implement properly?
 		if( TNLNamespace.ADD.equals(e.getTypeName()) ) {
 			return "eee";
 		}

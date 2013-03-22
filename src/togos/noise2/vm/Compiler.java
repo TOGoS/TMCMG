@@ -21,5 +21,5 @@ public interface Compiler
 	 *   may be null.
 	 * @return
 	 */
-	public Object compile( String source, SourceLocation loc, String scriptId, Class preferredType ) throws ScriptError;
+	public Object compile( String source, SourceLocation loc, String scriptId, Class<?> preferredType ) throws ScriptError;
 }

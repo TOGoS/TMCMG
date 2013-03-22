@@ -1,7 +1,5 @@
 package togos.noise2.vm.dftree.data;
 
-import java.security.MessageDigest;
-
 public class DataDaIa extends DataArray
 {
 	public final double[] d;

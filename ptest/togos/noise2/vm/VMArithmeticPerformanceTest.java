@@ -93,8 +93,7 @@ public class VMArithmeticPerformanceTest
 		TNLCompiler dftreeCompiler = new TNLCompiler();
 		dftreeCompiler.macroTypes.putAll( NoiseMacros.stdNoiseMacros );
 		
-		TNLToVKCompiler vkCompiler = new TNLToVKCompiler();
-		vkCompiler.macros.putAll( ArithmeticMacros.MACROS );
+		TNLToVKCompiler vkCompiler = new TNLToVKCompiler( ArithmeticMacros.MACROS );
 		
 		VMArithmeticPerformanceTest t = new VMArithmeticPerformanceTest();
 		

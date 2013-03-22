@@ -5,11 +5,11 @@ import java.util.Map;
 
 public class STVectorKernel implements STVectorOp
 {
-	public final Map vars;
+	public final Map<String,Object> vars;
 	protected final STVectorOp[] ops;
 	protected final int maxVectorSize;
 	
-	public STVectorKernel( Map vars, List ops, int maxVectorSize ) {
+	public STVectorKernel( Map<String,Object> vars, List<STVectorOp> ops, int maxVectorSize ) {
 		this.vars = vars;
 		this.ops = new STVectorOp[ops.size()];
 		for( int i=0; i<this.ops.length; ++i ) {
