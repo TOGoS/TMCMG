@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class Operators
 {
-	public final static HashMap PRECEDENCE = new HashMap();
+	public final static HashMap<String,Integer> PRECEDENCE = new HashMap<String,Integer>();
 	
 	public final static int COMMA_PRECEDENCE;
 	public final static int AT_PRECEDENCE;

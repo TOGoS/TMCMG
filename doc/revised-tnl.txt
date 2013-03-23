@@ -44,8 +44,10 @@ expression:
 	or
 	([<statement>; ]* <expression>)     (creates inner scope)
 
-infix operators (from highest to lowest precedence):
-	** * / - + -> @
+infix operators (from highest to lowest precedence, parens around operators
+with equal precedence, and including some things that kind of act like
+operators even though the parser may treat them as something different):
+	** (* / %) (+ -) (> < >= <=) (== !=) -> @ = , ;
 	
 
 == Syntactic sugar simplifications ==
