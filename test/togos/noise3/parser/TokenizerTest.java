@@ -1,6 +1,8 @@
-package togos.noise3;
+package togos.noise3.parser;
 
 import togos.noise3.asyncstream.Collector;
+import togos.noise3.parser.Token;
+import togos.noise3.parser.Tokenizer;
 import junit.framework.TestCase;
 
 public class TokenizerTest extends TestCase

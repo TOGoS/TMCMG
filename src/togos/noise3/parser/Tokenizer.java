@@ -1,4 +1,4 @@
-package togos.noise3;
+package togos.noise3.parser;
 
 import java.io.InputStreamReader;
 
