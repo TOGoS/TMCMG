@@ -1,7 +1,5 @@
 package togos.noise2.vm;
 
-import java.io.IOException;
-
 import togos.noise2.lang.ScriptError;
 import togos.noise2.vm.dftree.data.DataDa;
 import togos.noise2.vm.dftree.data.DataDaDaDa;
@@ -9,9 +7,14 @@ import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
 import togos.noise2.vm.dftree.lang.TNLCompiler;
 import togos.noise2.vm.dftree.lang.macro.LanguageMacros;
 import togos.noise2.vm.dftree.lang.macro.NoiseMacros;
-import togos.noise2.vm.vops.STVKScriptCompiler;
-import togos.noise2.vm.vops.STVectorKernel;
 
+/**
+ * Calculates
+ * 
+ *   (1 + x) * y + (2 + y) * y + (3 + z) * y
+ *
+ * using different engines to compare their speed.
+ */
 public class PerformanceTest
 {
 	class NativeCalculator {
@@ -27,7 +30,6 @@ public class PerformanceTest
 	}
 	
 	FunctionDaDaDa_Da tree;
-	STVectorKernel stvk;
 	NativeCalculator nc;
 	double[] x, y, z, dest;
 	
@@ -43,24 +45,6 @@ public class PerformanceTest
 		
 		try {
 			tree = (FunctionDaDaDa_Da)comp.compile("(1 + x) * y + (2 + y) * y + (3 + z) * y", "test");
-			stvk = new STVKScriptCompiler().compile(
-				"var double x\n" +
-				"var double y\n" +
-				"var double z\n" +
-				"var double temp\n" +
-				"var double res\n" +
-				"\n" +
-				"temp = 1 + x\n" +
-				"res  = temp * y\n" +
-				"temp = 2 + y\n" +
-				"temp = temp * y\n" +
-				"res  = res + temp\n" +
-				"temp = 3 + z\n" +
-				"temp = temp * y\n" +
-				"res  = res + temp\n",
-				"test", vectorSize);
-		} catch( IOException e ) {
-			throw new RuntimeException(e);
 		} catch( ScriptError e ) {
 			throw new RuntimeException(e);
 		}
@@ -82,21 +66,18 @@ public class PerformanceTest
 		return tree.apply(dat);
 	}
 	
-	public double[] runStvk( double startx, double starty, double startz, int vectorSize ) {
-		double[] x = (double[])stvk.vars.get("x");
-		double[] y = (double[])stvk.vars.get("y");
-		double[] z = (double[])stvk.vars.get("z");
-		initData( x, y, z, startx, starty, startz, vectorSize );
-		stvk.invoke(vectorSize);
-		return (double[])stvk.vars.get("res");
-	}
-	
+	/**
+	 * Native (Java) vector calculator
+	 */
 	public double[] runNV( double startx, double starty, double startz, int vectorSize ) {
 		initData( x, y, z, startx, starty, startz, vectorSize );
 		nc.calculate(vectorSize, dest, x, y, z);
 		return dest;
 	}
 	
+	/**
+	 * Native (Java) scalar calculator
+	 */
 	public double[] runNS( double startx, double starty, double startz, int vectorSize ) {
 		initData( x, y, z, startx, starty, startz, vectorSize );
 		for( int i=0; i<vectorSize; ++i ) {
@@ -107,7 +88,6 @@ public class PerformanceTest
 	}
 	
 	long totalTreeTime;
-	long totalStvkTime;
 	long totalNVTime;
 	long totalNSTime;
 	int innerIter  = 100;
@@ -124,7 +104,6 @@ public class PerformanceTest
 	
 	public void run() {
 		totalTreeTime   = 0;
-		totalStvkTime   = 0;
 		totalNVTime = 0;
 		setUp(vectorSize);
 		long bt, et;
@@ -136,14 +115,6 @@ public class PerformanceTest
 			}
 			et = System.currentTimeMillis();
 			totalTreeTime += (et - bt);
-			
-			bt = System.currentTimeMillis();
-			for( int i=0; i<innerIter; ++i ) {
-				int k = o*innerIter+i;
-				runStvk( 0, k, 1, vectorSize );
-			}
-			et = System.currentTimeMillis();
-			totalStvkTime += (et - bt);
 			
 			bt = System.currentTimeMillis();
 			for( int i=0; i<innerIter; ++i ) {
@@ -167,7 +138,6 @@ public class PerformanceTest
 		System.err.println("Iterations  = " + (innerIter*outerIter));
 		System.err.println("Vector size = " + vectorSize);
 		System.err.println("Tree time   = " + format(totalTreeTime, 6) + "ms" );
-		System.err.println("STVK time   = " + format(totalStvkTime, 6) + "ms" );
 		System.err.println("NV time     = " + format(totalNVTime, 6) + "ms" );
 		System.err.println("NS time     = " + format(totalNSTime, 6) + "ms" );
 		//System.err.println("Improvement   = " + ((double)totalTreeTime / totalStvkTime));
