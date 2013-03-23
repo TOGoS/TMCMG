@@ -4,12 +4,12 @@ import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise2.vm.dftree.data.DataDa;
-import togos.noise2.vm.dftree.data.DataDaDa;
-import togos.noise2.vm.dftree.data.DataDaDaDa;
-import togos.noise2.vm.dftree.data.DataIa;
-import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
-import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
+import togos.noise.v1.data.DataDa;
+import togos.noise.v1.data.DataDaDa;
+import togos.noise.v1.data.DataDaDaDa;
+import togos.noise.v1.data.DataIa;
+import togos.noise.v1.func.FunctionDaDaDa_Da;
+import togos.noise.v1.func.FunctionDaDaDa_Ia;
 
 public class Depositor implements ChunkMunger
 {

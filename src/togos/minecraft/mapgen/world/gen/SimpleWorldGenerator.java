@@ -4,17 +4,17 @@ import java.util.Map;
 
 import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.minecraft.mapgen.world.Blocks;
-import togos.noise2.vm.dftree.func.AdaptInXZDaDaDa_DaDa_Da;
-import togos.noise2.vm.dftree.func.AddOutDaDaDa_Da;
-import togos.noise2.vm.dftree.func.Constant_Da;
-import togos.noise2.vm.dftree.func.Constant_Ia;
-import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
-import togos.noise2.vm.dftree.func.MultiplyOutDaDaDa_Da;
-import togos.noise2.vm.dftree.func.PerlinDaDaDa_Da;
-import togos.noise2.vm.dftree.func.ScaleInDaDaDa_Da;
-import togos.noise2.vm.dftree.func.ScaleOutDaDaDa_Da;
-import togos.noise2.vm.dftree.func.TNLFunctionDaDaDa_Da;
-import togos.noise2.vm.dftree.func.TerrainScaleDaDaDa_Da;
+import togos.noise.v1.func.AdaptInXZDaDaDa_DaDa_Da;
+import togos.noise.v1.func.AddOutDaDaDa_Da;
+import togos.noise.v1.func.Constant_Da;
+import togos.noise.v1.func.Constant_Ia;
+import togos.noise.v1.func.FunctionDaDa_DaIa;
+import togos.noise.v1.func.MultiplyOutDaDaDa_Da;
+import togos.noise.v1.func.PerlinDaDaDa_Da;
+import togos.noise.v1.func.ScaleInDaDaDa_Da;
+import togos.noise.v1.func.ScaleOutDaDaDa_Da;
+import togos.noise.v1.func.TNLFunctionDaDaDa_Da;
+import togos.noise.v1.func.TerrainScaleDaDaDa_Da;
 
 public class SimpleWorldGenerator implements WorldGenerator
 {

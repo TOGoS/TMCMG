@@ -24,11 +24,11 @@ import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.noise2.lang.ParseUtil;
-import togos.noise2.lang.ScriptError;
-import togos.noise2.vm.dftree.data.DataDaDa;
-import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
-import togos.noise2.vm.dftree.func.FunctionDaDa_Ia;
+import togos.noise.v1.data.DataDaDa;
+import togos.noise.v1.func.CacheDaDaDa_Da;
+import togos.noise.v1.func.FunctionDaDa_Ia;
+import togos.noise.v1.lang.ParseUtil;
+import togos.noise.v1.lang.ScriptError;
 import togos.service.Service;
 
 public class NoiseCanvas extends WorldExplorerViewCanvas

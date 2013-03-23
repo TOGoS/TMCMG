@@ -46,8 +46,8 @@ import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.noise2.lang.ParseUtil;
-import togos.noise2.lang.ScriptError;
+import togos.noise.v1.lang.ParseUtil;
+import togos.noise.v1.lang.ScriptError;
 
 public class WorldDesigner
 {

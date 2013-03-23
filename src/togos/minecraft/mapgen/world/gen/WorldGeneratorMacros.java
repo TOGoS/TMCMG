@@ -6,20 +6,20 @@ import java.util.HashMap;
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.Material;
-import togos.noise2.lang.CompileError;
-import togos.noise2.rewrite.CacheRewriter;
-import togos.noise2.rewrite.ConstantFolder;
-import togos.noise2.vm.dftree.func.CacheDaDaDa_Da;
-import togos.noise2.vm.dftree.func.Constant_Ia;
-import togos.noise2.vm.dftree.func.FunctionDaDaDa_Da;
-import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
-import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
-import togos.noise2.vm.dftree.lang.ASTNode;
-import togos.noise2.vm.dftree.lang.FunctionUtil;
-import togos.noise2.vm.dftree.lang.TNLCompiler;
-import togos.noise2.vm.dftree.lang.macro.BaseMacroType;
-import togos.noise2.vm.dftree.lang.macro.ConstantMacroType;
-import togos.noise2.vm.dftree.lang.macro.MacroType;
+import togos.noise.v1.func.CacheDaDaDa_Da;
+import togos.noise.v1.func.Constant_Ia;
+import togos.noise.v1.func.FunctionDaDaDa_Da;
+import togos.noise.v1.func.FunctionDaDaDa_Ia;
+import togos.noise.v1.func.FunctionDaDa_Da;
+import togos.noise.v1.lang.ASTNode;
+import togos.noise.v1.lang.CompileError;
+import togos.noise.v1.lang.FunctionUtil;
+import togos.noise.v1.lang.TNLCompiler;
+import togos.noise.v1.lang.macro.BaseMacroType;
+import togos.noise.v1.lang.macro.ConstantMacroType;
+import togos.noise.v1.lang.macro.MacroType;
+import togos.noise.v1.rewrite.CacheRewriter;
+import togos.noise.v1.rewrite.ConstantFolder;
 
 public class WorldGeneratorMacros
 {

@@ -11,7 +11,7 @@ import togos.mf.api.Response;
 import togos.mf.api.ResponseCodes;
 import togos.mf.api.ResponseHandler;
 import togos.mf.base.BaseResponse;
-import togos.noise2.DigestUtil;
+import togos.noise.v1.DigestUtil;
 
 public class DataCacheCallable implements Callable, AsyncCallable
 {

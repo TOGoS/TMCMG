@@ -1,14 +1,14 @@
 package togos.minecraft.mapgen.world.gen;
 
 import togos.minecraft.mapgen.world.Material;
-import togos.noise2.rewrite.ExpressionRewriter;
-import togos.noise2.vm.dftree.data.DataDaDaDa;
-import togos.noise2.vm.dftree.data.DataIa;
-import togos.noise2.vm.dftree.func.Constant_Ia;
-import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
-import togos.noise2.vm.dftree.func.PossiblyConstant;
-import togos.noise2.vm.dftree.lang.Expression;
-import togos.noise2.vm.dftree.lang.FunctionUtil;
+import togos.noise.v1.data.DataDaDaDa;
+import togos.noise.v1.data.DataIa;
+import togos.noise.v1.func.Constant_Ia;
+import togos.noise.v1.func.FunctionDaDaDa_Ia;
+import togos.noise.v1.func.PossiblyConstant;
+import togos.noise.v1.lang.Expression;
+import togos.noise.v1.lang.FunctionUtil;
+import togos.noise.v1.rewrite.ExpressionRewriter;
 
 /**
  * Until I rewrite the compiler to support expressions

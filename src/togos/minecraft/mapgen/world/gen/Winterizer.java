@@ -3,8 +3,8 @@ package togos.minecraft.mapgen.world.gen;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise2.vm.dftree.data.DataDaDa;
-import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
+import togos.noise.v1.data.DataDaDa;
+import togos.noise.v1.func.FunctionDaDa_Da;
 
 public class Winterizer implements ChunkMunger
 {

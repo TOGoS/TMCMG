@@ -1,7 +1,7 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.noise2.vm.dftree.func.FunctionDaDaDa_Ia;
-import togos.noise2.vm.dftree.func.FunctionDaDa_Da;
+import togos.noise.v1.func.FunctionDaDaDa_Ia;
+import togos.noise.v1.func.FunctionDaDa_Da;
 
 public class HeightmapLayer
 {

@@ -28,8 +28,8 @@ import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise2.lang.ParseUtil;
-import togos.noise2.lang.ScriptError;
+import togos.noise.v1.lang.ParseUtil;
+import togos.noise.v1.lang.ScriptError;
 import togos.service.Service;
 
 public class ColumnSideCanvas extends WorldExplorerViewCanvas

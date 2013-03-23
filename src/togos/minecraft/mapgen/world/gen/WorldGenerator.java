@@ -3,7 +3,7 @@ package togos.minecraft.mapgen.world.gen;
 import java.util.Map;
 
 import togos.minecraft.mapgen.MaterialColumnFunction;
-import togos.noise2.vm.dftree.func.FunctionDaDa_DaIa;
+import togos.noise.v1.func.FunctionDaDa_DaIa;
 
 public interface WorldGenerator
 {
