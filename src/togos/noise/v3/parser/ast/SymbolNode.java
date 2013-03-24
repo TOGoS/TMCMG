@@ -14,4 +14,5 @@ public class SymbolNode extends ASTNode
 	public String toString() {
 		return this.text;
 	}
+	public String toAtomicString() { return toString(); }
 }

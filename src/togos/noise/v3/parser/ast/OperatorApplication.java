@@ -13,7 +13,17 @@ public class OperatorApplication extends ASTNode
 		this.n1 = n1; this.n2 = n2;
 	}
 	
+	protected static String spaceInfixOperator( String operator ) {
+		if( ",".equals(operator) || ";".equals(operator) ) {
+			return operator + " ";
+		} else if( ".".equals(operator) ) {
+			return operator;
+		} else {
+			return " " + operator + " ";
+		}
+	}
+	
 	public String toString() {
-		return "(" + n1.toString() + " " + operator.toString() + " " + n2.toString() + ")";
+		return n1.toAtomicString() + spaceInfixOperator(operator.toString()) + n2.toAtomicString();
 	}
 }

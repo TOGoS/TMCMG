@@ -1,11 +1,11 @@
 package togos.noise.v3.parser;
 
+import junit.framework.TestCase;
 import togos.noise.v1.lang.BaseSourceLocation;
 import togos.noise.v3.parser.ast.ASTNode;
-import togos.noise.v3.parser.ast.BlockNode;
 import togos.noise.v3.parser.ast.OperatorApplication;
 import togos.noise.v3.parser.ast.SymbolNode;
-import junit.framework.TestCase;
+import togos.noise.v3.parser.ast.VoidNode;
 
 public class ParserTest extends TestCase
 {
@@ -18,8 +18,7 @@ public class ParserTest extends TestCase
 	
 	public void testVoid() throws Exception {
 		ASTNode n = Parser.parse("", TEST_LOC);
-		assertInstanceOf( BlockNode.class, n );
-		assertEquals( 0, ((BlockNode)n).statements.size() );
+		assertInstanceOf( VoidNode.class, n );
 	}
 	
 	public void testSymbol() throws Exception {
@@ -28,9 +27,29 @@ public class ParserTest extends TestCase
 		assertEquals( "hello", ((SymbolNode)n).text );
 	}
 	
+	protected void assertStringification( String expected, String input ) throws Exception {
+		assertEquals( expected, Parser.parse(input, TEST_LOC).toString() );
+	}
+	
+	protected void assertStringification( String inputAndExpected ) throws Exception {
+		assertStringification( inputAndExpected, inputAndExpected );
+	}
+	
+	//// Argument lists ////
+	
+	public void testFunctionWithArgument() throws Exception {
+		assertStringification( "foo(bar)", "foo(bar)" );
+	}
+	
+	public void testFunctionWithArguments() throws Exception {
+		assertStringification( "foo(bar, baz)", "foo(bar,baz)" );
+	}
+	
+	//// Infix operators ////
+	
 	public void testOperator() throws Exception {
 		ASTNode n = Parser.parse("1 + 2", TEST_LOC);
-		assertEquals( "(1 + 2)", n.toString() );
+		assertEquals( "1 + 2", n.toString() );
 		
 		assertInstanceOf( OperatorApplication.class, n );
 		assertEquals("+", ((OperatorApplication)n).operator.text );
@@ -42,7 +61,7 @@ public class ParserTest extends TestCase
 	
 	public void testSamePrecedenceOperators() throws Exception {
 		ASTNode n = Parser.parse("1 + 2 - 3 + 4", TEST_LOC); // (((1 + 2) - 3) + 4)
-		assertEquals( "(((1 + 2) - 3) + 4)", n.toString() );
+		assertEquals( "((1 + 2) - 3) + 4", n.toString() );
 		
 		assertInstanceOf( OperatorApplication.class, n );
 		assertEquals("+", ((OperatorApplication)n).operator.text );
@@ -51,13 +70,9 @@ public class ParserTest extends TestCase
 		assertInstanceOf( OperatorApplication.class, o );
 		// Blah blah blah
 	}
-	
-	protected void assertParseAndEmit( String expected, String input ) throws Exception {
-		assertEquals( expected, Parser.parse(input, TEST_LOC).toString() );
-	}
-	
+		
 	public void testMoreInfixOperators() throws Exception {
-		assertParseAndEmit("((1 * 2) + (3 % 4))", "1 * 2 + 3 % 4");
-		assertParseAndEmit("((1 + 2) * (3 - 4))", "(1 + 2) * (3 - 4)");
+		assertStringification("(1 * 2) + (3 % 4)", "1 * 2 + 3 % 4");
+		assertStringification("(1 + 2) * (3 - 4)");
 	}
 }

@@ -13,11 +13,10 @@ import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.parser.ast.ASTNode;
-import togos.noise.v3.parser.ast.ArgumentList;
-import togos.noise.v3.parser.ast.BlockNode;
 import togos.noise.v3.parser.ast.FunctionApplication;
 import togos.noise.v3.parser.ast.OperatorApplication;
 import togos.noise.v3.parser.ast.SymbolNode;
+import togos.noise.v3.parser.ast.VoidNode;
 
 public class Parser extends BaseStreamSource<ASTNode> implements StreamDestination<Token>
 {
@@ -97,10 +96,11 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		protected ASTNode readFunctionApplication( ASTNode functionExpression ) throws ParseError {
 			if( offset == tokens.size() || tokens.get(offset).type != SuperToken.Type.PAREN_BLOCK ) return functionExpression;
 			
+			SuperToken argToken = tokens.get(offset++);
 			return readFunctionApplication( new FunctionApplication(
 				functionExpression,
-				buildArgumentList(tokens.get(offset++)),
-				tokens.get(offset).sLoc )
+				buildAstNode(argToken),
+				argToken.sLoc )
 			);
 		}
 		
@@ -130,19 +130,13 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		}
 	}
 	
-	protected static ArgumentList buildArgumentList( SuperToken block ) throws ParseError {
-		ASTNode n = buildAstNode(block);
-		// TODO
-		return null;
-	}
-	
 	protected static ASTNode buildAstNode( SuperToken block ) throws ParseError {
 		switch( block.type ) {
 		case ATOM:
 			return new SymbolNode( block.token );
 		case PAREN_BLOCK:
 			if( block.subTokens.size() == 0 ) {
-				return new BlockNode(block.sLoc);
+				return new VoidNode(block.sLoc);
 			} else if( block.subTokens.size() == 1 ) {
 				return buildAstNode( block.subTokens.get(0) );
 			} else {
@@ -201,7 +195,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		tokenizer.end();
 		
 		if( astNodes.size() == 0 ) {
-			return new BlockNode(sLoc);
+			return new VoidNode(sLoc);
 		} else {
 			assert astNodes.size() == 1;
 			return astNodes.get(0);

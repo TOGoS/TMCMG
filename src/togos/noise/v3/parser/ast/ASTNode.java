@@ -2,7 +2,7 @@ package togos.noise.v3.parser.ast;
 
 import togos.lang.SourceLocation;
 
-public class ASTNode implements SourceLocation
+public abstract class ASTNode implements SourceLocation
 {
 	protected String filename;
 	protected int lineNumber, columnNumber;
@@ -24,5 +24,14 @@ public class ASTNode implements SourceLocation
 	@Override public int getSourceColumnNumber() {
 		return columnNumber;
 	}
-
+	
+	//// Stringification ////
+	
+	/**
+	 * If atomic is false, toString does not need to
+	 * wrap otherwise ambiguous expressions in parentheses
+	 */
+	public String toAtomicString() {
+		return "(" + toString() + ")";
+	}
 }
