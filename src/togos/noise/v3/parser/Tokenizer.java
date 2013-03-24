@@ -2,6 +2,7 @@ package togos.noise.v3.parser;
 
 import java.io.InputStreamReader;
 
+import togos.lang.SourceLocation;
 import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.asyncstream.StreamUtil;
@@ -35,6 +36,9 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 		this.columnNumber = c;
 	}
 	
+	public void setSourceLocation( SourceLocation sLoc ) {
+		setSourceLocation( sLoc.getSourceFilename(), sLoc.getSourceLineNumber(), sLoc.getSourceColumnNumber() );
+	}
 	protected boolean isWhitespaceToken( char c ) {
 		switch( c ) {
 		case ' ': case '\t': case '\r': case '\n':

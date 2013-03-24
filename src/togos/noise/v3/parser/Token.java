@@ -26,4 +26,10 @@ public class Token implements SourceLocation
 	@Override public String getSourceFilename() { return filename; }
 	@Override public int getSourceLineNumber() { return lineNumber; }
 	@Override public int getSourceColumnNumber() { return columnNumber; }
+	
+	public String toString() {
+		if( type == Type.SYMBOL ) return text;
+		
+		return super.toString();
+	}
 }
