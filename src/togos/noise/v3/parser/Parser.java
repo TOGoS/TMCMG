@@ -123,7 +123,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 					--offset;
 					return v;
 				} else {
-					v = new OperatorApplication(operator, v, read(minPrecedence+1));
+					v = new OperatorApplication(operator, v, read(precedence+1));
 				}
 			}
 			return v;
