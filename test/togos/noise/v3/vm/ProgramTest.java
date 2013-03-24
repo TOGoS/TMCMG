@@ -53,4 +53,30 @@ public class ProgramTest extends TestCase
 		pi.run(123);
 		assertEquals( 300.0, pi.dVars[added.number][0] );
 	}
+	
+	protected void assertProgramResults( double expectedResult, Program program, int resultRegister ) {
+		Program.Instance pi = program.getInstance(1);
+		pi.run(1);
+		assertEquals( expectedResult, pi.dVars[resultRegister][0] );
+	}
+	
+	public void testArithmetic() {
+		// 1 - 2 * (3 + 4) / 4 = -2.5
+		ProgramBuilder pb = new ProgramBuilder();
+		RegisterID<RT.DVar> one   = pb.getVariable(1);
+		RegisterID<RT.DVar> two   = pb.getVariable(2);
+		RegisterID<RT.DVar> three = pb.getVariable(3);
+		RegisterID<RT.DVar> four  = pb.getVariable(4);
+		RegisterID<RT.DVar> fourB = pb.getVariable(4);
+		
+		// Twos should share a register
+		assertEquals( four.number, fourB.number );
+		
+		RegisterID<RT.DVar> threePlusFour = pb.dd_d( Program.ADD, three, four );
+		RegisterID<RT.DVar> twoTimesSeven = pb.dd_d( Program.MULTIPLY, two, threePlusFour );
+		RegisterID<RT.DVar> fourteenDividedByFour = pb.dd_d( Program.DIVIDE, twoTimesSeven, fourB );
+		RegisterID<RT.DVar> oneMinusThreeAndAHalf = pb.dd_d( Program.SUBTRACT, one, fourteenDividedByFour );
+		
+		assertProgramResults( -2.5, pb.toProgram(), oneMinusThreeAndAHalf.number );
+	}
 }
