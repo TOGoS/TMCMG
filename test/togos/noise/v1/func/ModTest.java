@@ -1,7 +1,7 @@
 package togos.noise.v1.func;
 
 import togos.noise.v1.func.LFunctionDaDaDa_Da;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 
 public class ModTest extends NoiseFunctionTest
 {

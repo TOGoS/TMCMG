@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import togos.lang.CompileError;
+import togos.lang.ParseError;
+import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
 import togos.noise.Compiler;
 import togos.noise.v1.data.DataDa;
@@ -80,7 +83,7 @@ public class TNLCompiler implements Compiler
 		return compile( source, "(unnamed)" );
 	}
 
-	public Object compile( String source, SourceLocation loc, String scriptId, Class preferredType ) throws ScriptError {
+	public Object compile( String source, SourceLocation loc, String scriptId, Class<?> preferredType ) throws ScriptError {
 		Object cv = compile( source, loc.getSourceFilename() );
 		
 		if( preferredType.isAssignableFrom(cv.getClass()) ) {

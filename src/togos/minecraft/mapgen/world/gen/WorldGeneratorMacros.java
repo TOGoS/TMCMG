@@ -3,6 +3,7 @@ package togos.minecraft.mapgen.world.gen;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.Material;
@@ -12,7 +13,6 @@ import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.func.FunctionDaDaDa_Ia;
 import togos.noise.v1.func.FunctionDaDa_Da;
 import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.CompileError;
 import togos.noise.v1.lang.FunctionUtil;
 import togos.noise.v1.lang.TNLCompiler;
 import togos.noise.v1.lang.macro.BaseMacroType;

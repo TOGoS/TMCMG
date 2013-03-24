@@ -2,7 +2,7 @@ package togos.noise.v1.lang.macro;
 
 import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.CompileError;
+import togos.lang.CompileError;
 import togos.noise.v1.lang.FunctionUtil;
 import togos.noise.v1.lang.TNLCompiler;
 

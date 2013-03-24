@@ -7,7 +7,7 @@ import togos.noise.v1.func.MaxOutDaDaDa_Da;
 import togos.noise.v1.func.MultiplyOutDaDaDa_Da;
 import togos.noise.v1.func.PerlinDaDaDa_Da;
 import togos.noise.v1.func.TNLFunctionDaDaDa_Da;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 import togos.noise.v1.lang.macro.ConstantMacroType;
 import togos.noise.v1.lang.macro.DaDaDa_DaArrayArgMacroType;
 

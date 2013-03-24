@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
+import togos.lang.CompileError;
+import togos.lang.ParseError;
 import togos.minecraft.mapgen.util.Script;
 import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.CompileError;
-import togos.noise.v1.lang.ParseError;
 import togos.noise.v1.lang.ParseUtil;
 import togos.noise.v1.lang.TNLCompiler;
 import togos.noise.v1.lang.TNLParser;

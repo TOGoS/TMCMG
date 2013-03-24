@@ -37,7 +37,7 @@ import togos.noise.v1.func.X;
 import togos.noise.v1.func.Y;
 import togos.noise.v1.func.Z;
 import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.CompileError;
+import togos.lang.CompileError;
 import togos.noise.v1.lang.FunctionUtil;
 
 public class NoiseMacros

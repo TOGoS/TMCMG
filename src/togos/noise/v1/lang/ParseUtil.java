@@ -1,6 +1,7 @@
 package togos.noise.v1.lang;
 
 import togos.lang.SourceLocation;
+import togos.lang.ScriptError;
 
 public class ParseUtil
 {

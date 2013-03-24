@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.CompileError;
+import togos.lang.CompileError;
 import togos.noise.v1.lang.ParseUtil;
 import togos.noise.v1.lang.TNLCompiler;
 

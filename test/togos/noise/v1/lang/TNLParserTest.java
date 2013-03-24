@@ -7,7 +7,7 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 import togos.lang.SourceLocation;
-import togos.noise.v1.lang.ParseError;
+import togos.lang.ParseError;
 import togos.noise.v1.lang.TNLTokenizer;
 import togos.noise.v1.lang.Token;
 

@@ -1,4 +1,4 @@
-package togos.noise.v1.lang;
+package togos.lang;
 
 import togos.lang.SourceLocation;
 

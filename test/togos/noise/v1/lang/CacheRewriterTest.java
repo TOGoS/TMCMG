@@ -1,12 +1,14 @@
 package togos.noise.v1.lang;
 
 import junit.framework.TestCase;
+import togos.lang.ScriptError;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.noise.v1.cache.SoftCache;
 import togos.noise.v1.data.DataDa;
 import togos.noise.v1.data.DataDaDaDa;
 import togos.noise.v1.func.AddOutDaDaDa_Da;
 import togos.noise.v1.func.CacheDaDaDa_Da;
+import togos.noise.v1.func.CacheDaDaDa_Da.Pair;
 import togos.noise.v1.func.Constant_Da;
 import togos.noise.v1.func.IfDaDaDa_Da;
 import togos.noise.v1.func.LessThanDaDaDa_Da;
@@ -16,8 +18,6 @@ import togos.noise.v1.func.SimplexDaDaDa_Da;
 import togos.noise.v1.func.X;
 import togos.noise.v1.func.Y;
 import togos.noise.v1.func.Z;
-import togos.noise.v1.func.CacheDaDaDa_Da.Pair;
-import togos.noise.v1.lang.ScriptError;
 import togos.noise.v1.rewrite.CacheRewriter;
 import togos.noise.v1.rewrite.ConstantFolder;
 

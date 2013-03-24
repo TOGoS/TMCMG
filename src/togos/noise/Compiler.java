@@ -1,7 +1,7 @@
 package togos.noise;
 
 import togos.lang.SourceLocation;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 
 /**
  * Completely generic interface to be implemented by anything that

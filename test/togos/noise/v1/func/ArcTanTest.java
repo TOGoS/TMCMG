@@ -5,7 +5,7 @@ import togos.noise.v1.data.DataDaDaDa;
 import togos.noise.v1.func.Constant_Da;
 import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.lang.FunctionUtil;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 import togos.noise.v1.rewrite.ConstantFolder;
 
 public class ArcTanTest extends NoiseFunctionTest

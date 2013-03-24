@@ -3,7 +3,7 @@ package togos.noise.v1.func;
 import togos.noise.v1.data.DataDa;
 import togos.noise.v1.data.DataDaDaDa;
 import togos.noise.v1.func.FunctionDaDaDa_Da;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 
 public class PerlinTest extends NoiseFunctionTest
 {

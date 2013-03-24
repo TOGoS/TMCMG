@@ -6,7 +6,7 @@ import java.util.Map;
 
 import togos.lang.SourceLocation;
 import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.CompileError;
+import togos.lang.CompileError;
 import togos.noise.v1.lang.TNLCompiler;
 
 public class LanguageMacros

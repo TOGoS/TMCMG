@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import togos.lang.SourceLocation;
+import togos.lang.ParseError;
 
 public class TNLParser
 {

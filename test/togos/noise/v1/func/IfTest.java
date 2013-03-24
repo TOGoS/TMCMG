@@ -3,8 +3,8 @@ package togos.noise.v1.func;
 import togos.noise.v1.data.DataDa;
 import togos.noise.v1.data.DataDaDaDa;
 import togos.noise.v1.func.FunctionDaDaDa_Da;
-import togos.noise.v1.lang.CompileError;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.CompileError;
+import togos.lang.ScriptError;
 
 public class IfTest extends NoiseFunctionTest
 {

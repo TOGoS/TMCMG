@@ -28,7 +28,7 @@ import togos.noise.v1.data.DataDaDa;
 import togos.noise.v1.func.CacheDaDaDa_Da;
 import togos.noise.v1.func.FunctionDaDa_Ia;
 import togos.noise.v1.lang.ParseUtil;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 import togos.service.Service;
 
 public class NoiseCanvas extends WorldExplorerViewCanvas

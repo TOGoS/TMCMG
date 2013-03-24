@@ -2,7 +2,7 @@ package togos.minecraft.mapgen.world.gen;
 
 import junit.framework.TestCase;
 import togos.noise.v1.func.SimplexDaDaDa_Da;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 
 public class TNLWorldGeneratorCompilerTest extends TestCase
 {

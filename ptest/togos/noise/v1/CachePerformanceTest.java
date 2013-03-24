@@ -5,7 +5,7 @@ import java.util.Random;
 
 import togos.noise.v1.data.DataDaDaDa;
 import togos.noise.v1.func.FunctionDaDaDa_Da;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 import togos.noise.v1.lang.TNLCompiler;
 import togos.noise.v1.lang.macro.NoiseMacros;
 

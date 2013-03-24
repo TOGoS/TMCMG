@@ -3,7 +3,7 @@ package togos.noise.v1.lang;
 import junit.framework.TestCase;
 import togos.lang.SourceLocation;
 import togos.noise.v1.func.TNLFunctionDaDaDa_Da;
-import togos.noise.v1.lang.ScriptError;
+import togos.lang.ScriptError;
 import togos.noise.v1.lang.macro.ConstantMacroType;
 import togos.noise.v1.lang.macro.NoiseMacros;
 import togos.noise.v1.rewrite.ConstantFolder;

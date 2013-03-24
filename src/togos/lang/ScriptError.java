@@ -1,7 +1,10 @@
-package togos.noise.v1.lang;
+package togos.lang;
 
 import togos.lang.SourceLocation;
 
+/**
+ * Used to indicate errors encountered while parsing, compiling, or running scripts.
+ */
 public class ScriptError extends Exception
 {
 	private static final long serialVersionUID = 1L;
