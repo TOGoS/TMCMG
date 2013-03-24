@@ -1,4 +1,6 @@
-Goal: Rewrite TNL to be strictly-defined functional language.
+v3 is designed to be a more conventional and strictly-defined functional language.
+
+
 
 == Syntax ==
 

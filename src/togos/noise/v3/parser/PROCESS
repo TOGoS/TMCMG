@@ -1,0 +1,16 @@
+- Character list
+- Token list
+- Syntax tree
+- Alias + function application tree (symbols not yet validated)
+- Function application tree (constant symbols replaced with their value, parameter symbols validated) 
+- Optimized function application tree (constants folded)
+
+The function application tree can then be evaluated or compiled.
+
+To compile a function to a vector program:
+- inline all function calls
+- if any cannot be inlined, it cannot be compiled!
+- recursively write instructions to calculate the result of each
+  expression, caching the result variable of each and re-using
+  for identical expressions
+ 
