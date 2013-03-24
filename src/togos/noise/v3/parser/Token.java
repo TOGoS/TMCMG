@@ -4,7 +4,7 @@ import togos.lang.SourceLocation;
 
 public class Token implements SourceLocation
 {
-	enum Type {
+	public static enum Type {
 		SYMBOL,
 		QUOTED_STRING
 	};

@@ -52,7 +52,7 @@ public class ParserTest extends TestCase
 		assertEquals( "1 + 2", n.toString() );
 		
 		assertInstanceOf( OperatorApplication.class, n );
-		assertEquals("+", ((OperatorApplication)n).operator.text );
+		assertEquals("+", ((OperatorApplication)n).operator );
 		assertInstanceOf( SymbolNode.class, ((OperatorApplication)n).n1 );
 		assertEquals("1", ((SymbolNode)((OperatorApplication)n).n1).text );
 		assertInstanceOf( SymbolNode.class, ((OperatorApplication)n).n2 );
@@ -64,7 +64,7 @@ public class ParserTest extends TestCase
 		assertEquals( "((1 + 2) - 3) + 4", n.toString() );
 		
 		assertInstanceOf( OperatorApplication.class, n );
-		assertEquals("+", ((OperatorApplication)n).operator.text );
+		assertEquals("+", ((OperatorApplication)n).operator );
 		assertInstanceOf( SymbolNode.class, ((OperatorApplication)n).n2 );
 		ASTNode o = ((OperatorApplication)n).n1;
 		assertInstanceOf( OperatorApplication.class, o );
@@ -74,5 +74,11 @@ public class ParserTest extends TestCase
 	public void testMoreInfixOperators() throws Exception {
 		assertStringification("(1 * 2) + (3 % 4)", "1 * 2 + 3 % 4");
 		assertStringification("(1 + 2) * (3 - 4)");
+	}
+	
+	//// Complex expressions ////
+	
+	public void testLambda() throws Exception {
+		assertStringification( "(a, b, c) -> (a * (b + c))" );
 	}
 }
