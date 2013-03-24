@@ -30,6 +30,8 @@ public class ParserTest extends TestCase
 	
 	public void testOperator() throws Exception {
 		ASTNode n = Parser.parse("1 + 2", TEST_LOC);
+		assertEquals( "(1 + 2)", n.toString() );
+		
 		assertInstanceOf( OperatorApplication.class, n );
 		assertEquals("+", ((OperatorApplication)n).operator.text );
 		assertInstanceOf( SymbolNode.class, ((OperatorApplication)n).n1 );
@@ -40,11 +42,22 @@ public class ParserTest extends TestCase
 	
 	public void testSamePrecedenceOperators() throws Exception {
 		ASTNode n = Parser.parse("1 + 2 - 3 + 4", TEST_LOC); // (((1 + 2) - 3) + 4)
+		assertEquals( "(((1 + 2) - 3) + 4)", n.toString() );
+		
 		assertInstanceOf( OperatorApplication.class, n );
 		assertEquals("+", ((OperatorApplication)n).operator.text );
 		assertInstanceOf( SymbolNode.class, ((OperatorApplication)n).n2 );
 		ASTNode o = ((OperatorApplication)n).n1;
 		assertInstanceOf( OperatorApplication.class, o );
+		// Blah blah blah
 	}
-
+	
+	protected void assertParseAndEmit( String expected, String input ) throws Exception {
+		assertEquals( expected, Parser.parse(input, TEST_LOC).toString() );
+	}
+	
+	public void testMoreInfixOperators() throws Exception {
+		assertParseAndEmit("((1 * 2) + (3 % 4))", "1 * 2 + 3 % 4");
+		assertParseAndEmit("((1 + 2) * (3 - 4))", "(1 + 2) * (3 - 4)");
+	}
 }

@@ -12,4 +12,8 @@ public class OperatorApplication extends ASTNode
 		this.operator = operator;
 		this.n1 = n1; this.n2 = n2;
 	}
+	
+	public String toString() {
+		return "(" + n1.toString() + " " + operator.toString() + " " + n2.toString() + ")";
+	}
 }

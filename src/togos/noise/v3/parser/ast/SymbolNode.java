@@ -10,4 +10,8 @@ public class SymbolNode extends ASTNode
 		super(t);
 		this.text = t.text;
 	}
+	
+	public String toString() {
+		return this.text;
+	}
 }
