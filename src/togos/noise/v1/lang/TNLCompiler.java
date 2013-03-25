@@ -20,7 +20,7 @@ import togos.noise.v1.lang.macro.MacroType;
 
 public class TNLCompiler implements Compiler
 {
-	public Map macroTypes = new HashMap();
+	public Map<String,MacroType> macroTypes = new HashMap<String,MacroType>();
 	
 	public TNLCompiler() {
 		initBuiltins();
@@ -30,7 +30,7 @@ public class TNLCompiler implements Compiler
 		// Here so you can override it
 	}
 	
-	public TNLCompiler( Map macroTypes ) {
+	public TNLCompiler( Map<String,MacroType> macroTypes ) {
 		this.macroTypes = macroTypes;
 	}
 	

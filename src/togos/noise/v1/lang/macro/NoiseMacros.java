@@ -57,7 +57,7 @@ public class NoiseMacros
 		}
 	}
 	
-	public static HashMap stdNoiseMacros = new HashMap();
+	public static HashMap<String,MacroType> stdNoiseMacros = new HashMap<String,MacroType>();
 	protected static void add( String name, MacroType mt ) {
 		stdNoiseMacros.put(name,mt);
 	}

@@ -1,17 +1,16 @@
 package togos.noise.v1.lang.macro;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v1.lang.ASTNode;
-import togos.lang.CompileError;
 import togos.noise.v1.lang.TNLCompiler;
 
 public class LanguageMacros
 {	
-	public static HashMap stdLanguageMacros = new HashMap();
+	public static HashMap<String,MacroType> stdLanguageMacros = new HashMap<String,MacroType>();
 	protected static void add( String name, MacroType mt ) {
 		stdLanguageMacros.put(name,mt);
 	}
@@ -29,10 +28,9 @@ public class LanguageMacros
 		add(";", new MacroType() {
 			public Object instantiate( TNLCompiler c, ASTNode sn ) throws CompileError {
 				ASTNode mainNode = null;
-				Map newContext = new HashMap(c.macroTypes);
+				Map<String,MacroType> newContext = new HashMap<String,MacroType>(c.macroTypes);
 				int mainCount = 0;
-				for( Iterator i=sn.arguments.iterator(); i.hasNext(); ) {
-					ASTNode n = (ASTNode)i.next();
+				for( ASTNode n : sn.arguments ) {
 					if( "=".equals(n.macroName) ) {
 						if( n.arguments.size() != 2 ) {
 							throw new CompileError("'=' should have exactly 2 arguments, but this one has "+n.arguments.size(), n);
