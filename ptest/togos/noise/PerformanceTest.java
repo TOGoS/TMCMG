@@ -7,9 +7,9 @@ import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.lang.TNLCompiler;
 import togos.noise.v1.lang.macro.LanguageMacros;
 import togos.noise.v1.lang.macro.NoiseMacros;
-import togos.noise.v3.vm.Program;
-import togos.noise.v3.vm.Program.RegisterID;
-import togos.noise.v3.vm.ProgramBuilder;
+import togos.noise.v3.vectorvm.Program;
+import togos.noise.v3.vectorvm.ProgramBuilder;
+import togos.noise.v3.vectorvm.Program.RegisterID;
 
 /**
  * Calculates
@@ -130,7 +130,7 @@ public class PerformanceTest
 	long totalPiTime;
 	int innerIter  = 100;
 	int outerIter  = 500;
-	int vectorSize = 256;
+	int vectorSize = 256; // A realistic number for generating Minecraft chunks!
 	
 	protected String format( long num, int places ) {
 		String s = Long.toString(num);

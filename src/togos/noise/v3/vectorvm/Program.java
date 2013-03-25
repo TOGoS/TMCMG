@@ -1,4 +1,4 @@
-package togos.noise.v3.vm;
+package togos.noise.v3.vectorvm;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;

@@ -1,13 +1,13 @@
-package togos.noise.v3.vm;
+package togos.noise.v3.vectorvm;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import togos.noise.v3.vm.Program.Instruction;
-import togos.noise.v3.vm.Program.Operator;
-import togos.noise.v3.vm.Program.RT;
-import togos.noise.v3.vm.Program.RegisterID;
+import togos.noise.v3.vectorvm.Program.Instruction;
+import togos.noise.v3.vectorvm.Program.Operator;
+import togos.noise.v3.vectorvm.Program.RT;
+import togos.noise.v3.vectorvm.Program.RegisterID;
 
 public class ProgramBuilder
 {

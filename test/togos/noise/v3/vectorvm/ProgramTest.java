@@ -1,7 +1,9 @@
-package togos.noise.v3.vm;
+package togos.noise.v3.vectorvm;
 
-import togos.noise.v3.vm.Program.RT;
-import togos.noise.v3.vm.Program.RegisterID;
+import togos.noise.v3.vectorvm.Program;
+import togos.noise.v3.vectorvm.ProgramBuilder;
+import togos.noise.v3.vectorvm.Program.RT;
+import togos.noise.v3.vectorvm.Program.RegisterID;
 import junit.framework.TestCase;
 
 public class ProgramTest extends TestCase
