@@ -9,7 +9,7 @@ public class Program
 	 * An instance of a program (a program + all its variables)
 	 * that may be run in a single thread at a time.
 	 */
-	static class Instance {
+	public static class Instance {
 		public final Program program;
 		public final boolean[][] bVars;
 		public final double[][]  dVars;
@@ -23,13 +23,17 @@ public class Program
 			this.maxVectorSize = maxVectorSize;
 		}
 		
-		public void setInput( int varId, double[] data, int vectorSize ) {
+		public void setDVar( int varId, double[] data, int vectorSize ) {
 			assert varId < dVars.length;
 			assert vectorSize < maxVectorSize;
 			assert data.length >= vectorSize;
 			for( int i = vectorSize-1; i >= 0; --i ) {
 				dVars[varId][i] = data[i];
 			}
+		}
+		
+		public double[] getDVar( int varId ) {
+			return dVars[varId];
 		}
 		
 		protected void run( Instruction<RT,RT,RT,RT>[] instructions, int vectorSize ) {
@@ -48,11 +52,11 @@ public class Program
 	}
 	
 	/** Register type */
-	class RT {
-		class DConst extends RT {};
-		class BVar extends RT {};
-		class DVar extends RT {};
-		class None extends RT {};
+	public class RT {
+		public class DConst extends RT {};
+		public class BVar extends RT {};
+		public class DVar extends RT {};
+		public class None extends RT {};
 	};
 	
 	public static final class RegisterID<Type extends RT> implements Comparable<RegisterID<?>> {

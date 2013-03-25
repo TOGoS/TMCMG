@@ -7,6 +7,9 @@ import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.lang.TNLCompiler;
 import togos.noise.v1.lang.macro.LanguageMacros;
 import togos.noise.v1.lang.macro.NoiseMacros;
+import togos.noise.v3.vm.Program;
+import togos.noise.v3.vm.Program.RegisterID;
+import togos.noise.v3.vm.ProgramBuilder;
 
 /**
  * Calculates
@@ -31,6 +34,9 @@ public class PerformanceTest
 	
 	FunctionDaDaDa_Da tree;
 	NativeCalculator nc;
+	Program.Instance pi;
+	@SuppressWarnings("unchecked")
+    RegisterID<Program.RT.DVar>[] piVars = new RegisterID[4];
 	double[] x, y, z, dest;
 	
 	public void setUp( int vectorSize ) {
@@ -48,6 +54,28 @@ public class PerformanceTest
 		} catch( ScriptError e ) {
 			throw new RuntimeException(e);
 		}
+		
+		ProgramBuilder pm = new ProgramBuilder();
+		piVars[0] = pm.newDVar();
+		piVars[1] = pm.newDVar();
+		piVars[2] = pm.newDVar();
+		piVars[3] = pm.dd_d( Program.ADD,
+			pm.dd_d( Program.ADD,
+				pm.dd_d( Program.MULTIPLY,
+					pm.dd_d( Program.ADD, pm.getVariable(1), piVars[0] ),
+					piVars[1]
+				),
+				pm.dd_d( Program.MULTIPLY,
+					pm.dd_d( Program.ADD, pm.getVariable(2), piVars[1] ),
+					piVars[1]
+				)
+			),
+			pm.dd_d( Program.MULTIPLY,
+				pm.dd_d( Program.ADD, pm.getVariable(3), piVars[2] ),
+				piVars[1]
+			)
+		);
+		pi = pm.toProgram().getInstance(vectorSize);
 		
 		nc = new NativeCalculator();
 	}
@@ -87,9 +115,19 @@ public class PerformanceTest
 		return dest;
 	}
 	
+	public double[] runPi( double startx, double starty, double startz, int vectorSize ) {
+		initData( x, y, z, startx, starty, startz, vectorSize );
+		pi.setDVar( piVars[0].number, x, vectorSize );
+		pi.setDVar( piVars[1].number, y, vectorSize );
+		pi.setDVar( piVars[2].number, z, vectorSize );
+		pi.run( vectorSize );
+		return pi.getDVar( piVars[3].number );
+	}
+	
 	long totalTreeTime;
 	long totalNVTime;
 	long totalNSTime;
+	long totalPiTime;
 	int innerIter  = 100;
 	int outerIter  = 500;
 	int vectorSize = 256;
@@ -105,6 +143,7 @@ public class PerformanceTest
 	public void run() {
 		totalTreeTime   = 0;
 		totalNVTime = 0;
+		totalPiTime = 0;
 		setUp(vectorSize);
 		long bt, et;
 		for( int o=0; o<outerIter; ++o ) {
@@ -131,6 +170,14 @@ public class PerformanceTest
 			}
 			et = System.currentTimeMillis();
 			totalNSTime += (et - bt);
+			
+			bt = System.currentTimeMillis();
+			for( int i=0; i<innerIter; ++i ) {
+				int k = o*innerIter+i;
+				runPi( 0, k, 1, vectorSize );
+			}
+			et = System.currentTimeMillis();
+			totalPiTime += (et - bt);
 		}
 	}
 	
@@ -140,6 +187,7 @@ public class PerformanceTest
 		System.err.println("Tree time   = " + format(totalTreeTime, 6) + "ms" );
 		System.err.println("NV time     = " + format(totalNVTime, 6) + "ms" );
 		System.err.println("NS time     = " + format(totalNSTime, 6) + "ms" );
+		System.err.println("PI time     = " + format(totalPiTime, 6) + "ms" );
 		//System.err.println("Improvement   = " + ((double)totalTreeTime / totalStvkTime));
 	}
 	
