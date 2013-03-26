@@ -1,4 +1,5 @@
 == To-do ==
+- Custom block color map (copy from TMCMR)
 - Implement biome capability using v1 engine for sixfootwaves
 - Finish v3 engine
 - auto-detect script type somehow
