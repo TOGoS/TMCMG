@@ -1,8 +1,13 @@
 package togos.noise.v3.program.structure;
 
-import togos.lang.SourceLocation;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-public class SymbolReference extends ProgramNode
+import togos.lang.ScriptError;
+import togos.lang.SourceLocation;
+import togos.noise.v3.program.runtime.ValueHandle;
+
+public class SymbolReference extends ValueNode<Object>
 {
 	final String symbol;
 	
@@ -10,4 +15,17 @@ public class SymbolReference extends ProgramNode
 		super( sLoc );
 		this.symbol = symbol;
 	}
+
+	@Override
+    public Callable<Object> evaluate( final Map<String, Callable<?>> context ) {
+		return new ValueHandle<Object>( sLoc ) {
+			@Override
+            protected Object evaluate() throws Exception {
+				if( !context.containsKey(symbol) ) {
+					throw new ScriptError( "Symbol '"+symbol+"' is undefined", sLoc );
+				}
+				return context.get(symbol).call();
+            }
+		};
+    }
 }
