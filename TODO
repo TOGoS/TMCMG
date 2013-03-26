@@ -1,5 +1,11 @@
 == To-do ==
-- Allow currying in TNL
+- Implement biome capability using v1 engine for sixfootwaves
+- Finish v3 engine
+- auto-detect script type somehow
+  (file extension?  '# TNLv3' comment?  Catch compile errors and retry?)
+- v1 tree -> v3 program compiler?
+
+== Would be nice ==
 - Make grassifier grass appear in overhead preview
   - Maybe list postprocessors together with layers
   - General refactoring if LayerTerrainGenerator may be in order 
@@ -8,12 +14,13 @@
 - Add % operator (should act logically with negative numbers)
 - Postprocess functions to make liquids (and maybe sand and gravel) not be in
   quite so unrealistic positions
-- Large, branching trees
-- Flower/mushroom populator
 - 'center on player' button in Export Chunks window
-- Custom trees?
 
 == Won't do ==
+* New procedural object populators
+  (but allowing populations of user-defined objects may be a good idea)
+* Implicit currying in TNL
+  (may be possible in v3 using a curry( function, ... ) function)
 * 'Drop' trees and other objects into chunks rather than relying on the ground function
   - Won't work for trees!
 
