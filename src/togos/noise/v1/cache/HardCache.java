@@ -2,7 +2,7 @@ package togos.noise.v1.cache;
 
 import java.util.HashMap;
 
-import togos.noise.v1.func.Function;
+import togos.noise.Function;
 
 public class HardCache<K,V> implements Cache<K,V>
 {

@@ -1,6 +1,6 @@
 package togos.noise.v1.cache;
 
-import togos.noise.v1.func.Function;
+import togos.noise.Function;
 
 class Handle<K,V> {
 	public final K key;

@@ -1,5 +1,6 @@
 package togos.noise.v1.func;
 
+import togos.noise.Function;
 import togos.noise.v1.DigestUtil;
 import togos.noise.v1.cache.Cache;
 import togos.noise.v1.cache.SoftCache;

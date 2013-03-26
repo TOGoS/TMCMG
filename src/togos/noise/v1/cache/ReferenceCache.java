@@ -3,7 +3,7 @@ package togos.noise.v1.cache;
 import java.lang.ref.Reference;
 import java.util.WeakHashMap;
 
-import togos.noise.v1.func.Function;
+import togos.noise.Function;
 
 /**
  * TODO: This is a little goofy because it is internal handles that are

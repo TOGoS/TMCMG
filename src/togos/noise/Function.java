@@ -1,4 +1,4 @@
-package togos.noise.v1.func;
+package togos.noise;
 
 public interface Function<Arg,Value>
 {

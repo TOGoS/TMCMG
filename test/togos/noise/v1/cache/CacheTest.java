@@ -1,11 +1,11 @@
 package togos.noise.v1.cache;
 
 import junit.framework.TestCase;
+import togos.noise.Function;
 import togos.noise.v1.cache.Cache;
 import togos.noise.v1.cache.HardCache;
 import togos.noise.v1.cache.SoftCache;
 import togos.noise.v1.cache.WeakCache;
-import togos.noise.v1.func.Function;
 
 public class CacheTest extends TestCase
 {
