@@ -51,7 +51,7 @@ public abstract class ReferenceCache<K,V> implements Cache<K,V>
 		return getHandle(key).value;
 	}
 	
-	public V get( K key, Function<K,V> generator ) {
+	public V get( K key, Function<K,V> generator ) throws Exception {
 		return getHandle(key).getValue(generator);
 	}
 	

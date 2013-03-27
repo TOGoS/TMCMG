@@ -2,8 +2,9 @@ package togos.noise.v3.program.structure;
 
 import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
+import togos.noise.Function;
 import togos.noise.v3.program.runtime.Binding;
-import togos.noise.v3.program.runtime.Closure;
+import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.Context;
 
 public class FunctionApplication extends Expression<Object>
@@ -18,15 +19,15 @@ public class FunctionApplication extends Expression<Object>
     }
 	
 	@Override
-    public Binding<Object> evaluate( final Context context ) {
-		return new Binding.Delegated<Object>() {
-            public Binding<Object> generateDelegate() throws Exception {
-				Object funObj = function.evaluate(context).getValue();
-				if( !(funObj instanceof Closure) ) {
+    public Binding<Object> bind( final Context context ) {
+		return new Binding.Delegated<Object>( sLoc ) {
+            public Binding<?> generateDelegate() throws Exception {
+				Object funObj = function.bind(context).getValue();
+				if( !(funObj instanceof Function ) ) {
 					throw new ScriptError("Function returned by "+function+" is not a closure, but a "+funObj.getClass(), sLoc);
 				}
 				@SuppressWarnings("unchecked")
-                Closure<Object> c = (Closure<Object>)funObj;
+				Function<BoundArgumentList,Binding<?>> c = (Function<BoundArgumentList,Binding<?>>)funObj;
 				return c.apply( argumentList.evaluate(context) );
 			}
 		};

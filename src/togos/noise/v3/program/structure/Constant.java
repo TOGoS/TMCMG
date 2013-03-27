@@ -12,7 +12,7 @@ public class Constant<V> extends Expression<V>
 		this.value = value;
 	}
 
-	@Override public Binding<V> evaluate( Context context ) {
+	@Override public Binding<V> bind( Context context ) {
 		return new Binding.Constant<V>( value, sLoc );
     }
 	

@@ -17,7 +17,7 @@ public class FunctionDefinition<V> extends Expression<Closure<V>>
     }
 
 	@Override
-    public Binding<Closure<V>> evaluate( final Context context ) {
+    public Binding<Closure<V>> bind( final Context context ) {
 		return new Binding.Constant<Closure<V>>( sLoc ) {
 			@Override protected Closure<V> evaluate() throws Exception {
 	            return new Closure<V>( FunctionDefinition.this, context );

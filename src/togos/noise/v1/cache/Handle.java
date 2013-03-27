@@ -11,7 +11,7 @@ class Handle<K,V> {
 		this.key = key;
 	}
 	
-	synchronized V getValue( Function<K,V> generator ) {
+	synchronized V getValue( Function<K,V> generator ) throws Exception {
 		if( value == null ) {
 			value = generator.apply(key);
 			assert value != null;

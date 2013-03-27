@@ -50,11 +50,15 @@ public class CacheDaDaDa_Da extends TNLFunctionDaDaDa_Da
 	}
 	
 	public DataDa apply( final DataDaDaDa in ) {
-	    return cache.get(new Pair<String,DataDaDaDa>( wrappedExpressionUrn, in ), new Function<Pair<String,DataDaDaDa>,DataDa>() {
-	    	public DataDa apply( Pair<String,DataDaDaDa> cacheKey ) {
-	    		return wrapped.apply( cacheKey.item1 );
-	    	}
-	    });
+	    try {
+	        return cache.get(new Pair<String,DataDaDaDa>( wrappedExpressionUrn, in ), new Function<Pair<String,DataDaDaDa>,DataDa>() {
+	        	public DataDa apply( Pair<String,DataDaDaDa> cacheKey ) {
+	        		return wrapped.apply( cacheKey.item1 );
+	        	}
+	        });
+        } catch( Exception e ) {
+        	throw new RuntimeException(e);
+        }
 	}
 	
 	public boolean isConstant() {

@@ -2,15 +2,22 @@ package togos.noise.v3.program.runtime;
 
 import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
+import togos.noise.v1.lang.BaseSourceLocation;
 
 public abstract class Binding<V>
 {
 	public abstract boolean isConstant() throws Exception;
 	public abstract V getValue() throws Exception;
+	public final SourceLocation sLoc;
+	
+	public Binding( SourceLocation sLoc ) {
+		this.sLoc = sLoc;
+    }
 	
 	public static class Variable<ID, V> extends Binding<V> {
 		public final ID id;
 		public Variable( ID id ) {
+			super( BaseSourceLocation.NONE );
 			this.id = id;
 		}
 		public boolean isConstant() {
@@ -24,18 +31,17 @@ public abstract class Binding<V>
 	public static class Constant<V> extends Binding<V> {
 		enum State { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
 		
-		public final SourceLocation sLoc;
 		private V value;
 		private State state = State.UNEVALUATED;
 		private Exception error;
 		
 		public Constant( V value, SourceLocation sLoc ) {
+			super( sLoc );
 			this.value = value;
 			this.state = State.EVALUATED;
-			this.sLoc = sLoc;
 		}
 		public Constant( SourceLocation sLoc ) {
-			this.sLoc = sLoc;
+			super( sLoc );
 		}
 		
 		protected V evaluate() throws Exception {
@@ -71,9 +77,14 @@ public abstract class Binding<V>
 	}
 	
 	public static abstract class Delegated<V> extends Binding<V> {
-		protected Binding<V> delegate;
-		protected abstract Binding<V> generateDelegate() throws Exception;
-		protected final Binding<V> getDelegate() throws Exception {
+		protected Binding<? extends V> delegate;
+		
+		public Delegated( SourceLocation sLoc ) {
+			super(sLoc);
+		}
+		
+		protected abstract Binding<? extends V> generateDelegate() throws Exception;
+		protected final Binding<? extends V> getDelegate() throws Exception {
 			if( delegate == null ) delegate = generateDelegate();
 			return delegate;
 		}

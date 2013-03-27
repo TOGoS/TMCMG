@@ -18,21 +18,21 @@ public class Block<V> extends Expression<V>
     }
 	
 	@Override
-    public Binding<V> evaluate( Context context ) {
+    public Binding<V> bind( Context context ) {
 		final Context newContext = new Context(context);
 		for( final Map.Entry<String,Expression<?>> symbolDef : symbolDefinitions.entrySet() ) {
 			newContext.put(
 				symbolDef.getKey(),
 				new Binding.Constant<Object>( symbolDef.getValue().sLoc ) {
 					@Override protected Object evaluate() throws Exception {
-						return symbolDef.getValue().evaluate(newContext).getValue();
+						return symbolDef.getValue().bind(newContext).getValue();
                     }
 				}
 			);
 		}
 		return new Binding.Constant<V>( value.sLoc ) {
 			@Override protected V evaluate() throws Exception {
-				return value.evaluate(newContext).getValue();
+				return value.bind(newContext).getValue();
             }
 		};
     }

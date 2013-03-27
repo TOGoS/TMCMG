@@ -15,10 +15,10 @@ public class SymbolReference extends Expression<Object>
 	}
 
 	@Override
-    public Binding<Object> evaluate( final Context context ) {
-		return new Binding.Delegated<Object>() {
+    public Binding<Object> bind( final Context context ) {
+		return new Binding.Delegated<Object>( sLoc ) {
 			@Override
-            protected Binding<Object> generateDelegate() throws Exception {
+            protected Binding<?> generateDelegate() throws Exception {
 				if( !context.containsKey(symbol) ) {
 					throw new ScriptError( "Symbol '"+symbol+"' is undefined", sLoc );
 				}

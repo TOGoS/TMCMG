@@ -9,7 +9,7 @@ import togos.noise.v1.cache.WeakCache;
 
 public class CacheTest extends TestCase
 {
-	protected void testCache( Cache<String,String> c ) {
+	protected void testCache( Cache<String,String> c ) throws Exception {
 		assertNull(c.get("sox"));
 		assertNull(c.get("rox"));
 		
@@ -35,11 +35,11 @@ public class CacheTest extends TestCase
 		assertNull(c.get("ghoti"));
 	}
 	
-	public void testHardCache() {
+	public void testHardCache() throws Exception {
 		testCache(new HardCache<String,String>());
 	}
 	
-	public void testSoftCache() {
+	public void testSoftCache() throws Exception {
 		testCache(new SoftCache<String,String>());
 	}
 	

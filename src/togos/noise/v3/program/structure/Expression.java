@@ -18,7 +18,7 @@ public abstract class Expression<V> extends ProgramNode
 	 *   later, calling code has a chance to finalize it.
 	 * - bindings can represent expressions that include variables! 
 	 */
-	public abstract Binding<V> evaluate( Context context );
+	public abstract Binding<V> bind( Context context );
 	
 	public String toAtomicString() {
 		return "(" + toString() + ")";

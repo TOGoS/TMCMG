@@ -15,8 +15,8 @@ public class BoundArgumentList
 		}
 	}
 	
-	public List<BoundArgument<?>> values = new ArrayList<BoundArgument<?>>();
+	public final List<BoundArgument<?>> arguments = new ArrayList<BoundArgument<?>>();
 	public <V> void add( String name, Binding<V> value ) {
-		values.add( new BoundArgument<V>(name,value) );
+		arguments.add( new BoundArgument<V>(name,value) );
 	}
 }
