@@ -5,6 +5,7 @@
 - auto-detect script type somehow
   (file extension?  '# TNLv3' comment?  Catch compile errors and retry?)
 - v1 tree -> v3 program compiler?
+- Fix 'too many open files' error when writing lots of regions
 
 == Would be nice ==
 - Make grassifier grass appear in overhead preview
