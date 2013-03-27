@@ -13,8 +13,8 @@ import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.parser.ast.ASTNode;
-import togos.noise.v3.parser.ast.FunctionApplication;
-import togos.noise.v3.parser.ast.OperatorApplication;
+import togos.noise.v3.parser.ast.ParenApplicationNode;
+import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.SymbolNode;
 import togos.noise.v3.parser.ast.VoidNode;
 
@@ -97,7 +97,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 			if( offset == tokens.size() || tokens.get(offset).type != SuperToken.Type.PAREN_BLOCK ) return functionExpression;
 			
 			SuperToken argToken = tokens.get(offset++);
-			return readFunctionApplication( new FunctionApplication(
+			return readFunctionApplication( new ParenApplicationNode(
 				functionExpression,
 				buildAstNode(argToken),
 				argToken.sLoc )
@@ -123,7 +123,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 					--offset;
 					return v;
 				} else {
-					v = new OperatorApplication(operator, v, read(precedence+1));
+					v = new InfixNode(operator, v, read(precedence+1));
 				}
 			}
 			return v;

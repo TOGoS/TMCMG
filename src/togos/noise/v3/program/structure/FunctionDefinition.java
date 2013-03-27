@@ -6,12 +6,12 @@ import java.util.concurrent.Callable;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Closure;
 
-public class FunctionDefinition<V> extends ValueNode<Closure<V>>
+public class FunctionDefinition<V> extends Expression<Closure<V>>
 {
 	final ParameterList parameterList;
-	final ValueNode<V> definition;
+	final Expression<V> definition;
 	
-	public FunctionDefinition( ParameterList parameterList, ValueNode<V> definition, SourceLocation sLoc ) {
+	public FunctionDefinition( ParameterList parameterList, Expression<V> definition, SourceLocation sLoc ) {
 	    super(sLoc);
 	    this.parameterList = parameterList;
 	    this.definition = definition;

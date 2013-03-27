@@ -7,7 +7,7 @@ import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.ValueHandle;
 
-public class SymbolReference extends ValueNode<Object>
+public class SymbolReference extends Expression<Object>
 {
 	final String symbol;
 	

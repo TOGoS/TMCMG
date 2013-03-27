@@ -10,9 +10,9 @@ public class ParameterList extends ProgramNode
 	static class Parameter<V> {
 		final String name;
 		final boolean slurpy;
-		final ValueNode<V> defaultValue;
+		final Expression<V> defaultValue;
 		
-		public Parameter( String name, boolean slurpy, ValueNode<V> defaultValue ) {
+		public Parameter( String name, boolean slurpy, Expression<V> defaultValue ) {
 			this.name = name;
 			this.slurpy = slurpy;
 			this.defaultValue = defaultValue;
@@ -25,7 +25,7 @@ public class ParameterList extends ProgramNode
 	    super(sLoc);
     }
 	
-	public <T> void add( String name, boolean slurpy, ValueNode<T> defaultValue ) {
+	public <T> void add( String name, boolean slurpy, Expression<T> defaultValue ) {
 		arguments.add( new Parameter<T>(name, slurpy, defaultValue) );
 	}
 }

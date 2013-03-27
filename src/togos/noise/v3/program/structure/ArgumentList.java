@@ -12,9 +12,9 @@ public class ArgumentList extends ProgramNode
 {
 	static class Argument<V> {
 		final String name;
-		final ValueNode<V> value;
+		final Expression<V> value;
 		
-		public Argument( String name, ValueNode<V> value ) {
+		public Argument( String name, Expression<V> value ) {
 			this.name = name;
 			this.value = value;
 		}
@@ -25,6 +25,12 @@ public class ArgumentList extends ProgramNode
 	public ArgumentList( SourceLocation sLoc ) {
 	    super(sLoc);
     }
+	
+	public <T,U> ArgumentList( Expression<T> arg0, Expression<U> arg1, SourceLocation sLoc ) {
+		this(sLoc);
+		arguments.add(new Argument<T>("",arg0));
+		arguments.add(new Argument<U>("",arg1));
+	}
 	
 	public BoundArgumentList evaluate( Map<String,Callable<?>> context ) {
 		BoundArgumentList bal = new BoundArgumentList();

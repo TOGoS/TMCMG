@@ -5,9 +5,12 @@ import java.util.concurrent.Callable;
 
 import togos.lang.SourceLocation;
 
-public abstract class ValueNode<V> extends ProgramNode 
+/**
+ * TODO: Rename to 'Expression' if Eclipse will ever let me.
+ */
+public abstract class Expression<V> extends ProgramNode 
 {
-	public ValueNode( SourceLocation sLoc ) {
+	public Expression( SourceLocation sLoc ) {
 	    super(sLoc);
     }
 	
