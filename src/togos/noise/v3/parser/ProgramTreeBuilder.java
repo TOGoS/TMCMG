@@ -73,7 +73,7 @@ public class ProgramTreeBuilder
 				if( defOp.n1 instanceof SymbolNode ) {
 					defName = ((SymbolNode)defOp.n1).text;
 					defValue = defOp.n2;
-				} if( defOp.n1 instanceof ParenApplicationNode ) {
+				} else if( defOp.n1 instanceof ParenApplicationNode ) {
 					ASTNode defFunNameNode = ((ParenApplicationNode)defOp.n1).function;
 					if( !(defFunNameNode instanceof SymbolNode) ) {
 						throw new ParseError("Defined function name must be a symbol", defFunNameNode);
@@ -81,7 +81,7 @@ public class ProgramTreeBuilder
 					defName = ((SymbolNode)defFunNameNode).text;
 					defValue = new InfixNode("->", ((ParenApplicationNode)defOp.n1).argumentList, defOp.n2, defOp);
 				} else {
-					throw new ParseError("Invalid lvalue for definition", defOp.n1);
+					throw new ParseError("Invalid lvalue for definition: "+defOp.n1.getClass(), defOp.n1);
 				}
 				definitions.put(defName, parseExpression(defValue));
 			} else {

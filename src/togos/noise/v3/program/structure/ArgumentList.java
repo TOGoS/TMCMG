@@ -40,7 +40,7 @@ public class ArgumentList extends ProgramNode
     }
 	
 	public BoundArgumentList evaluate( Context context ) {
-		BoundArgumentList bal = new BoundArgumentList();
+		BoundArgumentList bal = new BoundArgumentList( sLoc );
 		for( Argument<?> a : arguments ) {
 			bal.add( a.name, a.value.bind(context) );
 		}
