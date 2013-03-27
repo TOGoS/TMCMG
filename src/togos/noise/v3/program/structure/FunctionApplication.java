@@ -31,4 +31,11 @@ public class FunctionApplication extends Expression<Object>
 			}
 		};
     }
+	
+	@Override public String toString() {
+		return function.toAtomicString() + "(" + argumentList.toString() + ")";
+	}
+	@Override public String toAtomicString() {
+		return toString();
+	}
 }

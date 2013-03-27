@@ -25,15 +25,16 @@ public class Block<V> extends Expression<V>
 			newContext.put(
 				symbolDef.getKey(),
 				new ValueHandle<Object>( symbolDef.getValue().sLoc ) {
-					@Override
-                    protected Object evaluate() throws Exception {
+					@Override protected Object evaluate() throws Exception {
 						return symbolDef.getValue().evaluate(newContext).call();
                     }
 				}
 			);
 		}
-		
-	    // TODO Auto-generated method stub
-	    return null;
+		return new ValueHandle<V>( value.sLoc ) {
+			@Override protected V evaluate() throws Exception {
+				return value.evaluate(newContext).call();
+            }
+		};
     }
 }

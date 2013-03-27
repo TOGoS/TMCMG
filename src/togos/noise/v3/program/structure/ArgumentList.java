@@ -26,11 +26,19 @@ public class ArgumentList extends ProgramNode
 	    super(sLoc);
     }
 	
-	public <T,U> ArgumentList( Expression<T> arg0, Expression<U> arg1, SourceLocation sLoc ) {
+	public <V,W> ArgumentList( Expression<V> arg0, Expression<W> arg1, SourceLocation sLoc ) {
 		this(sLoc);
-		arguments.add(new Argument<T>("",arg0));
-		arguments.add(new Argument<U>("",arg1));
+		arguments.add(new Argument<V>("",arg0));
+		arguments.add(new Argument<W>("",arg1));
 	}
+	
+	public <V> void add( String name, Expression<V> v ) {
+		arguments.add( new Argument<V>(name,v) );
+	}
+	
+	public <V> void add( Expression<V> v ) {
+		add( "", v );
+    }
 	
 	public BoundArgumentList evaluate( Map<String,Callable<?>> context ) {
 		BoundArgumentList bal = new BoundArgumentList();
@@ -38,5 +46,14 @@ public class ArgumentList extends ProgramNode
 			bal.add( a.name, a.value.evaluate(context) );
 		}
 		return bal;
+	}
+	
+	@Override public String toString() {
+		String res = null;
+		for( Argument<?> arg : arguments ) {
+			res = res == null ? "" : res + ", ";
+			res += arg.name.isEmpty() ? arg.value.toAtomicString() : arg.name + " @ " + arg.value.toAtomicString();
+		}
+		return res;
 	}
 }

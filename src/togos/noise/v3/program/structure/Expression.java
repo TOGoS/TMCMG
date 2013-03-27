@@ -15,4 +15,8 @@ public abstract class Expression<V> extends ProgramNode
     }
 	
 	public abstract Callable<V> evaluate( Map<String,Callable<?>> context );
+	
+	public String toAtomicString() {
+		return "(" + toString() + ")";
+	}
 }

@@ -25,6 +25,12 @@ public class ProgramTreeBuilder
 		}
 	}
 	
+	protected List<ASTNode> flatten(ASTNode n, String operator) {
+		ArrayList<ASTNode> l = new ArrayList<ASTNode>();
+		flatten( n, operator, l );
+		return l;
+	}
+	
 	protected void flatten(InfixNode n, List<ASTNode> dest) {
 		flatten( n.n1, n.operator, dest );
 		flatten( n.n2, n.operator, dest );
@@ -35,6 +41,22 @@ public class ProgramTreeBuilder
 		flatten( n, l );
 		return l;
 	}
+	
+	protected ArgumentList parseArgumentList( ASTNode listNode ) throws ParseError {
+		ArgumentList argList = new ArgumentList( listNode );
+		for( ASTNode argNode : flatten( listNode, "," ) ) {
+			if( argNode instanceof InfixNode && "@".equals(((InfixNode)argNode).operator) ) {
+				InfixNode namedArgNode = (InfixNode)argNode;
+				if( !(namedArgNode.n1 instanceof SymbolNode) ) {
+					throw new ParseError( "Named argument key must be a symbol, but got a "+namedArgNode.n1.getClass(), namedArgNode.n1);
+				}
+				argList.add( ((SymbolNode)namedArgNode.n1).text, parseExpression(namedArgNode.n2) );
+			} else {
+				argList.add( parseExpression(argNode) );
+			}
+		}
+	    return argList;
+    }
 	
 	protected Block<Object> parseBlock( InfixNode ast ) throws ParseError {
 		assert ";".equals(ast.operator);
@@ -87,6 +109,13 @@ public class ProgramTreeBuilder
 					opApp
 				);
 			}
+		} else if( ast instanceof ParenApplicationNode ) {
+			ParenApplicationNode pan = (ParenApplicationNode)ast;
+			return new FunctionApplication(
+				parseExpression(pan.function),
+				parseArgumentList(pan.argumentList),
+				ast
+			);
 		} else if( ast instanceof SymbolNode ) {
 			// TODO: parse numbers and stuff!
 			return new SymbolReference( ((SymbolNode)ast).text, ast );

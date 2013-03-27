@@ -28,4 +28,12 @@ public class SymbolReference extends Expression<Object>
             }
 		};
     }
+	
+	@Override public String toString() {
+		// TODO: If there is ever a symbol escaping mechanism, would need to use it here
+		return symbol;
+	}
+	@Override public String toAtomicString() {
+		return toString();
+	}
 }

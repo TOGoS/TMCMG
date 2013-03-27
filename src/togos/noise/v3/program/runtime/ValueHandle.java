@@ -8,7 +8,7 @@ import togos.lang.SourceLocation;
 public abstract class ValueHandle<V> implements Callable<V>
 {
 	enum State { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
-
+	
 	public final SourceLocation sLoc;
 	private V value;
 	private State state = State.UNEVALUATED;
@@ -17,7 +17,7 @@ public abstract class ValueHandle<V> implements Callable<V>
 	public ValueHandle( SourceLocation sLoc ) {
 		this.sLoc = sLoc;
 	}
-
+	
 	protected abstract V evaluate() throws Exception;
 	
 	@Override
