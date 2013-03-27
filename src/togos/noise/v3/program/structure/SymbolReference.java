@@ -1,11 +1,9 @@
 package togos.noise.v3.program.structure;
 
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
-import togos.noise.v3.program.runtime.ValueHandle;
+import togos.noise.v3.program.runtime.Binding;
+import togos.noise.v3.program.runtime.Context;
 
 public class SymbolReference extends Expression<Object>
 {
@@ -17,14 +15,14 @@ public class SymbolReference extends Expression<Object>
 	}
 
 	@Override
-    public Callable<Object> evaluate( final Map<String, Callable<?>> context ) {
-		return new ValueHandle<Object>( sLoc ) {
+    public Binding<Object> evaluate( final Context context ) {
+		return new Binding.Delegated<Object>() {
 			@Override
-            protected Object evaluate() throws Exception {
+            protected Binding<Object> generateDelegate() throws Exception {
 				if( !context.containsKey(symbol) ) {
 					throw new ScriptError( "Symbol '"+symbol+"' is undefined", sLoc );
 				}
-				return context.get(symbol).call();
+				return context.get(symbol);
             }
 		};
     }

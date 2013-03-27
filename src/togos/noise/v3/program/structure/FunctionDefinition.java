@@ -1,10 +1,9 @@
 package togos.noise.v3.program.structure;
 
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import togos.lang.SourceLocation;
+import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Closure;
+import togos.noise.v3.program.runtime.Context;
 
 public class FunctionDefinition<V> extends Expression<Closure<V>>
 {
@@ -18,12 +17,11 @@ public class FunctionDefinition<V> extends Expression<Closure<V>>
     }
 
 	@Override
-    public Callable<Closure<V>> evaluate( final Map<String, Callable<?>> context ) {
-		return new Callable<Closure<V>>() {
-			@Override
-            public Closure<V> call() throws Exception {
-				return new Closure<V>( FunctionDefinition.this, context );
-			}
+    public Binding<Closure<V>> evaluate( final Context context ) {
+		return new Binding.Constant<Closure<V>>( sLoc ) {
+			@Override protected Closure<V> evaluate() throws Exception {
+	            return new Closure<V>( FunctionDefinition.this, context );
+            }
 		};
     }
 }

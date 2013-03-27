@@ -2,11 +2,10 @@ package togos.noise.v3.program.structure;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.BoundArgumentList;
+import togos.noise.v3.program.runtime.Context;
 
 public class ArgumentList extends ProgramNode
 {
@@ -40,7 +39,7 @@ public class ArgumentList extends ProgramNode
 		add( "", v );
     }
 	
-	public BoundArgumentList evaluate( Map<String,Callable<?>> context ) {
+	public BoundArgumentList evaluate( Context context ) {
 		BoundArgumentList bal = new BoundArgumentList();
 		for( Argument<?> a : arguments ) {
 			bal.add( a.name, a.value.evaluate(context) );
