@@ -9,7 +9,7 @@ public class Operators
 	public final static int COMMA_PRECEDENCE;
 	public final static int AT_PRECEDENCE;
 	public final static int EQUALS_PRECEDENCE;
-	public final static int APPLY_PRECEDENCE = 70;
+	public final static int APPLY_PRECEDENCE = 80;
 	
 	/* 
 	 * Trying to jive as much as possible with
@@ -17,6 +17,7 @@ public class Operators
 	 */
 	
 	static {
+		PRECEDENCE.put(".",  new Integer(70));
 		PRECEDENCE.put("**", new Integer(60));
 		
 		PRECEDENCE.put("*",  new Integer(50));

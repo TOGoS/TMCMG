@@ -46,11 +46,16 @@ expression:
 	or
 	([<statement>; ]* <expression>)     (creates inner scope)
 
-infix operators (from highest to lowest precedence, parens around operators
+Infix operators (from highest to lowest precedence, parens around operators
 with equal precedence, and including some things that kind of act like
 operators even though the parser may treat them as something different):
-	** (* / %) (+ -) (> < >= <=) (== !=) -> @ = , ;
-	
+	. ** (* / %) (+ -) (> < >= <=) (== !=) -> @ = , ;
+
+The following characters always create their own token, even if not separated
+from neighboring tokens by whitespace:
+	[ ] ( ) { } , ;
+
+
 
 == Syntactic sugar simplifications ==
 
