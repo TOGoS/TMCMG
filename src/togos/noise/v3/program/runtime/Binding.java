@@ -21,7 +21,7 @@ public abstract class Binding<V>
 		}
 	}
 	
-	public static abstract class Constant<V> extends Binding<V> {
+	public static class Constant<V> extends Binding<V> {
 		enum State { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
 		
 		public final SourceLocation sLoc;
@@ -29,11 +29,18 @@ public abstract class Binding<V>
 		private State state = State.UNEVALUATED;
 		private Exception error;
 		
+		public Constant( V value, SourceLocation sLoc ) {
+			this.value = value;
+			this.state = State.EVALUATED;
+			this.sLoc = sLoc;
+		}
 		public Constant( SourceLocation sLoc ) {
 			this.sLoc = sLoc;
 		}
 		
-		protected abstract V evaluate() throws Exception;
+		protected V evaluate() throws Exception {
+			throw new RuntimeException("Not implemented");
+		}
 		
 		public boolean isConstant() {
 			return true;

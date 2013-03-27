@@ -3,6 +3,7 @@ package togos.noise.v3.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import togos.lang.ParseError;
 import togos.noise.v3.parser.ast.ASTNode;
@@ -11,6 +12,7 @@ import togos.noise.v3.parser.ast.ParenApplicationNode;
 import togos.noise.v3.parser.ast.SymbolNode;
 import togos.noise.v3.program.structure.ArgumentList;
 import togos.noise.v3.program.structure.Block;
+import togos.noise.v3.program.structure.Constant;
 import togos.noise.v3.program.structure.FunctionApplication;
 import togos.noise.v3.program.structure.SymbolReference;
 import togos.noise.v3.program.structure.Expression;
@@ -60,7 +62,7 @@ public class ProgramTreeBuilder
 	
 	protected Block<Object> parseBlock( InfixNode ast ) throws ParseError {
 		assert ";".equals(ast.operator);
-		HashMap<String,Expression<Object>> definitions = new HashMap<String,Expression<Object>>();
+		HashMap<String,Expression<? extends Object>> definitions = new HashMap<String,Expression<?>>();
 		ASTNode blockValueNode = null;
 		List<ASTNode> blockParts = flatten(ast);
 		for( ASTNode bp : blockParts ) {
@@ -95,7 +97,20 @@ public class ProgramTreeBuilder
 		return new Block<Object>( definitions, parseExpression(blockValueNode), ast );
 	}
 	
-	public Expression<Object> parseExpression( ASTNode ast ) throws ParseError {
+	Pattern integerPattern = Pattern.compile("[+-]?(\\d+)");
+	Pattern numberPattern = Pattern.compile("[+-]?(\\d*\\.\\d+)");
+	
+	private Expression<?> parseSymbol( SymbolNode ast ) {
+		if( integerPattern.matcher(ast.text).matches() ) {
+			return Constant.withValue( Long.valueOf(ast.text), ast );
+		} else if( numberPattern.matcher(ast.text).matches() ) {
+			return Constant.withValue( Double.valueOf(ast.text), ast );
+		} else {
+			return new SymbolReference( ast.text, ast );
+		}
+    }
+	
+	public Expression<?> parseExpression( ASTNode ast ) throws ParseError {
 		if( ast instanceof InfixNode ) {
 			InfixNode opApp = (InfixNode)ast;
 			if( ";".equals(opApp.operator) ) {
@@ -117,8 +132,7 @@ public class ProgramTreeBuilder
 				ast
 			);
 		} else if( ast instanceof SymbolNode ) {
-			// TODO: parse numbers and stuff!
-			return new SymbolReference( ((SymbolNode)ast).text, ast );
+			return parseSymbol( (SymbolNode)ast );
 		} else {
 			throw new ParseError("Don't know how to parse this "+ast.getClass(), ast);
 		}

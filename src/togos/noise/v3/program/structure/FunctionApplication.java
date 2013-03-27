@@ -26,7 +26,7 @@ public class FunctionApplication extends Expression<Object>
 					throw new ScriptError("Function returned by "+function+" is not a closure, but a "+funObj.getClass(), sLoc);
 				}
 				@SuppressWarnings("unchecked")
-				Closure<Object> c = (Closure<Object>)funObj;
+                Closure<Object> c = (Closure<Object>)funObj;
 				return c.apply( argumentList.evaluate(context) );
 			}
 		};

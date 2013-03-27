@@ -10,13 +10,13 @@ public class ProgramTreeBuilderTest extends CoolTestCase
 	
 	protected void assertStringification( String expected, String input ) throws Exception {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
-		Expression<Object> expr = ptb.parseExpression(Parser.parse(input, TEST_LOC));
+		Expression<?> expr = ptb.parseExpression(Parser.parse(input, TEST_LOC));
 		assertEquals( expected, expr.toString() );
 	}
 	
 	public void testParseInfix() throws Exception {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
-		Expression<Object> b = ptb.parseExpression(Parser.parse("2 + 3", BaseSourceLocation.NONE));
+		Expression<?> b = ptb.parseExpression(Parser.parse("2 + 3", BaseSourceLocation.NONE));
 		assertInstanceOf( FunctionApplication.class, b );
 		assertEquals("+(2, 3)", b.toString());
 	}

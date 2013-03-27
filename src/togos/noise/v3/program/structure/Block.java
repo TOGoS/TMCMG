@@ -8,10 +8,10 @@ import togos.noise.v3.program.runtime.Context;
 
 public class Block<V> extends Expression<V>
 {
-	final Map<String,Expression<Object>> symbolDefinitions;
-	final Expression<V> value;
+	final Map<String,Expression<?>> symbolDefinitions;
+	final Expression<? extends V> value;
 	
-	public Block( Map<String,Expression<Object>> defs, Expression<V> value, SourceLocation sLoc ) {
+	public Block( Map<String,Expression<?>> defs, Expression<? extends V> value, SourceLocation sLoc ) {
 	    super(sLoc);
 	    this.symbolDefinitions = defs;
 	    this.value = value;
@@ -20,7 +20,7 @@ public class Block<V> extends Expression<V>
 	@Override
     public Binding<V> evaluate( Context context ) {
 		final Context newContext = new Context(context);
-		for( final Map.Entry<String,Expression<Object>> symbolDef : symbolDefinitions.entrySet() ) {
+		for( final Map.Entry<String,Expression<?>> symbolDef : symbolDefinitions.entrySet() ) {
 			newContext.put(
 				symbolDef.getKey(),
 				new Binding.Constant<Object>( symbolDef.getValue().sLoc ) {

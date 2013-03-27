@@ -10,12 +10,12 @@ public class ExpressionEvaluationTest extends TestCase
 {
 	BaseSourceLocation TEST_LOC = new BaseSourceLocation("test script", 1, 1);
 	
-	protected Expression<Object> parse( String source ) throws Exception {
+	protected Expression<?> parse( String source ) throws Exception {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
 		return ptb.parseExpression(Parser.parse(source, TEST_LOC));
 	}
 
 	public void testEvaluateConstant() throws Exception {
-		assertEquals( Integer.valueOf(1), parse("1").evaluate(new Context()));
+		assertEquals( Long.valueOf(1), parse("1").evaluate(new Context()).getValue() );
 	}
 }
