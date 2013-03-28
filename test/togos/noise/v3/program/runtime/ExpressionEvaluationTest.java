@@ -108,4 +108,9 @@ public class ExpressionEvaluationTest extends TestCase
 	public void testApplyFunction() throws Exception {
 		assertEquals( Double.valueOf(15), eval("f(x) = x + 5; f(10)") );
 	}
+	
+	public void testApplyFunctionWithNamedArguments() throws Exception {
+		assertEquals( Double.valueOf(7), eval("f(x, y) = x - y; f(x @ 10, y @ 3)") );
+		assertEquals( Double.valueOf(3), eval("f(x, y) = x - y; f(y @ 7, x @ 10)") );
+	}
 }
