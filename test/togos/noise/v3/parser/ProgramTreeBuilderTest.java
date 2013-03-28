@@ -32,4 +32,8 @@ public class ProgramTreeBuilderTest extends CoolTestCase
 	public void testParseFunctionApplicationWithNamedArguments2() throws Exception {
 		assertStringification("foo(+(1, 2), *(3, 4), qq @ /(5, 6))", "foo(1 + 2, 3 * 4, qq @ 5 / 6)");
 	}
+	
+	public void testParseFunctionDefinition() throws Exception {
+		assertStringification("(x, y) -> +(x, y)", "(x, y) -> x + y");
+	}
 }

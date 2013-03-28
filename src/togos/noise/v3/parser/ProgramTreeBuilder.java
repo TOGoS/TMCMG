@@ -116,7 +116,7 @@ public class ProgramTreeBuilder
 			if( ";".equals(opApp.operator) ) {
 				return parseBlock(opApp);
 			} else if( ",".equals(opApp.operator) ) {
-				throw new ParseError("Comma not allowed, here", ast);
+				throw new ParseError("Comma not allowed, here", opApp);
 			} else {
 				return new FunctionApplication(
 					new SymbolReference(opApp.operator, opApp),
