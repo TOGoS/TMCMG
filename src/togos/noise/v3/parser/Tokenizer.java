@@ -69,6 +69,12 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 			state = State.BAREWORD;
 			tokenBuffer[length++] = c;
 		}
+		if( c == '\n' ) {
+			lineNumber += 1;
+			columnNumber = 1;
+		} else {
+			++columnNumber;
+		}
 	}
 	
 	protected void flushToken() throws Exception {
