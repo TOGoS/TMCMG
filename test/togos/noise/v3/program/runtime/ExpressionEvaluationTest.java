@@ -17,12 +17,12 @@ public class ExpressionEvaluationTest extends TestCase
 	
 	Context CONTEXT = new Context();
 	
-	abstract class CoreNumericFunction implements Function<Double> {
+	abstract class NumberInputFunction<R> implements Function<R> {
 		abstract String getName();
-		abstract double apply( double a, double b );
+		abstract R apply( double a, double b );
 		
 		@Override
-        public Binding<Double> apply( BoundArgumentList input ) throws Exception {
+        public Binding<R> apply( BoundArgumentList input ) throws Exception {
 			if( input.arguments.size() != 2 ) {
 				throw new RuntimeError( "Too many arguments ("+input.arguments.size()+" to "+getName(), input.sLoc );
 			}
@@ -49,7 +49,7 @@ public class ExpressionEvaluationTest extends TestCase
 			if( argCount < 2 ) {
 				throw new RuntimeError( "Not enough arguments to "+getName(), input.sLoc );
 			}
-			return new Binding.Constant<Double>( apply(a,b), BUILTIN_LOC );
+			return new Binding.Constant<R>( apply(a,b), BUILTIN_LOC );
         }
 	}
 	
@@ -59,21 +59,61 @@ public class ExpressionEvaluationTest extends TestCase
 	
 	public ExpressionEvaluationTest() {
 		super();
-		CONTEXT.put("+", builtinBinding(new CoreNumericFunction() {
+		CONTEXT.put("if", builtinBinding(new Function<Object>() {
+			@Override public Binding<? extends Object> apply(BoundArgumentList input) throws Exception {
+				if( input.hasNamedArguments() ) throw new RuntimeError("if does not take named arguments", input.sLoc);
+				if( input.arguments.size() < 3 || input.arguments.size() % 2 == 0 ) {
+					throw new RuntimeError("if requires an odd number of arguments >= 3", input.sLoc);
+				}
+				int i = 0;
+				while( i <= input.arguments.size()-2 ) {
+					Object condition = input.arguments.get(i).value.getValue();
+					if( !(condition instanceof Boolean) ) {
+						throw new RuntimeError("Boolean value expected for condition, but got a "+condition.getClass().getName(), input.arguments.get(i).sLoc);
+					}
+					if( ((Boolean)condition).booleanValue() ) {
+						return input.arguments.get(i+1).value;
+					}
+					i += 2;
+				}
+				return input.arguments.get(i).value;
+			}
+		}));
+		CONTEXT.put(">", builtinBinding(new NumberInputFunction<Boolean>() {
 			@Override String getName() { return "+"; }
-			@Override double apply( double a, double b ) { return a + b; }
+			@Override Boolean apply( double a, double b ) { return a > b; }
 		}));
-		CONTEXT.put("-", builtinBinding(new CoreNumericFunction() {
+		CONTEXT.put(">=", builtinBinding(new NumberInputFunction<Boolean>() {
+			@Override String getName() { return "+"; }
+			@Override Boolean apply( double a, double b ) { return a >= b; }
+		}));
+		CONTEXT.put("==", builtinBinding(new NumberInputFunction<Boolean>() {
+			@Override String getName() { return "+"; }
+			@Override Boolean apply( double a, double b ) { return a == b; }
+		}));
+		CONTEXT.put("<=", builtinBinding(new NumberInputFunction<Boolean>() {
+			@Override String getName() { return "+"; }
+			@Override Boolean apply( double a, double b ) { return a <= b; }
+		}));
+		CONTEXT.put("<", builtinBinding(new NumberInputFunction<Boolean>() {
+			@Override String getName() { return "+"; }
+			@Override Boolean apply( double a, double b ) { return a < b; }
+		}));
+		CONTEXT.put("+", builtinBinding(new NumberInputFunction<Double>() {
+			@Override String getName() { return "+"; }
+			@Override Double apply( double a, double b ) { return a + b; }
+		}));
+		CONTEXT.put("-", builtinBinding(new NumberInputFunction<Double>() {
 			@Override String getName() { return "-"; }
-			@Override double apply( double a, double b ) { return a - b; }
+			@Override Double apply( double a, double b ) { return a - b; }
 		}));
-		CONTEXT.put("*", builtinBinding(new CoreNumericFunction() {
+		CONTEXT.put("*", builtinBinding(new NumberInputFunction<Double>() {
 			@Override String getName() { return "*"; }
-			@Override double apply( double a, double b ) { return a * b; }
+			@Override Double apply( double a, double b ) { return a * b; }
 		}));
-		CONTEXT.put("/", builtinBinding(new CoreNumericFunction() {
+		CONTEXT.put("/", builtinBinding(new NumberInputFunction<Double>() {
 			@Override String getName() { return "/"; }
-			@Override double apply( double a, double b ) { return a / b; }
+			@Override Double apply( double a, double b ) { return a / b; }
 		}));
 	}
 	
@@ -112,5 +152,13 @@ public class ExpressionEvaluationTest extends TestCase
 	public void testApplyFunctionWithNamedArguments() throws Exception {
 		assertEquals( Double.valueOf(7), eval("f(x, y) = x - y; f(x @ 10, y @ 3)") );
 		assertEquals( Double.valueOf(3), eval("f(x, y) = x - y; f(y @ 7, x @ 10)") );
+	}
+	
+	public void testSecondOrderFunction() throws Exception {
+		assertEquals( Double.valueOf(5), eval("(x -> (y -> x + y))(2)(3)") );
+	}
+	
+	public void testRecursiveFunction() throws Exception {
+		assertEquals( Double.valueOf(8), eval("fib(i) = if(i == 0, 0, i == 1, 1, fib(i - 1) + fib(i - 2)); fib(6)"));
 	}
 }

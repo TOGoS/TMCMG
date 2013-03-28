@@ -31,4 +31,11 @@ public class BoundArgumentList
 	public <V> void add( String name, Binding<V> value, SourceLocation sLoc ) {
 		arguments.add( new BoundArgument<V>(name,value,sLoc) );
 	}
+	
+	public boolean hasNamedArguments() {
+		for( BoundArgument<?> b : arguments ) {
+			if( !b.name.isEmpty() ) return true;
+		}
+		return false;
+	}
 }
