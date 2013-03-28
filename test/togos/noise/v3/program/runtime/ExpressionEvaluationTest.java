@@ -104,4 +104,8 @@ public class ExpressionEvaluationTest extends TestCase
 	public void testBlock() throws Exception {
 		assertEquals( Double.valueOf(9), eval("a = 1 + 2; a * a") );
 	}
+	
+	public void testApplyFunction() throws Exception {
+		assertEquals( Double.valueOf(15), eval("f(x) = x + 5; f(10)") );
+	}
 }

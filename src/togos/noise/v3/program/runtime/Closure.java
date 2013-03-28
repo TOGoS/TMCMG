@@ -1,7 +1,18 @@
 package togos.noise.v3.program.runtime;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import togos.lang.CompileError;
+import togos.lang.SourceLocation;
+import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.runtime.Function;
 import togos.noise.v3.program.structure.FunctionDefinition;
+import togos.noise.v3.program.structure.ParameterList;
+import togos.noise.v3.program.structure.ParameterList.Parameter;
 
 public class Closure<V> implements Function<V>
 {
@@ -13,7 +24,94 @@ public class Closure<V> implements Function<V>
 		this.context = context;
 	}
 	
-	public Binding<V> apply( BoundArgumentList args ) {
-		return null; // TODO
+	static class LinkedListNode<V> {
+		public final V head;
+		public final LinkedListNode<? extends V> tail;
+		public LinkedListNode( V head, LinkedListNode<? extends V> tail ) {
+			this.head = head;
+			this.tail = tail;
+		}
+	}
+	
+	static class ListBinding<V> extends Binding<LinkedListNode<V>> {
+		public final ArrayList<Binding<? extends V>> valueBindings = new ArrayList<Binding<? extends V>>();
+		
+		public ListBinding( SourceLocation sLoc ) {
+			super(sLoc);
+		}
+		
+		@Override public boolean isConstant() throws Exception {
+			for( Binding<?> b : valueBindings ) if(!b.isConstant()) return false;
+	        return true;
+        }
+		
+		@Override public LinkedListNode<V> getValue() throws Exception {
+			LinkedListNode<V> n = null;
+			for( int i = valueBindings.size()-1; i >= 0; --i ) {
+				n = new LinkedListNode<V>( valueBindings.get(i).getValue(), n );
+			}
+	        return n;
+        }
+
+		public void add( Binding<? extends V> value ) {
+			valueBindings.add(value);
+        }
+	}
+	
+	public Binding<V> apply( BoundArgumentList args ) throws CompileError {
+		Context newContext = new Context(context);
+		
+		Map<String,Parameter<?>> parameterMap = function.parameterList.getParameterMap();
+		List<Parameter<?>> parameters = function.parameterList.parameters;
+		Map<String,Binding<?>> newValues = new HashMap<String,Binding<?>>();
+		
+		for( Parameter<?> p : parameters ) {
+			if( p.slurpy ) {
+				newValues.put( p.name, new ListBinding<Object>(p.sLoc) );
+			}
+		}
+		
+		int i = 0;
+		boolean namedArgumentsEncountered = false;
+		// TODO: Deal with positional slurpy arguments
+		for( BoundArgument<?> arg : args.arguments ) {
+			String name;
+			if( "".equals(arg.name) ) {
+				if( namedArgumentsEncountered ) {
+					throw new CompileError( "Cannot give positional arguments after named ones", arg.sLoc );
+				}
+				if( i >= parameters.size() ) {
+					throw new CompileError( "Too many positional arguments", arg.sLoc );
+				}
+				name = parameters.get(i).name;
+				++i;
+			} else {
+				namedArgumentsEncountered = true;
+				name = arg.name;
+			}
+			if( parameterMap.containsKey(name) ) {
+				throw new CompileError("Undefined parameter '"+name+"'", arg.sLoc);
+			}
+			if( parameterMap.get(name).slurpy ) {
+				@SuppressWarnings("unchecked")
+                ListBinding<Object> listBinding = (ListBinding<Object>)newValues.get(name);
+				listBinding.add(arg.value);
+			} else {
+				newValues.put( name, arg.value );
+			}
+		}
+		
+		for( Parameter<?> p : parameters ) {
+			if( !newValues.containsKey(p.name) ) {
+				if( p.defaultValue != null ) {
+					newValues.put( p.name, p.defaultValue.bind(context) );
+				} else {
+					throw new CompileError("Parameter '"+p.name+"' is unbound", args.sLoc);
+				}
+			}
+		}
+		
+		newContext.putAll(newValues);
+		return function.definition.bind(newContext);
 	}
 }

@@ -13,10 +13,12 @@ public class BoundArgumentList
 	public class BoundArgument<V> {
 		public final String name;
 		public final Binding<V> value;
+		public final SourceLocation sLoc;
 		
-		public BoundArgument( String name, Binding<V> value ) {
+		public BoundArgument( String name, Binding<V> value, SourceLocation sLoc ) {
 			this.name = name;
 			this.value = value;
+			this.sLoc = sLoc;
 		}
 	}
 	
@@ -26,7 +28,7 @@ public class BoundArgumentList
 		this.sLoc = sLoc;
 	}
 	
-	public <V> void add( String name, Binding<V> value ) {
-		arguments.add( new BoundArgument<V>(name,value) );
+	public <V> void add( String name, Binding<V> value, SourceLocation sLoc ) {
+		arguments.add( new BoundArgument<V>(name,value,sLoc) );
 	}
 }

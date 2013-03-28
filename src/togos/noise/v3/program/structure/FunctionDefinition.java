@@ -7,8 +7,8 @@ import togos.noise.v3.program.runtime.Context;
 
 public class FunctionDefinition<V> extends Expression<Closure<V>>
 {
-	final ParameterList parameterList;
-	final Expression<V> definition;
+	public final ParameterList parameterList;
+	public final Expression<V> definition;
 	
 	public FunctionDefinition( ParameterList parameterList, Expression<V> definition, SourceLocation sLoc ) {
 	    super(sLoc);

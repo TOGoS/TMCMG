@@ -12,10 +12,12 @@ public class ArgumentList extends ProgramNode
 	static class Argument<V> {
 		final String name;
 		final Expression<V> value;
+		final SourceLocation sLoc;
 		
-		public Argument( String name, Expression<V> value ) {
+		public Argument( String name, Expression<V> value, SourceLocation sLoc ) {
 			this.name = name;
 			this.value = value;
+			this.sLoc = sLoc;
 		}
 	}
 	 
@@ -27,12 +29,12 @@ public class ArgumentList extends ProgramNode
 	
 	public <V,W> ArgumentList( Expression<V> arg0, Expression<W> arg1, SourceLocation sLoc ) {
 		this(sLoc);
-		arguments.add(new Argument<V>("",arg0));
-		arguments.add(new Argument<W>("",arg1));
+		arguments.add(new Argument<V>("",arg0,arg0.sLoc));
+		arguments.add(new Argument<W>("",arg1,arg1.sLoc));
 	}
 	
 	public <V> void add( String name, Expression<V> v ) {
-		arguments.add( new Argument<V>(name,v) );
+		arguments.add( new Argument<V>(name,v,v.sLoc) );
 	}
 	
 	public <V> void add( Expression<V> v ) {
@@ -42,7 +44,7 @@ public class ArgumentList extends ProgramNode
 	public BoundArgumentList evaluate( Context context ) {
 		BoundArgumentList bal = new BoundArgumentList( sLoc );
 		for( Argument<?> a : arguments ) {
-			bal.add( a.name, a.value.bind(context) );
+			bal.add( a.name, a.value.bind(context), a.sLoc );
 		}
 		return bal;
 	}
