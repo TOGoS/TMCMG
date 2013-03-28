@@ -62,6 +62,7 @@ public abstract class Binding<V>
 				} catch( Exception e ) {
 					state = State.ERRORED;
 					error = e;
+					throw error;
 				}
 				return value;
 			case EVALUATING:

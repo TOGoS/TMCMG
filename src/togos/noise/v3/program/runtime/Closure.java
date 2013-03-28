@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
-import togos.noise.v3.program.runtime.Function;
 import togos.noise.v3.program.structure.FunctionDefinition;
-import togos.noise.v3.program.structure.ParameterList;
 import togos.noise.v3.program.structure.ParameterList.Parameter;
 
 public class Closure<V> implements Function<V>
@@ -58,7 +55,7 @@ public class Closure<V> implements Function<V>
         }
 	}
 	
-	public Binding<V> apply( BoundArgumentList args ) throws CompileError {
+	public Binding<? extends V> apply( BoundArgumentList args ) throws CompileError {
 		Context newContext = new Context(context);
 		
 		Map<String,Parameter<?>> parameterMap = function.parameterList.getParameterMap();
@@ -89,7 +86,7 @@ public class Closure<V> implements Function<V>
 				namedArgumentsEncountered = true;
 				name = arg.name;
 			}
-			if( parameterMap.containsKey(name) ) {
+			if( !parameterMap.containsKey(name) ) {
 				throw new CompileError("Undefined parameter '"+name+"'", arg.sLoc);
 			}
 			if( parameterMap.get(name).slurpy ) {

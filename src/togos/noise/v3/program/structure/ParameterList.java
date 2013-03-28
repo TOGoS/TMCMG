@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
@@ -51,5 +50,21 @@ public class ParameterList extends ProgramNode
 		for( Parameter<?> p : parameters ) params.put(p.name, p);
 		return params;
 	}
-
+	
+	public String toString() {
+		String r = null;
+		for( Parameter<?> p : parameters ) {
+			r = r == null ? "" : r + ", ";
+			r += p.name;
+			if( p.slurpy ) r += "...";
+			if( p.defaultValue != null ) {
+				r += " @ " + p.defaultValue.toAtomicString();
+			}
+		}
+		return r;
+	}
+	
+	public String toAtomicString() {
+		return "(" + toString() + ")";
+	}
 }

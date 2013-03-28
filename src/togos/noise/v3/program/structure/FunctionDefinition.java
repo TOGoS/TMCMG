@@ -8,9 +8,9 @@ import togos.noise.v3.program.runtime.Context;
 public class FunctionDefinition<V> extends Expression<Closure<V>>
 {
 	public final ParameterList parameterList;
-	public final Expression<V> definition;
+	public final Expression<? extends V> definition;
 	
-	public FunctionDefinition( ParameterList parameterList, Expression<V> definition, SourceLocation sLoc ) {
+	public FunctionDefinition( ParameterList parameterList, Expression<? extends V> definition, SourceLocation sLoc ) {
 	    super(sLoc);
 	    this.parameterList = parameterList;
 	    this.definition = definition;
@@ -24,4 +24,8 @@ public class FunctionDefinition<V> extends Expression<Closure<V>>
             }
 		};
     }
+	
+	@Override public String toString() {
+		return parameterList.toAtomicString() + " -> " + definition.toAtomicString();
+	}
 }

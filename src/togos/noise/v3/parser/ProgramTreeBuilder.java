@@ -14,6 +14,8 @@ import togos.noise.v3.program.structure.ArgumentList;
 import togos.noise.v3.program.structure.Block;
 import togos.noise.v3.program.structure.Constant;
 import togos.noise.v3.program.structure.FunctionApplication;
+import togos.noise.v3.program.structure.FunctionDefinition;
+import togos.noise.v3.program.structure.ParameterList;
 import togos.noise.v3.program.structure.SymbolReference;
 import togos.noise.v3.program.structure.Expression;
 
@@ -58,6 +60,41 @@ public class ProgramTreeBuilder
 			}
 		}
 	    return argList;
+    }
+	
+	protected ParameterList parseParameterList( ASTNode listNode ) throws ParseError {
+		ParameterList paramList = new ParameterList( listNode );
+		for( ASTNode argNode : flatten( listNode, "," ) ) {
+			String name = null;
+			boolean slurpy;
+			Expression<?> defaultValue;
+			if( argNode instanceof InfixNode && "@".equals(((InfixNode)argNode).operator) ) {
+				InfixNode namedArgNode = (InfixNode)argNode;
+				if( !(namedArgNode.n1 instanceof SymbolNode) ) {
+					throw new ParseError( "Named argument key must be a symbol, but got a "+namedArgNode.n1.getClass(), namedArgNode.n1);
+				}
+				defaultValue = parseExpression(namedArgNode.n2);
+			} else if( argNode instanceof SymbolNode ) {
+				name = ((SymbolNode)argNode).text;
+				defaultValue = null;
+			} else {
+				throw new ParseError( "Parameter specification must be a symbol or a symbol @ default-value.  Got a "+argNode.getClass(), argNode);
+			}
+			
+			if( name.endsWith("...") ) {
+				name = name.substring(0, name.length()-3);
+				slurpy = true;
+			} else {
+				slurpy = false;
+			}
+			
+			if( slurpy && defaultValue != null ) {
+				throw new ParseError("Can't provide default values for slurpy parameters", defaultValue.sLoc);
+			}
+			
+			paramList.add( name, slurpy, defaultValue, argNode );
+		}
+	    return paramList;
     }
 	
 	protected Block<Object> parseBlock( InfixNode ast ) throws ParseError {
@@ -117,6 +154,14 @@ public class ProgramTreeBuilder
 				return parseBlock(opApp);
 			} else if( ",".equals(opApp.operator) ) {
 				throw new ParseError("Comma not allowed, here", opApp);
+			} else if( "=".equals(opApp.operator) ) {
+				throw new ParseError("Definition not allowed, here (hint: you need more semicolons)", opApp);
+			} else if( "->".equals(opApp.operator) ) {
+				return new FunctionDefinition<Object>(
+					parseParameterList(opApp.n1),
+					parseExpression(opApp.n2),
+					ast
+				);
 			} else {
 				return new FunctionApplication(
 					new SymbolReference(opApp.operator, opApp),

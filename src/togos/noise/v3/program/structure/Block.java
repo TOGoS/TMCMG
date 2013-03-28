@@ -36,4 +36,13 @@ public class Block<V> extends Expression<V>
             }
 		};
     }
+	
+	public String toString() {
+		String r = "";
+		for( Map.Entry<String,Expression<?>> def : symbolDefinitions.entrySet() ) {
+			r += def.getKey() + " = " + def.getValue().toAtomicString();
+			r += "; ";
+		}
+		return r + value.toAtomicString();
+	}
 }
