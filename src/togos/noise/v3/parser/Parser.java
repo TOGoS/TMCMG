@@ -61,6 +61,37 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		}
 	}
 	
+	public static String escape( String s ) {
+		char[] buf = new char[s.length()*2];
+		int i, j;
+		for( i=0, j=0; i<s.length(); ++i ) {
+			char c = s.charAt(i);
+			switch( c ) {
+			case '\r':
+				buf[j++] = '\\';
+				buf[j++] = 'r';
+				break;
+			case '\n':
+				buf[j++] = '\\';
+				buf[j++] = 'n';
+				break;
+			case '\t':
+				buf[j++] = '\\';
+				buf[j++] = 't';
+				break;
+			case '"': case '\\':
+				buf[j++] = '\\';
+			default:
+				buf[j++] = c;
+			}
+		}
+		return new String(buf,0,j);
+	}
+	
+	public static String quote( String s ) {
+		return "\"" + escape(s) + "\"";
+	}
+	
 	/**
 	 * If true, will output after each semicolon in the top-level program.
 	 * Otherwise, produces nothing until end() is called.
