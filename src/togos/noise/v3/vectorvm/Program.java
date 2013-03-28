@@ -105,18 +105,17 @@ public class Program
 		//// Shortcuts for instantiating instructions of various types */
 		public final Operator<DestRT, V1RT, V2RT, V3RT> op;
 		/** High bits of each are used to indicate flags, low bits to indicate register number */
-		public final short dest, v1, v2, v3;
+		public final RegisterID<DestRT> dest;
+		public final RegisterID<V1RT> v1;
+		public final RegisterID<V2RT> v2;
+		public final RegisterID<V3RT> v3;
 		
-		public Instruction( Operator<DestRT,V1RT,V2RT,V3RT> op, short dest, short v1, short v2, short v3 ) {
+		public Instruction( Operator<DestRT,V1RT,V2RT,V3RT> op, RegisterID<DestRT> dest, RegisterID<V1RT> v1, RegisterID<V2RT> v2, RegisterID<V3RT> v3 ) {
 			this.op = op;
 			this.dest = dest;
 			this.v1 = v1;
 			this.v2 = v2;
 			this.v3 = v3;
-		}
-
-		public Instruction( Operator<DestRT,V1RT,V2RT,V3RT> op, RegisterID<DestRT> dest, RegisterID<V1RT> v1, RegisterID<V2RT> v2, RegisterID<V3RT> v3 ) {
-			this( op, dest.number, v1.number, v2.number, v3.number );
 		}
 	}
 	
@@ -134,9 +133,9 @@ public class Program
 		
 		public void apply( Program.Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> inst, int vectorSize ) {
 			apply(
-				pi.dVars[inst.dest],
-				pi.dVars[inst.v1],
-				pi.dVars[inst.v2],
+				pi.dVars[inst.dest.number],
+				pi.dVars[inst.v1.number],
+				pi.dVars[inst.v2.number],
 				vectorSize
 			);
 		}
@@ -147,9 +146,9 @@ public class Program
 		
 		public void apply( Program.Instance pi, Instruction<RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> inst, int vectorSize ) {
 			apply(
-				pi.bVars[inst.dest],
-				pi.dVars[inst.v1],
-				pi.dVars[inst.v2],
+				pi.bVars[inst.dest.number],
+				pi.dVars[inst.v1.number],
+				pi.dVars[inst.v2.number],
 				vectorSize
 			);
 		}
@@ -160,10 +159,10 @@ public class Program
 		
 		public void apply( Program.Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar> inst, int vectorSize ) {
 			apply(
-				pi.dVars[inst.dest],
-				pi.bVars[inst.v1],
-				pi.dVars[inst.v2],
-				pi.dVars[inst.v3],
+				pi.dVars[inst.dest.number],
+				pi.bVars[inst.v1.number],
+				pi.dVars[inst.v2.number],
+				pi.dVars[inst.v3.number],
 				vectorSize
 			);
 		}
@@ -172,8 +171,8 @@ public class Program
 	public static final Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> LOADCONST = new Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>() {
 		@Override
 		public void apply(Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
-			double[] dest = pi.dVars[inst.dest];
-			double constVal = pi.program.constants[inst.v1];
+			double[] dest = pi.dVars[inst.dest.number];
+			double constVal = pi.program.constants[inst.v1.number];
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
 		}
 	};
