@@ -2,7 +2,7 @@ package togos.noise.v3.vectorvm;
 
 import togos.noise.v3.vectorvm.Program;
 import togos.noise.v3.vectorvm.ProgramBuilder;
-import togos.noise.v3.vectorvm.Program.RT;
+import togos.noise.v3.vectorvm.Program.RegisterBankID;
 import togos.noise.v3.vectorvm.Program.RegisterID;
 import junit.framework.TestCase;
 
@@ -39,9 +39,9 @@ public class ProgramTest extends TestCase
 	
 	public void testLoadConstants() {
 		ProgramBuilder pb = new ProgramBuilder();
-		RegisterID<RT.DVar> c100 = pb.getVariable( 100.0 );
-		RegisterID<RT.DVar> c200 = pb.getVariable( 200.0 );
-		RegisterID<RT.DVar> added = pb.dd_d( Program.ADD, c100, c200 );
+		RegisterID<RegisterBankID.DVar> c100 = pb.getVariable( 100.0 );
+		RegisterID<RegisterBankID.DVar> c200 = pb.getVariable( 200.0 );
+		RegisterID<RegisterBankID.DVar> added = pb.dd_d( Program.ADD, c100, c200 );
 		Program p = pb.toProgram();
 		assertEquals( 2, p.constants.length );
 		assertEquals( 2, p.initInstructions.length ); // 2 constant loads
@@ -65,19 +65,19 @@ public class ProgramTest extends TestCase
 	public void testArithmetic() {
 		// 1 - 2 * (3 + 4) / 4 = -2.5
 		ProgramBuilder pb = new ProgramBuilder();
-		RegisterID<RT.DVar> one   = pb.getVariable(1);
-		RegisterID<RT.DVar> two   = pb.getVariable(2);
-		RegisterID<RT.DVar> three = pb.getVariable(3);
-		RegisterID<RT.DVar> four  = pb.getVariable(4);
-		RegisterID<RT.DVar> fourB = pb.getVariable(4);
+		RegisterID<RegisterBankID.DVar> one   = pb.getVariable(1);
+		RegisterID<RegisterBankID.DVar> two   = pb.getVariable(2);
+		RegisterID<RegisterBankID.DVar> three = pb.getVariable(3);
+		RegisterID<RegisterBankID.DVar> four  = pb.getVariable(4);
+		RegisterID<RegisterBankID.DVar> fourB = pb.getVariable(4);
 		
 		// Twos should share a register
 		assertEquals( four.number, fourB.number );
 		
-		RegisterID<RT.DVar> threePlusFour = pb.dd_d( Program.ADD, three, four );
-		RegisterID<RT.DVar> twoTimesSeven = pb.dd_d( Program.MULTIPLY, two, threePlusFour );
-		RegisterID<RT.DVar> fourteenDividedByFour = pb.dd_d( Program.DIVIDE, twoTimesSeven, fourB );
-		RegisterID<RT.DVar> oneMinusThreeAndAHalf = pb.dd_d( Program.SUBTRACT, one, fourteenDividedByFour );
+		RegisterID<RegisterBankID.DVar> threePlusFour = pb.dd_d( Program.ADD, three, four );
+		RegisterID<RegisterBankID.DVar> twoTimesSeven = pb.dd_d( Program.MULTIPLY, two, threePlusFour );
+		RegisterID<RegisterBankID.DVar> fourteenDividedByFour = pb.dd_d( Program.DIVIDE, twoTimesSeven, fourB );
+		RegisterID<RegisterBankID.DVar> oneMinusThreeAndAHalf = pb.dd_d( Program.SUBTRACT, one, fourteenDividedByFour );
 		
 		assertProgramResults( -2.5, pb.toProgram(), oneMinusThreeAndAHalf.number );
 	}

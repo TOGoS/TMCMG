@@ -36,8 +36,8 @@ public class Program
 			return dVars[varId];
 		}
 		
-		protected void run( Instruction<RT,RT,RT,RT>[] instructions, int vectorSize ) {
-			for( Instruction<RT,RT,RT,RT> instr : instructions ) {
+		protected void run( Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] instructions, int vectorSize ) {
+			for( Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID> instr : instructions ) {
 				instr.op.apply( this, instr, vectorSize ); 
 			}
 		}
@@ -51,33 +51,56 @@ public class Program
 		}
 	}
 	
-	/** Register type */
-	public class RT {
-		public class DConst extends RT {};
-		public class BVar extends RT {};
-		public class DVar extends RT {};
-		public class None extends RT {};
+	public abstract static class RegisterBankID {
+		public final int number;
+		protected RegisterBankID( int number ) {
+			this.number = number;
+		}
+		
+		public static final class DConst extends RegisterBankID {
+			public static final DConst INSTANCE = new DConst();
+			private DConst() { super(1); }
+		};
+		public static class BVar extends RegisterBankID {
+			static final BVar INSTANCE = new BVar();
+			private BVar() { super(2); }
+		};
+		public static class DVar extends RegisterBankID {
+			static final DVar INSTANCE = new DVar();
+			private DVar() { super(3); }
+		};
+		public static class None extends RegisterBankID {
+			static final None INSTANCE = new None();
+			private None() { super(4); }
+		};
 	};
 	
-	public static final class RegisterID<Type extends RT> implements Comparable<RegisterID<?>> {
-		public static final RegisterID<RT.None> NONE = new RegisterID<RT.None>((short)0);
+	public static final class RegisterID<BankID extends RegisterBankID> implements Comparable<RegisterID<?>> {
+		public static <Bank extends RegisterBankID> RegisterID<Bank> create( Bank bank, short number ) {
+			return new RegisterID<Bank>( bank, number );
+		}
 		
+		public static final RegisterID<RegisterBankID.None> NONE = create( RegisterBankID.None.INSTANCE, (short)0 );
+		
+		public final BankID bankId;
 		public final short number;
-		public RegisterID( short number ) {
+		public RegisterID( BankID bankId, short number ) {
+			this.bankId = bankId;
 			this.number = number;
 		}
 		
 		@Override
 		public int compareTo(RegisterID<?> other) {
-			return number < other.number ? -1 : number > other.number ? 1 : 0;
+			return bankId.number < other.bankId.number ? -1 : bankId.number > other.bankId.number ? 1 :
+				number < other.number ? -1 : number > other.number ? 1 : 0;
 		}
 	}
 	
 	public static final class Instruction<
-		DestRT extends RT,
-		V1RT extends RT,
-		V2RT extends RT,
-		V3RT extends RT
+		DestRT extends RegisterBankID,
+		V1RT extends RegisterBankID,
+		V2RT extends RegisterBankID,
+		V3RT extends RegisterBankID
 	> {
 		//// Shortcuts for instantiating instructions of various types */
 		public final Operator<DestRT, V1RT, V2RT, V3RT> op;
@@ -98,18 +121,18 @@ public class Program
 	}
 	
 	interface Operator<
-		DestRT extends RT,
-		V1RT extends RT,
-		V2RT extends RT,
-		V3RT extends RT
+		DestRT extends RegisterBankID,
+		V1RT extends RegisterBankID,
+		V2RT extends RegisterBankID,
+		V3RT extends RegisterBankID
 	> {
 		public void apply( Program.Instance pi, Instruction<DestRT,V1RT,V2RT,V3RT> inst, int vectorSize );
 	}
 	
-	static abstract class OperatorDaDa_Da implements Operator<RT.DVar,RT.DVar,RT.DVar,RT.None> {
+	static abstract class OperatorDaDa_Da implements Operator<RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> {
 		protected abstract void apply(double[] dest, double[] i1, double[] i2, int vectorSize);
 		
-		public void apply( Program.Instance pi, Instruction<RT.DVar,RT.DVar,RT.DVar,RT.None> inst, int vectorSize ) {
+		public void apply( Program.Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> inst, int vectorSize ) {
 			apply(
 				pi.dVars[inst.dest],
 				pi.dVars[inst.v1],
@@ -119,10 +142,10 @@ public class Program
 		}
 	}
 	
-	static abstract class OperatorDaDa_Ba implements Operator<RT.BVar,RT.DVar,RT.DVar,RT.None> {
+	static abstract class OperatorDaDa_Ba implements Operator<RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> {
 		protected abstract void apply(boolean[] dest, double[] i1, double[] i2, int vectorSize);
 		
-		public void apply( Program.Instance pi, Instruction<RT.BVar,RT.DVar,RT.DVar,RT.None> inst, int vectorSize ) {
+		public void apply( Program.Instance pi, Instruction<RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> inst, int vectorSize ) {
 			apply(
 				pi.bVars[inst.dest],
 				pi.dVars[inst.v1],
@@ -132,10 +155,10 @@ public class Program
 		}
 	}
 	
-	static abstract class OperatorBaDaDa_Da implements Operator<RT.DVar,RT.BVar,RT.DVar,RT.DVar> {
+	static abstract class OperatorBaDaDa_Da implements Operator<RegisterBankID.DVar,RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar> {
 		protected abstract void apply(double[] dest, boolean[] i1, double[] i2, double[] i3, int vectorSize);
 		
-		public void apply( Program.Instance pi, Instruction<RT.DVar,RT.BVar,RT.DVar,RT.DVar> inst, int vectorSize ) {
+		public void apply( Program.Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar> inst, int vectorSize ) {
 			apply(
 				pi.dVars[inst.dest],
 				pi.bVars[inst.v1],
@@ -146,9 +169,9 @@ public class Program
 		}
 	}
 	
-	public static final Operator<RT.DVar,RT.DConst,RT.None,RT.None> LOADCONST = new Operator<RT.DVar,RT.DConst,RT.None,RT.None>() {
+	public static final Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> LOADCONST = new Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>() {
 		@Override
-		public void apply(Instance pi, Instruction<RT.DVar,RT.DConst,RT.None,RT.None> inst, int vectorSize) {
+		public void apply(Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
 			double[] dest = pi.dVars[inst.dest];
 			double constVal = pi.program.constants[inst.v1];
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
@@ -198,14 +221,14 @@ public class Program
 	// TODO: (FAST)SINE, MOD, IF
 	
 	/** Instructions that only need to be run once per instance (constant initialization) */
-	public final Instruction<RT,RT,RT,RT>[] initInstructions;
-	public final Instruction<RT,RT,RT,RT>[] runInstructions;
+	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions;
+	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions;
 	public final double[] constants;
 	public final int booleanVarCount, doubleVarCount;
 	
 	protected ThreadLocal<Reference<Instance>> instances = new ThreadLocal<Reference<Instance>>();
 	
-	public Program( Instruction<RT,RT,RT,RT>[] initInstructions, Instruction<RT,RT,RT,RT>[] runInstructions, double[] constants, int booleanVarCount, int doubleVarCount ) {
+	public Program( Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions, Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions, double[] constants, int booleanVarCount, int doubleVarCount ) {
 		this.initInstructions = initInstructions;
 		this.runInstructions = runInstructions;
 		this.constants = constants;

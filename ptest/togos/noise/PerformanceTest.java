@@ -36,7 +36,7 @@ public class PerformanceTest
 	NativeCalculator nc;
 	Program.Instance pi;
 	@SuppressWarnings("unchecked")
-    RegisterID<Program.RT.DVar>[] piVars = new RegisterID[4];
+	RegisterID<Program.RegisterBankID.DVar>[] piVars = new RegisterID[4];
 	double[] x, y, z, dest;
 	
 	public void setUp( int vectorSize ) {
