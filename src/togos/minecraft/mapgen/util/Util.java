@@ -13,6 +13,10 @@ import togos.mf.value.ByteChunk;
 
 public class Util
 {
+	public static boolean isHelpArgument( String arg ) {
+		return "-?".equals(arg) || "-h".equals(arg) || "-help".equals(arg) || "--help".equals(arg);
+	}
+	
 	public static final String string( byte[] b, int offset, int length ) {
 		try {
 			return new String( b, offset, length, "UTF-8" );

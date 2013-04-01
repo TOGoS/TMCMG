@@ -11,10 +11,12 @@ import java.util.zip.GZIPOutputStream;
 
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
+import org.jnbt.Tag;
 
 import togos.mf.value.ByteChunk;
 import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
+import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
@@ -35,7 +37,7 @@ public class ChunkWriter
 	public static void writeChunk( ChunkData cd, DataOutputStream dos ) throws IOException {
 		NBTOutputStream nbtos = NBTOutputStream.rawOpen(dos);
 		
-		HashMap levelRootTags = new HashMap();
+		HashMap<String,Tag> levelRootTags = new HashMap<String,Tag>();
 		levelRootTags.put("Level",cd.toLevelTag());
 		CompoundTag fileRootTag = new CompoundTag("",levelRootTags);
 		
@@ -158,6 +160,9 @@ public class ChunkWriter
 				boundsDepth = Integer.parseInt(args[++i]);
 			} else if( !args[i].startsWith("-") ) {
 				scriptFile = args[i];
+			} else if( Util.isHelpArgument(args[i]) ) {
+				System.out.println(USAGE);
+				System.exit(0);
 			} else {
 				System.err.println("Unrecognised argument: "+args[i]);
 				System.err.println(USAGE);

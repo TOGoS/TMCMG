@@ -317,7 +317,7 @@ public class WorldDesigner
 					}
 				}
 				System.exit(0);
-			} else if( "-?".equals(args[i]) || "-h".equals(args[i]) || "--help".equals(args[i]) ) {
+			} else if( Util.isHelpArgument(args[i]) ) {
 				System.out.println(USAGE);
 				System.exit(0);
 			} else if( !args[i].startsWith("-") ) {
