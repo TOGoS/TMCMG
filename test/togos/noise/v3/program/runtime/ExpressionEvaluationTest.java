@@ -97,10 +97,10 @@ public class ExpressionEvaluationTest extends TestCase
 	}
 	
 	public void testExpressions( Object[] tests ) throws Exception {
-		assertEquals( 0, literalTests.length & 0x1 );
-		for( int i=0; i<literalTests.length; i += 2 ) {
-			Object expectedResult = literalTests[i];
-			String expression = (String)literalTests[i+1];
+		assertEquals( 0, tests.length & 0x1 );
+		for( int i=0; i<tests.length; i += 2 ) {
+			Object expectedResult = tests[i];
+			String expression = (String)tests[i+1];
 			Object actualResult = eval(expression);
 			assertEqualsish( "eval('" + expression + "') = " + actualResult + "; expected "+expectedResult, expectedResult, actualResult );
 		}

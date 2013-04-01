@@ -35,8 +35,8 @@ public class MathFunctions
 					throw new RuntimeError("+ takes no named arguments, but was given '"+arg.name+"'", arg.value.sLoc);
 				}
 				Object o = arg.value.getValue();
-				if( !(o instanceof Number) ) {
-					throw new RuntimeError("Non-numeric argument: "+o, arg.value.sLoc );
+				if( !(o instanceof Boolean) ) {
+					throw new RuntimeError("Non-boolean argument: "+o, arg.value.sLoc );
 				}
 				boolean argValue = ((Boolean)o).booleanValue();
 				switch( argCount ) {
