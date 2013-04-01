@@ -4,6 +4,11 @@ import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
 import togos.noise.v1.lang.BaseSourceLocation;
 
+/**
+ * TODO: A 'binding' should really just be an expression + a context, hence 'binding'.
+ * All this other stuff should be refactored into something else.
+ * Call them 'nonrecursive variable expressions' or something.
+ */
 public abstract class Binding<V>
 {
 	public abstract boolean isConstant() throws Exception;
