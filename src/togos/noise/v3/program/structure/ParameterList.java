@@ -52,9 +52,9 @@ public class ParameterList extends ProgramNode
 	}
 	
 	public String toString() {
-		String r = null;
+		String r = "";
 		for( Parameter<?> p : parameters ) {
-			r = r == null ? "" : r + ", ";
+			r = r.length() == 0 ? "" : r + ", ";
 			r += p.name;
 			if( p.slurpy ) r += "...";
 			if( p.defaultValue != null ) {

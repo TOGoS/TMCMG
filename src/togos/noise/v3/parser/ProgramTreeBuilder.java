@@ -10,6 +10,7 @@ import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.ParenApplicationNode;
 import togos.noise.v3.parser.ast.SymbolNode;
+import togos.noise.v3.parser.ast.VoidNode;
 import togos.noise.v3.program.structure.ArgumentList;
 import togos.noise.v3.program.structure.Block;
 import togos.noise.v3.program.structure.Constant;
@@ -22,7 +23,10 @@ import togos.noise.v3.program.structure.Expression;
 public class ProgramTreeBuilder
 {
 	protected void flatten(ASTNode n, String operator, List<ASTNode> dest) {
-		if( n instanceof InfixNode && operator.equals(((InfixNode)n).operator) ) {
+		if( n instanceof VoidNode ) {
+			// To flatten to an empty list is the purpose of void nodes.
+			// Therefore do nothing!
+		} else if( n instanceof InfixNode && operator.equals(((InfixNode)n).operator) ) {
 			flatten( (InfixNode)n, dest );
 		} else {
 			dest.add(n);
@@ -97,7 +101,7 @@ public class ProgramTreeBuilder
 	    return paramList;
     }
 	
-	static final class Definition {
+	public static final class Definition {
 		public final String name;
 		public final ASTNode value;
 		public Definition( String name, ASTNode value ) {
@@ -106,7 +110,9 @@ public class ProgramTreeBuilder
 		}
 	}
 	
-	protected Definition parseDefinition( InfixNode defOp ) throws ParseError {
+	public Definition parseDefinition( InfixNode defOp ) throws ParseError {
+		assert "=".equals(defOp.operator);
+		
 		String defName;
 		ASTNode defValue;
 		if( defOp.n1 instanceof SymbolNode ) {

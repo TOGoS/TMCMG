@@ -37,6 +37,10 @@ public class ProgramTreeBuilderTest extends CoolTestCase
 		assertStringification("(x, y) -> +(x, y)", "(x, y) -> x + y");
 	}
 	
+	public void testParseZeroArgFunctionDefinition() throws Exception {
+		assertStringification("() -> +(1, 2)", "() -> 1 + 2");
+	}
+	
 	public void testParseFunctionDefinition2() throws Exception {
 		assertStringification("func = ((x, y) -> +(x, y)); func(1, 2)", "func(x, y) = x + y; func(1, 2)");
 	}
