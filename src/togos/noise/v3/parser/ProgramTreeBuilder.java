@@ -153,6 +153,8 @@ public class ProgramTreeBuilder
 		return new Block<Object>( definitions, parseExpression(blockValueNode), ast );
 	}
 	
+	Pattern hexIntegerPattern = Pattern.compile("[+-]?(0x[\\da-fA-F]+)");
+	Pattern binIntegerPattern = Pattern.compile("[+-]?(0b[10]+)");
 	Pattern integerPattern = Pattern.compile("[+-]?(\\d+)");
 	Pattern numberPattern = Pattern.compile("[+-]?(\\d*\\.\\d+)");
 	
@@ -161,6 +163,10 @@ public class ProgramTreeBuilder
 			return Constant.withValue( Long.valueOf(ast.text), ast );
 		} else if( numberPattern.matcher(ast.text).matches() ) {
 			return Constant.withValue( Double.valueOf(ast.text), ast );
+		} else if( hexIntegerPattern.matcher(ast.text).matches() ) {
+			return Constant.withValue( Long.valueOf(ast.text.substring(2), 16), ast );
+		} else if( binIntegerPattern.matcher(ast.text).matches() ) {
+			return Constant.withValue( Long.valueOf(ast.text.substring(2), 2), ast );
 		} else {
 			return new SymbolReference( ast.text, ast );
 		}

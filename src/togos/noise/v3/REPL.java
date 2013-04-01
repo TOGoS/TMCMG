@@ -1,7 +1,6 @@
 package togos.noise.v3;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Context;
-import togos.noise.v3.program.runtime.LinkedListNode;
 import togos.noise.v3.program.structure.Expression;
 
 public class REPL
@@ -48,7 +46,7 @@ public class REPL
 		System.err.println();
 		System.err.print( "TNL$ " );
 		
-		final LinkedListNode<String> operatorList = LinkedListNode.fromList( new ArrayList<String>(Operators.PRECEDENCE.keySet()) );
+		final Binding<String> operatorListBinding = new Binding.Constant<String>( Operators.dump("\t"), BaseSourceLocation.NONE );
 		
 		p.pipe( new StreamDestination<ASTNode>() {
 			final ProgramTreeBuilder ptb = new ProgramTreeBuilder();
@@ -65,7 +63,7 @@ public class REPL
 					Expression<?> exp = ptb.parseExpression(value);
 					Context ctx = new Context();
 					ctx.putAll( MathFunctions.CONTEXT );
-					ctx.put( "infix-operators", new Binding.Constant<LinkedListNode<String>>(operatorList, BaseSourceLocation.NONE) );
+					ctx.put( "infix-operators", operatorListBinding );
 					
 					for( Map.Entry<String,Expression<?>> def : definitions.entrySet() ) {
 						ctx.put( def.getKey(), def.getValue().bind(ctx) );

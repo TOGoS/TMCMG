@@ -18,6 +18,42 @@ public class MathFunctions
 	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation("built-in math function", 0, 0);
 	public static final Context CONTEXT = new Context();
 	
+	static abstract class BooleanInputFunction<R> implements Function<R> {
+		abstract String getName();
+		abstract R apply( boolean a, boolean b );
+		
+		@Override
+        public Binding<R> apply( BoundArgumentList input ) throws Exception {
+			if( input.arguments.size() != 2 ) {
+				throw new RuntimeError( "Too many arguments (exactly 2 required but "+input.arguments.size()+" given) to "+getName(), input.sLoc );
+			}
+			
+			int argCount = 0;
+			boolean a=false, b=false;
+			for( BoundArgument<?> arg : input.arguments ) {
+				if( !arg.name.isEmpty() ) {
+					throw new RuntimeError("+ takes no named arguments, but was given '"+arg.name+"'", arg.value.sLoc);
+				}
+				Object o = arg.value.getValue();
+				if( !(o instanceof Number) ) {
+					throw new RuntimeError("Non-numeric argument: "+o, arg.value.sLoc );
+				}
+				boolean argValue = ((Boolean)o).booleanValue();
+				switch( argCount ) {
+				case 0: a = argValue; break;
+				case 1: b = argValue; break;
+				default: throw new RuntimeError( "Too many arguments to "+getName(), arg.value.sLoc );
+				}
+				
+				++argCount;
+			}
+			if( argCount < 2 ) {
+				throw new RuntimeError( "Not enough arguments to "+getName(), input.sLoc );
+			}
+			return new Binding.Constant<R>( apply(a,b), BUILTIN_LOC );
+        }
+	}
+	
 	static abstract class NumberInputFunction<R> implements Function<R> {
 		abstract String getName();
 		abstract R apply( double a, double b );
@@ -25,7 +61,7 @@ public class MathFunctions
 		@Override
         public Binding<R> apply( BoundArgumentList input ) throws Exception {
 			if( input.arguments.size() != 2 ) {
-				throw new RuntimeError( "Too many arguments ("+input.arguments.size()+" to "+getName(), input.sLoc );
+				throw new RuntimeError( "Too many arguments (exactly 2 required but "+input.arguments.size()+" given) to "+getName(), input.sLoc );
 			}
 			
 			int argCount = 0;
@@ -59,6 +95,19 @@ public class MathFunctions
 	}
 	
 	static {
+		BooleanInputFunction<Boolean> logicalOr = new BooleanInputFunction<Boolean>() {
+			@Override String getName() { return "or"; }
+			@Override Boolean apply( boolean a, boolean b ) { return a || b; }
+		};
+		BooleanInputFunction<Boolean> logicalXor = new BooleanInputFunction<Boolean>() {
+			@Override String getName() { return "xor"; }
+			@Override Boolean apply( boolean a, boolean b ) { return (a && !b) || (b && !a); }
+		};
+		BooleanInputFunction<Boolean> logicalAnd = new BooleanInputFunction<Boolean>() {
+			@Override String getName() { return "and"; }
+			@Override Boolean apply( boolean a, boolean b ) { return a && b; }
+		};
+		
 		CONTEXT.put("if", builtinBinding(new Function<Object>() {
 			@Override public Binding<? extends Object> apply(BoundArgumentList input) throws Exception {
 				if( input.hasNamedArguments() ) throw new RuntimeError("if does not take named arguments", input.sLoc);
@@ -78,6 +127,34 @@ public class MathFunctions
 				}
 				return input.arguments.get(i).value;
 			}
+		}));
+		CONTEXT.put("&&",  builtinBinding(logicalAnd));
+		CONTEXT.put("^^",  builtinBinding(logicalXor));
+		CONTEXT.put("||",  builtinBinding(logicalOr));
+		CONTEXT.put("and", builtinBinding(logicalAnd));
+		CONTEXT.put("xor", builtinBinding(logicalXor));
+		CONTEXT.put("or",  builtinBinding(logicalOr));
+		
+		CONTEXT.put("<<", builtinBinding(new NumberInputFunction<Long>() {
+			@Override String getName() { return "<<"; }
+			@Override Long apply( double a, double b ) { return (long)a << (long)b; }
+		}));
+		CONTEXT.put(">>", builtinBinding(new NumberInputFunction<Long>() {
+			@Override String getName() { return "<<"; }
+			@Override Long apply( double a, double b ) { return (long)a >> (long)b; }
+		}));
+		
+		CONTEXT.put("|", builtinBinding(new NumberInputFunction<Long>() {
+			@Override String getName() { return "|"; }
+			@Override Long apply( double a, double b ) { return (long)a | (long)b; }
+		}));
+		CONTEXT.put("&", builtinBinding(new NumberInputFunction<Long>() {
+			@Override String getName() { return "&"; }
+			@Override Long apply( double a, double b ) { return (long)a & (long)b; }
+		}));
+		CONTEXT.put("^", builtinBinding(new NumberInputFunction<Long>() {
+			@Override String getName() { return "^"; }
+			@Override Long apply( double a, double b ) { return (long)a ^ (long)b; }
 		}));
 		CONTEXT.put(">", builtinBinding(new NumberInputFunction<Boolean>() {
 			@Override String getName() { return "+"; }
@@ -119,5 +196,8 @@ public class MathFunctions
 			@Override String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return Math.pow(a, b); }
 		}));
+		
+		CONTEXT.put("true", builtinBinding(Boolean.TRUE));
+		CONTEXT.put("false", builtinBinding(Boolean.FALSE));
 	}
 }
