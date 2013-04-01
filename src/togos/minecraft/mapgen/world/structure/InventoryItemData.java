@@ -23,7 +23,7 @@ public class InventoryItemData
 	}
 	
 	public Tag toTag(String name) {
-		TagMap m = new TagMap();
+		TagMap<Tag> m = new TagMap<Tag>();
 		m.add(new ShortTag("id",(short)itemTypeId));
 		m.add(new ShortTag("Damage",(short)damage));
 		m.add(new ByteTag("Count",(byte)count));

@@ -1,7 +1,5 @@
 package togos.minecraft.mapgen.world;
 
-import java.util.Iterator;
-
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.MiniChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
