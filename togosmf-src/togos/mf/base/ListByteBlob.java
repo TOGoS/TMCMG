@@ -4,18 +4,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import togos.mf.value.ByteBlob;
+import togos.mf.value.ByteChunk;
 
 public class ListByteBlob implements ByteBlob
 {
-	List l;
+	List<ByteChunk> l;
 	long size;
 	
-	public ListByteBlob( List l, long size ) {
+	public ListByteBlob( List<ByteChunk> l, long size ) {
 		this.l = l;
 		this.size = size;
 	}
 	
-	public Iterator chunkIterator() {
+	public Iterator<ByteChunk> iterator() {
 		return l.iterator();
 	}
 	
