@@ -111,4 +111,8 @@ public class Closure<V> implements Function<V>
 		newContext.putAll(newValues);
 		return function.definition.bind(newContext);
 	}
+	
+	public String toString() {
+		return "Closure of "+function;
+	}
 }
