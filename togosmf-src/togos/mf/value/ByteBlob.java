@@ -5,9 +5,9 @@ import java.util.Iterator;
 /**
  * A blob is a series of chunks.
  */
-public interface ByteBlob
+public interface ByteBlob extends Iterable<ByteChunk>
 {
-	public Iterator chunkIterator();
+	public Iterator<ByteChunk> chunkIterator();
 	
 	/**
 	 * Total number of bytes in this blob.

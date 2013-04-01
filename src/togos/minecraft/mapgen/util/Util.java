@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 
 import togos.mf.base.SimpleByteChunk;
 import togos.mf.value.ByteBlob;
@@ -102,8 +101,7 @@ public class Util
 	}
 	
 	public static final void write( ByteBlob b, OutputStream os ) throws IOException {
-		for( Iterator i=b.chunkIterator(); i.hasNext(); ) {
-			ByteChunk c = (ByteChunk)i.next();
+		for( ByteChunk c : b ) {
 			os.write( c.getBuffer(), c.getOffset(), c.getSize() );
 		}
 	}
