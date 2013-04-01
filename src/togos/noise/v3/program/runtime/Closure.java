@@ -21,15 +21,6 @@ public class Closure<V> implements Function<V>
 		this.context = context;
 	}
 	
-	static class LinkedListNode<V> {
-		public final V head;
-		public final LinkedListNode<? extends V> tail;
-		public LinkedListNode( V head, LinkedListNode<? extends V> tail ) {
-			this.head = head;
-			this.tail = tail;
-		}
-	}
-	
 	static class ListBinding<V> extends Binding<LinkedListNode<V>> {
 		public final ArrayList<Binding<? extends V>> valueBindings = new ArrayList<Binding<? extends V>>();
 		

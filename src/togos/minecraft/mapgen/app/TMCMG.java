@@ -29,7 +29,7 @@ public class TMCMG
 				return;
 			} else if( "-world-designer-gui".equals(args[i]) ) {
 				WorldDesigner.main( Arrays.copyOf(args, i) );
-			} else if( "-tnl-repl".equals(args[i]) ) {
+			} else if( "-tnl".equals(args[i]) ) {
 				REPL.main( Arrays.copyOf(args, i) );
 			} else {
 				System.err.println("Unrecognised argument: "+args[i]);

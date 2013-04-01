@@ -114,7 +114,10 @@ public class MathFunctions
 		CONTEXT.put("/", builtinBinding(new NumberInputFunction<Double>() {
 			@Override String getName() { return "/"; }
 			@Override Double apply( double a, double b ) { return a / b; }
-		}));	
+		}));
+		CONTEXT.put("**", builtinBinding(new NumberInputFunction<Double>() {
+			@Override String getName() { return "*"; }
+			@Override Double apply( double a, double b ) { return Math.pow(a, b); }
+		}));
 	}
 }
-
