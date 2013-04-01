@@ -4,12 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-
-import togos.mf.base.SimpleByteChunk;
-import togos.mf.value.ByteBlob;
-import togos.mf.value.ByteChunk;
 
 public class Util
 {
@@ -38,29 +33,10 @@ public class Util
 			return (String)o;
 		} else if( o instanceof byte[] ) {
 			return string( (byte[])o, 0, ((byte[])o).length );
-		} else if( o instanceof ByteChunk ) {
-			ByteChunk c = (ByteChunk)o;
-			return string( c.getBuffer(), c.getOffset(), c.getSize() );
 		} else if( o == null ) {
 			return null;
 		} else {
 			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a String");
-		}
-	}
-	
-	public static final ByteChunk byteBuffer( Object o ) {
-		if( o == null ) {
-			return null;
-		} else if( o instanceof ByteChunk ) {
-			return (ByteChunk)o;
-		} else if( o instanceof byte[] ) {
-			byte[] b = (byte[])o;
-			return new SimpleByteChunk( b, 0, b.length );
-		} else if( o instanceof String ) {
-			byte[] b = bytes((String)o);
-			return new SimpleByteChunk( b, 0, b.length );
-		} else {
-			throw new RuntimeException("Don't know how to turn "+o.getClass()+" into a ByteBuffer");
 		}
 	}
 	
@@ -98,34 +74,6 @@ public class Util
 		return new Script(readFile(f), f.getPath());
 	}
 	
-	//// ByteChunk/Blob utils ////
-	
-	public static final void write( ByteChunk bb, OutputStream os ) throws IOException {
-		os.write( bb.getBuffer(), bb.getOffset(), bb.getSize() );
-	}
-	
-	public static final void write( ByteBlob b, OutputStream os ) throws IOException {
-		for( ByteChunk c : b ) {
-			os.write( c.getBuffer(), c.getOffset(), c.getSize() );
-		}
-	}
-	
-	public static final boolean equals( ByteChunk c1, ByteChunk c2 ) {
-		if( c1 == c2 ) return true;
-		if( c1.getSize() != c2.getSize() ) return false;
-		
-		int o1 = c1.getOffset();
-		int o2 = c2.getOffset();
-		byte[] f1 = c1.getBuffer();
-		byte[] f2 = c2.getBuffer();
-		
-		for( int i=c1.getSize()-1; i>=0; --i ) {
-			if( f1[i+o1] != f2[i+o2] ) return false;
-		}
-		
-		return true;
-	}
-	
 	/**
 	 * Should be compatible with Arrays.hashCode( byte[] data ),
 	 * which is supposedly compatible with List<Byte>#hashCode.
@@ -136,10 +84,6 @@ public class Util
 			hashCode = 31*hashCode + data[i+offset];
 		}
 		return hashCode;
-	}
-	
-	public static final int hashCode( ByteChunk c ) {
-		return hashCode( c.getBuffer(), c.getOffset(), c.getSize() );
 	}
 	
 	//// Serialization help ////

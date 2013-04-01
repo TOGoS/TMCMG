@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import javax.swing.BoxLayout;
 
 import togos.minecraft.mapgen.ScriptUtil;
-import togos.minecraft.mapgen.job.JobService;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.ColumnSideCanvas;
 import togos.minecraft.mapgen.ui.HelpWindow;
@@ -58,10 +57,8 @@ public class WorldDesigner
 		FileUpdateListener ful;
 		GeneratorUpdateListener gul;
 		boolean autoReloadEnabled = false;
-		JobService jobServ = new JobService();
 		
 		public WorldDesignerKernel() {
-			sm.add(jobServ);
 		}
 		
 		public void setFileUpdateListener( FileUpdateListener ful ) {
@@ -213,8 +210,8 @@ public class WorldDesigner
 	}
 	
 	WorldDesignerKernel wdk = new WorldDesignerKernel();
-	ChunkWritingService cws = new ChunkWritingService(wdk.jobServ.jobQueue);
-	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm,cws);
+	ChunkWritingService cws = new ChunkWritingService();
+	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm, cws);
 	
 	ColumnSideCanvas lsc = new ColumnSideCanvas();
 	NoiseCanvas noiseCanvas = new NoiseCanvas();
@@ -240,9 +237,6 @@ public class WorldDesigner
 		"  -fullscreen      ; display maximized with no border\n" +
 		"  -normal-shading  ; enable angle-based terrain shading (slow)\n" +
 		"  -height-shading  ; enable height-based terrain shading)\n"+
-		"  -job-system      ; enable job system\n" +
-		"  -remote-generator [n*]<url> ; specify a remote web server to help\n" +
-		"                   ; calculate chunks (requires job system)\n" +
 		"Other commands:\n" +
 		"  -?, -h           ; print help and exit\n" +
 		"  -dump-materials  ; print material list and exit";
@@ -292,7 +286,6 @@ public class WorldDesigner
 		boolean fullscreen = false;
 		boolean normalShade = false;
 		boolean heightShade = false;
-		boolean jobSystem = false;
 		String chunkDir = "output-chunks";
 		for( int i=0; i<args.length; ++i ) {
 			if( "-chunk-dir".equals(args[i]) ) {
@@ -307,8 +300,6 @@ public class WorldDesigner
 				heightShade = true;
 			} else if( "-perf-log".equals(args[i]) ) {
 				Stat.performanceLoggingEnabled = true;
-			} else if( "-job-system".equals(args[i]) ) {
-				jobSystem = true;
 			} else if( "-dump-materials".equals(args[i]) ) {
 				for( int j=0; j<Materials.byBlockType.length; ++j ) {
 					Material m = Materials.byBlockType[j];
@@ -342,8 +333,6 @@ public class WorldDesigner
 				chunkExportWindow.setScript( s );
 			}
 		};
-		
-		cws.useJobSystem = jobSystem;
 		
 		wdk.setAutoReloadEnabled(autoReload);
 		

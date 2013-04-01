@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+// TODO: Explicitly open and close region files to avoid 'too many open files' bug.
+@Deprecated
 public class RegionFileCache {
 
     private static final int MAX_CACHE_SIZE = 256;

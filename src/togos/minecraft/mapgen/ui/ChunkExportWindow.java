@@ -2,7 +2,6 @@ package togos.minecraft.mapgen.ui;
 
 import java.awt.Button;
 import java.awt.Canvas;
-import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -15,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
@@ -31,7 +28,6 @@ import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 
-import togos.minecraft.mapgen.job.JobService;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -89,14 +85,13 @@ public class ChunkExportWindow extends Frame
     private static final long serialVersionUID = 1L;
     
     public Script script;
-    public ChunkWritingService cws;
+    public final ChunkWritingService cws;
     
     TextField outputDirField = new TextField();
     TextField xField, zField, widthField, depthField;
     ProgressBar progressBar;
-    Checkbox useJobSystemCheckbox;
     Label levelDatStatusBar = new Label();
-    ServiceManager sm;
+    final ServiceManager sm;
     FileWatcher levelDatWatcher;
     
     protected void interpretLevelDat( File f ) {
@@ -112,7 +107,8 @@ public class ChunkExportWindow extends Frame
 				CompoundTag t = (CompoundTag)nis.readTag();
 				CompoundTag d = (CompoundTag)t.getValue().get("Data");
 				CompoundTag p = (CompoundTag)d.getValue().get("Player");
-				ListTag<DoubleTag> pos = (ListTag<DoubleTag>)p.getValue().get("Pos");
+				@SuppressWarnings("unchecked")
+                ListTag<DoubleTag> pos = (ListTag<DoubleTag>)p.getValue().get("Pos");
 				List<DoubleTag> posValues = pos.getValue();
 				long x = (long)((DoubleTag)posValues.get(0)).getDoubleValue();
 				long y = (long)((DoubleTag)posValues.get(1)).getDoubleValue();
@@ -166,7 +162,6 @@ public class ChunkExportWindow extends Frame
     }
     
 	public void initState() {
-		useJobSystemCheckbox.setState(cws.useJobSystem);
 	}
     
     public ChunkExportWindow( ServiceManager _sm, ChunkWritingService _cws ) {
@@ -174,6 +169,7 @@ public class ChunkExportWindow extends Frame
     	
     	this.sm = _sm;
     	this.cws = _cws;
+    	
     	setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
     	
     	FocusListener selectAllFocusListener = new FocusListener() {
@@ -264,20 +260,10 @@ public class ChunkExportWindow extends Frame
 			}
 		});
     	
-    	useJobSystemCheckbox = new Checkbox();
-    	useJobSystemCheckbox.setLabel("Use job system (possibly faster on multicore)");
-    	useJobSystemCheckbox.addItemListener(new ItemListener() {
-			public void itemStateChanged( ItemEvent evt ) {
-				cws.useJobSystem = ( evt.getStateChange() == ItemEvent.SELECTED );
-			}
-		});
-    	useJobSystemCheckbox.setState( cws.useJobSystem );
-    	
     	add(outputdirPanel);
     	add(inputPanel);
     	add(progressBar);
     	add(levelDatStatusBar);
-    	add(useJobSystemCheckbox);
     	
     	addWindowListener(new WindowAdapter() {
     		public void windowActivated( WindowEvent evt ) {
@@ -308,19 +294,12 @@ public class ChunkExportWindow extends Frame
     }
     
     public static void main( String[] args ) {
-    	final JobService js = new JobService();
-    	final ChunkWritingService cws = new ChunkWritingService(js.jobQueue);
     	final ServiceManager sm = new ServiceManager();
-    	sm.add(js);
+    	final ChunkWritingService cws = new ChunkWritingService();
     	sm.add(cws);
-    	final ChunkExportWindow cew = new ChunkExportWindow(sm,cws);
-    	cew.addWindowListener(new WindowAdapter() {
-    		public void windowClosing( WindowEvent e ) {
-    			cew.dispose();
-    			sm.halt();
-    		}
-    	});
+    	final ChunkExportWindow cew = new ChunkExportWindow(sm, cws);
     	cew.pack();
     	cew.setVisible(true);
+    	sm.start();
     }
 }

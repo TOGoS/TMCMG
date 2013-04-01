@@ -8,7 +8,7 @@ clean:
 compile:
 	rm -rf bin
 	cp -r src bin
-	find src jnbt-src togosmf-src -name '*.java' >.java-src.lst
+	find src jnbt-src -name '*.java' >.java-src.lst
 	javac -d bin @.java-src.lst -target 1.6 -source 1.6
 	mkdir -p bin bin/META-INF
 	echo 'Version: 1.0' >bin/META-INF/MANIFEST.MF

@@ -1,5 +1,6 @@
 package togos.minecraft.mapgen.io;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +14,7 @@ import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
 import org.jnbt.Tag;
 
-import togos.mf.value.ByteChunk;
+import togos.lang.ScriptError;
 import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.Util;
@@ -23,7 +24,6 @@ import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v1.lang.ParseUtil;
-import togos.lang.ScriptError;
 
 public class ChunkWriter
 {
@@ -45,8 +45,8 @@ public class ChunkWriter
 		nbtos.close();
 	}
 	
-	public static ByteChunk serializeChunk( ChunkData cd, int format ) {
-		BetterByteArrayOutputStream baos = new BetterByteArrayOutputStream();
+	public static byte[] serializeChunk( ChunkData cd, int format ) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			writeChunk( cd, new DataOutputStream(
 				format == RegionFile.VERSION_GZIP ? new GZIPOutputStream(baos) : new DeflaterOutputStream(baos)
@@ -54,7 +54,7 @@ public class ChunkWriter
 		} catch( IOException e ) {
 			throw new RuntimeException("IOException while serializing chunk", e);
 		}
-		return baos;
+		return baos.toByteArray();
 	}
 	
 	public static void writeChunkToFile( ChunkData cd, String worldDir ) throws IOException {
@@ -70,8 +70,8 @@ public class ChunkWriter
 		}
 	}
 	
-	public static void writeChunkToRegionFile( int cx, int cz, ByteChunk data, int format, String baseDir ) throws IOException {
-		RegionFileCache.getRegionFile(new File(baseDir), cx, cz).write( cx&31, cz&31, data.getBuffer(), data.getOffset(), data.getSize(), format );
+	public static void writeChunkToRegionFile( int cx, int cz, byte[] data, int format, String baseDir ) throws IOException {
+		RegionFileCache.getRegionFile(new File(baseDir), cx, cz).write( cx&31, cz&31, data, 0, data.length, format );
 	}
 	
 	public static void writeChunkToRegionFile( ChunkData cd, String baseDir, int format ) throws IOException {
@@ -100,7 +100,7 @@ public class ChunkWriter
 	 * This method should be thread-safe, as os.close() calls
 	 * RegionFile.write, which is synchronized
 	 * */
-	public void saveChunk( int cx, int cz, ByteChunk data, int format ) throws IOException {
+	public void saveChunk( int cx, int cz, byte[] data, int format ) throws IOException {
 		switch( worldFormat ) {
 		case( FORMAT_CHUNKS ):
 			if( format != RegionFile.VERSION_GZIP ) {

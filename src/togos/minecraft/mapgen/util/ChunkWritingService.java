@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 
-import togos.mf.value.ByteChunk;
 import togos.minecraft.mapgen.io.ChunkWriter;
-import togos.minecraft.mapgen.job.ChunkGenerationJob;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.service.Service;
 
 public class ChunkWritingService extends ChunkWriter implements Runnable, Service
@@ -26,12 +23,10 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	protected HashSet<ChunkWritingProgressListener> progressListeners = new HashSet<ChunkWritingProgressListener>();
 	protected Script script;
 	
-	public boolean useJobSystem = true;
 	protected BlockingQueue<Runnable> jobQueue;
 	
-	public ChunkWritingService( BlockingQueue<Runnable> jobQueue ) {
+	public ChunkWritingService() {
 		super("junk-chunks");
-		this.jobQueue = jobQueue;
 	}
 	
 	public void addProgressListener( ChunkWritingProgressListener l ) {
@@ -77,41 +72,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 				
 				final int cx = bx+x, cz = bz+z;
 				
-				if( useJobSystem ) {
-					try {
-						jobQueue.put(new ChunkGenerationJob(
-							script, cm,
-							cx*ChunkData.NORMAL_CHUNK_WIDTH,
-							0,
-							cz*ChunkData.NORMAL_CHUNK_DEPTH,
-							ChunkData.NORMAL_CHUNK_WIDTH,
-							ChunkData.NORMAL_CHUNK_HEIGHT,
-							ChunkData.NORMAL_CHUNK_DEPTH,
-							new ChunkDataListener() {
-								public void setChunkData(
-									long px, long py, long pz,
-									int w, int h, int d, ByteChunk data, int format
-								) {
-									int cx = (int)(px / w);
-									int cz = (int)(pz / d);
-									
-									try {
-										saveChunk( cx, cz, data, format );
-									} catch( IOException e ) {
-										System.err.println("Error writing chunk "+cx+","+cz+":");
-										e.printStackTrace();
-									}
-									chunkWritten();
-								}
-							}
-						));
-					} catch( InterruptedException e ) {
-						Thread.currentThread().interrupt();
-					}
-				} else {
-					saveChunk( cg.generateChunk(cx,cz) );
-					chunkWritten();
-				}
+				saveChunk( cg.generateChunk(cx,cz) );
+				chunkWritten();
 			}
 		}
 	}
