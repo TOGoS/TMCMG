@@ -21,6 +21,10 @@ public class ExpressionEvaluationTest extends TestCase
 		(double)bigNum, String.valueOf(bigNum),
 		(double)bigNum, "0x"+Long.toHexString(bigNum),
 		(double)0x1234FFFF, "0b00010010001101001111111111111111",
+		(double)-3, "-0x3",
+		(double)-3, "-0b11",
+		(double)+3, "+0x3",
+		(double)+3, "+0b11",
 	};
 	
 	static final Object[] logicTests = new Object[] {

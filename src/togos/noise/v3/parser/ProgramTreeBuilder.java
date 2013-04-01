@@ -3,6 +3,7 @@ package togos.noise.v3.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import togos.lang.ParseError;
@@ -14,11 +15,11 @@ import togos.noise.v3.parser.ast.VoidNode;
 import togos.noise.v3.program.structure.ArgumentList;
 import togos.noise.v3.program.structure.Block;
 import togos.noise.v3.program.structure.Constant;
+import togos.noise.v3.program.structure.Expression;
 import togos.noise.v3.program.structure.FunctionApplication;
 import togos.noise.v3.program.structure.FunctionDefinition;
 import togos.noise.v3.program.structure.ParameterList;
 import togos.noise.v3.program.structure.SymbolReference;
-import togos.noise.v3.program.structure.Expression;
 
 public class ProgramTreeBuilder
 {
@@ -153,20 +154,28 @@ public class ProgramTreeBuilder
 		return new Block<Object>( definitions, parseExpression(blockValueNode), ast );
 	}
 	
-	Pattern hexIntegerPattern = Pattern.compile("[+-]?(0x[\\da-fA-F]+)");
-	Pattern binIntegerPattern = Pattern.compile("[+-]?(0b[10]+)");
-	Pattern integerPattern = Pattern.compile("[+-]?(\\d+)");
-	Pattern numberPattern = Pattern.compile("[+-]?(\\d*\\.\\d+)");
+	protected static final Pattern hexIntegerPattern = Pattern.compile("([+-])?0x([\\da-fA-F]+)");
+	protected static final Pattern binIntegerPattern = Pattern.compile("([+-])?0b([10]+)");
+	protected static final Pattern integerPattern = Pattern.compile("[+-]?(\\d+)");
+	protected static final Pattern numberPattern = Pattern.compile("[+-]?(\\d*\\.\\d+)");
 	
-	private Expression<?> parseSymbol( SymbolNode ast ) {
+	private static int sign( String s ) {
+		if( s == null || s.length() == 0 ) return 1;
+		if( "-".equals(s) ) return -1;
+		if( "+".equals(s) ) return +1;
+		throw new RuntimeException("Invalid sign: '"+s+"'" );
+	}
+	
+	private static Expression<?> parseSymbol( SymbolNode ast ) {
+		Matcher m;
 		if( integerPattern.matcher(ast.text).matches() ) {
 			return Constant.withValue( Long.valueOf(ast.text), ast );
 		} else if( numberPattern.matcher(ast.text).matches() ) {
 			return Constant.withValue( Double.valueOf(ast.text), ast );
-		} else if( hexIntegerPattern.matcher(ast.text).matches() ) {
-			return Constant.withValue( Long.valueOf(ast.text.substring(2), 16), ast );
-		} else if( binIntegerPattern.matcher(ast.text).matches() ) {
-			return Constant.withValue( Long.valueOf(ast.text.substring(2), 2), ast );
+		} else if( (m = hexIntegerPattern.matcher(ast.text)).matches() ) {
+			return Constant.withValue( sign(m.group(1)) * Long.valueOf(m.group(2), 16), ast );
+		} else if( (m = binIntegerPattern.matcher(ast.text)).matches() ) {
+			return Constant.withValue( sign(m.group(1)) * Long.valueOf(m.group(2), 2), ast );
 		} else {
 			return new SymbolReference( ast.text, ast );
 		}
