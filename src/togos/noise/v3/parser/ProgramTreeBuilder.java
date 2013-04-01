@@ -97,6 +97,34 @@ public class ProgramTreeBuilder
 	    return paramList;
     }
 	
+	static final class Definition {
+		public final String name;
+		public final ASTNode value;
+		public Definition( String name, ASTNode value ) {
+			this.name = name;
+			this.value = value;
+		}
+	}
+	
+	protected Definition parseDefinition( InfixNode defOp ) throws ParseError {
+		String defName;
+		ASTNode defValue;
+		if( defOp.n1 instanceof SymbolNode ) {
+			defName = ((SymbolNode)defOp.n1).text;
+			defValue = defOp.n2;
+		} else if( defOp.n1 instanceof ParenApplicationNode ) {
+			ASTNode defFunNameNode = ((ParenApplicationNode)defOp.n1).function;
+			if( !(defFunNameNode instanceof SymbolNode) ) {
+				throw new ParseError("Defined function name must be a symbol", defFunNameNode);
+			}
+			defName = ((SymbolNode)defFunNameNode).text;
+			defValue = new InfixNode("->", ((ParenApplicationNode)defOp.n1).argumentList, defOp.n2, defOp);
+		} else {
+			throw new ParseError("Invalid lvalue for definition: "+defOp.n1.getClass(), defOp.n1);
+		}
+		return new Definition( defName, defValue );
+	}
+	
 	protected Block<Object> parseBlock( InfixNode ast ) throws ParseError {
 		assert ";".equals(ast.operator);
 		HashMap<String,Expression<? extends Object>> definitions = new HashMap<String,Expression<?>>();
@@ -104,23 +132,8 @@ public class ProgramTreeBuilder
 		List<ASTNode> blockParts = flatten(ast);
 		for( ASTNode bp : blockParts ) {
 			if( bp instanceof InfixNode && "=".equals(((InfixNode)bp).operator) ) {
-				InfixNode defOp = (InfixNode)bp;
-				String defName;
-				ASTNode defValue;
-				if( defOp.n1 instanceof SymbolNode ) {
-					defName = ((SymbolNode)defOp.n1).text;
-					defValue = defOp.n2;
-				} else if( defOp.n1 instanceof ParenApplicationNode ) {
-					ASTNode defFunNameNode = ((ParenApplicationNode)defOp.n1).function;
-					if( !(defFunNameNode instanceof SymbolNode) ) {
-						throw new ParseError("Defined function name must be a symbol", defFunNameNode);
-					}
-					defName = ((SymbolNode)defFunNameNode).text;
-					defValue = new InfixNode("->", ((ParenApplicationNode)defOp.n1).argumentList, defOp.n2, defOp);
-				} else {
-					throw new ParseError("Invalid lvalue for definition: "+defOp.n1.getClass(), defOp.n1);
-				}
-				definitions.put(defName, parseExpression(defValue));
+				Definition def = parseDefinition( (InfixNode)bp );
+				definitions.put(def.name, parseExpression(def.value));
 			} else {
 				if( blockValueNode != null ) {
 					throw new ParseError("More than one value defined for block", bp);
