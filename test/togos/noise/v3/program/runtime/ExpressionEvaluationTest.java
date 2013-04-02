@@ -1,7 +1,7 @@
 package togos.noise.v3.program.runtime;
 
 import junit.framework.TestCase;
-import togos.noise.v1.lang.BaseSourceLocation;
+import togos.lang.BaseSourceLocation;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ProgramTreeBuilder;
@@ -47,8 +47,12 @@ public class ExpressionEvaluationTest extends TestCase
 		return parse(source).bind(MathFunctions.CONTEXT).getValue();
 	}
 
-	public void testEvaluateConstant() throws Exception {
+	public void testEvaluateIntegerConstant() throws Exception {
 		assertEquals( Long.valueOf(1), eval("1") );
+	}
+	
+	public void testEvaluateStringConstant() throws Exception {
+		assertEquals( "foo\n\"bar baz\"", eval("\"foo\\n\\\"bar baz\\\"\""));
 	}
 	
 	public void testEvaluateAddition() throws Exception {

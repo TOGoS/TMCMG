@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import togos.lang.BaseSourceLocation;
 import togos.lang.ParseError;
 import togos.lang.SourceLocation;
-import togos.noise.v1.lang.BaseSourceLocation;
 import togos.noise.v1.lang.Operators;
 import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
@@ -15,7 +15,7 @@ import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.ParenApplicationNode;
 import togos.noise.v3.parser.ast.InfixNode;
-import togos.noise.v3.parser.ast.SymbolNode;
+import togos.noise.v3.parser.ast.TextNode;
 import togos.noise.v3.parser.ast.VoidNode;
 
 public class Parser extends BaseStreamSource<ASTNode> implements StreamDestination<Token>
@@ -164,7 +164,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 	protected static ASTNode buildAstNode( SuperToken block ) throws ParseError {
 		switch( block.type ) {
 		case ATOM:
-			return new SymbolNode( block.token );
+			return new TextNode( TextNode.Type.fromTokenType(block.token.type), block.token );
 		case PAREN_BLOCK:
 			if( block.subTokens.size() == 0 ) {
 				return new VoidNode(block.sLoc);

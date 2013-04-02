@@ -1,9 +1,9 @@
 package togos.noise.v3.parser;
 
-import togos.noise.v1.lang.BaseSourceLocation;
+import togos.lang.BaseSourceLocation;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
-import togos.noise.v3.parser.ast.SymbolNode;
+import togos.noise.v3.parser.ast.TextNode;
 import togos.noise.v3.parser.ast.VoidNode;
 
 public class ParserTest extends CoolTestCase
@@ -17,8 +17,8 @@ public class ParserTest extends CoolTestCase
 	
 	public void testSymbol() throws Exception {
 		ASTNode n = Parser.parse("hello", TEST_LOC);
-		assertInstanceOf( SymbolNode.class, n );
-		assertEquals( "hello", ((SymbolNode)n).text );
+		assertInstanceOf( TextNode.class, n );
+		assertEquals( "hello", ((TextNode)n).text );
 	}
 	
 	protected void assertStringification( String expected, String input ) throws Exception {
@@ -47,10 +47,10 @@ public class ParserTest extends CoolTestCase
 		
 		assertInstanceOf( InfixNode.class, n );
 		assertEquals("+", ((InfixNode)n).operator );
-		assertInstanceOf( SymbolNode.class, ((InfixNode)n).n1 );
-		assertEquals("1", ((SymbolNode)((InfixNode)n).n1).text );
-		assertInstanceOf( SymbolNode.class, ((InfixNode)n).n2 );
-		assertEquals("2", ((SymbolNode)((InfixNode)n).n2).text );
+		assertInstanceOf( TextNode.class, ((InfixNode)n).n1 );
+		assertEquals("1", ((TextNode)((InfixNode)n).n1).text );
+		assertInstanceOf( TextNode.class, ((InfixNode)n).n2 );
+		assertEquals("2", ((TextNode)((InfixNode)n).n2).text );
 	}
 	
 	public void testSamePrecedenceOperators() throws Exception {
@@ -59,7 +59,7 @@ public class ParserTest extends CoolTestCase
 		
 		assertInstanceOf( InfixNode.class, n );
 		assertEquals("+", ((InfixNode)n).operator );
-		assertInstanceOf( SymbolNode.class, ((InfixNode)n).n2 );
+		assertInstanceOf( TextNode.class, ((InfixNode)n).n2 );
 		ASTNode o = ((InfixNode)n).n1;
 		assertInstanceOf( InfixNode.class, o );
 		// Blah blah blah

@@ -1,7 +1,7 @@
 package togos.noise.v3.functions;
 
+import togos.lang.BaseSourceLocation;
 import togos.lang.RuntimeError;
-import togos.noise.v1.lang.BaseSourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.Context;

@@ -4,8 +4,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import togos.lang.BaseSourceLocation;
 import togos.lang.ScriptError;
-import togos.noise.v1.lang.BaseSourceLocation;
 import togos.noise.v1.lang.Operators;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.asyncstream.StreamUtil;

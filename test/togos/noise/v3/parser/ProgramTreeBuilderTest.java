@@ -1,6 +1,6 @@
 package togos.noise.v3.parser;
 
-import togos.noise.v1.lang.BaseSourceLocation;
+import togos.lang.BaseSourceLocation;
 import togos.noise.v3.program.structure.FunctionApplication;
 import togos.noise.v3.program.structure.Expression;
 

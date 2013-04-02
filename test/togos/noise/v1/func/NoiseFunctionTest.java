@@ -1,8 +1,8 @@
 package togos.noise.v1.func;
 
 import junit.framework.TestCase;
+import togos.lang.BaseSourceLocation;
 import togos.lang.ScriptError;
-import togos.noise.v1.lang.BaseSourceLocation;
 import togos.noise.v1.lang.TNLCompiler;
 import togos.noise.v1.lang.macro.NoiseMacros;
 

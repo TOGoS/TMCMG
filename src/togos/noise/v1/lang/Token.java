@@ -1,5 +1,7 @@
 package togos.noise.v1.lang;
 
+import togos.lang.BaseSourceLocation;
+
 /**
  * A single 'word' in a TNL program.
  * '+', 'simplex', '(', ';', ',' each get a token.

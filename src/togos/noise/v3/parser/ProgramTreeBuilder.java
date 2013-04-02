@@ -10,7 +10,7 @@ import togos.lang.ParseError;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.ParenApplicationNode;
-import togos.noise.v3.parser.ast.SymbolNode;
+import togos.noise.v3.parser.ast.TextNode;
 import togos.noise.v3.parser.ast.VoidNode;
 import togos.noise.v3.program.structure.ArgumentList;
 import togos.noise.v3.program.structure.Block;
@@ -56,10 +56,10 @@ public class ProgramTreeBuilder
 		for( ASTNode argNode : flatten( listNode, "," ) ) {
 			if( argNode instanceof InfixNode && "@".equals(((InfixNode)argNode).operator) ) {
 				InfixNode namedArgNode = (InfixNode)argNode;
-				if( !(namedArgNode.n1 instanceof SymbolNode) ) {
+				if( !(namedArgNode.n1 instanceof TextNode) ) {
 					throw new ParseError( "Named argument key must be a symbol, but got a "+namedArgNode.n1.getClass(), namedArgNode.n1);
 				}
-				argList.add( ((SymbolNode)namedArgNode.n1).text, parseExpression(namedArgNode.n2) );
+				argList.add( ((TextNode)namedArgNode.n1).text, parseExpression(namedArgNode.n2) );
 			} else {
 				argList.add( parseExpression(argNode) );
 			}
@@ -75,12 +75,12 @@ public class ProgramTreeBuilder
 			Expression<?> defaultValue;
 			if( argNode instanceof InfixNode && "@".equals(((InfixNode)argNode).operator) ) {
 				InfixNode namedArgNode = (InfixNode)argNode;
-				if( !(namedArgNode.n1 instanceof SymbolNode) ) {
+				if( !(namedArgNode.n1 instanceof TextNode) ) {
 					throw new ParseError( "Named argument key must be a symbol, but got a "+namedArgNode.n1.getClass(), namedArgNode.n1);
 				}
 				defaultValue = parseExpression(namedArgNode.n2);
-			} else if( argNode instanceof SymbolNode ) {
-				name = ((SymbolNode)argNode).text;
+			} else if( argNode instanceof TextNode ) {
+				name = ((TextNode)argNode).text;
 				defaultValue = null;
 			} else {
 				throw new ParseError( "Parameter specification must be a symbol or a symbol @ default-value.  Got a "+argNode.getClass(), argNode);
@@ -116,15 +116,15 @@ public class ProgramTreeBuilder
 		
 		String defName;
 		ASTNode defValue;
-		if( defOp.n1 instanceof SymbolNode ) {
-			defName = ((SymbolNode)defOp.n1).text;
+		if( defOp.n1 instanceof TextNode ) {
+			defName = ((TextNode)defOp.n1).text;
 			defValue = defOp.n2;
 		} else if( defOp.n1 instanceof ParenApplicationNode ) {
 			ASTNode defFunNameNode = ((ParenApplicationNode)defOp.n1).function;
-			if( !(defFunNameNode instanceof SymbolNode) ) {
+			if( !(defFunNameNode instanceof TextNode) ) {
 				throw new ParseError("Defined function name must be a symbol", defFunNameNode);
 			}
-			defName = ((SymbolNode)defFunNameNode).text;
+			defName = ((TextNode)defFunNameNode).text;
 			defValue = new InfixNode("->", ((ParenApplicationNode)defOp.n1).argumentList, defOp.n2, defOp);
 		} else {
 			throw new ParseError("Invalid lvalue for definition: "+defOp.n1.getClass(), defOp.n1);
@@ -166,7 +166,7 @@ public class ProgramTreeBuilder
 		throw new RuntimeException("Invalid sign: '"+s+"'" );
 	}
 	
-	private static Expression<?> parseSymbol( SymbolNode ast ) {
+	private static Expression<?> parseSymbol( TextNode ast ) {
 		Matcher m;
 		if( integerPattern.matcher(ast.text).matches() ) {
 			return Constant.withValue( Long.valueOf(ast.text), ast );
@@ -210,8 +210,15 @@ public class ProgramTreeBuilder
 				parseArgumentList(pan.argumentList),
 				ast
 			);
-		} else if( ast instanceof SymbolNode ) {
-			return parseSymbol( (SymbolNode)ast );
+		} else if( ast instanceof TextNode ) {
+			switch( ((TextNode)ast).type ) {
+			case BAREWORD:
+				return parseSymbol( (TextNode)ast );
+			case SINGLE_QUOTED: case DOUBLE_QUOTED:
+				return new Constant<String>( ((TextNode)ast).text, ast );
+			default:
+				throw new RuntimeException("Unrecognised TextNode type: '"+((TextNode)ast).type+"'");
+			}
 		} else {
 			throw new ParseError("Don't know how to parse this "+ast.getClass(), ast);
 		}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import togos.lang.BaseSourceLocation;
 import togos.lang.SourceLocation;
 import togos.lang.ParseError;
 

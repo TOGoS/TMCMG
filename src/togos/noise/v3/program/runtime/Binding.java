@@ -1,8 +1,8 @@
 package togos.noise.v3.program.runtime;
 
+import togos.lang.BaseSourceLocation;
 import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
-import togos.noise.v1.lang.BaseSourceLocation;
 
 /**
  * TODO: A 'binding' should really just be an expression + a context, hence 'binding'.
