@@ -5,6 +5,8 @@ import java.util.Map;
 import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.noise.v1.func.FunctionDaDa_DaIa;
 
+// TODO: Replace with MinecraftTerrainGenerator
+@Deprecated
 public interface WorldGenerator
 {
 	/** Used to color the overhead preview */
@@ -19,5 +21,5 @@ public interface WorldGenerator
 	 *     that returns the temperature at every X,Z point on the map
 	 *   "humidity" - see above, but for humidity
 	 */
-	public Map getComponents();
+	public Map<String,Object> getComponents();
 }

@@ -18,6 +18,7 @@ import togos.noise.v1.data.DataDaIa;
 import togos.noise.v1.data.DataIa;
 import togos.noise.v1.func.FunctionDaDa_DaIa;
 
+// TODO: Implement MinecraftTerrainGenerator, instead
 public class LayerTerrainGenerator implements WorldGenerator
 {	
 	public final HashMap<String,Object> components = new HashMap<String,Object>();
