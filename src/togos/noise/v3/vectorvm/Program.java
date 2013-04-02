@@ -219,7 +219,12 @@ public class Program
 	};
 	// TODO: (FAST)SINE, MOD, IF
 	
-	/** Instructions that only need to be run once per instance (constant initialization) */
+	/**
+	 * Instructions that only need to be run once per instance (constant initialization)
+	 * 
+	 * TODO: Need to make sure that destination registers of initInstructions
+	 * are never overwritten by any operations in runInstructions! 
+	 */
 	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions;
 	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions;
 	public final double[] constants;
