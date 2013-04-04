@@ -99,7 +99,7 @@ public class SimpleWorldGenerator implements WorldGenerator
 		this.columnFunction = columnFunction;
 		this.components = components;
 	}
-		
+	
 	public FunctionDaDa_DaIa getGroundFunction() {
 		return groundFunction;
 	}

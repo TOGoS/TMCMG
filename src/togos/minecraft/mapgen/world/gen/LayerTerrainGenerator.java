@@ -19,10 +19,19 @@ import togos.noise.v1.data.DataIa;
 import togos.noise.v1.func.FunctionDaDa_DaIa;
 
 // TODO: Implement MinecraftTerrainGenerator, instead
-public class LayerTerrainGenerator implements WorldGenerator
-{	
-	public final HashMap<String,Object> components = new HashMap<String,Object>();
-	public final ArrayList<HeightmapLayer> layers = new ArrayList<HeightmapLayer>();
+public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGenerator
+{
+	public final HashMap<String,Object> components;
+	public final ArrayList<HeightmapLayer> layers;
+	
+	public LayerTerrainGenerator( ArrayList<HeightmapLayer> layers, HashMap<String,Object> components ) {
+		this.components = components;
+		this.layers = layers;
+	}
+	
+	public LayerTerrainGenerator() {
+		this( new ArrayList<HeightmapLayer>(), new HashMap<String,Object>() );
+	}
 	
 	protected HeightmapLayer[] layerArray( List<HeightmapLayer> layers ) {
 		HeightmapLayer[] larr = new HeightmapLayer[layers.size()];
@@ -186,19 +195,38 @@ public class LayerTerrainGenerator implements WorldGenerator
         }
 	}
 	
+	@Override
 	public ChunkMunger getChunkMunger() {
 		return new LayerChunkMunger(layers);
 	}
 	
+	@Override
 	public FunctionDaDa_DaIa getGroundFunction() {
 		return new LayerGroundFunction(layers, LayerGroundFunction.AIR_SUBTRACT);
 	}
 	
+	@Override
 	public MaterialColumnFunction getColumnFunction() {
 		return new LayerColumnFunction(layers);
     }
 	
+	@Override
 	public Map<String,Object> getComponents() {
 		return components;
 	}
+
+	////
+	
+	@Override
+    public TerrainBuffer generate( double[] x, double[] z, int vectorSize, TerrainBuffer buffer ) {
+		buffer = TerrainBuffer.getInstance( buffer, vectorSize, layers.size() );
+		int i = 0;
+		for( HeightmapLayer l : layers ) {
+			l.lFloorHeightFunction.apply( vectorSize, x, z, buffer.layerData[i].floor );
+			l.lCeilingHeightFunction.apply( vectorSize, x, z, buffer.layerData[i].ceiling );
+			buffer.layerData[i].materialFunction = l.lTypeFunction;
+			++i;
+		}
+		return buffer;
+    }
 }

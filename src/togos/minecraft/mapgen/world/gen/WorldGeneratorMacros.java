@@ -225,33 +225,32 @@ public class WorldGeneratorMacros
 							argNode);
 				}
 				
+				ArrayList<HeightmapLayer> constantFoldedLayers = new ArrayList<HeightmapLayer>();
 				for( HeightmapLayer layer : lm.layers ) {
-					layer.floorHeightFunction   = (FunctionDaDa_Da)cf.rewrite( layer.floorHeightFunction );
-					layer.ceilingHeightFunction = (FunctionDaDa_Da)cf.rewrite( layer.ceilingHeightFunction );
-					layer.typeFunction        = (FunctionDaDaDa_Ia)cf.rewrite( layer.typeFunction );
+					layer = new HeightmapLayer(
+						(FunctionDaDaDa_Ia)cf.rewrite( layer.typeFunction ),
+						(FunctionDaDa_Da)cf.rewrite( layer.floorHeightFunction ),
+						(FunctionDaDa_Da)cf.rewrite( layer.ceilingHeightFunction )
+					);
 					
 					crw.initCounts( layer.floorHeightFunction );
 					crw.initCounts( layer.ceilingHeightFunction );
 					crw.initCounts( layer.typeFunction );
-				}
-				
-				//crw.dumpCounts(System.out);
-				
-				for( HeightmapLayer layer : lm.layers ) {
-					//System.err.println("   "+layer.floorHeightFunction.toString());
-					//System.err.println("   "+layer.ceilingHeightFunction.toString());
-					//System.err.println("   "+layer.typeFunction.toString());
-
-					layer.floorHeightFunction   = (FunctionDaDa_Da)crw.rewrite( layer.floorHeightFunction );
-					layer.ceilingHeightFunction = (FunctionDaDa_Da)crw.rewrite( layer.ceilingHeightFunction );
-					layer.typeFunction        = (FunctionDaDaDa_Ia)crw.rewrite( layer.typeFunction );
 					
-					//System.err.println("-> "+layer.floorHeightFunction.toString());
-					//System.err.println("-> "+layer.ceilingHeightFunction.toString());
-					//System.err.println("-> "+layer.typeFunction.toString());
+					constantFoldedLayers.add( layer );
 				}
 				
-				//System.exit(0);
+				ArrayList<HeightmapLayer> cachifiedLayers = new ArrayList<HeightmapLayer>();
+				for( HeightmapLayer layer : constantFoldedLayers ) {
+					layer = new HeightmapLayer(
+						(FunctionDaDaDa_Ia)crw.rewrite( layer.typeFunction ),
+						(FunctionDaDa_Da)crw.rewrite( layer.floorHeightFunction ),
+						(FunctionDaDa_Da)crw.rewrite( layer.ceilingHeightFunction )
+					);
+					cachifiedLayers.add( layer );
+				}
+				
+				lm = new LayerTerrainGenerator( cachifiedLayers, lm.components );
 				
 				chunkMungers.add(0, lm.getChunkMunger());
 				return new SimpleWorldGenerator(

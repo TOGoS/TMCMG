@@ -5,8 +5,6 @@ import java.util.Map;
 import togos.minecraft.mapgen.MaterialColumnFunction;
 import togos.noise.v1.func.FunctionDaDa_DaIa;
 
-// TODO: Replace with MinecraftTerrainGenerator
-@Deprecated
 public interface WorldGenerator
 {
 	/** Used to color the overhead preview */

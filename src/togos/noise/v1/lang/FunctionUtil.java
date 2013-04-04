@@ -15,6 +15,8 @@ import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.func.FunctionDaDaDa_Ia;
 import togos.noise.v1.func.FunctionDaDa_Da;
 import togos.noise.v1.func.FunctionDaDa_Ia;
+import togos.noise.v1.func.LFunctionDaDaDa_Ia;
+import togos.noise.v1.func.LFunctionDaDa_Da;
 import togos.noise.v1.func.PossiblyConstant;
 import togos.noise.v1.func.TNLFunctionDaDaDa_Da;
 
@@ -150,4 +152,35 @@ public class FunctionUtil
 			return false;
 		}
 	}
+	
+	public static LFunctionDaDaDa_Ia toLDaDaDa_Ia( final FunctionDaDaDa_Ia thing ) {
+		if( thing instanceof LFunctionDaDaDa_Ia ) {
+			return (LFunctionDaDaDa_Ia)thing;
+		}
+		return new LFunctionDaDaDa_Ia() {
+			@Override
+            public void apply( int vectorSize, double[] x, double[] y, double[] z, int[] dest ) {
+				DataIa rez = thing.apply(new DataDaDaDa( vectorSize, x, y, z ));
+				for( int i=vectorSize-1; i>=0; --i ) {
+					dest[i] = rez.v[i];
+				}
+            }
+		};
+	}
+	
+	public static LFunctionDaDa_Da toLDaDa_Da( final FunctionDaDa_Da thing ) {
+		if( thing instanceof LFunctionDaDa_Da ) {
+			return (LFunctionDaDa_Da)thing;
+		}
+		return new LFunctionDaDa_Da() {
+			@Override
+            public void apply( int vectorSize, double[] x, double[] y, double[] dest ) {
+				DataDa rez = thing.apply(new DataDaDa( vectorSize, x, y ));
+				for( int i=vectorSize-1; i>=0; --i ) {
+					dest[i] = rez.x[i];
+				}
+            }
+		};
+	}
+
 }
