@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import togos.lang.ParseError;
+import togos.lang.SourceLocation;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.ParenApplicationNode;
@@ -51,15 +52,15 @@ public class ProgramTreeBuilder
 		return l;
 	}
 	
-	protected ArgumentList parseArgumentList( ASTNode listNode ) throws ParseError {
-		ArgumentList argList = new ArgumentList( listNode );
+	protected ArgumentList parseArgumentList( ASTNode listNode, SourceLocation callLoc ) throws ParseError {
+		ArgumentList argList = new ArgumentList( callLoc, listNode );
 		for( ASTNode argNode : flatten( listNode, "," ) ) {
 			if( argNode instanceof InfixNode && "@".equals(((InfixNode)argNode).operator) ) {
 				InfixNode namedArgNode = (InfixNode)argNode;
 				if( !(namedArgNode.n1 instanceof TextNode) ) {
 					throw new ParseError( "Named argument key must be a symbol, but got a "+namedArgNode.n1.getClass(), namedArgNode.n1);
 				}
-				argList.add( ((TextNode)namedArgNode.n1).text, parseExpression(namedArgNode.n2) );
+				argList.add( ((TextNode)namedArgNode.n1).text, parseExpression(namedArgNode.n2), argNode );
 			} else {
 				argList.add( parseExpression(argNode) );
 			}
@@ -169,13 +170,13 @@ public class ProgramTreeBuilder
 	private static Expression<?> parseSymbol( TextNode ast ) {
 		Matcher m;
 		if( integerPattern.matcher(ast.text).matches() ) {
-			return Constant.withValue( Long.valueOf(ast.text), ast );
+			return Constant.forValue( Long.valueOf(ast.text), Long.class, ast );
 		} else if( numberPattern.matcher(ast.text).matches() ) {
-			return Constant.withValue( Double.valueOf(ast.text), ast );
+			return Constant.forValue( Double.valueOf(ast.text), Double.class, ast );
 		} else if( (m = hexIntegerPattern.matcher(ast.text)).matches() ) {
-			return Constant.withValue( sign(m.group(1)) * Long.valueOf(m.group(2), 16), ast );
+			return Constant.forValue( sign(m.group(1)) * Long.valueOf(m.group(2), 16), Long.class, ast );
 		} else if( (m = binIntegerPattern.matcher(ast.text)).matches() ) {
-			return Constant.withValue( sign(m.group(1)) * Long.valueOf(m.group(2), 2), ast );
+			return Constant.forValue( sign(m.group(1)) * Long.valueOf(m.group(2), 2), Long.class, ast );
 		} else {
 			return new SymbolReference( ast.text, ast );
 		}
@@ -199,7 +200,7 @@ public class ProgramTreeBuilder
 			} else {
 				return new FunctionApplication(
 					new SymbolReference(opApp.operator, opApp),
-					new ArgumentList(parseExpression(opApp.n1), parseExpression(opApp.n2), opApp),
+					new ArgumentList(parseExpression(opApp.n1), parseExpression(opApp.n2), opApp, opApp),
 					opApp
 				);
 			}
@@ -207,7 +208,7 @@ public class ProgramTreeBuilder
 			ParenApplicationNode pan = (ParenApplicationNode)ast;
 			return new FunctionApplication(
 				parseExpression(pan.function),
-				parseArgumentList(pan.argumentList),
+				parseArgumentList(pan.argumentList, pan),
 				ast
 			);
 		} else if( ast instanceof TextNode ) {
@@ -215,7 +216,7 @@ public class ProgramTreeBuilder
 			case BAREWORD:
 				return parseSymbol( (TextNode)ast );
 			case SINGLE_QUOTED: case DOUBLE_QUOTED:
-				return new Constant<String>( ((TextNode)ast).text, ast );
+				return new Constant<String>( ((TextNode)ast).text, String.class, ast );
 			default:
 				throw new RuntimeException("Unrecognised TextNode type: '"+((TextNode)ast).type+"'");
 			}

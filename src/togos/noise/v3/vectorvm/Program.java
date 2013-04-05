@@ -43,7 +43,7 @@ public class Program
 		}
 		
 		public void run( int vectorSize ) {
-			assert vectorSize < maxVectorSize;
+			assert vectorSize <= maxVectorSize;
 			if( firstRun ) {
 				run( program.initInstructions, vectorSize );
 			}

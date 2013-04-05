@@ -10,7 +10,10 @@ public class InfixNode extends ASTNode
 	
 	public InfixNode( Token operator, ASTNode n1, ASTNode n2 ) {
 		super(operator);
-		assert operator.type == Token.Type.SYMBOL;
+		if( operator.type != Token.Type.SYMBOL && operator.type != Token.Type.BAREWORD ) {
+			// InfixNode doesn't actually care; this is more of a sanity check.
+			throw new RuntimeException("Only SYMBOL and BAREWORD tokens may be used as operators.  Got '"+operator.toString()+"'");
+		}
 		this.operator = operator.text;
 		this.n1 = n1; this.n2 = n2;
 	}

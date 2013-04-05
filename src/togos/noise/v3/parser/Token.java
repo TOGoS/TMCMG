@@ -30,8 +30,14 @@ public class Token implements SourceLocation
 	@Override public int getSourceColumnNumber() { return columnNumber; }
 	
 	public String toString() {
-		if( type == Type.SYMBOL ) return text;
-		
-		return super.toString();
+		switch( type ) {
+		case SYMBOL: case BAREWORD: return text;
+		case SINGLE_QUOTED_STRING:
+			return "'" + text + "'";
+		case DOUBLE_QUOTED_STRING:
+			return '"' + text + '"';
+		default:
+			throw new RuntimeException("Token has no type!  Text: "+text);
+		}
 	}
 }

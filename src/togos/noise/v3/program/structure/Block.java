@@ -2,6 +2,7 @@ package togos.noise.v3.program.structure;
 
 import java.util.Map;
 
+import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Context;
@@ -18,23 +19,15 @@ public class Block<V> extends Expression<V>
     }
 	
 	@Override
-    public Binding<V> bind( Context context ) {
+    public Binding<V> bind( Context context ) throws CompileError {
 		final Context newContext = new Context(context);
 		for( final Map.Entry<String,Expression<?>> symbolDef : symbolDefinitions.entrySet() ) {
 			newContext.put(
 				symbolDef.getKey(),
-				new Binding.Constant<Object>( symbolDef.getValue().sLoc ) {
-					@Override protected Object evaluate() throws Exception {
-						return symbolDef.getValue().bind(newContext).getValue();
-                    }
-				}
+				symbolDef.getValue().bind(newContext)
 			);
 		}
-		return new Binding.Constant<V>( value.sLoc ) {
-			@Override protected V evaluate() throws Exception {
-				return value.bind(newContext).getValue();
-            }
-		};
+		return new Binding.Delegated<V>( value.bind(newContext), sLoc );
     }
 	
 	public String toString() {

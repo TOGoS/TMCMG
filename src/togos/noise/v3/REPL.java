@@ -46,7 +46,7 @@ public class REPL
 		System.err.println();
 		System.err.print( "TNL$ " );
 		
-		final Binding<String> operatorListBinding = new Binding.Constant<String>( Operators.dump("\t"), BaseSourceLocation.NONE );
+		final Binding<String> operatorListBinding = Binding.forValue( Operators.dump("\t"), String.class, BaseSourceLocation.NONE );
 		
 		p.pipe( new StreamDestination<ASTNode>() {
 			final ProgramTreeBuilder ptb = new ProgramTreeBuilder();

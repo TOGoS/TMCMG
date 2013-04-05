@@ -36,7 +36,7 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 	public final int worldFloor = 0, worldCeiling = ChunkData.NORMAL_CHUNK_HEIGHT;
     
 	class ColumnSideRenderer implements Runnable, Service {
-		LFunctionDaDa_Da_Ia cFunc;
+		final LFunctionDaDa_Da_Ia cFunc;
 		int width, height;
 		double worldX, worldZ, worldXPerPixel;
 		
@@ -46,6 +46,8 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		public ColumnSideRenderer( LFunctionDaDa_Da_Ia cFunc, int width, int height,
 			double worldX, double worldZ, double worldXPerPixel
 		) {
+			assert cFunc != null;
+			
 			this.cFunc = cFunc;
 			this.width = width;
 			this.height = height;

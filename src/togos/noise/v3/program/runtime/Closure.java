@@ -28,7 +28,7 @@ public class Closure<V> implements Function<V>
 			super(sLoc);
 		}
 		
-		@Override public boolean isConstant() throws Exception {
+		@Override public boolean isConstant() throws CompileError {
 			for( Binding<?> b : valueBindings ) if(!b.isConstant()) return false;
 	        return true;
         }
@@ -43,6 +43,12 @@ public class Closure<V> implements Function<V>
 
 		public void add( Binding<? extends V> value ) {
 			valueBindings.add(value);
+        }
+
+    	@SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {
+			return (Class<? extends LinkedListNode<V>>)LinkedListNode.class;
         }
 	}
 	
@@ -94,7 +100,7 @@ public class Closure<V> implements Function<V>
 				if( p.defaultValue != null ) {
 					newValues.put( p.name, p.defaultValue.bind(context) );
 				} else {
-					throw new CompileError("Parameter '"+p.name+"' is unbound", args.sLoc);
+					throw new CompileError("Parameter '"+p.name+"' is unbound", args.argListLocation);
 				}
 			}
 		}

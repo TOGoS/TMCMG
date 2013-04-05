@@ -1,6 +1,6 @@
 package togos.noise.v3.program.structure;
 
-import togos.lang.ScriptError;
+import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Context;
@@ -16,11 +16,11 @@ public class SymbolReference extends Expression<Object>
 
 	@Override
     public Binding<Object> bind( final Context context ) {
-		return new Binding.Delegated<Object>( sLoc ) {
+		return new Binding.Deferred<Object>( sLoc ) {
 			@Override
-            protected Binding<?> generateDelegate() throws Exception {
+            protected Binding<?> generateDelegate() throws CompileError {
 				if( !context.containsKey(symbol) ) {
-					throw new ScriptError( "Symbol '"+symbol+"' is undefined", sLoc );
+					throw new CompileError( "Symbol '"+symbol+"' is undefined", sLoc );
 				}
 				return context.get(symbol);
             }

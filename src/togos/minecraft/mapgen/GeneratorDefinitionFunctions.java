@@ -1,64 +1,139 @@
 package togos.minecraft.mapgen;
 
+import java.util.ArrayList;
+
 import togos.lang.BaseSourceLocation;
+import togos.lang.CompileError;
+import togos.lang.RuntimeError;
+import togos.minecraft.mapgen.world.gen.ChunkMunger;
+import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
+import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
-import togos.lang.RuntimeError;
 
 public class GeneratorDefinitionFunctions
 {
 	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( GeneratorDefinitionFunctions.class.getName()+".java", 0, 0);
-	protected static <V> Binding<V> builtinBinding( V v ) {
-		return new Binding.Constant<V>( v, BUILTIN_LOC );
+	protected static <V> Binding<? extends V> builtinBinding( V v ) {
+		return Binding.forValue( v, BUILTIN_LOC );
 	}
 	
-	static class LayerDef {
+	protected static <V> Function<V> toFunc( Binding<?> b, Class<V> vClass ) throws CompileError {
+		Object v;
+        try {
+	        v = b.getValue();
+        } catch( Exception e ) {
+        	throw new CompileError(e, b.sLoc);
+        }
+		if( v instanceof Function ) {
+			return (Function<V>)v;
+		} else if( vClass.isAssignableFrom(v.getClass()) ) {
+			return new MathFunctions.ConstantBindingFunction<V>( (Binding<? extends V>)b );
+		} else {
+			throw new CompileError("Can't convert "+v.getClass()+" to a number function", b.sLoc);
+		}
+	}
+	
+	static class WorldGeneratorDefinition implements MinecraftWorldGenerator
+	{
+		ArrayList<LayerDefinition> layerDefs = new ArrayList<LayerDefinition>();
+		Function<Number> biomeFunction = new MathFunctions.ConstantBindingFunction<Number>( Binding.forValue(0, BUILTIN_LOC) );
+		
+		@Override
+        public LayeredTerrainFunction getTerrainFunction() {
+			return new LayeredTerrainFunction() {
+				protected <V> V applyFunction( Function<V> func, Object...argValues ) throws Exception {
+					BoundArgumentList bal = new BoundArgumentList(BUILTIN_LOC, BUILTIN_LOC);
+					for( Object argValue : argValues ) {
+						bal.add( "", Binding.forValue(argValue, BUILTIN_LOC), BUILTIN_LOC );
+					}
+					return func.apply(bal).getValue();
+				}
+				
+				@Override
+                public TerrainBuffer apply( int vectorSize, double[] x, double[] z, TerrainBuffer buffer ) {
+					try {
+						buffer = TerrainBuffer.getInstance( buffer, vectorSize, layerDefs.size() );
+		                for( int i=vectorSize-1; i>=0; --i ) {
+		                	buffer.biomeData[i] = applyFunction( biomeFunction, x[i], z[i] ).intValue();
+		                }
+		                System.err.println("Calculated "+vectorSize+" biome datas!");
+		                return buffer;
+					} catch( Exception e ) {
+						throw new RuntimeException(e);
+					}
+                }
+			};
+        }
+		
+		@Override
+        public ChunkMunger getChunkMunger() {
+	        // TODO Auto-generated method stub
+	        return null;
+        }
+	}
+	
+	static class LayerDefinition
+	{
 		final Function<Number> blockType;
 		final Function<Number> floorHeight;
 		final Function<Number> ceilingHeight;
 		
-		public LayerDef( Function<Number> blockType, Function<Number> floorHeight, Function<Number> ceilingHeight ) {
+		public LayerDefinition( Function<Number> blockType, Function<Number> floorHeight, Function<Number> ceilingHeight ) {
 			this.blockType = blockType;
 			this.floorHeight = floorHeight;
 			this.ceilingHeight = ceilingHeight;
 		}
 		
-		protected static Function<Number> toFunc( Binding<?> b ) {
-			
-		}
-		
-		public LayerDef( Binding<?> blockType, Binding<?> floorHeight, Binding<?> ceilingHeight ) throws Exception {
-			this( toFunc(blockType), toFunc(floorHeight), toFunc(ceilingHeight) );
+		public LayerDefinition( Binding<?> blockType, Binding<?> floorHeight, Binding<?> ceilingHeight ) throws CompileError {
+			this( toFunc(blockType, Number.class), toFunc(floorHeight, Number.class), toFunc(ceilingHeight, Number.class) );
 		}
 	}
 	
 	public static final Context CONTEXT = new Context();
 	static {
-		CONTEXT.put("layer", builtinBinding(new Function<LayerDef>() {
+		CONTEXT.put("layer", builtinBinding(new Function<LayerDefinition>() {
 			@Override
-            public Binding<LayerDef> apply( BoundArgumentList input ) throws Exception {
-				if( input.arguments.size() != 3 ) throw new RuntimeError(
-					"'layer' requires exactly 3 arguments, but "+input.arguments.size()+" given", input.sLoc);
+            public Binding<LayerDefinition> apply( BoundArgumentList input ) throws CompileError {
+				if( input.arguments.size() != 3 ) throw new CompileError(
+					"'layer' requires exactly 3 arguments, but "+input.arguments.size()+" given", input.argListLocation);
 				for( BoundArgumentList.BoundArgument<?> arg : input.arguments ) {
-					if( !arg.name.isEmpty() ) throw new RuntimeError(
-						"'layer' takes no named arguments, but got '"+arg.name+"'", input.sLoc );
+					if( !arg.name.isEmpty() ) throw new CompileError(
+						"'layer' takes no named arguments, but got '"+arg.name+"'", input.argListLocation );
 				}
-				return new Binding.Constant<LayerDef>( new LayerDef(
+				return Binding.forValue( new LayerDefinition(
 					input.arguments.get(0).value,
 					input.arguments.get(1).value,
 					input.arguments.get(2).value
-				), input.sLoc);
+				), LayerDefinition.class, input.callLocation );
             }
 		}));
-		CONTEXT.put("layered-terrain", builtinBinding(new Function<MinecraftWorldGenerator>() {
+		CONTEXT.put("layered-terrain", builtinBinding(new Function<WorldGeneratorDefinition>() {
 			@Override
-            public Binding<MinecraftWorldGenerator> apply( BoundArgumentList input ) throws Exception {
+            public Binding<WorldGeneratorDefinition> apply( BoundArgumentList input ) throws CompileError {
+				WorldGeneratorDefinition wgd = new WorldGeneratorDefinition();
 				for( BoundArgumentList.BoundArgument<?> arg : input.arguments ) {
-					Object v = arg.value.getValue();
+					Object v;
+					try {
+						v = arg.value.getValue();
+					} catch( CompileError e ) {
+						throw e;
+					} catch( Exception e ) {
+						throw new RuntimeException( e );
+					}
+					if( "biome".equals(arg.name) ) {
+						wgd.biomeFunction = toFunc( arg.value, Number.class );
+					} else if( "".equals(arg.name) && v instanceof LayerDefinition ) {
+						wgd.layerDefs.add( (LayerDefinition)v );
+					} else {
+						String argName = arg.name.length() == 0 ? " " : " '"+arg.name+"' "; 
+						throw new CompileError("Don't know how to handle"+argName+"argument with value: "+v, arg.sLoc);
+					}
 				}
+				return Binding.forValue(wgd, WorldGeneratorDefinition.class, input.argListLocation);
             }
 		}));
 	}

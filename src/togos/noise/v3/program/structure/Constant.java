@@ -7,18 +7,21 @@ import togos.noise.v3.program.runtime.Context;
 
 public class Constant<V> extends Expression<V>
 {
-	public final V value;
-	public Constant( V value, SourceLocation sLoc ) {
+	protected final V value;
+	protected final Class<V> valueType;
+	
+	public Constant( V value, Class<V> valueType, SourceLocation sLoc ) {
 		super( sLoc );
 		this.value = value;
+		this.valueType = valueType;
 	}
-
+	
 	@Override public Binding<V> bind( Context context ) {
-		return new Binding.Constant<V>( value, sLoc );
+		return Binding.forValue( value, valueType, sLoc );
     }
 	
-	public static <V> Constant<V> withValue( V value, SourceLocation sLoc ) {
-		return new Constant<V>( value, sLoc );
+	public static <V> Constant<V> forValue( V value, Class<V> valueType, SourceLocation sLoc ) {
+		return new Constant<V>( value, valueType, sLoc );
 	}
 	
 	@Override public String toString() {

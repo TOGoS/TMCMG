@@ -225,6 +225,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		
 		if( source != null ) tokenizer.data( source );
 		if( reader != null ) StreamUtil.pipe( reader, tokenizer );
+		tokenizer.end();
 		
 		if( astNodes.size() == 0 ) {
 			return new VoidNode(sLoc);

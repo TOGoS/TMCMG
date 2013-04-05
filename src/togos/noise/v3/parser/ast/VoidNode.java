@@ -6,4 +6,7 @@ public class VoidNode extends ASTNode {
 	public VoidNode(SourceLocation sLoc) {
 		super(sLoc);
 	}
+	
+	public String toString() { return "()"; }
+	public String toAtomicString() { return "()"; }
 }
