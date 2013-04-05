@@ -128,12 +128,29 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		}
 		
 		@Override
-        public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] color ) {
+        public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] data ) {
+			double[] colX = new double[yCount];
+			double[] colY = new double[yCount];
+			double[] colZ = new double[yCount];
+			int[] colData = new int[yCount];
+			
 			buf = ltf.apply( xzCount, x, z, buf );
 			for( int l=0; l<buf.layerCount; ++l ) {
 				LayeredTerrainFunction.LayerBuffer layer = buf.layerData[l];
 				for( int i=xzCount-1; i>=0; --i ) {
-					// TODO
+					int rFloor = (int)Math.round(layer.floorHeight[i]);
+					int rCeil  = (int)Math.round(layer.ceilingHeight[i]);
+					if( rFloor < 0 ) rFloor = 0;
+					if( rCeil > yCount ) rCeil = yCount;
+					int layerHeight = rCeil - rFloor;
+					for( int j=0; j<layerHeight; ++j ) {
+						colX[j] = colZ[j] = 0;
+						colY[j] = rFloor + j;
+					}
+					layer.blockTypeFunction.apply( layerHeight, colX, colY, colZ, colData);
+					for( int j=0, h=rFloor; h<rCeil; ++h, ++j ) {
+						if( colData[j] != -1 ) data[i*yCount+h] = colData[j];
+					}
 				}
 			}
         }
@@ -264,6 +281,8 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 				fw.addUpdateListener(ful);
 				sm.add(fw);
 			}
+		} else {
+			throw new RuntimeException("You need to provide a script!");
 		}
 		
 		nc.setPreferredSize(new Dimension(512,128));

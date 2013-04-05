@@ -123,14 +123,14 @@ public class MathFunctions
 		}
 	}
 
-	static abstract class NoiseFunction extends BuiltinFunction<Double> {
+	static abstract class NoiseFunction extends BuiltinFunction<Number> {
 		abstract double apply( double a, double b, double c );
 		
 		protected static final Class<?>[] ARG_TYPES = { Number.class, Number.class, Number.class };
 		protected static final Object[] ARG_DEFAULTS = { null, null, null };
 
 		public NoiseFunction() {
-			super(Double.class, ARG_TYPES, ARG_DEFAULTS);
+			super(Number.class, ARG_TYPES, ARG_DEFAULTS);
 		}
 		
 		protected Double apply( Object[] args ) {

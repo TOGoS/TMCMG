@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
-import togos.lang.RuntimeError;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
+import togos.noise.v1.func.LFunctionDaDaDa_Ia;
+import togos.noise.v1.func.LFunctionDaDa_Da;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
@@ -37,6 +38,50 @@ public class GeneratorDefinitionFunctions
 		}
 	}
 	
+	protected static final <V> V applyFunction( Function<V> func, Object...argValues ) throws Exception {
+		BoundArgumentList bal = new BoundArgumentList(BUILTIN_LOC, BUILTIN_LOC);
+		for( Object argValue : argValues ) {
+			bal.add( "", Binding.forValue(argValue, BUILTIN_LOC), BUILTIN_LOC );
+		}
+		return func.apply(bal).getValue();
+	}
+	
+	static class FunctionAdapterDaDaDa_Ia implements LFunctionDaDaDa_Ia {
+		Function<? extends Number> sFunc;
+		public FunctionAdapterDaDaDa_Ia( Function<? extends Number> sFunc ) {
+			this.sFunc = sFunc;
+		}
+		
+		@Override
+		public void apply(int vectorSize, double[] x, double[] y, double[] z, int[] dest) {
+			try {
+				for( int i=vectorSize-1; i>=0; --i ) {
+					dest[i] = applyFunction(sFunc, x[i], y[i], z[i]).intValue();
+				}
+			} catch( Exception e ) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	static class FunctionAdapterDaDa_Da implements LFunctionDaDa_Da {
+		Function<? extends Number> sFunc;
+		public FunctionAdapterDaDa_Da( Function<? extends Number> sFunc ) {
+			this.sFunc = sFunc;
+		}
+		
+		@Override
+		public void apply(int vectorSize, double[] x, double[] y, double[] dest) {
+			try {
+				for( int i=vectorSize-1; i>=0; --i ) {
+					dest[i] = applyFunction(sFunc, x[i], y[i]).intValue();
+				}
+			} catch( Exception e ) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
 	static class WorldGeneratorDefinition implements MinecraftWorldGenerator
 	{
 		ArrayList<LayerDefinition> layerDefs = new ArrayList<LayerDefinition>();
@@ -45,14 +90,6 @@ public class GeneratorDefinitionFunctions
 		@Override
         public LayeredTerrainFunction getTerrainFunction() {
 			return new LayeredTerrainFunction() {
-				protected <V> V applyFunction( Function<V> func, Object...argValues ) throws Exception {
-					BoundArgumentList bal = new BoundArgumentList(BUILTIN_LOC, BUILTIN_LOC);
-					for( Object argValue : argValues ) {
-						bal.add( "", Binding.forValue(argValue, BUILTIN_LOC), BUILTIN_LOC );
-					}
-					return func.apply(bal).getValue();
-				}
-				
 				@Override
                 public TerrainBuffer apply( int vectorSize, double[] x, double[] z, TerrainBuffer buffer ) {
 					try {
@@ -60,7 +97,13 @@ public class GeneratorDefinitionFunctions
 		                for( int i=vectorSize-1; i>=0; --i ) {
 		                	buffer.biomeData[i] = applyFunction( biomeFunction, x[i], z[i] ).intValue();
 		                }
-		                System.err.println("Calculated "+vectorSize+" biome datas!");
+		                for( int i=0; i<layerDefs.size(); ++i ) {
+		                	FunctionAdapterDaDa_Da floorHeightFunction = new FunctionAdapterDaDa_Da( layerDefs.get(i).floorHeight );
+		                	FunctionAdapterDaDa_Da ceilingHeightFunction = new FunctionAdapterDaDa_Da( layerDefs.get(i).ceilingHeight );
+		                	floorHeightFunction.apply( vectorSize, x, z, buffer.layerData[i].floorHeight );
+		                	ceilingHeightFunction.apply( vectorSize, x, z, buffer.layerData[i].ceilingHeight );
+		                	buffer.layerData[i].blockTypeFunction = new FunctionAdapterDaDaDa_Ia( layerDefs.get(i).blockType );
+		                }
 		                return buffer;
 					} catch( Exception e ) {
 						throw new RuntimeException(e);

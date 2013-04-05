@@ -6,14 +6,14 @@ public interface LayeredTerrainFunction
 {
 	static class LayerBuffer {
 		public final int maxVectorSize;
-		public final double[] floor, ceiling;
-		public LFunctionDaDaDa_Ia materialFunction;
+		public final double[] floorHeight, ceilingHeight;
+		public LFunctionDaDaDa_Ia blockTypeFunction;
 		
 		public LayerBuffer( int maxVectorSize ) {
 			assert maxVectorSize >= 0;
 			this.maxVectorSize = maxVectorSize;
-			this.floor = new double[maxVectorSize];
-			this.ceiling = new double[maxVectorSize];
+			this.floorHeight = new double[maxVectorSize];
+			this.ceilingHeight = new double[maxVectorSize];
 		}
 	}
 	

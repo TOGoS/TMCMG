@@ -4,25 +4,27 @@ bedrock =  7;
 water   =  8;
 sand    = 12;
 
-fractal( iter, bx, by, mx, my, dz, basis ) = (x,y,z) ->
-	basis( x * bx, y * by, z ) +
+clamp( min, max, v ) = if( v < min, min, v > max, max, v ); 
+
+fractal( iter, bx, by, mx, my, dz, basis ) =
 	if( iter > 0,
-	    fractal( iter - 1, bx * mx, by * my, dz, basis )(x, y, z - dz),
-	    (x,y,z) -> 0);
-	    
+	    (x,y,z) -> basis(x,y,z) + fractal( iter - 1, bx * mx, by * my, mx, my, dz, basis )(x, y, z - dz),
+	    basis );
 
 basis(x,y,z) = simplex(x,y,z) * 3;
 
-simple-dirt-height(x,y,z) = clamp( clamp( -0.2, 0.2, simplex( x / 4, y, z / 4)), +0.3, basis );
+simple-dirt-height(x,y,z) = clamp( clamp( -0.2, 0.2, simplex( x / 4, y, z / 4)), +0.3, basis(x,y,z) );
 simple-dirt-height-frac = fractal( 2, 32, 16, 2, 2, 1, simple-dirt-height );
 
-base-level(x,y,z) = clamp(0, 64, 512 * simplex( _x / 128, 0, _z / 128 ));
+base-level(x,y,z) = clamp(0, 64, 512 * simplex( x / 128, 0, z / 128 ));
+
+defun( fun ) = (x,z) -> fun(x,z) + 1;
 
 layered-terrain(
 	layer( water  , 0, 63 ),
-	layer( sand   , 0, (x,z) -> 63 + 64 * simplex( x / 128, y / 128 ) ),
-	layer( dirt   , 0, (x,z) -> base-level(x,y,0) + 60 + simple-dirt-height-frac(x,y,0) ),    
-	layer( stone  , 0, (x,z) -> base-level(x,y,0) + 56 + simple-dirt-height-frac(x,y,0) ),
+	layer( sand   , 0, (x,z) -> 63 + 64 * simplex( x / 128, 0, z / 128 ) ),
+	layer( dirt   , 0, (x,z) -> base-level(x,0,z) + 60 + simple-dirt-height-frac(x,0,z) ),    
+	layer( stone  , 0, (x,z) -> base-level(x,0,z) + 56 + simple-dirt-height-frac(x,0,z) ),
 	layer( bedrock, 0, 1 ),
 	biome @ (x,z) -> if( simplex(x / 100,0,z / 100) < 0, 0, 1 )
 	# grassifier,
