@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import togos.minecraft.mapgen.io.ChunkWriter;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.service.Service;
 
 public class ChunkWritingService extends ChunkWriter implements Runnable, Service
@@ -21,7 +21,7 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	int bx=0, bz=0, bw=0, bd=0;
 	protected volatile boolean go = false;
 	protected HashSet<ChunkWritingProgressListener> progressListeners = new HashSet<ChunkWritingProgressListener>();
-	protected Script script;
+	protected MinecraftWorldGenerator worldGenerator;
 	
 	protected BlockingQueue<Runnable> jobQueue;
 	
@@ -44,8 +44,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		this.bd = bd;
 	}
 	
-	public void setScript( Script s ) {
-		this.script = s;
+	public void setWorldGenerator( MinecraftWorldGenerator mwg ) {
+		this.worldGenerator = mwg;
 	}
 	
 	protected int written, total;
@@ -57,10 +57,10 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 		}
 	}
 	
-	public void writeGrid( int bx, int bz, int bw, int bd, Script script )
+	public void writeGrid( int bx, int bz, int bw, int bd, MinecraftWorldGenerator mwg )
 		throws IOException
 	{
-		ChunkMunger cm = ((WorldGenerator)script.program).getChunkMunger();
+		ChunkMunger cm = mwg.getChunkMunger();
 		ChunkGenerator cg = new ChunkGenerator( cm );
 		
 		written = 0;
@@ -80,8 +80,8 @@ public class ChunkWritingService extends ChunkWriter implements Runnable, Servic
 	
 	public void run() {
 		try {
-			if( script == null ) return;
-			writeGrid( bx, bz, bw, bd, script );
+			if( worldGenerator == null ) return;
+			writeGrid( bx, bz, bw, bd, worldGenerator );
 		} catch( IOException e ) {
 			throw new RuntimeException(e);
 		} finally {

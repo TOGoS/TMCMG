@@ -2,11 +2,12 @@ package togos.noise.v3.functions;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.RuntimeError;
+import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
+import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
-import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 
 /**
  * TODO: If this is specific to v3.program evaluation, move to that package.
@@ -15,7 +16,7 @@ import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
  */
 public class MathFunctions
 {
-	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation("built-in math function", 0, 0);
+	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( MathFunctions.class.getName()+".java", 0, 0);
 	public static final Context CONTEXT = new Context();
 	
 	static abstract class BooleanInputFunction<R> implements Function<R> {
@@ -87,6 +88,19 @@ public class MathFunctions
 				throw new RuntimeError( "Not enough arguments to "+getName(), input.sLoc );
 			}
 			return new Binding.Constant<R>( apply(a,b), BUILTIN_LOC );
+        }
+	}
+	
+	public static class ConstantBindingFunction<V> implements Function<V> {
+		Binding<V> v;
+		
+		public ConstantBindingFunction( Binding<V> v ) {
+			this.v = v;
+		}
+
+		@Override
+        public Binding<V> apply( BoundArgumentList input ) {
+			return v;
         }
 	}
 	

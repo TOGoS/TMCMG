@@ -13,7 +13,6 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import togos.lang.ScriptError;
 import togos.minecraft.mapgen.LFunctionDaDa_Da_Ia;
@@ -21,13 +20,9 @@ import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
-import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
-import togos.minecraft.mapgen.util.Util;
-import togos.minecraft.mapgen.world.Materials;
-import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
-import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v1.func.LFunctionIa_Ia;
 import togos.noise.v1.lang.ParseUtil;
@@ -118,6 +113,30 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		}
 	}
 	
+	public static class ColumnTerrainFunction implements LFunctionDaDa_Da_Ia
+	{
+		protected final LayeredTerrainFunction ltf;
+		// Not thread-safe!
+		protected LayeredTerrainFunction.TerrainBuffer buf;
+		
+		double[] xBuf, yBuf, zBuf;
+		
+		public ColumnTerrainFunction( LayeredTerrainFunction ltf ) {
+			this.ltf = ltf;
+		}
+		
+		@Override
+        public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] color ) {
+			buf = ltf.apply( xzCount, x, z, buf );
+			for( int l=0; l<buf.layerCount; ++l ) {
+				LayeredTerrainFunction.LayerBuffer layer = buf.layerData[l];
+				for( int i=xzCount-1; i>=0; --i ) {
+					// TODO
+				}
+			}
+        }
+	}
+	
 	public static class ColumnColorFunction implements LFunctionDaDa_Da_Ia
 	{
 		protected final LFunctionDaDa_Da_Ia materialFunction;
@@ -149,7 +168,7 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		if( wg == null ) {
 			cFunc = null;
 		} else {
-			cFunc = new ColumnColorFunction( wg.getColumnFunction(), colorMap );
+			cFunc = new ColumnColorFunction( new ColumnTerrainFunction(wg.getTerrainFunction()), colorMap );
 		}
 		
 		if( cFunc != null ) {
@@ -214,24 +233,22 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		final ColumnSideCanvas nc = new ColumnSideCanvas();
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
-			public void generatorUpdated( Script s ) {
-				nc.setWorldGenerator( (WorldGenerator)s.program );
+			public void generatorUpdated( MinecraftWorldGenerator mwg ) {
+				nc.setWorldGenerator( mwg );
 			}
 		};
 		
 		final FileUpdateListener ful = new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					Script script = Util.readScript(scriptFile);
-					script.program = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), script );
-					gul.generatorUpdated( script );
+					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile ) );
 				} catch( ScriptError e ) {
 					System.err.println(ParseUtil.formatScriptError(e));
 				} catch( FileNotFoundException e ) {
 					System.err.println(e.getMessage());
 					System.exit(1);
 					return;
-				} catch( IOException e ) {
+				} catch( Exception e ) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -245,10 +262,6 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 				fw.addUpdateListener(ful);
 				sm.add(fw);
 			}
-		} else {
-			Script emptyScript = new Script( new byte[0], "" );
-			emptyScript.program = SimpleWorldGenerator.DEFAULT;
-			gul.generatorUpdated( emptyScript );
 		}
 		
 		nc.setPreferredSize(new Dimension(512,128));

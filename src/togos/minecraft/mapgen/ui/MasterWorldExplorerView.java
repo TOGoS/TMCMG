@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 
 public class MasterWorldExplorerView implements WorldExplorerView
 {
 	protected List subViews = new ArrayList(); 
-	protected WorldGenerator wg;
+	protected MinecraftWorldGenerator wg;
 	protected double wx=0, wy=0, zoom=1;
 	
 	public MasterWorldExplorerView() {
@@ -38,7 +38,7 @@ public class MasterWorldExplorerView implements WorldExplorerView
 		return pev == null ? 0 : pev.getWorldYStepSize();
 	}
 	
-	public void setWorldGenerator( WorldGenerator wg ) {
+	public void setWorldGenerator( MinecraftWorldGenerator wg ) {
 		this.wg = wg;
 		for( Iterator i=subViews.iterator(); i.hasNext(); ) {
 			((WorldExplorerView)i.next()).setWorldGenerator(wg);

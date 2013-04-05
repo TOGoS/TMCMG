@@ -70,10 +70,6 @@ public class Util
 		return buffer;
 	}
 	
-	public static final Script readScript( File f ) throws IOException {
-		return new Script(readFile(f), f.getPath());
-	}
-	
 	/**
 	 * Should be compatible with Arrays.hashCode( byte[] data ),
 	 * which is supposedly compatible with List<Byte>#hashCode.

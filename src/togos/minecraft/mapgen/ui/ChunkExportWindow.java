@@ -31,8 +31,8 @@ import org.jnbt.NBTInputStream;
 import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
-import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 
 public class ChunkExportWindow extends Frame
 {
@@ -84,7 +84,6 @@ public class ChunkExportWindow extends Frame
     
     private static final long serialVersionUID = 1L;
     
-    public Script script;
     public final ChunkWritingService cws;
     
     TextField outputDirField = new TextField();
@@ -93,6 +92,7 @@ public class ChunkExportWindow extends Frame
     Label levelDatStatusBar = new Label();
     final ServiceManager sm;
     FileWatcher levelDatWatcher;
+    MinecraftWorldGenerator worldGenerator;
     
     protected void interpretLevelDat( File f ) {
     	if( !f.exists() ) {
@@ -157,8 +157,8 @@ public class ChunkExportWindow extends Frame
     	initLevelDatWatcher();
     }
     
-    public void setScript( Script s ) {
-    	this.script = s;
+    public void setWorldGenerator( MinecraftWorldGenerator mwg ) {
+    	this.worldGenerator = mwg;
     }
     
 	public void initState() {
@@ -220,14 +220,14 @@ public class ChunkExportWindow extends Frame
 						int bw = Integer.parseInt(widthField.getText());
 						int bd = Integer.parseInt(depthField.getText());
 
-						if( script == null ) {
-							progressBar.setProgress(-1, "Error: no script");
+						if( worldGenerator == null ) {
+							progressBar.setProgress(-1, "Error: no generator");
 							return;
 						}
 						
 						cws.setBounds(bx, bz, bw, bd);
 						cws.setChunkDir(outputDirField.getText());
-						cws.setScript(script);
+						cws.setWorldGenerator(worldGenerator);
 						cws.start();
 					} catch( NumberFormatException e ) {
 						progressBar.setProgress(-1, "Error: "+e.getMessage());

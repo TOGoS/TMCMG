@@ -1,6 +1,6 @@
 package togos.minecraft.mapgen.ui;
 
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 
 public interface WorldExplorerView
 {
@@ -10,6 +10,6 @@ public interface WorldExplorerView
 	public double getWorldXStepSize();
 	public double getWorldYStepSize();
 	
-	public void setWorldGenerator( WorldGenerator wg );
+	public void setWorldGenerator( MinecraftWorldGenerator wg );
 	public void setWorldPos( double wx, double wy, double zoom );
 }

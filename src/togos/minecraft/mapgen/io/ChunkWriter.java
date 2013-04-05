@@ -19,9 +19,7 @@ import togos.minecraft.mapgen.PathUtil;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
-import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
-import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v1.lang.ParseUtil;
 
@@ -146,7 +144,7 @@ public class ChunkWriter
 		int boundsWidth = 1;
 		int boundsDepth = 1;
 		String worldDir = ".";
-		String scriptFile = null;
+		File scriptFile = null;
 		for( int i=0; i<args.length; ++i ) {
 			if( "-world-dir".equals(args[i]) ) {
 				worldDir = args[++i];
@@ -159,7 +157,7 @@ public class ChunkWriter
 			} else if( "-depth".equals(args[i]) ) {
 				boundsDepth = Integer.parseInt(args[++i]);
 			} else if( !args[i].startsWith("-") ) {
-				scriptFile = args[i];
+				scriptFile = new File(args[i]);
 			} else if( Util.isHelpArgument(args[i]) ) {
 				System.out.println(USAGE);
 				System.exit(0);
@@ -171,10 +169,10 @@ public class ChunkWriter
 		}
 		
 		try {
-			WorldGenerator worldGenerator;
+			MinecraftWorldGenerator worldGenerator = null;
 			if( scriptFile != null ) {
 				try {
-					worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), new File(scriptFile) );
+					worldGenerator = ScriptUtil.loadWorldGenerator( scriptFile );
 				} catch( ScriptError e ) {
 					System.err.println(ParseUtil.formatScriptError(e));
 					System.exit(1);
@@ -183,11 +181,15 @@ public class ChunkWriter
 					System.err.println(e.getMessage());
 					System.exit(1);
 					return;
-				} catch( IOException e ) {
+				} catch( Exception e ) {
 					throw new RuntimeException(e);
 				}
-			} else {
-				worldGenerator = SimpleWorldGenerator.DEFAULT;
+			}
+			
+			if( worldGenerator == null ) {
+				System.err.println("No script specified");
+				System.err.println(USAGE);
+				System.exit(1);
 			}
 			
 			ChunkGenerator cg = new ChunkGenerator(worldGenerator.getChunkMunger());

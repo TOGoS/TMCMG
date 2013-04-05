@@ -1,5 +1,6 @@
 package togos.noise.v3.parser;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,9 +13,10 @@ import togos.noise.v1.lang.Operators;
 import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
 import togos.noise.v3.asyncstream.StreamDestination;
+import togos.noise.v3.asyncstream.StreamUtil;
 import togos.noise.v3.parser.ast.ASTNode;
-import togos.noise.v3.parser.ast.ParenApplicationNode;
 import togos.noise.v3.parser.ast.InfixNode;
+import togos.noise.v3.parser.ast.ParenApplicationNode;
 import togos.noise.v3.parser.ast.TextNode;
 import togos.noise.v3.parser.ast.VoidNode;
 
@@ -212,8 +214,7 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		_end();
 	}
 	
-	
-	public static ASTNode parse( String program, SourceLocation sLoc ) throws Exception {
+	protected static ASTNode parse( char[] source, Reader reader, SourceLocation sLoc ) throws Exception {
 		ArrayList<ASTNode> astNodes = new ArrayList<ASTNode>();
 		Parser parser = new Parser(false);
 		parser.setSourceLocation( sLoc );
@@ -222,8 +223,8 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		tokenizer.setSourceLocation( sLoc );
 		tokenizer.pipe(parser);
 		
-		tokenizer.data( program.toCharArray() );
-		tokenizer.end();
+		if( source != null ) tokenizer.data( source );
+		if( reader != null ) StreamUtil.pipe( reader, tokenizer );
 		
 		if( astNodes.size() == 0 ) {
 			return new VoidNode(sLoc);
@@ -231,5 +232,13 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 			assert astNodes.size() == 1;
 			return astNodes.get(0);
 		}
+	}
+	
+	public static ASTNode parse( Reader reader, SourceLocation sLoc ) throws Exception {
+		return parse( null, reader, sLoc );
+	}
+	
+	public static ASTNode parse( String source, SourceLocation sLoc ) throws Exception {
+		return parse( source.toCharArray(), null, sLoc );
 	}
 }

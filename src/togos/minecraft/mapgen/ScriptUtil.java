@@ -1,61 +1,45 @@
 package togos.minecraft.mapgen;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 
-import togos.lang.CompileError;
-import togos.lang.ParseError;
-import togos.minecraft.mapgen.util.Script;
-import togos.noise.v1.lang.ASTNode;
-import togos.noise.v1.lang.ParseUtil;
-import togos.noise.v1.lang.TNLCompiler;
-import togos.noise.v1.lang.TNLParser;
-import togos.noise.v1.lang.TNLTokenizer;
+import togos.lang.BaseSourceLocation;
+import togos.lang.RuntimeError;
+import togos.lang.SourceLocation;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
+import togos.noise.v3.functions.MathFunctions;
+import togos.noise.v3.parser.Parser;
+import togos.noise.v3.parser.ProgramTreeBuilder;
+import togos.noise.v3.parser.ast.ASTNode;
+import togos.noise.v3.program.runtime.Context;
+import togos.noise.v3.program.structure.Expression;
 
 public class ScriptUtil
 {
-	public static Object compileOrExit( TNLCompiler c, ASTNode n ) {
-		try {
-			return c.compile(n);
-		} catch( CompileError e ) {
-			System.err.println(ParseUtil.formatScriptError(e));
-			System.exit(1);
-			return null;
+	static final Context STD_CONTEXT = new Context();
+	static {
+		STD_CONTEXT.putAll(MathFunctions.CONTEXT);
+		STD_CONTEXT.putAll(GeneratorDefinitionFunctions.CONTEXT);
+	}
+	
+	public static MinecraftWorldGenerator loadWorldGenerator( Reader scriptReader, SourceLocation sLoc ) throws Exception {
+		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
+		
+		ASTNode programAst = Parser.parse( scriptReader, sLoc );
+		Expression<?> program = ptb.parseExpression(programAst);
+		Object v = program.bind( STD_CONTEXT ).getValue();
+		if( v instanceof MinecraftWorldGenerator ) {
+			return (MinecraftWorldGenerator)v;
+		} else {
+			throw new RuntimeError( "Program did not return a world generator, but "+v.getClass(), program.sLoc);
 		}
 	}
 	
-	public static Object compile( TNLCompiler c, Reader r, String sourceFilename, int sourceLineNumber ) throws IOException, ParseError, CompileError {
-		return c.compile( new TNLParser(new TNLTokenizer(r, sourceFilename, sourceLineNumber, 1)).readNode(0) );
-	}
-	
-	public static Object compile( TNLCompiler c, String source, String sourceFilename, int sourceLineNumber )
-		throws ParseError, CompileError
-	{
+	public static MinecraftWorldGenerator loadWorldGenerator( File scriptFile ) throws Exception {
+		FileReader r = new FileReader(scriptFile);
 		try {
-			return compile( c, new StringReader(source), sourceFilename, sourceLineNumber );
-		} catch( IOException e ) {
-			throw new RuntimeException(e); // shouldn't happen
-		}
-	}
-	
-	public static Object compile( TNLCompiler c, File f ) throws IOException, ParseError, CompileError {
-		Reader r = new FileReader(f);
-		try {
-			return compile( c, r, f.getName(), 1 );
-		} finally {
-			r.close();
-		}
-	}
-
-	public static Object compile( TNLCompiler c, Script s ) throws IOException, ParseError, CompileError {
-		Reader r = new InputStreamReader(new ByteArrayInputStream(s.source));
-		try {
-			return compile( c, r, s.sourceFilename, 1 );
+			return loadWorldGenerator( r, new BaseSourceLocation(scriptFile.getPath(), 1, 1));
 		} finally {
 			r.close();
 		}

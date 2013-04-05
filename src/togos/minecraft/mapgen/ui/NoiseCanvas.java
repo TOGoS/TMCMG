@@ -13,7 +13,6 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import togos.lang.ScriptError;
 import togos.minecraft.mapgen.ScriptUtil;
@@ -21,10 +20,9 @@ import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
+import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
-import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
-import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.noise.v1.func.CacheDaDaDa_Da;
 import togos.noise.v1.func.LFunctionDaDa_DaIa;
 import togos.noise.v1.lang.ParseUtil;
@@ -33,6 +31,19 @@ import togos.service.Service;
 public class NoiseCanvas extends WorldExplorerViewCanvas
 {
     private static final long serialVersionUID = 1L;
+    
+    class LayeredTerrainGroundFunction implements LFunctionDaDa_DaIa
+    {
+    	protected final LayeredTerrainFunction ltf;
+    	public LayeredTerrainGroundFunction( LayeredTerrainFunction ltf ) {
+    		this.ltf = ltf;
+    	}
+
+		@Override
+        public void apply( int vectorSize, double[] x, double[] z, double[] height, int[] type ) {
+	        // TODO
+        }
+    }
     
 	class NoiseRenderer implements Runnable, Service {
 		LFunctionDaDa_DaIa colorFunction;
@@ -179,11 +190,16 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 			colorFunc = null;
 		} else if( normalShadingEnabled ) {
 			NormalShadingGroundColorFunction gcf = new NormalShadingGroundColorFunction(
-				wg.getGroundFunction(), colorMap, mpp/2, mpp/2, 0.3/mpp, 0.5 );
+				new LayeredTerrainGroundFunction(wg.getTerrainFunction()),
+				colorMap, mpp/2, mpp/2, 0.3/mpp, 0.5
+			);
 			gcf.heightShadingEnabled = heightShadingEnabled;
 			colorFunc = gcf;
 		} else {
-			GroundColorFunction gcf = new GroundColorFunction( wg.getGroundFunction(), colorMap );
+			GroundColorFunction gcf = new GroundColorFunction(
+				new LayeredTerrainGroundFunction(wg.getTerrainFunction()),
+				colorMap
+			);
 			gcf.heightShadingEnabled = heightShadingEnabled;
 			colorFunc = gcf;
 		}
@@ -234,7 +250,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 	}
 	
 	interface GeneratorUpdateListener {
-		public void generatorUpdated( WorldGenerator wg );
+		public void generatorUpdated( MinecraftWorldGenerator wg );
 	}
 	
 	public static void main( String[] args ) {
@@ -256,7 +272,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		final NoiseCanvas nc = new NoiseCanvas();
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
-			public void generatorUpdated( WorldGenerator wg ) {
+			public void generatorUpdated( MinecraftWorldGenerator wg ) {
 				nc.setWorldGenerator( wg );
 			}
 		};
@@ -264,7 +280,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		final FileUpdateListener ful = new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					WorldGenerator worldGenerator = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
+					MinecraftWorldGenerator worldGenerator = (MinecraftWorldGenerator)ScriptUtil.loadWorldGenerator( scriptFile );
 					gul.generatorUpdated( worldGenerator );
 				} catch( ScriptError e ) {
 					System.err.println(ParseUtil.formatScriptError(e));
@@ -272,7 +288,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					System.err.println(e.getMessage());
 					System.exit(1);
 					return;
-				} catch( IOException e ) {
+				} catch( Exception e ) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -286,8 +302,6 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 				fw.addUpdateListener(ful);
 				sm.add(fw);
 			}
-		} else {
-			gul.generatorUpdated( SimpleWorldGenerator.DEFAULT );
 		}
 		
 		nc.setPreferredSize(new Dimension(512,384));

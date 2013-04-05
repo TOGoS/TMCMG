@@ -8,14 +8,14 @@ import java.awt.event.ComponentListener;
 import java.awt.geom.Rectangle2D;
 
 import togos.minecraft.mapgen.world.Materials;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.noise.v1.func.LFunctionIa_Ia;
 
 public abstract class WorldExplorerViewCanvas extends Canvas implements WorldExplorerView
 {
     private static final long serialVersionUID = 1L;
     
-	protected WorldGenerator wg;
+	protected MinecraftWorldGenerator wg;
 	protected LFunctionIa_Ia colorMap = Materials.colorMap( getSkyColor(), getSkyColor() );
 	protected double wx=0, wy=0, zoom=1;
 	public boolean showZoom = true;
@@ -45,7 +45,7 @@ public abstract class WorldExplorerViewCanvas extends Canvas implements WorldExp
 	
 	protected abstract void stateUpdated();
 	
-	public void setState( WorldGenerator wg, double wx, double wy, double zoom ) {
+	public void setState( MinecraftWorldGenerator wg, double wx, double wy, double zoom ) {
 		if( zoom == 0 ) {
 			throw new RuntimeException("Zoom cannot be zero!");
 		}
@@ -65,7 +65,7 @@ public abstract class WorldExplorerViewCanvas extends Canvas implements WorldExp
 		stateUpdated();
 	}
 	
-	public void setWorldGenerator( WorldGenerator wg ) {
+	public void setWorldGenerator( MinecraftWorldGenerator wg ) {
 		setState( wg, wx, wy, zoom );
 	}
 	public void setWorldPos( double wx, double wy, double zoom ) {

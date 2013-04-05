@@ -18,7 +18,7 @@ public final class StreamUtil
 	}
 	
 	public static void pipe( Reader r, StreamDestination<char[]> d ) throws Exception {
-		char[] buffer = new char[1024];
+		char[] buffer = new char[2048];
 		int i;
 		while( (i = r.read(buffer)) > 0 ) {
 			d.data( Arrays.copyOf(buffer, i) );

@@ -20,11 +20,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.regex.Pattern;
 
 import javax.swing.BoxLayout;
 
+import togos.lang.ScriptError;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.ui.ChunkExportWindow;
 import togos.minecraft.mapgen.ui.ColumnSideCanvas;
@@ -38,15 +38,12 @@ import togos.minecraft.mapgen.util.ChunkWritingService;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
-import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
-import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
-import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.noise.v1.lang.ParseUtil;
-import togos.lang.ScriptError;
 
 public class WorldDesigner
 {
@@ -327,10 +324,10 @@ public class WorldDesigner
 		final WorldExploreKeyListener wekl = new WorldExploreKeyListener(mwev);
 		
 		final GeneratorUpdateListener gul = new GeneratorUpdateListener() {
-			public void generatorUpdated( Script s ) {
-				lsc.setWorldGenerator( (WorldGenerator)s.program );
-				noiseCanvas.setWorldGenerator( (WorldGenerator)s.program );
-				chunkExportWindow.setScript( s );
+			public void generatorUpdated( MinecraftWorldGenerator mwg ) {
+				lsc.setWorldGenerator( mwg );
+				noiseCanvas.setWorldGenerator( mwg );
+				chunkExportWindow.setWorldGenerator( mwg );
 			}
 		};
 		
@@ -339,9 +336,7 @@ public class WorldDesigner
 		wdk.setFileUpdateListener(new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					Script script = Util.readScript(scriptFile);
-					script.program = (WorldGenerator)ScriptUtil.compile( new TNLWorldGeneratorCompiler(), scriptFile );
-					gul.generatorUpdated( script );
+					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile ) );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
 					String errText = ParseUtil.formatScriptError(e);
@@ -351,7 +346,7 @@ public class WorldDesigner
 					String errText = e.getMessage();
 					setStatus(true,errText);
 					System.err.println(errText);
-				} catch( IOException e ) {
+				} catch( Exception e ) {
 					throw new RuntimeException(e);
 				}
 			}

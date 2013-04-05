@@ -1,18 +1,30 @@
-basis = simplex( x, y, z ) * 3;
-# basis = perlin * 1.5;
+stone   =  1;
+dirt    =  3;
+bedrock =  7;
+water   =  8;
+sand    = 12;
 
-simple-dirt-height = clamp( clamp( -0.2, 0.2, simplex( x / 4, y, z / 4)), +0.3, basis );
+fractal( iter, bx, by, mx, my, dz, basis ) = (x,y,z) ->
+	basis( x * bx, y * by, z ) +
+	if( iter > 0,
+	    fractal( iter - 1, bx * mx, by * my, dz, basis )(x, y, z - dz),
+	    (x,y,z) -> 0);
+	    
+
+basis(x,y,z) = simplex(x,y,z) * 3;
+
+simple-dirt-height(x,y,z) = clamp( clamp( -0.2, 0.2, simplex( x / 4, y, z / 4)), +0.3, basis );
 simple-dirt-height-frac = fractal( 2, 32, 16, 2, 2, 1, simple-dirt-height );
 
-base-level(_x,_y,_z) = clamp(0, 64, 512 * simplex( _x / 128, 0, _z / 128 ));
+base-level(x,y,z) = clamp(0, 64, 512 * simplex( _x / 128, 0, _z / 128 ));
 
 layered-terrain(
-	layer( materials.water,  0, 63 ),
-	layer( materials.sand, 0, 63 + 64 * simplex( x / 128, y / 128, z / 128 ) ),
-	layer( material( 3, 3 ), 0, base-level(x,y,z) + 60 + simple-dirt-height-frac ),    
-	layer( materials.stone,  0, base-level(x,y,z) + 56 + simple-dirt-height-frac ),
-	layer( materials.bedrock, 0, 1 ),
-	grassifier,
-	tree-populator( tree-types.pine, 0.01 ),
-	lighter,
-);
+	layer( water  , 0, 63 ),
+	layer( sand   , 0, (x,z) -> 63 + 64 * simplex( x / 128, y / 128 ) ),
+	layer( dirt   , 0, (x,z) -> base-level(x,y,0) + 60 + simple-dirt-height-frac(x,y,0) ),    
+	layer( stone  , 0, (x,z) -> base-level(x,y,0) + 56 + simple-dirt-height-frac(x,y,0) ),
+	layer( bedrock, 0, 1 )
+	# grassifier,
+	# tree-populator( tree-types.pine, 0.01 ),
+	# lighter
+)

@@ -2,7 +2,7 @@ package togos.minecraft.mapgen.world.gen;
 
 import togos.noise.v1.func.LFunctionDaDaDa_Ia;
 
-public interface MinecraftTerrainGenerator
+public interface LayeredTerrainFunction
 {
 	static class LayerBuffer {
 		public final int maxVectorSize;
@@ -58,5 +58,5 @@ public interface MinecraftTerrainGenerator
 	 * doesn't have enough layers or if its vectorSize is < vectorSize.
 	 * Return the TerrainData containing the generated data.
 	 */
-	public TerrainBuffer generate( double[] x, double[] z, int vectorSize, TerrainBuffer buffer );
+	public TerrainBuffer apply( int vectorSize, double[] x, double[] z, TerrainBuffer buffer );
 }
