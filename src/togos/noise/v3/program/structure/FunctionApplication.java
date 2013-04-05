@@ -1,13 +1,12 @@
 package togos.noise.v3.program.structure;
 
 import togos.lang.CompileError;
-import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
-import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
-import togos.noise.v3.program.runtime.Function;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
+import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.runtime.Context;
+import togos.noise.v3.program.runtime.Function;
 
 public class FunctionApplication extends Expression<Object>
 {

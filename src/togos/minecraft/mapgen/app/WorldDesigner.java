@@ -342,6 +342,7 @@ public class WorldDesigner
 					String errText = ParseUtil.formatScriptError(e);
 					setStatus(true,errText);
 					System.err.println(errText);
+					e.printStackTrace();
 				} catch( FileNotFoundException e ) {
 					String errText = e.getMessage();
 					setStatus(true,errText);

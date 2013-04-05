@@ -129,10 +129,10 @@ public abstract class Binding<V>
 	}
 	
 	/**
-	 * Similar to Delegated but doesn't even generate
-	 * the delegated binding until it is needed.  This
-	 * is needed for looking up symbols since the name -> Binding table
-	 * may not be completely set up when the outer binding is created.
+	 * Similar to Delegated but doesn't even generate the delegated
+	 * binding until it is needed.  This is used when constructing
+	 * blocks since the name -> Binding table may not be completely
+	 * set up when the outer binding is created.
 	 */
 	public static abstract class Deferred<V> extends Binding<V> {
 		enum State {

@@ -2,6 +2,8 @@ package togos.noise.v3.functions;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
+import togos.noise.v1.func.D5_2Perlin;
+import togos.noise.v1.func.SimplexNoise;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
@@ -122,7 +124,7 @@ public class MathFunctions
 	}
 
 	static abstract class NoiseFunction extends BuiltinFunction<Double> {
-		abstract double apply( double a, double b );
+		abstract double apply( double a, double b, double c );
 		
 		protected static final Class<?>[] ARG_TYPES = { Number.class, Number.class, Number.class };
 		protected static final Object[] ARG_DEFAULTS = { null, null, null };
@@ -132,7 +134,7 @@ public class MathFunctions
 		}
 		
 		protected Double apply( Object[] args ) {
-			return apply( ((Number)args[0]).doubleValue(), ((Number)args[1]).doubleValue() );
+			return apply( ((Number)args[0]).doubleValue(), ((Number)args[1]).doubleValue(), ((Number)args[2]).doubleValue() );
 		}
 	}
 	
@@ -165,6 +167,44 @@ public class MathFunctions
 			@Override String getName() { return "and"; }
 			@Override Boolean apply( boolean a, boolean b ) { return a && b; }
 		};
+		
+		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
+			@Override String getName() { return "simplex"; }
+			
+			ThreadLocal<SimplexNoise> simplex = new ThreadLocal<SimplexNoise>() {
+				@Override public SimplexNoise initialValue() {
+					return new SimplexNoise();
+				}
+			};
+			
+			@Override
+			double apply(double a, double b, double c) {
+				return simplex.get().apply((float)a, (float)b, (float)c);
+			}
+		}) );
+		
+		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
+			@Override String getName() { return "simplex"; }
+			
+			ThreadLocal<SimplexNoise> simplex = new ThreadLocal<SimplexNoise>() {
+				@Override public SimplexNoise initialValue() {
+					return new SimplexNoise();
+				}
+			};
+			
+			@Override
+			double apply(double a, double b, double c) {
+				return simplex.get().apply((float)a, (float)b, (float)c);
+			}
+		}) );
+		CONTEXT.put("perlin", builtinBinding(new NoiseFunction() {
+			@Override String getName() { return "perlin"; }
+			
+			@Override
+			double apply(double a, double b, double c) {
+				return D5_2Perlin.instance.get(a, b, c);
+			}
+		}) );
 		
 		CONTEXT.put("if", builtinBinding(new Function<Object>() {
 			@Override public Binding<Object> apply(final BoundArgumentList input) throws CompileError {

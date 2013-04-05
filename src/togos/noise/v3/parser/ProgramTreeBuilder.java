@@ -1,7 +1,7 @@
 package togos.noise.v3.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -135,7 +135,7 @@ public class ProgramTreeBuilder
 	
 	protected Block<Object> parseBlock( InfixNode ast ) throws ParseError {
 		assert ";".equals(ast.operator);
-		HashMap<String,Expression<? extends Object>> definitions = new HashMap<String,Expression<?>>();
+		LinkedHashMap<String,Expression<? extends Object>> definitions = new LinkedHashMap<String,Expression<?>>();
 		ASTNode blockValueNode = null;
 		List<ASTNode> blockParts = flatten(ast);
 		for( ASTNode bp : blockParts ) {

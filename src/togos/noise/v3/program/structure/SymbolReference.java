@@ -15,16 +15,11 @@ public class SymbolReference extends Expression<Object>
 	}
 
 	@Override
-    public Binding<Object> bind( final Context context ) {
-		return new Binding.Deferred<Object>( sLoc ) {
-			@Override
-            protected Binding<?> generateDelegate() throws CompileError {
-				if( !context.containsKey(symbol) ) {
-					throw new CompileError( "Symbol '"+symbol+"' is undefined", sLoc );
-				}
-				return context.get(symbol);
-            }
-		};
+    public Binding<?> bind( final Context context ) throws CompileError {
+		if( !context.containsKey(symbol) ) {
+			throw new CompileError( "Symbol '"+symbol+"' is undefined", sLoc );
+		}
+		return context.get(symbol);
     }
 	
 	@Override public String toString() {

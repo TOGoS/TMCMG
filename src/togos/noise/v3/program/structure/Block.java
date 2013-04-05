@@ -18,16 +18,25 @@ public class Block<V> extends Expression<V>
 	    this.value = value;
     }
 	
+	protected static <T> Binding.Deferred<T> defer( final Expression<? extends T> expr, final Context ctx, SourceLocation sLoc ) {
+		return new Binding.Deferred<T>( sLoc ) {
+			@Override
+			protected Binding<? extends T> generateDelegate() throws CompileError {
+				return expr.bind(ctx);
+			}
+		};
+	}
+
 	@Override
     public Binding<V> bind( Context context ) throws CompileError {
 		final Context newContext = new Context(context);
 		for( final Map.Entry<String,Expression<?>> symbolDef : symbolDefinitions.entrySet() ) {
 			newContext.put(
 				symbolDef.getKey(),
-				symbolDef.getValue().bind(newContext)
+				defer( symbolDef.getValue(), newContext, symbolDef.getValue().sLoc )
 			);
 		}
-		return new Binding.Delegated<V>( value.bind(newContext), sLoc );
+		return defer( value, newContext, sLoc );
     }
 	
 	public String toString() {
