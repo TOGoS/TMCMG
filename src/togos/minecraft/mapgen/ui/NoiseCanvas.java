@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import togos.lang.ScriptError;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -24,11 +25,9 @@ import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
-import togos.noise.v1.data.DataDaDa;
 import togos.noise.v1.func.CacheDaDaDa_Da;
-import togos.noise.v1.func.FunctionDaDa_Ia;
+import togos.noise.v1.func.LFunctionDaDa_DaIa;
 import togos.noise.v1.lang.ParseUtil;
-import togos.lang.ScriptError;
 import togos.service.Service;
 
 public class NoiseCanvas extends WorldExplorerViewCanvas
@@ -36,14 +35,14 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
     private static final long serialVersionUID = 1L;
     
 	class NoiseRenderer implements Runnable, Service {
-		FunctionDaDa_Ia colorFunction;
+		LFunctionDaDa_DaIa colorFunction;
 		int width, height;
 		double worldX, worldY, worldXPerPixel, worldYPerPixel;
 		
 		public volatile BufferedImage buffer;
 		protected volatile boolean stop = false;
 		
-		public NoiseRenderer( FunctionDaDa_Ia colorFunction, int width, int height,
+		public NoiseRenderer( LFunctionDaDa_DaIa colorFunction, int width, int height,
 			double worldX, double worldY, double worldXPerPixel, double worldYPerPixel
 		) {
 			this.colorFunction = colorFunction;
@@ -119,6 +118,9 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 			
 			double[] wx = new double[batchSize];
 			double[] wy = new double[batchSize];
+			// Never used here, but coloring function gets to use it as scratch space.
+			double[] height = new double[batchSize];
+			int[] color = new int[batchSize];
 			
 			while( !stop ) {
 				int coordCount = cpop.nextCoords(px, py, scale);
@@ -129,7 +131,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 					wy[i] = worldY + py[i]*worldYPerPixel;
 				}
 				long beginTime = System.currentTimeMillis();
-				int[] color = colorFunction.apply(new DataDaDa(batchSize,wx,wy)).v;
+				colorFunction.apply( batchSize, wx, wy, height, color );
 				long endTime = System.currentTimeMillis();
 				elapsedMs += (endTime - beginTime);
 				samples += batchSize;
@@ -157,7 +159,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		}
 	}
 	
-	public FunctionDaDa_Ia colorFunc;
+	public LFunctionDaDa_DaIa colorFunc;
 	NoiseRenderer cnr;
 	public boolean normalShadingEnabled = true;
 	public boolean heightShadingEnabled = true;
@@ -177,11 +179,11 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 			colorFunc = null;
 		} else if( normalShadingEnabled ) {
 			NormalShadingGroundColorFunction gcf = new NormalShadingGroundColorFunction(
-				wg.getGroundFunction(), mpp/2, mpp/2, 0.3/mpp, 0.5 );
+				wg.getGroundFunction(), colorMap, mpp/2, mpp/2, 0.3/mpp, 0.5 );
 			gcf.heightShadingEnabled = heightShadingEnabled;
 			colorFunc = gcf;
 		} else {
-			GroundColorFunction gcf = new GroundColorFunction( wg.getGroundFunction() );
+			GroundColorFunction gcf = new GroundColorFunction( wg.getGroundFunction(), colorMap );
 			gcf.heightShadingEnabled = heightShadingEnabled;
 			colorFunc = gcf;
 		}
@@ -189,6 +191,10 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		if( colorFunc != null ) {
 			startRenderer(new NoiseRenderer(colorFunc,getWidth(),getHeight(),leftX,topY,mpp,mpp));
 		}
+	}
+	
+	protected int getSkyColor() {
+		return 0xFF000000;
 	}
 	
 	public void update(Graphics g) {

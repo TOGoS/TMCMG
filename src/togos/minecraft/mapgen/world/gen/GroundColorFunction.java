@@ -1,21 +1,19 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.minecraft.mapgen.world.Materials;
-import togos.noise.v1.data.DataDaDa;
-import togos.noise.v1.data.DataDaIa;
-import togos.noise.v1.data.DataIa;
-import togos.noise.v1.func.FunctionDaDa_DaIa;
-import togos.noise.v1.func.FunctionDaDa_Ia;
+import togos.noise.v1.func.LFunctionDaDa_DaIa;
+import togos.noise.v1.func.LFunctionIa_Ia;
 
-public class GroundColorFunction implements FunctionDaDa_Ia
+public class GroundColorFunction implements LFunctionDaDa_DaIa
 {
-	FunctionDaDa_DaIa groundFunction;
+	protected final LFunctionDaDa_DaIa groundFunction;
+	protected final LFunctionIa_Ia colorMap;
 	public double heightShadeOrigin = 64;
 	public double heightShadeAmount = 1.0/128;
 	public boolean heightShadingEnabled = true;
 	
-	public GroundColorFunction( FunctionDaDa_DaIa groundFunction ) {
+	public GroundColorFunction( LFunctionDaDa_DaIa groundFunction, LFunctionIa_Ia colorMap ) {
 		this.groundFunction = groundFunction;
+		this.colorMap = colorMap;
 	}
 	
 	//// Handy color-manipulation functions ////
@@ -55,18 +53,15 @@ public class GroundColorFunction implements FunctionDaDa_Ia
 	
 	////
 	
-	public DataIa apply( final DataDaDa in ) {
-		final int vectorSize = in.getLength();
-		DataDaIa ground = groundFunction.apply(in);
-		int[] type = ground.i;
-		int[] color = new int[vectorSize];
-		for( int i=0; i<color.length; ++i ) {
-			int col = Materials.getByBlockType(type[i]).color;
+	public void apply( int vectorSize, double[] x, double[] y, double[] height, int[] color ) {
+		groundFunction.apply( vectorSize, x, y, height, color );
+		colorMap.apply( vectorSize, color, color );
+		for( int i=vectorSize-1; i>=0; --i ) {
+			int col = color[i];
 			if( heightShadingEnabled ) {
-				col = shade(col,(int)((ground.d[i]-heightShadeOrigin)*heightShadeAmount*255));
+				col = shade(col,(int)((height[i]-heightShadeOrigin)*heightShadeAmount*255));
 			}
 			color[i] = col;
 		}
-		return new DataIa(vectorSize, color);
 	}
 }

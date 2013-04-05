@@ -9,12 +9,28 @@ package togos.minecraft.mapgen.world;
 
 import java.util.HashMap;
 
+import togos.noise.v1.func.LFunctionIa_Ia;
+
 // TODO: Remove this entirely; use TMCMR-style text files to define colors
 // and some way to import aliases into TNL scripts.
 public class Materials
 {
 	static final int BLOCK_TYPE_MASK = 0xFF;
 	static final int BLOCK_TYPE_COUNT = 256;
+	
+	public static final LFunctionIa_Ia colorMap( final int airColor, final int noColor ) {
+		return new LFunctionIa_Ia() {
+			@Override public void apply( int vectorSize, int[] in, int[] out ) {
+				for( int i=vectorSize-1; i>=0; --i ) {
+					switch( in[i] ) {
+					case  0: out[i] = airColor; break;
+					case -1: out[i] = noColor; break;
+					default: out[i] = Materials.getByBlockType( in[i] ).color;
+					}
+				}
+	        }
+		};
+	};
 	
 	public static Material[] byBlockType = new Material[BLOCK_TYPE_COUNT];
 	static HashMap<String,Material> byName = new HashMap<String,Material>();

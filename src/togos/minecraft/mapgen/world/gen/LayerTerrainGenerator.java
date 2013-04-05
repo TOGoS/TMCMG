@@ -5,18 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import togos.minecraft.mapgen.MaterialColumnFunction;
+import togos.minecraft.mapgen.LFunctionDaDa_Da_Ia;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.minecraft.mapgen.world.ChunkUtil;
 import togos.minecraft.mapgen.world.LayerUtil;
-import togos.minecraft.mapgen.world.Material;
-import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v1.data.DataDaDa;
 import togos.noise.v1.data.DataDaDaDa;
-import togos.noise.v1.data.DataDaIa;
 import togos.noise.v1.data.DataIa;
-import togos.noise.v1.func.FunctionDaDa_DaIa;
+import togos.noise.v1.func.LFunctionDaDa_DaIa;
 
 // TODO: Implement MinecraftTerrainGenerator, instead
 public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGenerator
@@ -85,7 +82,7 @@ public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGe
 		}
 	}
 	
-	public static class LayerGroundFunction implements FunctionDaDa_DaIa {
+	public static class LayerGroundFunction implements LFunctionDaDa_DaIa {
 		public static final int AIR_IGNORE = 0;
 		public static final int AIR_SUBTRACT = 1;
 		public static final int AIR_NORMAL = 2;
@@ -97,22 +94,20 @@ public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGe
 			this.airTreatment = airTreatment;
 		}
 		
-		public DataDaIa apply( final DataDaDa in ) {
-			final int vectorSize = in.getLength();
-			
-			double[] highest = new double[vectorSize];
-			int[] outT = new int[vectorSize];
-			for( int j=in.getLength()-1; j>=0; --j ) {
-				highest[j] = Double.NEGATIVE_INFINITY;
-				outT[j] = Blocks.AIR;
+		public void apply( int vectorSize, double[] x, double[] z, double[] height, int[] type ) {
+			for( int j=vectorSize-1; j>=0; --j ) {
+				height[j] = Double.NEGATIVE_INFINITY;
+				type[j] = Blocks.AIR;
 			}
+			double[] lCeil  = new double[vectorSize];
+			double[] lFloor = new double[vectorSize];
+			double[] lTopY = LayerUtil.maxY(lCeil);
 			for( HeightmapLayer l : layers ) {
-				double[] lCeil  = l.ceilingHeightFunction.apply(in).x;
-				double[] lFloor = l.floorHeightFunction.apply(in).x;
-				double[] lTopY = LayerUtil.maxY(lCeil);
-				DataDaDaDa typeInput = new DataDaDaDa(vectorSize,in.x,lTopY,in.y);
-				int[] lType = l.typeFunction.apply(typeInput).v;
-				for( int j=in.getLength()-1; j>=0; --j ) {
+				l.lCeilingHeightFunction.apply(vectorSize, x, z, lCeil);
+				l.lFloorHeightFunction.apply(vectorSize, x, z, lFloor);
+				int[] lType = new int[vectorSize];
+				l.lTypeFunction.apply(vectorSize, x, lTopY, z, lType);
+				for( int j=vectorSize-1; j>=0; --j ) {
 					boolean subtract = false;
 					if( lType[j] == Blocks.NONE ) {
 						continue;
@@ -134,34 +129,33 @@ public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGe
 					if( Double.isNaN(lFloor[j]) ) {
 						throw new RuntimeException("Floor height is NaN for layer "+l);
 					}
-					if( lCeil[j] < highest[j] ) continue;
+					if( lCeil[j] < height[j] ) continue;
 					if( lCeil[j] <= lFloor[j] ) continue;
 					
 					if( subtract ) {
-						if( highest[j] <= lCeil[j] && highest[j] >= lFloor[j] ) {
-							highest[j] = lFloor[j];
+						if( height[j] <= lCeil[j] && height[j] >= lFloor[j] ) {
+							height[j] = lFloor[j];
 						}
 					} else {
-						outT[j] = lType[j];
-						highest[j] = lCeil[j];
+						type[j] = lType[j];
+						height[j] = lCeil[j];
 					}
 				}
 			}
-			return new DataDaIa( vectorSize, highest, outT );
 		}
 	}
 	
-	public static class LayerColumnFunction implements MaterialColumnFunction {
+	public static class LayerColumnFunction implements LFunctionDaDa_Da_Ia {
 		List<HeightmapLayer> layers;
 		public LayerColumnFunction( List<HeightmapLayer> layers ) {
 			this.layers = layers;
 		}
 		
-		public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, Material[] dest ) {
+		public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] dest ) {
 			DataDaDa in = new DataDaDa(xzCount,x,z);
 			
 			for( int i=0; i<xzCount*yCount; ++i ) {
-				dest[i] = Materials.getByBlockType(Blocks.AIR);
+				dest[i] = 0;
 			}
 			
 			for( HeightmapLayer l : layers ) {
@@ -188,7 +182,7 @@ public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGe
 						int t = type.v[j];
 						if( t == -1 ) continue;
 						int yIdx = colIdx[j];
-						dest[yIdx+i*yCount] = Materials.getByBlockType(t);
+						dest[yIdx+i*yCount] = t;
 					}
 				}
 			}
@@ -201,12 +195,12 @@ public class LayerTerrainGenerator implements WorldGenerator, MinecraftTerrainGe
 	}
 	
 	@Override
-	public FunctionDaDa_DaIa getGroundFunction() {
+	public LFunctionDaDa_DaIa getGroundFunction() {
 		return new LayerGroundFunction(layers, LayerGroundFunction.AIR_SUBTRACT);
 	}
 	
 	@Override
-	public MaterialColumnFunction getColumnFunction() {
+	public LFunctionDaDa_Da_Ia getColumnFunction() {
 		return new LayerColumnFunction(layers);
     }
 	

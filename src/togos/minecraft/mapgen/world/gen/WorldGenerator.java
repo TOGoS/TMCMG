@@ -2,14 +2,14 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.Map;
 
-import togos.minecraft.mapgen.MaterialColumnFunction;
-import togos.noise.v1.func.FunctionDaDa_DaIa;
+import togos.minecraft.mapgen.LFunctionDaDa_Da_Ia;
+import togos.noise.v1.func.LFunctionDaDa_DaIa;
 
 public interface WorldGenerator
 {
 	/** Used to color the overhead preview */
-	public FunctionDaDa_DaIa getGroundFunction();
-	public MaterialColumnFunction getColumnFunction();
+	public LFunctionDaDa_DaIa getGroundFunction();
+	public LFunctionDaDa_Da_Ia getColumnFunction();
 	public ChunkMunger getChunkMunger();
 	
 	/**

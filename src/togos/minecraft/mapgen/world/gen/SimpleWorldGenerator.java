@@ -2,13 +2,14 @@ package togos.minecraft.mapgen.world.gen;
 
 import java.util.Map;
 
-import togos.minecraft.mapgen.MaterialColumnFunction;
+import togos.minecraft.mapgen.LFunctionDaDa_Da_Ia;
 import togos.minecraft.mapgen.world.Blocks;
 import togos.noise.v1.func.AdaptInXZDaDaDa_DaDa_Da;
 import togos.noise.v1.func.AddOutDaDaDa_Da;
 import togos.noise.v1.func.Constant_Da;
 import togos.noise.v1.func.Constant_Ia;
 import togos.noise.v1.func.FunctionDaDa_DaIa;
+import togos.noise.v1.func.LFunctionDaDa_DaIa;
 import togos.noise.v1.func.MultiplyOutDaDaDa_Da;
 import togos.noise.v1.func.PerlinDaDaDa_Da;
 import togos.noise.v1.func.ScaleInDaDaDa_Da;
@@ -18,8 +19,8 @@ import togos.noise.v1.func.TerrainScaleDaDaDa_Da;
 
 public class SimpleWorldGenerator implements WorldGenerator
 {
-	public FunctionDaDa_DaIa groundFunction;
-	public MaterialColumnFunction columnFunction;
+	public LFunctionDaDa_DaIa groundFunction;
+	public LFunctionDaDa_Da_Ia columnFunction;
 	public ChunkMunger chunkMunger;
 	public Map<String,Object> components;
 	
@@ -93,18 +94,18 @@ public class SimpleWorldGenerator implements WorldGenerator
 		DEFAULT = new SimpleWorldGenerator(cmList, lm.getGroundFunction(), lm.getColumnFunction(), lm.getComponents());
 	}
 	
-	public SimpleWorldGenerator( ChunkMunger chunkMunger, FunctionDaDa_DaIa groundFunction, MaterialColumnFunction columnFunction, Map<String,Object> components ) {
+	public SimpleWorldGenerator( ChunkMunger chunkMunger, LFunctionDaDa_DaIa groundFunction, LFunctionDaDa_Da_Ia columnFunction, Map<String,Object> components ) {
 		this.chunkMunger = chunkMunger;
 		this.groundFunction = groundFunction;
 		this.columnFunction = columnFunction;
 		this.components = components;
 	}
 	
-	public FunctionDaDa_DaIa getGroundFunction() {
+	public LFunctionDaDa_DaIa getGroundFunction() {
 		return groundFunction;
 	}
 	
-	public MaterialColumnFunction getColumnFunction() {
+	public LFunctionDaDa_Da_Ia getColumnFunction() {
 		return columnFunction;
     }
 	

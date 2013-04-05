@@ -9,13 +9,14 @@ import togos.noise.v1.data.DataDaDa;
 import togos.noise.v1.data.DataDaIa;
 import togos.noise.v1.func.FunctionDaDa_Da;
 import togos.noise.v1.func.FunctionDaDa_DaIa;
+import togos.noise.v1.func.LFunctionDaDa_DaIa;
 import togos.noise.v1.lang.FunctionUtil;
 
 public class GroundStampPopulator implements StampPopulator
 {
 	FunctionDaDa_Da densityFunction;
 	double maxDensity;
-	FunctionDaDa_DaIa groundFunction;
+	LFunctionDaDa_DaIa groundFunction;
 	int[] allowedGroundTypes;
 	Stamp[] stamps;
 	int placementSeed = 0;
@@ -26,7 +27,7 @@ public class GroundStampPopulator implements StampPopulator
 	public GroundStampPopulator(
 		StampGenerator stampGenerator, int instanceCount,
 		FunctionDaDa_Da densityFunction, double maxDensity,
-		FunctionDaDa_DaIa groundFunction, int[] allowedGroundTypes
+		LFunctionDaDa_DaIa groundFunction, int[] allowedGroundTypes
 	) {
 		this.stampGenerator = stampGenerator;
 		this.densityFunction = densityFunction;
@@ -43,7 +44,7 @@ public class GroundStampPopulator implements StampPopulator
 		return stamps[seed];
 	}
 	
-	protected void collect( Collection instances, long cwx, long cwz, int cw, int cd ) {
+	protected void collect( Collection<StampInstance> instances, long cwx, long cwz, int cw, int cd ) {
 		Random r = new Random((cwx*1234+cwz) ^ placementSeed);
 		
 		double density = FunctionUtil.getValue( densityFunction, cwx, cwz );
@@ -55,11 +56,13 @@ public class GroundStampPopulator implements StampPopulator
 			x[i] = cwx + r.nextInt(cw);
 			z[i] = cwz + r.nextInt(cd);
 		}
-		DataDaIa ground = groundFunction.apply(new DataDaDa(count,x,z));
+		double[] groundHeight = new double[count];
+		int[] groundType = new int[count];
+		groundFunction.apply(count, x, z, groundHeight, groundType );
 		for( int i=0; i<count; ++i ) {
 			boolean allowPlacement = false;
 			for( int j=0; j<allowedGroundTypes.length; ++j ) {
-				if( allowedGroundTypes[j] == ground.i[i] ) {
+				if( allowedGroundTypes[j] == groundType[i] ) {
 					allowPlacement = true;
 					break;
 				}
@@ -67,13 +70,13 @@ public class GroundStampPopulator implements StampPopulator
 			if( allowPlacement ) {
 				long wx = (long)x[i];
 				long wz = (long)z[i];
-				instances.add(new StampInstance( getStamp(wx,wz), wx, (int)ground.d[i], wz ));
+				instances.add(new StampInstance( getStamp(wx,wz), wx, (int)groundHeight[i], wz ));
 			}
 		}
 	}
 	
-	public Collection getStampInstances( long cwx, long cwz, int cw, int cd ) {
-		ArrayList instances = new ArrayList();
+	public Collection<StampInstance> getStampInstances( long cwx, long cwz, int cw, int cd ) {
+		ArrayList<StampInstance> instances = new ArrayList<StampInstance>();
 		collect( instances, cwx-cw, cwz-cd, cw, cd );
 		collect( instances, cwx   , cwz-cd, cw, cd );
 		collect( instances, cwx+cw, cwz-cd, cw, cd );

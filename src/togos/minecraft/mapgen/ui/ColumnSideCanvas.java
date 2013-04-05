@@ -15,7 +15,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import togos.minecraft.mapgen.MaterialColumnFunction;
+import togos.lang.ScriptError;
+import togos.minecraft.mapgen.LFunctionDaDa_Da_Ia;
 import togos.minecraft.mapgen.ScriptUtil;
 import togos.minecraft.mapgen.util.FileUpdateListener;
 import togos.minecraft.mapgen.util.FileWatcher;
@@ -23,31 +24,31 @@ import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.Script;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.util.Util;
-import togos.minecraft.mapgen.world.Material;
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.SimpleWorldGenerator;
 import togos.minecraft.mapgen.world.gen.TNLWorldGeneratorCompiler;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.noise.v1.func.LFunctionIa_Ia;
 import togos.noise.v1.lang.ParseUtil;
-import togos.lang.ScriptError;
 import togos.service.Service;
 
 public class ColumnSideCanvas extends WorldExplorerViewCanvas
 {
     private static final long serialVersionUID = 1L;
 	
-    public static final int SKY_COLOR = 0xFF00AAFF;
+    public int getSkyColor() { return 0xFF00AAFF; }
 	public final int worldFloor = 0, worldCeiling = ChunkData.NORMAL_CHUNK_HEIGHT;
     
 	class ColumnSideRenderer implements Runnable, Service {
-		MaterialColumnFunction cFunc;
+		LFunctionDaDa_Da_Ia cFunc;
 		int width, height;
 		double worldX, worldZ, worldXPerPixel;
 		
 		public volatile BufferedImage buffer;
 		protected volatile boolean stop = false;		
 		
-		public ColumnSideRenderer( MaterialColumnFunction cFunc, int width, int height,
+		public ColumnSideRenderer( LFunctionDaDa_Da_Ia cFunc, int width, int height,
 			double worldX, double worldZ, double worldXPerPixel
 		) {
 			this.cFunc = cFunc;
@@ -67,10 +68,6 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 			return gc.createCompatibleImage(width, height, Transparency.OPAQUE);
 		}
 		
-		protected Color color(int argb) {
-			return new Color(argb);
-		}
-		
 		public void run() {
 			if( width == 0 || height == 0 ) return;
 			
@@ -82,16 +79,15 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 			double[] wx = new double[sectWidth];
 			double[] wy = new double[height];
 			double[] wz = new double[sectWidth];
-			Material[] mat = new Material[sectWidth*height];
-			int[] imgCol = new int[sectWidth*height];
+			int[] colors = new int[sectWidth*height]; // ordered y, xz
 			
 			synchronized( buffer ) {
-				g.setColor( color(SKY_COLOR) );
+				g.setColor( Color.BLACK );
 				g.fillRect(0,0,width,height);
 			}
 			
 			for( int i=0; i<height; ++i ) {
-				wy[i] = 0 + i;
+				wy[i] = i;
 			}
 			
 			for( int sx=0; sx<width && !stop; sx+=sectWidth ) {
@@ -101,18 +97,13 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 					wx[i] = worldX + (sx+i)*worldXPerPixel;
 					wz[i] = worldZ;
 				}
-				cFunc.apply( sw, wx, wz, height, wy, mat );
-				
-				for( int x=0; x<sw; ++x ) {
-					for( int y=0; y<height; ++y ) {
-						Material material = mat[x*height+y];
-						int color = material.color == 0 ? SKY_COLOR : material.color;
-						imgCol[x+(height-y-1)*sectWidth] = color;
-					}
-				}
+				cFunc.apply( sw, wx, wz, height, wy, colors );
 				
 				synchronized( buffer ) {
-					buffer.setRGB(sx, 0, sw, height, imgCol, 0, sectWidth);
+					for( int i=0; i<sw; ++i ) {
+						// Draw it upside-down!
+						buffer.setRGB(sx+i, 0, 1, height, colors, (i+1)*height-1, -1);
+					}
 				}
 				repaint();
 			}
@@ -127,7 +118,23 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		}
 	}
 	
-	protected MaterialColumnFunction cFunc;
+	public static class ColumnColorFunction implements LFunctionDaDa_Da_Ia
+	{
+		protected final LFunctionDaDa_Da_Ia materialFunction;
+		protected final LFunctionIa_Ia colorMap;
+		
+		ColumnColorFunction( LFunctionDaDa_Da_Ia materialFunction, LFunctionIa_Ia colorMap ) {
+			this.materialFunction = materialFunction;
+			this.colorMap = colorMap;
+		}
+
+		@Override public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] color ) {
+			materialFunction.apply( xzCount, x, z, yCount, y, color );
+			colorMap.apply( xzCount*yCount, color, color );
+        }
+	}
+	
+	protected LFunctionDaDa_Da_Ia cFunc;
 	ColumnSideRenderer cnr;
 	
 	public ColumnSideCanvas() {
@@ -142,7 +149,7 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		if( wg == null ) {
 			cFunc = null;
 		} else {
-			cFunc = wg.getColumnFunction();
+			cFunc = new ColumnColorFunction( wg.getColumnFunction(), colorMap );
 		}
 		
 		if( cFunc != null ) {

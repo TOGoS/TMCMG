@@ -7,15 +7,20 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.Rectangle2D;
 
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.WorldGenerator;
+import togos.noise.v1.func.LFunctionIa_Ia;
 
 public abstract class WorldExplorerViewCanvas extends Canvas implements WorldExplorerView
 {
     private static final long serialVersionUID = 1L;
     
 	protected WorldGenerator wg;
+	protected LFunctionIa_Ia colorMap = Materials.colorMap( getSkyColor(), getSkyColor() );
 	protected double wx=0, wy=0, zoom=1;
 	public boolean showZoom = true;
+	
+	protected abstract int getSkyColor();
 	
 	public WorldExplorerViewCanvas() {
 		addComponentListener(new ComponentListener() {
