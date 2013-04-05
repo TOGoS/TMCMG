@@ -11,14 +11,13 @@ import togos.lang.CompileError;
 import togos.lang.ParseError;
 import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
-import togos.noise.Compiler;
 import togos.noise.v1.data.DataDa;
 import togos.noise.v1.data.DataDaDaDa;
 import togos.noise.v1.func.FunctionDaDaDa_Da;
 import togos.noise.v1.func.LFunctionDaDaDa_Da;
 import togos.noise.v1.lang.macro.MacroType;
 
-public class TNLCompiler implements Compiler
+public class TNLCompiler
 {
 	public Map<String,MacroType> macroTypes = new HashMap<String,MacroType>();
 	
