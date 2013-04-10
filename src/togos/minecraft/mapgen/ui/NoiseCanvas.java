@@ -21,6 +21,7 @@ import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.GroundColorFunction;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
+import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.LayerBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
 import togos.noise.v1.func.CacheDaDaDa_Da;
@@ -35,13 +36,103 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
     class LayeredTerrainGroundFunction implements LFunctionDaDa_DaIa
     {
     	protected final LayeredTerrainFunction ltf;
-    	public LayeredTerrainGroundFunction( LayeredTerrainFunction ltf ) {
+    	protected final boolean quantizeH, quantizeV;
+    	public LayeredTerrainGroundFunction( LayeredTerrainFunction ltf, boolean quantizeH, boolean quantizeV ) {
     		this.ltf = ltf;
+    		this.quantizeH = quantizeH;
+    		this.quantizeV = quantizeV;
     	}
-
+    	
+    	class Buf {
+    		final int vectorSize;
+    		LayeredTerrainFunction.TerrainBuffer terrainBuffer;
+    		final boolean[] tempB;
+    		final double[] quantX;
+    		final double[] quantZ;
+    		final double[] tempX;
+    		final double[] tempY;
+    		final double[] tempZ;
+    		final int[] tempType;
+    		final int[] tempIndex;
+    		
+    		public Buf( final int vectorSize ) {
+    			this.vectorSize = vectorSize;
+    			this.tempB = new boolean[vectorSize];
+    			this.quantX = new double[vectorSize];
+    			this.quantZ = new double[vectorSize];
+    			this.tempX = new double[vectorSize];
+    			this.tempY = new double[vectorSize];
+    			this.tempZ = new double[vectorSize];
+    			this.tempType = new int[vectorSize];
+    			this.tempIndex = new int[vectorSize];
+    		}
+    	}
+    	
+    	final ThreadLocal<Buf> bufVar = new ThreadLocal<Buf>();
+    	
+    	protected Buf getBuf( int vectorSize ) {
+    		Buf buf = bufVar.get();
+    		if( buf == null || buf.vectorSize < vectorSize ) {
+        		bufVar.set( buf = new Buf(vectorSize) );
+    		}
+    		return buf;
+    	}
+    	
 		@Override
         public void apply( int vectorSize, double[] x, double[] z, double[] height, int[] type ) {
-	        // TODO
+			Buf buf = getBuf(vectorSize);
+			
+			double[] quantX, quantZ;
+			
+			if( quantizeH ) {
+				quantX = buf.quantX;
+				quantZ = buf.quantZ;
+				for( int i=vectorSize-1; i>=0; --i ) {
+					quantX[i] = Math.floor(x[i]) + 0.5;
+					quantZ[i] = Math.floor(z[i]) + 0.5;
+				}
+			} else {
+				quantX = x;
+				quantZ = z;
+			}
+			buf.terrainBuffer = ltf.apply(vectorSize, quantX, quantZ, buf.terrainBuffer);
+			
+			for( int i=vectorSize-1; i>=0; --i ) {
+				height[i] = Double.NEGATIVE_INFINITY;
+				type[i] = -1;
+			}
+			for( int l=0; l<buf.terrainBuffer.layerCount; ++l ) {
+				LayerBuffer lBuf = buf.terrainBuffer.layerData[l];
+				
+				// Build some sub-vectors so that only layers that stick
+				// out above previous ones will need their type calculated
+				// TODO: Wait until all done calculating heights, *then*
+				// calculate type.
+				int subVectorSize = 0;
+				for( int i=vectorSize-1; i>=0; --i ) {
+					double lFloor, lCeil;
+					if( quantizeV ) {
+						lFloor = Math.round(lBuf.floorHeight[i]);
+						lCeil  = Math.round(lBuf.ceilingHeight[i]);
+					} else {
+						lFloor = lBuf.floorHeight[i];
+						lCeil  = lBuf.ceilingHeight[i];
+					}
+					if( lCeil > lFloor && lCeil >= height[i] ) {
+						buf.tempX[subVectorSize] = x[i];
+						buf.tempY[subVectorSize] = lCeil - 0.5;
+						buf.tempZ[subVectorSize] = z[i];
+						buf.tempIndex[subVectorSize] = i;
+						height[i] = lCeil;
+						++subVectorSize;
+					}
+				}
+				lBuf.blockTypeFunction.apply(subVectorSize, buf.tempX, buf.tempY, buf.tempZ, buf.tempType);
+				for( int j=subVectorSize-1; j>=0; --j ) {
+					final int i = buf.tempIndex[j];
+					type[i] = buf.tempType[j];
+				}
+			}
         }
     }
     
@@ -174,10 +265,15 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 	NoiseRenderer cnr;
 	public boolean normalShadingEnabled = true;
 	public boolean heightShadingEnabled = true;
+	private boolean quantizationEnabled = false;
 	
 	public NoiseCanvas() {
 		super();
     }
+	
+	protected LayeredTerrainGroundFunction getTerrainGroundFunction() {
+		return new LayeredTerrainGroundFunction(wg.getTerrainFunction(), quantizationEnabled, quantizationEnabled);
+	}
 	
 	public void stateUpdated() {
 		stopRenderer();
@@ -190,14 +286,14 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 			colorFunc = null;
 		} else if( normalShadingEnabled ) {
 			NormalShadingGroundColorFunction gcf = new NormalShadingGroundColorFunction(
-				new LayeredTerrainGroundFunction(wg.getTerrainFunction()),
+				getTerrainGroundFunction(),
 				colorMap, mpp/2, mpp/2, 0.3/mpp, 0.5
 			);
 			gcf.heightShadingEnabled = heightShadingEnabled;
 			colorFunc = gcf;
 		} else {
 			GroundColorFunction gcf = new GroundColorFunction(
-				new LayeredTerrainGroundFunction(wg.getTerrainFunction()),
+				getTerrainGroundFunction(),
 				colorMap
 			);
 			gcf.heightShadingEnabled = heightShadingEnabled;
@@ -256,9 +352,18 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 	public static void main( String[] args ) {
 		String scriptFilename = null;
 		boolean autoReload = false;
+		boolean normalShading = false;
+		boolean heightShading = false;
+		boolean quantization = false;
 		for( int i=0; i<args.length; ++i ) {
 			if( "-auto-reload".equals(args[i]) ) {
 				autoReload = true;
+			} else if( "-normal-shading".equals(args[i]) ) {
+				normalShading = true;
+			} else if( "-height-shading".equals(args[i]) ) {
+				heightShading = true;
+			} else if( "-quantize".equals(args[i]) ) {
+				quantization = true;
 			} else if( !args[i].startsWith("-") ) {
 				scriptFilename = args[i];
 			} else {
@@ -305,6 +410,9 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		}
 		
 		nc.setPreferredSize(new Dimension(512,384));
+		nc.normalShadingEnabled = normalShading;
+		nc.heightShadingEnabled = heightShading;
+		nc.quantizationEnabled  = quantization;
 		f.add(nc);
 		f.pack();
 		f.addWindowListener(new WindowListener() {

@@ -54,9 +54,9 @@ public interface LayeredTerrainFunction
 	}
 	
 	/**
-	 * Generate TerrainData for the given x,z coordinates into buffer, or into a new one if buffer
-	 * doesn't have enough layers or if its vectorSize is < vectorSize.
-	 * Return the TerrainData containing the generated data.
+	 * Generates TerrainBuffer for the given x,z coordinates into buffer, or into a new one if
+	 * the provided buffer is null or doesn't have enough layers or if its vectorSize is < vectorSize.
+	 * Returns the TerrainBuffer containing the generated data.
 	 */
 	public TerrainBuffer apply( int vectorSize, double[] x, double[] z, TerrainBuffer buffer );
 }

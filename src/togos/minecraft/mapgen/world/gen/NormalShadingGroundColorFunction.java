@@ -24,7 +24,7 @@ public class NormalShadingGroundColorFunction extends GroundColorFunction
 		this.normalShadeScale = amt;
 		this.normalShadeMax = max;
 	}
-		
+	
 	public void apply( int vectorSize, double[] x1, double[] y1, double[] height1, int[] color1 ) {
 		double[] x2 = new double[vectorSize];
 		double[] y2 = new double[vectorSize];
