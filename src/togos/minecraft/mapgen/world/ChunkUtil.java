@@ -4,7 +4,6 @@ import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.minecraft.mapgen.world.structure.MiniChunkData;
 import togos.minecraft.mapgen.world.structure.Stamp;
 import togos.minecraft.mapgen.world.structure.TileEntityData;
-import togos.noise.v1.data.DataDaDa;
 
 public class ChunkUtil
 {
@@ -134,24 +133,5 @@ public class ChunkUtil
 			);
 			addTileEntity(ted, dest, false);
 		}
-	}
-	
-	/**
-	 * Returns world x,z coordinate of each cell in a single y-layer of the chunk
-	 * from 0,0, 1,0, ... 14,15, 15,15.
-	 */
-	public static DataDaDa getTileXZCoordinates( ChunkData cd ) {
-		long cwx = cd.getChunkPositionX();
-		long cwz = cd.getChunkPositionZ();
-		final int vectorSize = cd.width*cd.depth;
-		double[] x = new double[vectorSize];
-		double[] z = new double[vectorSize];
-		for( int i=0, tz=0; tz<cd.depth; ++tz ) {
-			for( int tx=0; tx<cd.width; ++tx, ++i ) {
-				x[i] = cwx+tx;
-				z[i] = cwz+tz;
-			}
-		}
-		return new DataDaDa(vectorSize,x,z);
 	}
 }

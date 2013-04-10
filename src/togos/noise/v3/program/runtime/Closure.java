@@ -10,6 +10,8 @@ import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.structure.FunctionDefinition;
 import togos.noise.v3.program.structure.ParameterList.Parameter;
+import togos.noise.v3.vector.vm.ProgramBuilder;
+import togos.noise.v3.vector.vm.Program.RegisterID;
 
 public class Closure<V> implements Function<V>
 {
@@ -40,11 +42,18 @@ public class Closure<V> implements Function<V>
 			}
 	        return n;
         }
-
+		
 		public void add( Binding<? extends V> value ) {
 			valueBindings.add(value);
         }
-
+		
+		@Override
+		public RegisterID<?> toVectorProgram(
+			Map<String, RegisterID<?>> variableRegisters, ProgramBuilder pb
+		) throws CompileError {
+			throw new CompileError("List binding cannot be converted to a vector program", sLoc);
+		}
+		
     	@SuppressWarnings("unchecked")
         @Override
         public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {

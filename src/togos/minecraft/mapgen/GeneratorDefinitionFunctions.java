@@ -7,13 +7,13 @@ import togos.lang.CompileError;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
-import togos.noise.v1.func.LFunctionDaDaDa_Ia;
-import togos.noise.v1.func.LFunctionDaDa_Da;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
+import togos.noise.v3.vector.function.LFunctionDaDaDa_Ia;
+import togos.noise.v3.vector.function.LFunctionDaDa_Da;
 
 public class GeneratorDefinitionFunctions
 {

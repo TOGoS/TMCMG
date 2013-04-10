@@ -1,6 +1,6 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.noise.v1.func.LFunctionDaDaDa_Ia;
+import togos.noise.v3.vector.function.LFunctionDaDaDa_Ia;
 
 public interface LayeredTerrainFunction
 {

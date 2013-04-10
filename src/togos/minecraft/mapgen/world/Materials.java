@@ -9,7 +9,7 @@ package togos.minecraft.mapgen.world;
 
 import java.util.HashMap;
 
-import togos.noise.v1.func.LFunctionIa_Ia;
+import togos.noise.v3.vector.function.LFunctionIa_Ia;
 
 // TODO: Remove this entirely; use TMCMR-style text files to define colors
 // and some way to import aliases into TNL scripts.

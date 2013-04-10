@@ -3,8 +3,8 @@ package togos.noise.v3.program.runtime;
 import junit.framework.TestCase;
 import togos.lang.BaseSourceLocation;
 import togos.noise.v3.functions.MathFunctions;
-import togos.noise.v3.parser.Parser;
-import togos.noise.v3.parser.ProgramTreeBuilder;
+import togos.noise.v3.parse.Parser;
+import togos.noise.v3.parse.ProgramTreeBuilder;
 import togos.noise.v3.program.structure.Expression;
 
 public class ExpressionEvaluationTest extends TestCase

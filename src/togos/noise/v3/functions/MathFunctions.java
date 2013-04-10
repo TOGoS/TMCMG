@@ -2,8 +2,8 @@ package togos.noise.v3.functions;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
-import togos.noise.v1.func.D5_2Perlin;
-import togos.noise.v1.func.SimplexNoise;
+import togos.noise.function.D5_2Perlin;
+import togos.noise.function.SimplexNoise;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
@@ -75,7 +75,7 @@ public class MathFunctions
 					}
 					return true; 
                 }
-
+				
 				@Override
                 public R getValue() throws Exception {
 					Object[] arguments = new Object[argumentBindings.length];

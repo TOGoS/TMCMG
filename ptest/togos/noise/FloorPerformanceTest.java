@@ -1,7 +1,6 @@
 package togos.noise;
 
-import togos.noise.v1.func.SimplexDaDaDa_Da;
-import togos.noise.v1.func.SimplexNoise;
+import togos.noise.function.SimplexNoise;
 
 public class FloorPerformanceTest
 {
@@ -18,7 +17,6 @@ public class FloorPerformanceTest
 	double[] dvals = new double[vectorSize];
 	float[] fvals = new float[vectorSize];
 	
-	SimplexDaDaDa_Da hlCalculator = new SimplexDaDaDa_Da();
 	SimplexNoise llCalculator = new SimplexNoise();
 	
 	protected String format( long num, int places ) {

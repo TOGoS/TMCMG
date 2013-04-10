@@ -1,9 +1,14 @@
 package togos.noise.v3.program.runtime;
 
+import java.util.Map;
+
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.RuntimeError;
 import togos.lang.SourceLocation;
+import togos.noise.v3.parse.Parser;
+import togos.noise.v3.vector.vm.ProgramBuilder;
+import togos.noise.v3.vector.vm.Program.RegisterID;
 
 /**
  * Represents the result of applying an expression with a context.
@@ -11,13 +16,17 @@ import togos.lang.SourceLocation;
 public abstract class Binding<V>
 {
 	enum EvaluationState { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
-
+	
 	public static <V> Binding<V> forValue( V v, Class<V> valueType, SourceLocation sLoc ) {
 		return new Binding.Constant<V>( v, valueType, sLoc );
 	}
-
+	
 	public static <V> Binding<? extends V> forValue( V v, SourceLocation sLoc ) {
 		return new Binding.Constant<V>( v, (Class<? extends V>)v.getClass(), sLoc );
+	}
+	
+	public static <T> Binding<T> memoize(Binding<T> binding) {
+		return new Binding.Memoizing<T>( binding, binding.sLoc );
 	}
 	
 	public static <V> Binding<V> cast( final Binding<?> b, final Class<V> targetClass ) throws CompileError {
@@ -36,10 +45,15 @@ public abstract class Binding<V>
 					}
                 }
 
-				@Override
-                public Class<? extends V> getValueType() {
+				@Override public Class<? extends V> getValueType() {
 	                return targetClass;
                 }
+				
+				@Override public RegisterID<?> toVectorProgram(
+					Map<String,RegisterID<?>> variableRegisters, ProgramBuilder pb
+				) throws CompileError {
+					return b.toVectorProgram(variableRegisters, pb);
+				}
 			});
 		} else if( targetClass.isAssignableFrom(b.getValueType()) ) {
 			return (Binding<V>)b;
@@ -48,31 +62,45 @@ public abstract class Binding<V>
 		}
 	}
 	
+	public final SourceLocation sLoc;
+	
 	public abstract boolean isConstant() throws CompileError;
 	public abstract V getValue() throws Exception;
 	public abstract Class<? extends V> getValueType() throws CompileError;
-	public final SourceLocation sLoc;
+	public RegisterID<?> toVectorProgram(
+		Map<String,RegisterID<?>> variableRegisters, ProgramBuilder pb
+	) throws CompileError {
+		throw new CompileError("toVectorProgram not supported for "+getClass(), sLoc);
+	}
 	
 	public Binding( SourceLocation sLoc ) {
 		this.sLoc = sLoc;
     }
 	
-	public static class Variable<ID, V> extends Binding<V> {
-		public final ID id;
+	public static class Variable<V> extends Binding<V> {
+		public final String variableId;
 		protected final Class<? extends V> type;
-		public Variable( ID id, Class<? extends V> type ) {
+		public Variable( String variableId, Class<? extends V> type ) {
 			super( BaseSourceLocation.NONE );
-			this.id = id;
+			this.variableId = variableId;
 			this.type = type;
 		}
 		public boolean isConstant() {
 			return false;
 		}
 		public V getValue() {
-			throw new RuntimeException("Cannot evaluate "+id+"; it is a variable");
+			throw new RuntimeException("Cannot getValue "+variableId+"; it is a variable");
 		}
 		public Class<? extends V> getValueType() {
 			return type;
+		}
+		public RegisterID<?> toVectorProgram( Map<String,RegisterID<?>> variableRegisters, ProgramBuilder pb ) throws CompileError {
+			RegisterID<?> regId = variableRegisters.get(variableId);
+			if( regId == null ) throw new CompileError("Undefined variable '"+variableId+"'", sLoc);
+			return regId;
+		}
+		public String toString() {
+			return "variable('"+variableId+"')";
 		}
 	}
 	
@@ -97,6 +125,10 @@ public abstract class Binding<V>
 		
 		@Override public Class<? extends V> getValueType() {
 			return type;
+		}
+		
+		public String toString() {
+			return Parser.toLiteral(value);
 		}
 	}
 	
@@ -283,9 +315,5 @@ public abstract class Binding<V>
 			}
 		}
 
-	}
-
-	public static <T> Binding<T> memoize(Binding<T> binding) {
-		return new Binding.Memoizing<T>( binding, binding.sLoc );
 	}
 }

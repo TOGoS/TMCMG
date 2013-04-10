@@ -1,10 +1,11 @@
 package togos.noise.v3.parser;
 
 import togos.lang.BaseSourceLocation;
-import togos.noise.v3.parser.ast.ASTNode;
-import togos.noise.v3.parser.ast.InfixNode;
-import togos.noise.v3.parser.ast.TextNode;
-import togos.noise.v3.parser.ast.VoidNode;
+import togos.noise.v3.parse.Parser;
+import togos.noise.v3.parse.ast.ASTNode;
+import togos.noise.v3.parse.ast.InfixNode;
+import togos.noise.v3.parse.ast.TextNode;
+import togos.noise.v3.parse.ast.VoidNode;
 
 public class ParserTest extends CoolTestCase
 {

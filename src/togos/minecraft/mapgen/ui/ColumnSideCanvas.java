@@ -26,8 +26,8 @@ import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.LayerBuffer;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.TerrainBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise.v1.func.LFunctionIa_Ia;
-import togos.noise.v1.lang.ParseUtil;
+import togos.noise.v3.parse.ParseUtil;
+import togos.noise.v3.vector.function.LFunctionIa_Ia;
 import togos.service.Service;
 
 public class ColumnSideCanvas extends WorldExplorerViewCanvas

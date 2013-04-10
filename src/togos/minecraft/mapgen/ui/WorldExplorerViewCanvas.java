@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
-import togos.noise.v1.func.LFunctionIa_Ia;
+import togos.noise.v3.vector.function.LFunctionIa_Ia;
 
 public abstract class WorldExplorerViewCanvas extends Canvas implements WorldExplorerView
 {

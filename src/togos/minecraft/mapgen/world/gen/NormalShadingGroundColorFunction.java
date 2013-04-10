@@ -1,7 +1,7 @@
 package togos.minecraft.mapgen.world.gen;
 
-import togos.noise.v1.func.LFunctionDaDa_DaIa;
-import togos.noise.v1.func.LFunctionIa_Ia;
+import togos.noise.v3.vector.function.LFunctionDaDa_DaIa;
+import togos.noise.v3.vector.function.LFunctionIa_Ia;
 
 public class NormalShadingGroundColorFunction extends GroundColorFunction
 {
