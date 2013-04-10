@@ -22,6 +22,8 @@ import togos.minecraft.mapgen.util.FileWatcher;
 import togos.minecraft.mapgen.util.GeneratorUpdateListener;
 import togos.minecraft.mapgen.util.ServiceManager;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
+import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.LayerBuffer;
+import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.TerrainBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v1.func.LFunctionIa_Ia;
@@ -118,25 +120,50 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 	public static class ColumnTerrainFunction implements LFunctionDaDa_Da_Ia
 	{
 		protected final LayeredTerrainFunction ltf;
-		// Not thread-safe!
-		protected LayeredTerrainFunction.TerrainBuffer buf;
 		
-		double[] xBuf, yBuf, zBuf;
+		class Buf {
+			public final int colSize;
+			public LayeredTerrainFunction.TerrainBuffer terrainBuffer;
+			public final double[] colX, colY, colZ;
+			public final int[] colData;
+			
+			public Buf( int colSize ) {
+				this.colSize = colSize;
+				this.colX = new double[colSize];
+				this.colY = new double[colSize];
+				this.colZ = new double[colSize];
+				this.colData = new int[colSize];
+			}
+		}
 		
-		public ColumnTerrainFunction( LayeredTerrainFunction ltf ) {
+		ThreadLocal<Buf> bufVar = new ThreadLocal<Buf>();
+		
+		final int defaultValue;
+		
+		private Buf getBuf(int colSize) {
+			Buf buf = bufVar.get();
+			if( buf == null || buf.colSize < colSize ) {
+				bufVar.set(buf = new Buf(colSize));
+			}
+			return buf;
+		}
+		
+		public ColumnTerrainFunction( LayeredTerrainFunction ltf, int defaultValue ) {
 			this.ltf = ltf;
+			this.defaultValue = defaultValue;
 		}
 		
 		@Override
         public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] data ) {
-			double[] colX = new double[yCount];
-			double[] colY = new double[yCount];
-			double[] colZ = new double[yCount];
-			int[] colData = new int[yCount];
+			final Buf buf = getBuf( yCount );
+			final TerrainBuffer tBuf = (buf.terrainBuffer = ltf.apply( xzCount, x, z, buf.terrainBuffer ));
 			
-			buf = ltf.apply( xzCount, x, z, buf );
-			for( int l=0; l<buf.layerCount; ++l ) {
-				LayeredTerrainFunction.LayerBuffer layer = buf.layerData[l];
+			for( int i=xzCount*yCount-1; i>=0; --i ) {
+				data[i] = defaultValue;
+			}
+			
+			for( int l=0; l<tBuf.layerCount; ++l ) {
+				LayerBuffer layer = tBuf.layerData[l];
 				for( int i=xzCount-1; i>=0; --i ) {
 					int rFloor = (int)Math.round(layer.floorHeight[i]);
 					int rCeil  = (int)Math.round(layer.ceilingHeight[i]);
@@ -144,12 +171,12 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 					if( rCeil > yCount ) rCeil = yCount;
 					int layerHeight = rCeil - rFloor;
 					for( int j=0; j<layerHeight; ++j ) {
-						colX[j] = colZ[j] = 0;
-						colY[j] = rFloor + j;
+						buf.colX[j] = buf.colZ[j] = 0;
+						buf.colY[j] = rFloor + j;
 					}
-					layer.blockTypeFunction.apply( layerHeight, colX, colY, colZ, colData);
+					layer.blockTypeFunction.apply( layerHeight, buf.colX, buf.colY, buf.colZ, buf.colData);
 					for( int j=0, h=rFloor; h<rCeil; ++h, ++j ) {
-						if( colData[j] != -1 ) data[i*yCount+h] = colData[j];
+						if( buf.colData[j] != -1 ) data[i*yCount+h] = buf.colData[j];
 					}
 				}
 			}
@@ -165,7 +192,7 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 			this.materialFunction = materialFunction;
 			this.colorMap = colorMap;
 		}
-
+		
 		@Override public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] color ) {
 			materialFunction.apply( xzCount, x, z, yCount, y, color );
 			colorMap.apply( xzCount*yCount, color, color );
@@ -187,7 +214,7 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		if( wg == null ) {
 			cFunc = null;
 		} else {
-			cFunc = new ColumnColorFunction( new ColumnTerrainFunction(wg.getTerrainFunction()), colorMap );
+			cFunc = new ColumnColorFunction( new ColumnTerrainFunction(wg.getTerrainFunction(), -1), colorMap );
 		}
 		
 		if( cFunc != null ) {
