@@ -10,6 +10,8 @@ import togos.lang.SourceLocation;
  */
 public abstract class Binding<V>
 {
+	enum EvaluationState { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
+
 	public static <V> Binding<V> forValue( V v, Class<V> valueType, SourceLocation sLoc ) {
 		return new Binding.Constant<V>( v, valueType, sLoc );
 	}
@@ -20,7 +22,7 @@ public abstract class Binding<V>
 	
 	public static <V> Binding<V> cast( final Binding<?> b, final Class<V> targetClass ) throws CompileError {
 		if( b.getValueType() == null ) {
-			return new Binding<V>( b.sLoc ) {
+			return Binding.memoize(new Binding<V>( b.sLoc ) {
 				@Override public boolean isConstant() throws CompileError {
 					return b.isConstant();
                 }
@@ -38,7 +40,7 @@ public abstract class Binding<V>
                 public Class<? extends V> getValueType() {
 	                return targetClass;
                 }
-			};
+			});
 		} else if( targetClass.isAssignableFrom(b.getValueType()) ) {
 			return (Binding<V>)b;
 		} else {
@@ -75,8 +77,6 @@ public abstract class Binding<V>
 	}
 	
 	public static class Constant<V> extends Binding<V> {
-		enum State { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
-		
 		protected final Class<? extends V> type;
 		
 		private V value;
@@ -135,12 +135,8 @@ public abstract class Binding<V>
 	 * set up when the outer binding is created.
 	 */
 	public static abstract class Deferred<V> extends Binding<V> {
-		enum State {
-			UNEVALUATED, EVALUATING, EVALUATED, ERRORED;
-		}
-		
 		protected Binding<? extends V> delegate;
-		private State state = State.UNEVALUATED;
+		private EvaluationState state = EvaluationState.UNEVALUATED;
 		protected CompileError error;
 		
 		public Deferred( SourceLocation sLoc ) {
@@ -151,12 +147,12 @@ public abstract class Binding<V>
 		protected final Binding<? extends V> getDelegate() throws CompileError {
 			switch( state ) {
 			case UNEVALUATED:
-				state = State.EVALUATING;
+				state = EvaluationState.EVALUATING;
 				try {
 					delegate = generateDelegate();
-					state = State.EVALUATED;
+					state = EvaluationState.EVALUATED;
 				} catch( CompileError e ) {
-					state = State.ERRORED;
+					state = EvaluationState.ERRORED;
 					error = e;
 					throw error;
 				}
@@ -168,7 +164,7 @@ public abstract class Binding<V>
 			case ERRORED:
 				throw error;
 			default:
-				throw new RuntimeException("Invalid ValueHandle state: "+state);
+				throw new RuntimeException("Invalid state: "+state);
 			}
 		}
 		
@@ -183,5 +179,113 @@ public abstract class Binding<V>
 		public Class<? extends V> getValueType() throws CompileError {
 			return getDelegate().getValueType();
 		}
+	}
+	
+	/**
+	 * Wraps another binding so that its isConstant, getValue, and getValueType
+	 * fields will only ever need to be called once.
+	 * @author stevens
+	 *
+	 * @param <T>
+	 */
+	public static class Memoizing<T> extends Binding<T> {
+		protected EvaluationState isConstantState = EvaluationState.UNEVALUATED;
+		protected EvaluationState valueState      = EvaluationState.UNEVALUATED;
+		protected EvaluationState valueTypeState  = EvaluationState.UNEVALUATED;
+		
+		protected CompileError isConstantError;
+		protected Exception valueError;
+		protected CompileError valueTypeError;
+		
+		protected boolean isConstant;
+		protected T value;
+		protected Class<? extends T> valueType;
+		
+		final Binding<T> delegate;
+		
+		public Memoizing( Binding<T> other, SourceLocation sLoc ) {
+			super( sLoc );
+			this.delegate = other;
+		}
+		
+		@Override
+		public boolean isConstant() throws CompileError {
+			switch( isConstantState ) {
+			case UNEVALUATED:
+				isConstantState = EvaluationState.EVALUATING;
+				try {
+					isConstant = delegate.isConstant();
+					isConstantState = EvaluationState.EVALUATED;
+				} catch( CompileError e ) {
+					isConstantState = EvaluationState.ERRORED;
+					isConstantError = e;
+					throw isConstantError;
+				}
+				return isConstant;
+			case EVALUATING:
+				throw new CompileError( "Circular definition encountered", sLoc );
+			case EVALUATED:
+				return isConstant;
+			case ERRORED:
+				throw isConstantError;
+			default:
+				throw new RuntimeException("Invalid state: "+isConstantState);
+			}
+		}
+
+		@Override
+		public T getValue() throws Exception {
+			switch( valueState ) {
+			case UNEVALUATED:
+				valueState = EvaluationState.EVALUATING;
+				try {
+					value = delegate.getValue();
+					valueState = EvaluationState.EVALUATED;
+				} catch( CompileError e ) {
+					valueState = EvaluationState.ERRORED;
+					valueError = e;
+					throw valueError;
+				}
+				return value;
+			case EVALUATING:
+				throw new CompileError( "Circular definition encountered", sLoc );
+			case EVALUATED:
+				return value;
+			case ERRORED:
+				throw valueError;
+			default:
+				throw new RuntimeException("Invalid state: "+valueState);
+			}
+		}
+
+		@Override
+		public Class<? extends T> getValueType() throws CompileError {
+			switch( valueTypeState ) {
+			case UNEVALUATED:
+				valueTypeState = EvaluationState.EVALUATING;
+				try {
+					valueType = delegate.getValueType();
+					valueTypeState = EvaluationState.EVALUATED;
+				} catch( CompileError e ) {
+					valueTypeState = EvaluationState.ERRORED;
+					valueTypeError = e;
+					throw valueTypeError;
+				}
+				return valueType;
+			case EVALUATING:
+				throw new CompileError( "Circular definition encountered", sLoc );
+			case EVALUATED:
+				return valueType;
+			case ERRORED:
+				throw valueTypeError;
+			default:
+				throw new RuntimeException("Invalid state: "+valueTypeState);
+			}
+		}
+
+	}
+
+	public static <T> Binding<T> memoize(Binding<T> binding) {
+		return new Binding.Memoizing<T>( binding, binding.sLoc );
 	}
 }

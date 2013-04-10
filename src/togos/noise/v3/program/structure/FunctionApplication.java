@@ -25,7 +25,7 @@ public class FunctionApplication extends Expression<Object>
 		final Binding<? extends Function> functionBinding = Binding.cast( function.bind(context), Function.class );
     	final BoundArgumentList boundArgumentList = argumentList.evaluate(context);
 		
-		return new Binding<Object>( sLoc ) {
+		return Binding.memoize( new Binding<Object>( sLoc ) {
 			@Override
             public boolean isConstant() throws CompileError {
 				if( !functionBinding.isConstant() ) return false;
@@ -44,7 +44,7 @@ public class FunctionApplication extends Expression<Object>
             public Class<Object> getValueType() throws CompileError {
 				return null;
             }
-		};
+		});
     }
 	
 	@Override public String toString() {

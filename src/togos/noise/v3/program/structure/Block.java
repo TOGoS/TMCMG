@@ -26,7 +26,7 @@ public class Block<V> extends Expression<V>
 			}
 		};
 	}
-
+	
 	@Override
     public Binding<V> bind( Context context ) throws CompileError {
 		final Context newContext = new Context(context);

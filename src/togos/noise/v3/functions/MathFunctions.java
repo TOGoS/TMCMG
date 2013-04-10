@@ -67,7 +67,7 @@ public class MathFunctions
 					}
 				}
 			}
-			return new Binding<R>( input.callLocation ) {
+			return Binding.memoize(new Binding<R>( input.callLocation ) {
 				@Override
                 public boolean isConstant() throws CompileError {
 					for( int i=0; i<argumentBindings.length; ++i ) {
@@ -89,7 +89,7 @@ public class MathFunctions
                 public Class<? extends R> getValueType() {
 	                return returnType;
                 }
-			};
+			});
         }
 	}
 	
@@ -212,7 +212,7 @@ public class MathFunctions
 				if( input.arguments.size() < 3 || input.arguments.size() % 2 == 0 ) {
 					throw new CompileError("'if' requires an odd number of arguments >= 3", input.argListLocation);
 				}
-				return new Binding<Object>( input.callLocation ) {
+				return Binding.memoize(new Binding<Object>( input.callLocation ) {
 					@Override
                     public boolean isConstant() throws CompileError {
 						try {
@@ -250,7 +250,7 @@ public class MathFunctions
                     public Class<? extends Object> getValueType() throws CompileError {
 	                    return null;
                     }
-				};
+				});
 			}
 		}));
 		CONTEXT.put("&&",  builtinBinding(logicalAnd));
