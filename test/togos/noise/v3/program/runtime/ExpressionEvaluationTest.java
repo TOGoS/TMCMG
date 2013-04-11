@@ -34,7 +34,7 @@ public class ExpressionEvaluationTest extends TestCase
 		false, "true  ^^ true ",
 		false, "false ^^ false",
 	};
-
+	
 	public ExpressionEvaluationTest() {
 		super();
 	}

@@ -79,7 +79,7 @@ public class Program
 		}
 		
 		public static class None extends RegisterBankID {
-			static final None INSTANCE = new None();
+			public static final None INSTANCE = new None();
 			private None() { super(true, Void.class); }
 		};
 		public static final class IConst extends RegisterBankID {
@@ -91,15 +91,15 @@ public class Program
 			private DConst() { super(true, Double.class); }
 		};
 		public static class BVar extends RegisterBankID {
-			static final BVar INSTANCE = new BVar();
+			public static final BVar INSTANCE = new BVar();
 			private BVar() { super(false, Boolean.class); }
 		};
 		public static class IVar extends RegisterBankID {
-			static final IVar INSTANCE = new IVar();
+			public static final IVar INSTANCE = new IVar();
 			private IVar() { super(false, Integer.class); }
 		};
 		public static class DVar extends RegisterBankID {
-			static final DVar INSTANCE = new DVar();
+			public static final DVar INSTANCE = new DVar();
 			private DVar() { super(false, Double.class); }
 		};
 	};

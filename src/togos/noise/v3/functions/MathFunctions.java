@@ -4,6 +4,7 @@ import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.noise.function.D5_2Perlin;
 import togos.noise.function.SimplexNoise;
+import togos.noise.v3.parser.Parser;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
@@ -20,7 +21,7 @@ public class MathFunctions
 	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( MathFunctions.class.getName()+".java", 0, 0);
 	public static final Context CONTEXT = new Context();
 	
-	static abstract class BuiltinFunction<R> implements Function<R> {
+	static abstract class BuiltinFunction<R> implements Function<R>, NativeFunction {
 		protected final Class<? extends R> returnType;
 		protected final Class<?>[] argumentTypes;
 		protected final Object[] argumentDefaults;
@@ -39,8 +40,12 @@ public class MathFunctions
 			this.argumentDefaults = argumentDefaults;
 		}
 		
-		abstract String getName();
+		public abstract String getName();
 		abstract R apply( Object[] arguments );
+		
+		public String toString() {
+			return "native-function("+Parser.quote(getName())+")";
+		}
 		
 		public Class<? extends R> getReturnType() { return returnType; }
 		
@@ -160,20 +165,20 @@ public class MathFunctions
 	
 	static {
 		BooleanInputFunction<Boolean> logicalOr = new BooleanInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "or"; }
+			@Override public String getName() { return "or"; }
 			@Override Boolean apply( boolean a, boolean b ) { return a || b; }
 		};
 		BooleanInputFunction<Boolean> logicalXor = new BooleanInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "xor"; }
+			@Override public String getName() { return "xor"; }
 			@Override Boolean apply( boolean a, boolean b ) { return (a && !b) || (b && !a); }
 		};
 		BooleanInputFunction<Boolean> logicalAnd = new BooleanInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "and"; }
+			@Override public String getName() { return "and"; }
 			@Override Boolean apply( boolean a, boolean b ) { return a && b; }
 		};
 		
 		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
-			@Override String getName() { return "simplex"; }
+			@Override public String getName() { return "simplex"; }
 			
 			ThreadLocal<SimplexNoise> simplex = new ThreadLocal<SimplexNoise>() {
 				@Override public SimplexNoise initialValue() {
@@ -188,7 +193,7 @@ public class MathFunctions
 		}) );
 		
 		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
-			@Override String getName() { return "simplex"; }
+			@Override public String getName() { return "simplex"; }
 			
 			ThreadLocal<SimplexNoise> simplex = new ThreadLocal<SimplexNoise>() {
 				@Override public SimplexNoise initialValue() {
@@ -202,7 +207,7 @@ public class MathFunctions
 			}
 		}) );
 		CONTEXT.put("perlin", builtinBinding(new NoiseFunction() {
-			@Override String getName() { return "perlin"; }
+			@Override public String getName() { return "perlin"; }
 			
 			@Override
 			double apply(double a, double b, double c) {
@@ -270,64 +275,64 @@ public class MathFunctions
 		CONTEXT.put("or",  builtinBinding(logicalOr));
 		
 		CONTEXT.put("<<", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override String getName() { return "<<"; }
+			@Override public String getName() { return "<<"; }
 			@Override Long apply( double a, double b ) { return (long)a << (long)b; }
 		}));
 		CONTEXT.put(">>", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override String getName() { return "<<"; }
+			@Override public String getName() { return "<<"; }
 			@Override Long apply( double a, double b ) { return (long)a >> (long)b; }
 		}));
 		
 		CONTEXT.put("|", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override String getName() { return "|"; }
+			@Override public String getName() { return "|"; }
 			@Override Long apply( double a, double b ) { return (long)a | (long)b; }
 		}));
 		CONTEXT.put("&", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override String getName() { return "&"; }
+			@Override public String getName() { return "&"; }
 			@Override Long apply( double a, double b ) { return (long)a & (long)b; }
 		}));
 		CONTEXT.put("^", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override String getName() { return "^"; }
+			@Override public String getName() { return "^"; }
 			@Override Long apply( double a, double b ) { return (long)a ^ (long)b; }
 		}));
 		CONTEXT.put(">", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "+"; }
+			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a > b; }
 		}));
 		CONTEXT.put(">=", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "+"; }
+			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a >= b; }
 		}));
 		CONTEXT.put("==", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "+"; }
+			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a == b; }
 		}));
 		CONTEXT.put("<=", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "+"; }
+			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a <= b; }
 		}));
 		CONTEXT.put("<", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
-			@Override String getName() { return "+"; }
+			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a < b; }
 		}));
 		CONTEXT.put("+", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
-			@Override String getName() { return "+"; }
+			@Override public String getName() { return "+"; }
 			@Override Double apply( double a, double b ) { return a + b; }
 		}));
 		CONTEXT.put("-", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
-			@Override String getName() { return "-"; }
+			@Override public String getName() { return "-"; }
 			@Override Double apply( double a, double b ) { return a - b; }
 		}));
 		CONTEXT.put("*", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
-			@Override String getName() { return "*"; }
+			@Override public String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return a * b; }
 		}));
 		CONTEXT.put("/", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
-			@Override String getName() { return "/"; }
+			@Override public String getName() { return "/"; }
 			@Override Double apply( double a, double b ) { return a / b; }
 		}));
 		CONTEXT.put("**", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
-			@Override String getName() { return "*"; }
+			@Override public String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return Math.pow(a, b); }
 		}));
 		

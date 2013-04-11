@@ -123,6 +123,12 @@ public abstract class Binding<V>
 		@Override public String toSource() {
 			return Parser.toLiteral(value);
 		}
+		
+		@Override public RegisterID<?> toVectorProgram(
+			ExpressionVectorProgramCompiler compiler
+		) throws CompileError {
+			return compiler.compileConstant(value, sLoc);
+		}
 	}
 	
 	/**
@@ -231,19 +237,16 @@ public abstract class Binding<V>
 		protected EvaluationState isConstantState = EvaluationState.UNEVALUATED;
 		protected EvaluationState valueState      = EvaluationState.UNEVALUATED;
 		protected EvaluationState valueTypeState  = EvaluationState.UNEVALUATED;
-		protected EvaluationState toVectorProgramState = EvaluationState.UNEVALUATED;
 		protected EvaluationState toSourceState = EvaluationState.UNEVALUATED;
 		
 		protected CompileError isConstantError;
 		protected Exception valueError;
 		protected CompileError valueTypeError;
-		protected CompileError toVectorProgramError;
 		protected CompileError toSourceError;
 		
 		protected boolean isConstant;
 		protected T value;
 		protected Class<? extends T> valueType;
-		protected RegisterID<?> vectorRegister;
 		protected String source;
 		
 		final Binding<T> delegate;
@@ -277,7 +280,7 @@ public abstract class Binding<V>
 				throw new RuntimeException("Invalid state: "+isConstantState);
 			}
 		}
-
+		
 		@Override
 		public T getValue() throws Exception {
 			switch( valueState ) {
@@ -302,7 +305,7 @@ public abstract class Binding<V>
 				throw new RuntimeException("Invalid state: "+valueState);
 			}
 		}
-
+		
 		@Override
 		public Class<? extends T> getValueType() throws CompileError {
 			switch( valueTypeState ) {
@@ -330,29 +333,11 @@ public abstract class Binding<V>
 		
 		@Override
 		public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
-			switch( toVectorProgramState ) {
-			case UNEVALUATED:
-				isConstantState = EvaluationState.EVALUATING;
-				try {
-					vectorRegister = compiler.compile(delegate);
-					toVectorProgramState = EvaluationState.EVALUATED;
-				} catch( CompileError e ) {
-					toVectorProgramState = EvaluationState.ERRORED;
-					toVectorProgramError = e;
-					throw isConstantError;
-				}
-				return vectorRegister;
-			case EVALUATING:
-				throw new CompileError( "Circular definition encountered", sLoc );
-			case EVALUATED:
-				return vectorRegister;
-			case ERRORED:
-				throw toVectorProgramError;
-			default:
-				throw new RuntimeException("Invalid state: "+isConstantState);
-			}
+			// Don't memoize because different compilers may be passed in,
+			// and the compiler will optimize out duplicate code, anyway.
+			return compiler.compile(delegate);
 		}
-
+		
 		@Override
 		public String toSource() throws CompileError {
 			switch( toSourceState ) {

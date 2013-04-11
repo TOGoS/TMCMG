@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import togos.lang.CompileError;
+import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 import togos.noise.v3.vector.vm.ProgramBuilder;
@@ -35,10 +36,11 @@ public class ExpressionVectorProgramCompiler
 		}
 	}
 	
-	ProgramBuilder pb = new ProgramBuilder();
-	Map<String, RegisterID<?>> variableRegisters = new HashMap<String, RegisterID<?>>();
-	Map<String, RegisterID<?>> expressionResultRegisters = new HashMap<String, RegisterID<?>>();
-	Map<TypeTranslationKey, RegisterID<?>> translatedExpressionResultRegisters = new HashMap<TypeTranslationKey, RegisterID<?>>(); 
+	public ProgramBuilder pb = new ProgramBuilder();
+	
+	protected Map<String, RegisterID<?>> variableRegisters = new HashMap<String, RegisterID<?>>();
+	protected Map<String, RegisterID<?>> expressionResultRegisters = new HashMap<String, RegisterID<?>>();
+	protected Map<TypeTranslationKey, RegisterID<?>> translatedExpressionResultRegisters = new HashMap<TypeTranslationKey, RegisterID<?>>(); 
 	
 	protected RegisterID<?> createVariableRegister( Class<?> type ) {
 		if( type == Double.class ) {
@@ -85,5 +87,15 @@ public class ExpressionVectorProgramCompiler
 		reg = pb.translate( compile( b ), targetType, b.sLoc );
 		translatedExpressionResultRegisters.put(key, reg);
 		return reg;
+	}
+	
+	public RegisterID<?> compileConstant( Object value, SourceLocation sLoc ) throws CompileError {
+		if( value instanceof Number && ((Number)value).doubleValue() == ((Number)value).intValue() ) {
+			return pb.getConstant( ((Number)value).intValue() );
+		} else if( value instanceof Double || value instanceof Float ) {
+			return pb.getConstant( ((Number)value).doubleValue() );
+		} else {
+			throw new UnvectorizableError("Cannot compile constant of class "+value.getClass()+" to vector program", sLoc);
+		}
 	}
 }

@@ -7,11 +7,11 @@ public class UnvectorizableError extends CompileError
 {
 	private static final long serialVersionUID = -3218877872514802701L;
 
-	public UnvectorizableError(String message, SourceLocation sloc) {
-		super(message, sloc);
+	public UnvectorizableError(String message, SourceLocation sLoc) {
+		super(message, sLoc);
 	}
 	
-	public UnvectorizableError(Exception cause, SourceLocation sloc) {
-		super(cause, sloc);
+	public UnvectorizableError(Exception cause, SourceLocation sLoc) {
+		super(cause, sLoc);
 	}
 }

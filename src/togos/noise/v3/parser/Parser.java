@@ -13,6 +13,7 @@ import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.asyncstream.StreamUtil;
+import togos.noise.v3.functions.NativeFunction;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.ParenApplicationNode;
@@ -98,6 +99,8 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 			return value.toString();
 		} else if( value instanceof String ) {
 			return quote((String)value);
+		} else if( value instanceof NativeFunction ) {
+			return "native-function("+quote(((NativeFunction)value).getName())+")";
 		} else {
 			throw new RuntimeException("Don't know how to convert "+value.getClass()+" to string");
 		}

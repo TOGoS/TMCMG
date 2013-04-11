@@ -2,11 +2,14 @@ package togos.noise.v3.program.structure;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
+import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
+import togos.noise.v3.program.compiler.UnvectorizableError;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
+import togos.noise.v3.vector.vm.Program.RegisterID;
 
 public class FunctionApplication extends Expression<Object>
 {
@@ -45,6 +48,23 @@ public class FunctionApplication extends Expression<Object>
 			@Override public String toSource() throws CompileError {
 				return functionBinding.toSource() + "(" + boundArgumentList.toSource() + ")";
 			}
+			
+			@Override public RegisterID<?> toVectorProgram(
+				ExpressionVectorProgramCompiler compiler
+			) throws CompileError {
+				if( !functionBinding.isConstant() ) {
+					throw new UnvectorizableError(
+						"Cannot vectorize function application because the function to be applied is not constant", sLoc
+					);
+				}
+				Function<?> function;
+				try {
+					function = functionBinding.getValue();
+				} catch( Exception e ) {
+					throw new CompileError( e, sLoc );
+				}
+				return function.apply( boundArgumentList ).toVectorProgram(compiler);
+			} 
 		});
     }
 	
