@@ -26,8 +26,7 @@ public class FunctionApplication extends Expression<Object>
     	final BoundArgumentList boundArgumentList = argumentList.evaluate(context);
 		
 		return Binding.memoize( new Binding<Object>( sLoc ) {
-			@Override
-            public boolean isConstant() throws CompileError {
+			@Override public boolean isConstant() throws CompileError {
 				if( !functionBinding.isConstant() ) return false;
 				for( BoundArgument<?> bArg : boundArgumentList.arguments ) {
 					if( !bArg.value.isConstant() ) return false;
@@ -35,15 +34,17 @@ public class FunctionApplication extends Expression<Object>
 	            return true;
             }
 			
-			@Override
-            public Object getValue() throws Exception {
+			@Override public Object getValue() throws Exception {
 				return functionBinding.getValue().apply( boundArgumentList ).getValue();
             }
 			
-			@Override
-            public Class<Object> getValueType() throws CompileError {
+			@Override public Class<Object> getValueType() throws CompileError {
 				return null;
             }
+			
+			@Override public String toSource() throws CompileError {
+				return functionBinding.toSource() + "(" + boundArgumentList.toSource() + ")";
+			}
 		});
     }
 	

@@ -44,7 +44,7 @@ public class MathFunctions
 		
 		public Class<? extends R> getReturnType() { return returnType; }
 		
-        public Binding<R> apply( BoundArgumentList input ) throws CompileError {
+        public Binding<R> apply( final BoundArgumentList input ) throws CompileError {
 			for( BoundArgument<?> arg : input.arguments ) {
 				if( !arg.name.isEmpty() ) {
 					throw new CompileError("+ takes no named arguments, but was given '"+arg.name+"'", arg.value.sLoc);
@@ -89,6 +89,10 @@ public class MathFunctions
                 public Class<? extends R> getValueType() {
 	                return returnType;
                 }
+				
+				public String toSource() throws CompileError {
+					return getName() + "(" + input.toSource() + ")";
+				}
 			});
         }
 	}
@@ -250,6 +254,11 @@ public class MathFunctions
                     public Class<? extends Object> getValueType() throws CompileError {
 	                    return null;
                     }
+					
+					@Override
+					public String toSource() throws CompileError {
+						return "if(" + input.toSource() + ")";
+					}
 				});
 			}
 		}));

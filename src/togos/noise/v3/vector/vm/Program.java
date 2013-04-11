@@ -54,32 +54,53 @@ public class Program
 	}
 	
 	public abstract static class RegisterBankID {
+		public final boolean isConstant;
+		public final Class<?> valueType;
 		public final int number;
-		private RegisterBankID( int number ) { this.number = number; }
+		
+		private RegisterBankID( boolean isConstant, Class<?> valueType ) {
+			this.isConstant = isConstant;
+			this.valueType = valueType;
+			
+			int arenaNumber = isConstant ? 0 : 1;
+			int typeNumber;
+			if( valueType == Void.class ) {
+				typeNumber = 0;
+			} else if( valueType == Boolean.class ) {
+				typeNumber = 1;
+			} else if( valueType == Integer.class ) {
+				typeNumber = 2;
+			} else if( valueType == Double.class ) {
+				typeNumber = 3;
+			} else {
+				throw new RuntimeException("Unsupported value type: "+valueType);
+			}
+			this.number = (arenaNumber << 4) | typeNumber;
+		}
 		
 		public static class None extends RegisterBankID {
 			static final None INSTANCE = new None();
-			private None() { super(0); }
+			private None() { super(true, Void.class); }
 		};
 		public static final class IConst extends RegisterBankID {
 			public static final IConst INSTANCE = new IConst();
-			private IConst() { super(0x11); }
+			private IConst() { super(true, Integer.class); }
 		};
 		public static final class DConst extends RegisterBankID {
 			public static final DConst INSTANCE = new DConst();
-			private DConst() { super(0x12); }
+			private DConst() { super(true, Double.class); }
 		};
 		public static class BVar extends RegisterBankID {
 			static final BVar INSTANCE = new BVar();
-			private BVar() { super(0x20); }
+			private BVar() { super(false, Boolean.class); }
 		};
 		public static class IVar extends RegisterBankID {
 			static final IVar INSTANCE = new IVar();
-			private IVar() { super(0x21); }
+			private IVar() { super(false, Integer.class); }
 		};
 		public static class DVar extends RegisterBankID {
 			static final DVar INSTANCE = new DVar();
-			private DVar() { super(0x22); }
+			private DVar() { super(false, Double.class); }
 		};
 	};
 	
@@ -210,6 +231,14 @@ public class Program
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
 		}
 	};
+	public static final Operator<RegisterBankID.DVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None> LOAD_INT_CONST_AS_DOUBLE = new Operator<RegisterBankID.DVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>() {
+		@Override
+		public void apply(Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
+			double[] dest = pi.doubleVectors[inst.dest.number];
+			double constVal = pi.program.intConstants[inst.v1.number];
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
+		}
+	};
 	public static final Operator<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None> LOAD_INT_CONST = new Operator<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>() {
 		@Override
 		public void apply(Instance pi, Instruction<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
@@ -218,7 +247,16 @@ public class Program
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
 		}
 	};
-
+	
+	public static final Operator<RegisterBankID.DVar,RegisterBankID.IVar,RegisterBankID.None,RegisterBankID.None> INT_TO_DOUBLE = new Operator<RegisterBankID.DVar,RegisterBankID.IVar,RegisterBankID.None,RegisterBankID.None>() {
+		@Override
+		public void apply(Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.IVar,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
+			int[] src = pi.integerVectors[inst.v1.number];
+			double[] dest = pi.doubleVectors[inst.dest.number];
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = src[i];
+		}
+	};
+	
 	public static final OperatorBaBa_Ba LOGICAL_OR = new OperatorBaBa_Ba() {
 		public void apply( boolean[] dest, boolean[] i1, boolean[] i2, int vectorSize ) {
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] || i2[i];

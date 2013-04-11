@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import togos.lang.SourceLocation;
+import togos.noise.v3.program.compiler.UnvectorizableError;
 import togos.noise.v3.vector.vm.Program.Instruction;
 import togos.noise.v3.vector.vm.Program.Operator;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
@@ -21,6 +23,7 @@ public class ProgramBuilder
 	/** Maps constant register ID => double variable ID */
 	TreeMap<RegisterID<RegisterBankID.IConst>,RegisterID<RegisterBankID.IVar>> intConstVars = new TreeMap<RegisterID<RegisterBankID.IConst>,RegisterID<RegisterBankID.IVar>>();
 	TreeMap<RegisterID<RegisterBankID.DConst>,RegisterID<RegisterBankID.DVar>> doubleConstVars = new TreeMap<RegisterID<RegisterBankID.DConst>,RegisterID<RegisterBankID.DVar>>();
+	TreeMap<RegisterID<RegisterBankID.IConst>,RegisterID<RegisterBankID.DVar>> intAsDoubleConstVars = new TreeMap<RegisterID<RegisterBankID.IConst>,RegisterID<RegisterBankID.DVar>>();
 	public short nextIntegerVector = 0;
 	public short nextDoubleVector  = 0;
 	public short nextBooleanVector = 0;
@@ -61,7 +64,7 @@ public class ProgramBuilder
 		if( intConstVars.containsKey(cReg) ) {
 			return intConstVars.get(cReg);
 		}
-		RegisterID<RegisterBankID.IVar> vReg = RegisterID.create( RegisterBankID.IVar.INSTANCE, nextIntegerVector++);
+		RegisterID<RegisterBankID.IVar> vReg = newIVar();
 		intConstVars.put( cReg, vReg );
 		initInstructions.add( new Instruction<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>( Program.LOAD_INT_CONST, vReg, cReg, R_NONE, R_NONE ));
 		return vReg;
@@ -73,9 +76,19 @@ public class ProgramBuilder
 		if( doubleConstVars.containsKey(cReg) ) {
 			return doubleConstVars.get(cReg);
 		}
-		RegisterID<RegisterBankID.DVar> vReg = RegisterID.create( RegisterBankID.DVar.INSTANCE, nextDoubleVector++);
+		RegisterID<RegisterBankID.DVar> vReg = newDVar();
 		doubleConstVars.put( cReg, vReg );
 		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>( Program.LOAD_DOUBLE_CONST, vReg, cReg, R_NONE, R_NONE ));
+		return vReg;
+	}
+	
+	public RegisterID<RegisterBankID.DVar> getIntAsDoubleVariable( RegisterID<RegisterBankID.IConst> cReg ) {
+		if( intAsDoubleConstVars.containsKey(cReg) ) {
+			return intAsDoubleConstVars.get(cReg);
+		}
+		RegisterID<RegisterBankID.DVar> vReg = newDVar();
+		intAsDoubleConstVars.put( cReg, vReg );
+		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>( Program.LOAD_INT_CONST_AS_DOUBLE, vReg, cReg, R_NONE, R_NONE ));
 		return vReg;
 	}
 	
@@ -87,6 +100,11 @@ public class ProgramBuilder
 	public RegisterID<RegisterBankID.IVar> ii_i( Operator<RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.None> op, RegisterID<RegisterBankID.IVar> r1, RegisterID<RegisterBankID.IVar> r2 ) {
 		RegisterID<RegisterBankID.IVar> newReg = newIVar();
 		runInstructions.add( new Instruction<RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.None>(op, newReg, r1, r2, R_NONE) );
+		return newReg;
+	}
+	public RegisterID<RegisterBankID.DVar> i_d( Operator<RegisterBankID.DVar,RegisterBankID.IVar,RegisterBankID.None,RegisterBankID.None> op, RegisterID<RegisterBankID.IVar> r1 ) {
+		RegisterID<RegisterBankID.DVar> newReg = newDVar();
+		runInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.IVar,RegisterBankID.None,RegisterBankID.None>(op, newReg, r1, R_NONE, R_NONE) );
 		return newReg;
 	}
 	public RegisterID<RegisterBankID.DVar> dd_d( Operator<RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> op, RegisterID<RegisterBankID.DVar> r1, RegisterID<RegisterBankID.DVar> r2 ) {
@@ -125,5 +143,21 @@ public class ProgramBuilder
 			intConstValues, doubleConstValues,
 			nextBooleanVector, nextIntegerVector, nextDoubleVector
 		);
+	}
+	
+	public RegisterID<?> translate(RegisterID<?> reg, Class<?> targetType, SourceLocation sLoc)
+			throws UnvectorizableError
+	{
+		if( reg.bankId.valueType == targetType ) {
+			return reg;
+		} else if( reg.bankId.valueType == Integer.class && targetType == Double.class ) {
+			if( reg.bankId.isConstant ) {
+				return getIntAsDoubleVariable( (RegisterID<RegisterBankID.IConst>)reg );
+			} else {
+				return i_d( Program.INT_TO_DOUBLE, (RegisterID<RegisterBankID.IVar>)reg );
+			}
+		} else {
+			throw new UnvectorizableError("Cannot write vector program to translate from "+reg.bankId.valueType+" to "+targetType, sLoc);
+		}
 	}
 }

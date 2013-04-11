@@ -1,13 +1,12 @@
 package togos.noise.v3.program.runtime;
 
-import java.util.Map;
-
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.RuntimeError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.parser.Parser;
-import togos.noise.v3.vector.vm.ProgramBuilder;
+import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
+import togos.noise.v3.program.compiler.UnvectorizableError;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 
 /**
@@ -50,9 +49,13 @@ public abstract class Binding<V>
                 }
 				
 				@Override public RegisterID<?> toVectorProgram(
-					Map<String,RegisterID<?>> variableRegisters, ProgramBuilder pb
+					ExpressionVectorProgramCompiler compiler
 				) throws CompileError {
-					return b.toVectorProgram(variableRegisters, pb);
+					return compiler.compile(b);
+				}
+				
+				@Override public String toSource() throws CompileError {
+					return "cast("+b.toSource()+", '"+targetClass.getName()+"'";
 				}
 			});
 		} else if( targetClass.isAssignableFrom(b.getValueType()) ) {
@@ -62,20 +65,7 @@ public abstract class Binding<V>
 		}
 	}
 	
-	public final SourceLocation sLoc;
-	
-	public abstract boolean isConstant() throws CompileError;
-	public abstract V getValue() throws Exception;
-	public abstract Class<? extends V> getValueType() throws CompileError;
-	public RegisterID<?> toVectorProgram(
-		Map<String,RegisterID<?>> variableRegisters, ProgramBuilder pb
-	) throws CompileError {
-		throw new CompileError("toVectorProgram not supported for "+getClass(), sLoc);
-	}
-	
-	public Binding( SourceLocation sLoc ) {
-		this.sLoc = sLoc;
-    }
+	////
 	
 	public static class Variable<V> extends Binding<V> {
 		public final String variableId;
@@ -85,21 +75,24 @@ public abstract class Binding<V>
 			this.variableId = variableId;
 			this.type = type;
 		}
-		public boolean isConstant() {
+		
+		@Override public boolean isConstant() {
 			return false;
 		}
-		public V getValue() {
+		
+		@Override public V getValue() {
 			throw new RuntimeException("Cannot getValue "+variableId+"; it is a variable");
 		}
-		public Class<? extends V> getValueType() {
+		
+		@Override public Class<? extends V> getValueType() {
 			return type;
 		}
-		public RegisterID<?> toVectorProgram( Map<String,RegisterID<?>> variableRegisters, ProgramBuilder pb ) throws CompileError {
-			RegisterID<?> regId = variableRegisters.get(variableId);
-			if( regId == null ) throw new CompileError("Undefined variable '"+variableId+"'", sLoc);
-			return regId;
+		
+		@Override public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
+			return compiler.getVariableRegister(variableId);
 		}
-		public String toString() {
+		
+		@Override public String toSource() {
 			return "variable('"+variableId+"')";
 		}
 	}
@@ -127,7 +120,7 @@ public abstract class Binding<V>
 			return type;
 		}
 		
-		public String toString() {
+		@Override public String toSource() {
 			return Parser.toLiteral(value);
 		}
 	}
@@ -147,16 +140,20 @@ public abstract class Binding<V>
 			this.delegate = delegate;
 		}
 		
-		public boolean isConstant() throws CompileError {
+		@Override public boolean isConstant() throws CompileError {
 			return delegate.isConstant();
 		}
 		
-		public V getValue() throws Exception {
+		@Override public V getValue() throws Exception {
 			return delegate.getValue();
 		}
 		
-		public Class<? extends V> getValueType() throws CompileError {
+		@Override public Class<? extends V> getValueType() throws CompileError {
 			return delegate.getValueType();
+		}
+		
+		@Override public String toSource() throws CompileError {
+			return delegate.toSource();
 		}
 	}
 	
@@ -200,16 +197,26 @@ public abstract class Binding<V>
 			}
 		}
 		
-		public boolean isConstant() throws CompileError {
+		@Override public boolean isConstant() throws CompileError {
 			return getDelegate().isConstant();
 		}
 		
-		public V getValue() throws Exception {
+		@Override public V getValue() throws Exception {
 			return getDelegate().getValue();
 		}
 		
-		public Class<? extends V> getValueType() throws CompileError {
+		@Override public Class<? extends V> getValueType() throws CompileError {
 			return getDelegate().getValueType();
+		}
+		
+		@Override public String toSource() throws CompileError {
+			return getDelegate().toSource();
+		}
+		
+		@Override public RegisterID<?> toVectorProgram(
+			ExpressionVectorProgramCompiler compiler
+		) throws CompileError {
+			return getDelegate().toVectorProgram(compiler);
 		}
 	}
 	
@@ -224,14 +231,20 @@ public abstract class Binding<V>
 		protected EvaluationState isConstantState = EvaluationState.UNEVALUATED;
 		protected EvaluationState valueState      = EvaluationState.UNEVALUATED;
 		protected EvaluationState valueTypeState  = EvaluationState.UNEVALUATED;
+		protected EvaluationState toVectorProgramState = EvaluationState.UNEVALUATED;
+		protected EvaluationState toSourceState = EvaluationState.UNEVALUATED;
 		
 		protected CompileError isConstantError;
 		protected Exception valueError;
 		protected CompileError valueTypeError;
+		protected CompileError toVectorProgramError;
+		protected CompileError toSourceError;
 		
 		protected boolean isConstant;
 		protected T value;
 		protected Class<? extends T> valueType;
+		protected RegisterID<?> vectorRegister;
+		protected String source;
 		
 		final Binding<T> delegate;
 		
@@ -314,6 +327,75 @@ public abstract class Binding<V>
 				throw new RuntimeException("Invalid state: "+valueTypeState);
 			}
 		}
+		
+		@Override
+		public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
+			switch( toVectorProgramState ) {
+			case UNEVALUATED:
+				isConstantState = EvaluationState.EVALUATING;
+				try {
+					vectorRegister = compiler.compile(delegate);
+					toVectorProgramState = EvaluationState.EVALUATED;
+				} catch( CompileError e ) {
+					toVectorProgramState = EvaluationState.ERRORED;
+					toVectorProgramError = e;
+					throw isConstantError;
+				}
+				return vectorRegister;
+			case EVALUATING:
+				throw new CompileError( "Circular definition encountered", sLoc );
+			case EVALUATED:
+				return vectorRegister;
+			case ERRORED:
+				throw toVectorProgramError;
+			default:
+				throw new RuntimeException("Invalid state: "+isConstantState);
+			}
+		}
 
+		@Override
+		public String toSource() throws CompileError {
+			switch( toSourceState ) {
+			case UNEVALUATED:
+				isConstantState = EvaluationState.EVALUATING;
+				try {
+					source = delegate.toSource();
+					toSourceState = EvaluationState.EVALUATED;
+				} catch( CompileError e ) {
+					toSourceState = EvaluationState.ERRORED;
+					toSourceError = e;
+					throw e;
+				}
+				return source;
+			case EVALUATING:
+				throw new CompileError( "Circular definition encountered", sLoc );
+			case EVALUATED:
+				return source;
+			case ERRORED:
+				throw toSourceError;
+			default:
+				throw new RuntimeException("Invalid state: "+isConstantState);
+			}
+		}
+	}
+	
+	////
+	
+	public final SourceLocation sLoc;
+	
+	public Binding( SourceLocation sLoc ) {
+		this.sLoc = sLoc;
+    }
+	
+	public abstract boolean isConstant() throws CompileError;
+	public abstract V getValue() throws Exception;
+	public abstract Class<? extends V> getValueType() throws CompileError;
+	
+	public abstract String toSource() throws CompileError;
+	
+	public RegisterID<?> toVectorProgram(
+		ExpressionVectorProgramCompiler compiler
+	) throws CompileError {
+		throw new UnvectorizableError("toVectorProgram not supported for "+getClass(), sLoc);
 	}
 }

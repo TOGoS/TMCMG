@@ -3,6 +3,7 @@ package togos.noise.v3.program.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 
 public class BoundArgumentList
@@ -20,6 +21,12 @@ public class BoundArgumentList
 			this.name = name;
 			this.value = value;
 			this.sLoc = sLoc;
+		}
+
+		public String toSource() throws CompileError {
+			String s = (name.length() > 0) ? name + " @ " : "";
+			s += value.toSource();
+			return s;
 		}
 	}
 	
@@ -39,5 +46,14 @@ public class BoundArgumentList
 			if( !b.name.isEmpty() ) return true;
 		}
 		return false;
+	}
+
+	public String toSource() throws CompileError {
+		String s = "";
+		for( BoundArgument<?> ba : arguments ) {
+			if( s.length() > 0 ) s += ", ";
+			s += ba.toSource();
+		}
+		return s;
 	}
 }

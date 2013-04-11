@@ -7,10 +7,10 @@ import java.util.Map;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
+import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.structure.FunctionDefinition;
 import togos.noise.v3.program.structure.ParameterList.Parameter;
-import togos.noise.v3.vector.vm.ProgramBuilder;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 
 public class Closure<V> implements Function<V>
@@ -49,7 +49,7 @@ public class Closure<V> implements Function<V>
 		
 		@Override
 		public RegisterID<?> toVectorProgram(
-			Map<String, RegisterID<?>> variableRegisters, ProgramBuilder pb
+			ExpressionVectorProgramCompiler compiler
 		) throws CompileError {
 			throw new CompileError("List binding cannot be converted to a vector program", sLoc);
 		}
@@ -59,6 +59,16 @@ public class Closure<V> implements Function<V>
         public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {
 			return (Class<? extends LinkedListNode<V>>)LinkedListNode.class;
         }
+    	
+		@Override
+		public String toSource() throws CompileError {
+			String s = "";
+			for( int i=0; i<valueBindings.size(); ++i ) {
+				if( i > 0 ) s += ", ";
+				s += valueBindings.get(i).toSource();
+			}
+			return "list("+s+")";
+		}
 	}
 	
 	public Binding<? extends V> apply( BoundArgumentList args ) throws CompileError {
