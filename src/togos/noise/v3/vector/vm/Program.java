@@ -11,29 +11,31 @@ public class Program
 	 */
 	public static class Instance {
 		public final Program program;
-		public final boolean[][] bVars;
-		public final double[][]  dVars;
+		public final boolean[][] booleanVectors;
+		public final int[][] integerVectors;
+		public final double[][]  doubleVectors;
 		public final int maxVectorSize;
 		protected boolean firstRun = true;
 		
 		public Instance( Program program, int maxVectorSize ) {
 			this.program = program;
-			this.bVars = new boolean[program.booleanVarCount][maxVectorSize];
-			this.dVars = new double[program.doubleVarCount][maxVectorSize];
+			this.booleanVectors = new boolean[program.booleanVectorCount][maxVectorSize];
+			this.integerVectors = new int[program.integerVectorCount][maxVectorSize];
+			this.doubleVectors = new double[program.doubleVectorCount][maxVectorSize];
 			this.maxVectorSize = maxVectorSize;
 		}
 		
 		public void setDVar( int varId, double[] data, int vectorSize ) {
-			assert varId < dVars.length;
+			assert varId < doubleVectors.length;
 			assert vectorSize < maxVectorSize;
 			assert data.length >= vectorSize;
 			for( int i = vectorSize-1; i >= 0; --i ) {
-				dVars[varId][i] = data[i];
+				doubleVectors[varId][i] = data[i];
 			}
 		}
 		
 		public double[] getDVar( int varId ) {
-			return dVars[varId];
+			return doubleVectors[varId];
 		}
 		
 		protected void run( Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] instructions, int vectorSize ) {
@@ -139,9 +141,35 @@ public class Program
 		
 		public void apply( Program.Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> inst, int vectorSize ) {
 			apply(
-				pi.dVars[inst.dest.number],
-				pi.dVars[inst.v1.number],
-				pi.dVars[inst.v2.number],
+				pi.doubleVectors[inst.dest.number],
+				pi.doubleVectors[inst.v1.number],
+				pi.doubleVectors[inst.v2.number],
+				vectorSize
+			);
+		}
+	}
+	
+	static abstract class OperatorBaBa_Ba implements Operator<RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.None> {
+		protected abstract void apply(boolean[] dest, boolean[] i1, boolean[] i2, int vectorSize);
+		
+		public void apply( Program.Instance pi, Instruction<RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.None> inst, int vectorSize ) {
+			apply(
+				pi.booleanVectors[inst.dest.number],
+				pi.booleanVectors[inst.v1.number],
+				pi.booleanVectors[inst.v2.number],
+				vectorSize
+			);
+		}
+	}
+	
+	static abstract class OperatorIaIa_Ia implements Operator<RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.None> {
+		protected abstract void apply(int[] dest, int[] i1, int[] i2, int vectorSize);
+		
+		public void apply( Program.Instance pi, Instruction<RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.None> inst, int vectorSize ) {
+			apply(
+				pi.integerVectors[inst.dest.number],
+				pi.integerVectors[inst.v1.number],
+				pi.integerVectors[inst.v2.number],
 				vectorSize
 			);
 		}
@@ -152,9 +180,9 @@ public class Program
 		
 		public void apply( Program.Instance pi, Instruction<RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> inst, int vectorSize ) {
 			apply(
-				pi.bVars[inst.dest.number],
-				pi.dVars[inst.v1.number],
-				pi.dVars[inst.v2.number],
+				pi.booleanVectors[inst.dest.number],
+				pi.doubleVectors[inst.v1.number],
+				pi.doubleVectors[inst.v2.number],
 				vectorSize
 			);
 		}
@@ -165,23 +193,64 @@ public class Program
 		
 		public void apply( Program.Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar> inst, int vectorSize ) {
 			apply(
-				pi.dVars[inst.dest.number],
-				pi.bVars[inst.v1.number],
-				pi.dVars[inst.v2.number],
-				pi.dVars[inst.v3.number],
+				pi.doubleVectors[inst.dest.number],
+				pi.booleanVectors[inst.v1.number],
+				pi.doubleVectors[inst.v2.number],
+				pi.doubleVectors[inst.v3.number],
 				vectorSize
 			);
 		}
 	}
 	
-	public static final Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> LOADCONST = new Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>() {
+	public static final Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> LOAD_DOUBLE_CONST = new Operator<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>() {
 		@Override
 		public void apply(Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
-			double[] dest = pi.dVars[inst.dest.number];
+			double[] dest = pi.doubleVectors[inst.dest.number];
 			double constVal = pi.program.doubleConstants[inst.v1.number];
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
 		}
 	};
+	public static final Operator<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None> LOAD_INT_CONST = new Operator<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>() {
+		@Override
+		public void apply(Instance pi, Instruction<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
+			int[] dest = pi.integerVectors[inst.dest.number];
+			int constVal = pi.program.intConstants[inst.v1.number];
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
+		}
+	};
+
+	public static final OperatorBaBa_Ba LOGICAL_OR = new OperatorBaBa_Ba() {
+		public void apply( boolean[] dest, boolean[] i1, boolean[] i2, int vectorSize ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] || i2[i];
+		}
+	};
+	public static final OperatorBaBa_Ba LOGICAL_AND = new OperatorBaBa_Ba() {
+		public void apply( boolean[] dest, boolean[] i1, boolean[] i2, int vectorSize ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] && !i2[i];
+		}
+	};
+	public static final OperatorBaBa_Ba LOGICAL_XOR = new OperatorBaBa_Ba() {
+		public void apply( boolean[] dest, boolean[] i1, boolean[] i2, int vectorSize ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] ? !i2[i] : i2[i];
+		}
+	};
+
+	public static final OperatorIaIa_Ia BITWISE_OR = new OperatorIaIa_Ia() {
+		public void apply( int[] dest, int[] i1, int[] i2, int vectorSize ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] | i2[i];
+		}
+	};
+	public static final OperatorIaIa_Ia BITWISE_AND = new OperatorIaIa_Ia() {
+		public void apply( int[] dest, int[] i1, int[] i2, int vectorSize ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] & i2[i];
+		}
+	};
+	public static final OperatorIaIa_Ia BITWISE_XOR = new OperatorIaIa_Ia() {
+		public void apply( int[] dest, int[] i1, int[] i2, int vectorSize ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] ^ i2[i];
+		}
+	};
+	
 	public static final OperatorDaDa_Da ADD = new OperatorDaDa_Da() {
 		public void apply( double[] dest, double[] i1, double[] i2, int vectorSize ) {
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = i1[i] + i2[i];
@@ -235,22 +304,23 @@ public class Program
 	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions;
 	public final int[] intConstants;
 	public final double[] doubleConstants;
-	public final int booleanVarCount, intVarCount, doubleVarCount;
+	public final int booleanVectorCount, integerVectorCount, doubleVectorCount;
 	
 	protected ThreadLocal<Reference<Instance>> instances = new ThreadLocal<Reference<Instance>>();
 	
 	public Program(
 		Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions,
 		Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions,
-		int[] intConstants, double[] doubleConstants, int booleanVarCount, int intVarCount, int doubleVarCount
+		int[] intConstants, double[] doubleConstants,
+		int booleanVectorCount, int integerVectorCount, int doubleVectorCount
 	) {
 		this.initInstructions = initInstructions;
 		this.runInstructions = runInstructions;
 		this.intConstants = intConstants;
 		this.doubleConstants = doubleConstants;
-		this.booleanVarCount = booleanVarCount;
-		this.doubleVarCount = doubleVarCount;
-		this.intVarCount = intVarCount;
+		this.booleanVectorCount = booleanVectorCount;
+		this.doubleVectorCount = doubleVectorCount;
+		this.integerVectorCount = integerVectorCount;
 	}
 	
 	public Instance getInstance( int maxVectorSize ) {
