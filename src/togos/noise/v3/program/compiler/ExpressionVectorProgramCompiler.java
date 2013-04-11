@@ -3,7 +3,6 @@ package togos.noise.v3.program.compiler;
 import java.util.HashMap;
 import java.util.Map;
 
-import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.vector.vm.Program.RegisterID;

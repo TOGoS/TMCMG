@@ -1,7 +1,5 @@
 package togos.lang;
 
-import togos.lang.SourceLocation;
-
 /**
  * Used to indicate errors encountered while parsing, compiling, or running scripts.
  */

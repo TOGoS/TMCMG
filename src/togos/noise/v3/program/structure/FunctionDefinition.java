@@ -1,11 +1,9 @@
 package togos.noise.v3.program.structure;
 
-import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Closure;
 import togos.noise.v3.program.runtime.Context;
-import togos.noise.v3.program.runtime.Function;
 
 public class FunctionDefinition<V> extends Expression<Closure<V>>
 {

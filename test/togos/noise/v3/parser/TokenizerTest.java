@@ -1,10 +1,8 @@
 package togos.noise.v3.parser;
 
+import junit.framework.TestCase;
 import togos.lang.ParseError;
 import togos.noise.v3.asyncstream.Collector;
-import togos.noise.v3.parser.Token;
-import togos.noise.v3.parser.Tokenizer;
-import junit.framework.TestCase;
 
 public class TokenizerTest extends TestCase
 {

@@ -1,10 +1,8 @@
 package togos.noise.v3.parser;
 
 import togos.lang.BaseSourceLocation;
-import togos.noise.v3.parser.Parser;
-import togos.noise.v3.parser.ProgramTreeBuilder;
-import togos.noise.v3.program.structure.FunctionApplication;
 import togos.noise.v3.program.structure.Expression;
+import togos.noise.v3.program.structure.FunctionApplication;
 
 public class ProgramTreeBuilderTest extends CoolTestCase
 {

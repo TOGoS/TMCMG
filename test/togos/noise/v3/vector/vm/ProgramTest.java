@@ -1,10 +1,8 @@
 package togos.noise.v3.vector.vm;
 
-import togos.noise.v3.vector.vm.Program;
-import togos.noise.v3.vector.vm.ProgramBuilder;
+import junit.framework.TestCase;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
 import togos.noise.v3.vector.vm.Program.RegisterID;
-import junit.framework.TestCase;
 
 public class ProgramTest extends TestCase
 {

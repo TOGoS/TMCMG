@@ -1,7 +1,6 @@
 package togos.noise.v3.parser;
 
 import togos.lang.BaseSourceLocation;
-import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.TextNode;
