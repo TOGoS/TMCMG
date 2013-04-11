@@ -53,25 +53,31 @@ public class Program
 	
 	public abstract static class RegisterBankID {
 		public final int number;
-		protected RegisterBankID( int number ) {
-			this.number = number;
-		}
+		private RegisterBankID( int number ) { this.number = number; }
 		
+		public static class None extends RegisterBankID {
+			static final None INSTANCE = new None();
+			private None() { super(0); }
+		};
+		public static final class IConst extends RegisterBankID {
+			public static final IConst INSTANCE = new IConst();
+			private IConst() { super(0x11); }
+		};
 		public static final class DConst extends RegisterBankID {
 			public static final DConst INSTANCE = new DConst();
-			private DConst() { super(1); }
+			private DConst() { super(0x12); }
 		};
 		public static class BVar extends RegisterBankID {
 			static final BVar INSTANCE = new BVar();
-			private BVar() { super(2); }
+			private BVar() { super(0x20); }
+		};
+		public static class IVar extends RegisterBankID {
+			static final IVar INSTANCE = new IVar();
+			private IVar() { super(0x21); }
 		};
 		public static class DVar extends RegisterBankID {
 			static final DVar INSTANCE = new DVar();
-			private DVar() { super(3); }
-		};
-		public static class None extends RegisterBankID {
-			static final None INSTANCE = new None();
-			private None() { super(4); }
+			private DVar() { super(0x22); }
 		};
 	};
 	
@@ -172,7 +178,7 @@ public class Program
 		@Override
 		public void apply(Instance pi, Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None> inst, int vectorSize) {
 			double[] dest = pi.dVars[inst.dest.number];
-			double constVal = pi.program.constants[inst.v1.number];
+			double constVal = pi.program.doubleConstants[inst.v1.number];
 			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = constVal;
 		}
 	};
@@ -227,17 +233,24 @@ public class Program
 	 */
 	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions;
 	public final Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions;
-	public final double[] constants;
-	public final int booleanVarCount, doubleVarCount;
+	public final int[] intConstants;
+	public final double[] doubleConstants;
+	public final int booleanVarCount, intVarCount, doubleVarCount;
 	
 	protected ThreadLocal<Reference<Instance>> instances = new ThreadLocal<Reference<Instance>>();
 	
-	public Program( Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions, Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions, double[] constants, int booleanVarCount, int doubleVarCount ) {
+	public Program(
+		Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] initInstructions,
+		Instruction<RegisterBankID,RegisterBankID,RegisterBankID,RegisterBankID>[] runInstructions,
+		int[] intConstants, double[] doubleConstants, int booleanVarCount, int intVarCount, int doubleVarCount
+	) {
 		this.initInstructions = initInstructions;
 		this.runInstructions = runInstructions;
-		this.constants = constants;
+		this.intConstants = intConstants;
+		this.doubleConstants = doubleConstants;
 		this.booleanVarCount = booleanVarCount;
 		this.doubleVarCount = doubleVarCount;
+		this.intVarCount = intVarCount;
 	}
 	
 	public Instance getInstance( int maxVectorSize ) {

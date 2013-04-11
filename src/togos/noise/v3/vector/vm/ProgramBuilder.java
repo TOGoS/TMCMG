@@ -16,9 +16,12 @@ public class ProgramBuilder
 	ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>> initInstructions = new ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>>();
 	ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>> runInstructions = new ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>>();
 	/** Maps constant value to its register ID */
-	TreeMap<Double,RegisterID<RegisterBankID.DConst>> constants = new TreeMap<Double,RegisterID<RegisterBankID.DConst>>();
+	TreeMap<Integer,RegisterID<RegisterBankID.IConst>> intConstRegisters = new TreeMap<Integer,RegisterID<RegisterBankID.IConst>>();
+	TreeMap<Double,RegisterID<RegisterBankID.DConst>> doubleConstRegisters = new TreeMap<Double,RegisterID<RegisterBankID.DConst>>();
 	/** Maps constant register ID => double variable ID */
-	TreeMap<RegisterID<RegisterBankID.DConst>,RegisterID<RegisterBankID.DVar>> constantVariables = new TreeMap<RegisterID<RegisterBankID.DConst>,RegisterID<RegisterBankID.DVar>>();
+	TreeMap<RegisterID<RegisterBankID.IConst>,RegisterID<RegisterBankID.IVar>> intConstVars = new TreeMap<RegisterID<RegisterBankID.IConst>,RegisterID<RegisterBankID.IVar>>();
+	TreeMap<RegisterID<RegisterBankID.DConst>,RegisterID<RegisterBankID.DVar>> doubleConstVars = new TreeMap<RegisterID<RegisterBankID.DConst>,RegisterID<RegisterBankID.DVar>>();
+	public short nextIntVar     = 0;
 	public short nextDoubleVar  = 0;
 	public short nextBooleanVar = 0;
 	public short nextConstant   = 0;
@@ -30,23 +33,32 @@ public class ProgramBuilder
 		return RegisterID.create( RegisterBankID.BVar.INSTANCE, nextBooleanVar++ );
 	}
 	
+	public RegisterID<RegisterBankID.IConst> getConstant( int v ) {
+		RegisterID<RegisterBankID.IConst> c = intConstRegisters.get(v);
+		if( c != null ) return c;
+		
+		c = RegisterID.create( RegisterBankID.IConst.INSTANCE, nextConstant++);
+		intConstRegisters.put(v, c);
+		return c;
+	}
+	
 	public RegisterID<RegisterBankID.DConst> getConstant( double v ) {
-		RegisterID<RegisterBankID.DConst> c = constants.get(v);
+		RegisterID<RegisterBankID.DConst> c = doubleConstRegisters.get(v);
 		if( c != null ) return c;
 		
 		c = RegisterID.create( RegisterBankID.DConst.INSTANCE, nextConstant++);
-		constants.put(v, c);
+		doubleConstRegisters.put(v, c);
 		return c;
 	}
 	
 	public RegisterID<RegisterBankID.DVar> getVariable( double v ) {
 		RegisterID<RegisterBankID.DConst> cReg = getConstant(v);
 		
-		if( constantVariables.containsKey(cReg) ) {
-			return constantVariables.get(cReg);
+		if( doubleConstVars.containsKey(cReg) ) {
+			return doubleConstVars.get(cReg);
 		}
 		RegisterID<RegisterBankID.DVar> dReg = RegisterID.create( RegisterBankID.DVar.INSTANCE, nextDoubleVar++);
-		constantVariables.put( cReg, dReg );
+		doubleConstVars.put( cReg, dReg );
 		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>( Program.LOADCONST, dReg, cReg, R_NONE, R_NONE ));
 		return dReg;
 	}
@@ -69,16 +81,22 @@ public class ProgramBuilder
 	
 	@SuppressWarnings("unchecked")
 	public Program toProgram() {
-		double[] constants = new double[this.constants.size()];
-		for( Map.Entry<Double,RegisterID<RegisterBankID.DConst>> ce : this.constants.entrySet() ) {
-			assert ce.getValue().number >= 0 && ce.getValue().number < constants.length;
-			constants[ce.getValue().number] = ce.getKey();
+		int[] intConstValues = new int[this.intConstRegisters.size()];
+		for( Map.Entry<Integer,RegisterID<RegisterBankID.IConst>> ce : this.intConstRegisters.entrySet() ) {
+			assert ce.getValue().number >= 0 && ce.getValue().number < intConstValues.length;
+			intConstValues[ce.getValue().number] = ce.getKey();
+		}
+		
+		double[] doubleConstValues = new double[this.doubleConstRegisters.size()];
+		for( Map.Entry<Double,RegisterID<RegisterBankID.DConst>> ce : this.doubleConstRegisters.entrySet() ) {
+			assert ce.getValue().number >= 0 && ce.getValue().number < doubleConstValues.length;
+			doubleConstValues[ce.getValue().number] = ce.getKey();
 		}
 		
 		return new Program(
 			initInstructions.toArray(new Instruction[initInstructions.size()]),
 			runInstructions.toArray(new Instruction[runInstructions.size()]),
-			constants, nextBooleanVar, nextDoubleVar
+			intConstValues, doubleConstValues, nextBooleanVar, nextIntVar, nextDoubleVar
 		);
 	}
 }
