@@ -1,4 +1,4 @@
-package togos.noise.v3.parse.ast;
+package togos.noise.v3.parser.ast;
 
 import togos.lang.SourceLocation;
 

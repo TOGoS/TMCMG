@@ -1,7 +1,7 @@
-package togos.noise.v3.parse.ast;
+package togos.noise.v3.parser.ast;
 
 import togos.lang.SourceLocation;
-import togos.noise.v3.parse.Token;
+import togos.noise.v3.parser.Token;
 
 public class InfixNode extends ASTNode
 {

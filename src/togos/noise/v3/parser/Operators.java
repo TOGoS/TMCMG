@@ -1,4 +1,4 @@
-package togos.noise.v3.parse;
+package togos.noise.v3.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;

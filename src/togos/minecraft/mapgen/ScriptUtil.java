@@ -9,9 +9,9 @@ import togos.lang.RuntimeError;
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.noise.v3.functions.MathFunctions;
-import togos.noise.v3.parse.Parser;
-import togos.noise.v3.parse.ProgramTreeBuilder;
-import togos.noise.v3.parse.ast.ASTNode;
+import togos.noise.v3.parser.Parser;
+import togos.noise.v3.parser.ProgramTreeBuilder;
+import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.structure.Expression;
 

@@ -1,4 +1,4 @@
-package togos.noise.v3.parse;
+package togos.noise.v3.parser;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -13,11 +13,11 @@ import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.asyncstream.StreamUtil;
-import togos.noise.v3.parse.ast.ASTNode;
-import togos.noise.v3.parse.ast.InfixNode;
-import togos.noise.v3.parse.ast.ParenApplicationNode;
-import togos.noise.v3.parse.ast.TextNode;
-import togos.noise.v3.parse.ast.VoidNode;
+import togos.noise.v3.parser.ast.ASTNode;
+import togos.noise.v3.parser.ast.InfixNode;
+import togos.noise.v3.parser.ast.ParenApplicationNode;
+import togos.noise.v3.parser.ast.TextNode;
+import togos.noise.v3.parser.ast.VoidNode;
 
 public class Parser extends BaseStreamSource<ASTNode> implements StreamDestination<Token>
 {

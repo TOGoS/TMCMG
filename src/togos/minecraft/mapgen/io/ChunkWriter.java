@@ -21,7 +21,7 @@ import togos.minecraft.mapgen.util.Util;
 import togos.minecraft.mapgen.world.gen.ChunkGenerator;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-import togos.noise.v3.parse.ParseUtil;
+import togos.noise.v3.parser.ParseUtil;
 
 public class ChunkWriter
 {

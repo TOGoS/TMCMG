@@ -24,7 +24,7 @@ import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.LayerBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
-import togos.noise.v3.parse.ParseUtil;
+import togos.noise.v3.parser.ParseUtil;
 import togos.noise.v3.vector.function.LFunctionDaDa_DaIa;
 import togos.service.Service;
 

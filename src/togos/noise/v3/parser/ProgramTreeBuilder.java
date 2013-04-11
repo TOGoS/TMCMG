@@ -1,4 +1,4 @@
-package togos.noise.v3.parse;
+package togos.noise.v3.parser;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -8,11 +8,11 @@ import java.util.regex.Pattern;
 
 import togos.lang.ParseError;
 import togos.lang.SourceLocation;
-import togos.noise.v3.parse.ast.ASTNode;
-import togos.noise.v3.parse.ast.InfixNode;
-import togos.noise.v3.parse.ast.ParenApplicationNode;
-import togos.noise.v3.parse.ast.TextNode;
-import togos.noise.v3.parse.ast.VoidNode;
+import togos.noise.v3.parser.ast.ASTNode;
+import togos.noise.v3.parser.ast.InfixNode;
+import togos.noise.v3.parser.ast.ParenApplicationNode;
+import togos.noise.v3.parser.ast.TextNode;
+import togos.noise.v3.parser.ast.VoidNode;
 import togos.noise.v3.program.structure.ArgumentList;
 import togos.noise.v3.program.structure.Block;
 import togos.noise.v3.program.structure.Constant;

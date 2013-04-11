@@ -6,7 +6,7 @@ import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.RuntimeError;
 import togos.lang.SourceLocation;
-import togos.noise.v3.parse.Parser;
+import togos.noise.v3.parser.Parser;
 import togos.noise.v3.vector.vm.ProgramBuilder;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 
