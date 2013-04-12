@@ -7,6 +7,8 @@ import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.DConst;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.IConst;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 import togos.noise.v3.vector.vm.ProgramBuilder;
 
@@ -44,12 +46,12 @@ public class ExpressionVectorProgramCompiler
 	protected Map<TypeTranslationKey, RegisterID<?>> translatedExpressionResultRegisters = new HashMap<TypeTranslationKey, RegisterID<?>>(); 
 	
 	protected RegisterID<?> createVariableRegister( Class<?> type ) {
-		if( type == Double.class ) {
-			return pb.newDVar();
+		if( type == Boolean.class ) {
+			return pb.newBVar();
 		} else if( type == Integer.class ) {
 			return pb.newIVar();
-		} else if( type == Boolean.class ) {
-			return pb.newIVar();
+		} else if( type == Double.class ) {
+			return pb.newDVar();
 		} else {
 			throw new RuntimeException( "Cannot create vector register for type: '"+type.getName()+"'");
 		}
@@ -70,36 +72,6 @@ public class ExpressionVectorProgramCompiler
 		return reg;
 	}
 	
-	public RegisterID<?> compile( Binding<?> b ) throws CompileError {
-		String key = b.toSource();
-		RegisterID<?> reg = expressionResultRegisters.get(key);
-		if( reg == null ) {
-			expressionResultRegisters.put(key, reg = b.toVectorProgram(this));
-		}
-		assert reg != null;
-		return reg;
-	}
-
-	public <T extends RegisterBankID<?>> RegisterID<T> compile( Binding<?> b, T targetRegisterBank ) throws CompileError {
-		TypeTranslationKey key = new TypeTranslationKey( b.toSource(), targetRegisterBank.valueType );
-		RegisterID<?> reg = translatedExpressionResultRegisters.get(key);
-		if( reg != null ) return (RegisterID<T>)reg;
-		
-		reg = pb.translate( compile( b ), targetRegisterBank.valueType, b.sLoc );
-		translatedExpressionResultRegisters.put(key, reg);
-		return (RegisterID<T>)reg;
-	}
-	
-	public RegisterID<?> compile( Binding<?> b, Class<?> targetType ) throws CompileError {
-		TypeTranslationKey key = new TypeTranslationKey( b.toSource(), targetType);
-		RegisterID<?> reg = translatedExpressionResultRegisters.get(key);
-		if( reg != null ) return reg;
-		
-		reg = pb.translate( compile( b ), targetType, b.sLoc );
-		translatedExpressionResultRegisters.put(key, reg);
-		return reg;
-	}
-	
 	public RegisterID<?> compileConstant( Object value, SourceLocation sLoc ) throws CompileError {
 		if( value instanceof Number && ((Number)value).doubleValue() == ((Number)value).intValue() ) {
 			return pb.getConstant( ((Number)value).intValue() );
@@ -108,5 +80,45 @@ public class ExpressionVectorProgramCompiler
 		} else {
 			throw new UnvectorizableError("Cannot compile constant of class "+value.getClass()+" to vector program", sLoc);
 		}
+	}
+	
+	public RegisterID<?> toVector( RegisterID<?> reg ) {
+		if( !reg.bankId.isConstant ) return reg;
+		
+		if( reg.bankId.valueType == Boolean.class ) {
+			throw new RuntimeException("Somehow got a constant boolean register!");
+		} else if( reg.bankId.valueType == Integer.class ) {
+			return pb.getIntegerVariable( (RegisterID<IConst>)reg );
+		} else if( reg.bankId.valueType == Double.class ) {
+			return pb.getDoubleVariable( (RegisterID<DConst>)reg );
+		}
+		
+		return null;
+	}
+	
+	//// The following will only return vector/variable registers ////
+	
+	public RegisterID<?> compile( Binding<?> b ) throws CompileError {
+		String key = b.toSource();
+		RegisterID<?> reg = expressionResultRegisters.get(key);
+		if( reg == null ) {
+			expressionResultRegisters.put(key, reg = toVector(b.toVectorProgram(this)));
+		}
+		assert reg != null;
+		return reg;
+	}
+	
+	public <T extends RegisterBankID<?>> RegisterID<T> compile( Binding<?> b, T targetRegisterBank ) throws CompileError {
+		return (RegisterID<T>)compile( b, targetRegisterBank.valueType );
+	}
+	
+	public RegisterID<?> compile( Binding<?> b, Class<?> targetType ) throws CompileError {
+		TypeTranslationKey key = new TypeTranslationKey( b.toSource(), targetType);
+		RegisterID<?> reg = translatedExpressionResultRegisters.get(key);
+		if( reg != null ) return reg;
+		
+		reg = toVector( pb.translate( compile( b ), targetType, b.sLoc ) );
+		translatedExpressionResultRegisters.put(key, reg);
+		return reg;
 	}
 }

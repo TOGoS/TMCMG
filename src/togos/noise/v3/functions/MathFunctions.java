@@ -2,6 +2,7 @@ package togos.noise.v3.functions;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
+import togos.noise.MathUtil;
 import togos.noise.function.D5_2Perlin;
 import togos.noise.function.SimplexNoise;
 import togos.noise.v3.parser.Parser;
@@ -13,17 +14,16 @@ import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
 import togos.noise.v3.vector.function.LFunctionDaDaDa_Da;
 import togos.noise.v3.vector.vm.Operators;
-import togos.noise.v3.vector.vm.Operators.OperatorBaBa_Ba;
-import togos.noise.v3.vector.vm.Operators.OperatorIaIa_Ia;
+import togos.noise.v3.vector.vm.Operators.AbstractOperator;
 import togos.noise.v3.vector.vm.Program;
 import togos.noise.v3.vector.vm.Program.Instance;
 import togos.noise.v3.vector.vm.Program.Instruction;
 import togos.noise.v3.vector.vm.Program.Operator;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
-import togos.noise.v3.vector.vm.Program.RegisterID;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.BVar;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.DVar;
-import togos.noise.v3.vector.vm.Program.RegisterBankID.IVar;
-import togos.noise.v3.vector.vm.Program.RegisterBankID.None;
+import togos.noise.v3.vector.vm.Program.RegisterID;
+import togos.noise.v3.vector.vm.ProgramBuilder;
 
 /**
  * TODO: If this is specific to v3.program evaluation, move to that package.
@@ -35,12 +35,14 @@ public class MathFunctions
 	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( MathFunctions.class.getName()+".java", 0, 0);
 	public static final Context CONTEXT = new Context();
 	
-	static abstract class BuiltinFunction<R> implements Function<R>, NativeFunction {
+	static interface BuiltinFunction<R> extends Function<R>, NativeFunction {}
+	
+	static abstract class FixedArgumentBuiltinFunction<R> implements BuiltinFunction<R> {
 		protected final Class<? extends R> returnType;
 		protected final Class<?>[] argumentTypes;
 		protected final Object[] argumentDefaults;
 		
-		public BuiltinFunction(
+		public FixedArgumentBuiltinFunction(
 			Class<? extends R> returnType,
 			Class<?>[] argumentTypes,
 			Object[] argumentDefaults
@@ -116,13 +118,13 @@ public class MathFunctions
 				}
 				
 				public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
-					return BuiltinFunction.this.toVectorProgram( argumentBindings, compiler );
+					return FixedArgumentBuiltinFunction.this.toVectorProgram( argumentBindings, compiler );
 				}
 			});
         }
 	}
 	
-	static abstract class BooleanInputFunction<R> extends BuiltinFunction<R> {
+	static abstract class BooleanInputFunction<R> extends FixedArgumentBuiltinFunction<R> {
 		abstract R apply( boolean a, boolean b );
 		
 		protected static final Class<?>[] ARG_TYPES = { Boolean.class, Boolean.class };
@@ -147,7 +149,7 @@ public class MathFunctions
 		};
 	}
 	
-	static abstract class NumberInputFunction<R> extends BuiltinFunction<R> {
+	static abstract class NumberInputFunction<R> extends FixedArgumentBuiltinFunction<R> {
 		abstract R apply( double a, double b );
 		
 		protected static final Class<?>[] ARG_TYPES = { Number.class, Number.class };
@@ -163,7 +165,7 @@ public class MathFunctions
 	}
 	
 	static abstract class FunctionII_I extends NumberInputFunction<Integer> {
-		public FunctionII_I() { 	super(Integer.class); }
+		public FunctionII_I() { super(Integer.class); }
 		
 		protected abstract Operator<RegisterBankID.IVar, RegisterBankID.IVar, RegisterBankID.IVar, RegisterBankID.None> getOperator();
 		
@@ -172,7 +174,27 @@ public class MathFunctions
 		};
 	}
 
-	static abstract class FunctionDDD_D extends BuiltinFunction<Number> {
+	static abstract class FunctionDD_B extends NumberInputFunction<Boolean> {
+		public FunctionDD_B() { super(Boolean.class); }
+		
+		protected abstract Operator<RegisterBankID.BVar, RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.None> getOperator();
+		
+		protected Program.RegisterID<RegisterBankID.BVar> toVectorProgram( Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
+			return compiler.pb.dd_b( getOperator(), compiler.compile(argumentBindings[0], RegisterBankID.DVar.INSTANCE), compiler.compile(argumentBindings[1], RegisterBankID.DVar.INSTANCE));		
+		};
+	}
+	
+	static abstract class FunctionDD_D extends NumberInputFunction<Double> {
+		public FunctionDD_D() { super(Double.class); }
+		
+		protected abstract Operator<RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.None> getOperator();
+		
+		protected Program.RegisterID<RegisterBankID.DVar> toVectorProgram( Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
+			return compiler.pb.dd_d( getOperator(), compiler.compile(argumentBindings[0], RegisterBankID.DVar.INSTANCE), compiler.compile(argumentBindings[1], RegisterBankID.DVar.INSTANCE));		
+		};
+	}
+	
+	static abstract class FunctionDDD_D extends FixedArgumentBuiltinFunction<Number> {
 		abstract double apply( double a, double b, double c );
 		
 		protected static final Class<?>[] ARG_TYPES = { Number.class, Number.class, Number.class };
@@ -201,7 +223,7 @@ public class MathFunctions
 		protected abstract LFunctionDaDaDa_Da getLFunction();
 		
 		protected Operator<DVar, DVar, DVar, DVar> getOperator() {
-			return new Operator<DVar, DVar, DVar, DVar>() {
+			return new AbstractOperator<DVar, DVar, DVar, DVar>(getName()) {
 				@Override public void apply(Instance pi, Instruction<DVar, DVar, DVar, DVar> inst, int vectorSize) {
 					double[] x = pi.doubleVectors[inst.v1.number];
 					double[] y = pi.doubleVectors[inst.v2.number];
@@ -276,15 +298,16 @@ public class MathFunctions
 			}
 		}) );
 		
-		CONTEXT.put("if", builtinBinding(new Function<Object>() {
+		CONTEXT.put("if", builtinBinding(new BuiltinFunction<Object>() {
+			@Override public String getName() { return "if"; }
+			
 			@Override public Binding<Object> apply(final BoundArgumentList input) throws CompileError {
 				if( input.hasNamedArguments() ) throw new CompileError("'if' does not take named arguments", input.argListLocation);
 				if( input.arguments.size() < 3 || input.arguments.size() % 2 == 0 ) {
 					throw new CompileError("'if' requires an odd number of arguments >= 3", input.argListLocation);
 				}
 				return Binding.memoize(new Binding<Object>( input.callLocation ) {
-					@Override
-                    public boolean isConstant() throws CompileError {
+					@Override public boolean isConstant() throws CompileError {
 						try {
 							int i = 0;
 							while( i <= input.arguments.size()-2 ) {
@@ -303,8 +326,7 @@ public class MathFunctions
 						return false;
                     }
 					
-					@Override
-                    public Object getValue() throws Exception {
+					@Override public Object getValue() throws Exception {
 						int i = 0;
 						while( i <= input.arguments.size()-2 ) {
 							Binding<? extends Boolean> condition = Binding.cast(input.arguments.get(i).value, Boolean.class);
@@ -316,14 +338,30 @@ public class MathFunctions
 						return input.arguments.get(i).value.getValue();
                     }
 					
-					@Override
-                    public Class<? extends Object> getValueType() throws CompileError {
+					@Override public Class<? extends Object> getValueType() throws CompileError {
 	                    return null;
                     }
 					
-					@Override
-					public String toSource() throws CompileError {
+					@Override public String toSource() throws CompileError {
 						return "if(" + input.toSource() + ")";
+					}
+					
+					@Override
+					public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler) throws CompileError {
+						final ProgramBuilder pb = compiler.pb;
+						
+						int i = input.arguments.size()-1;
+						RegisterID<?> onFalseRegister = compiler.compile( input.arguments.get(i).value );
+						i -= 2;
+						while( i >= 0 ) {
+							assert i % 2 == 0;
+							Binding<? extends Boolean> condition = Binding.cast(input.arguments.get(i).value, Boolean.class);
+							RegisterID<BVar> conditionRegister = (RegisterID<BVar>)pb.translate(condition.toVectorProgram(compiler), Boolean.class, condition.sLoc);
+							RegisterID<?> onTrueRegister = compiler.compile(input.arguments.get(i+1).value);
+							onFalseRegister = pb.select(conditionRegister, onFalseRegister, onTrueRegister, condition.sLoc);
+							i -= 2;
+						}
+						return onFalseRegister;
 					}
 				});
 			}
@@ -362,44 +400,65 @@ public class MathFunctions
 		}));
 		
 		CONTEXT.put(">", builtinBinding(new FunctionDD_B() {
-			@Override public String getName() { return "+"; }
+			@Override public String getName() { return ">"; }
 			@Override Boolean apply( double a, double b ) { return a > b; }
+			@Override protected Operators.OperatorDaDa_Ba getOperator() { return Operators.COMPARE_GREATER; }
 		}));
 		CONTEXT.put(">=", builtinBinding(new FunctionDD_B() {
-			@Override public String getName() { return "+"; }
+			@Override public String getName() { return ">="; }
 			@Override Boolean apply( double a, double b ) { return a >= b; }
+			@Override protected Operators.OperatorDaDa_Ba getOperator() { return Operators.COMPARE_GREATER_OR_EQUAL; }
 		}));
 		CONTEXT.put("==", builtinBinding(new FunctionDD_B() {
-			@Override public String getName() { return "+"; }
+			@Override public String getName() { return "=="; }
 			@Override Boolean apply( double a, double b ) { return a == b; }
+			@Override protected Operators.OperatorDaDa_Ba getOperator() { return Operators.COMPARE_EQUAL; }
+		}));
+		CONTEXT.put("!=", builtinBinding(new FunctionDD_B() {
+			@Override public String getName() { return "!="; }
+			@Override Boolean apply( double a, double b ) { return a != b; }
+			@Override protected Operators.OperatorDaDa_Ba getOperator() { return Operators.COMPARE_NOT_EQUAL; }
 		}));
 		CONTEXT.put("<=", builtinBinding(new FunctionDD_B() {
-			@Override public String getName() { return "+"; }
+			@Override public String getName() { return "<="; }
 			@Override Boolean apply( double a, double b ) { return a <= b; }
+			@Override protected Operators.OperatorDaDa_Ba getOperator() { return Operators.COMPARE_LESSER_OR_EQUAL; }
 		}));
 		CONTEXT.put("<", builtinBinding(new FunctionDD_B() {
-			@Override public String getName() { return "+"; }
+			@Override public String getName() { return "<"; }
 			@Override Boolean apply( double a, double b ) { return a < b; }
+			@Override protected Operators.OperatorDaDa_Ba getOperator() { return Operators.COMPARE_LESSER; }
 		}));
+		
 		CONTEXT.put("+", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "+"; }
 			@Override Double apply( double a, double b ) { return a + b; }
+			@Override protected Operators.OperatorDaDa_Da getOperator() { return Operators.ADD; }
 		}));
 		CONTEXT.put("-", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "-"; }
 			@Override Double apply( double a, double b ) { return a - b; }
+			@Override protected Operators.OperatorDaDa_Da getOperator() { return Operators.SUBTRACT; }
 		}));
 		CONTEXT.put("*", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return a * b; }
+			@Override protected Operators.OperatorDaDa_Da getOperator() { return Operators.MULTIPLY; }
 		}));
 		CONTEXT.put("/", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "/"; }
 			@Override Double apply( double a, double b ) { return a / b; }
+			@Override protected Operators.OperatorDaDa_Da getOperator() { return Operators.DIVIDE; }
 		}));
 		CONTEXT.put("**", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return Math.pow(a, b); }
+			@Override protected Operators.OperatorDaDa_Da getOperator() { return Operators.EXPONENTIATE; }
+		}));
+		CONTEXT.put("%", builtinBinding(new FunctionDD_D() {
+			@Override public String getName() { return "%"; }
+			@Override Double apply( double a, double b ) { return MathUtil.safeFlooredDivisionModulus(a, b); }
+			@Override protected Operators.OperatorDaDa_Da getOperator() { return Operators.FLOORED_DIVISION_MODULUS; }
 		}));
 		
 		CONTEXT.put("true", builtinBinding(Boolean.TRUE));

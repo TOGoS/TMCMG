@@ -35,6 +35,15 @@ public class ExpressionEvaluationTest extends TestCase
 		false, "false ^^ false",
 	};
 	
+	static final Object[] conditionalTests = new Object[] {
+		true,  "if( true, true, false )",
+		false, "if( true, false, true )",
+		false, "if( false, true, false )",
+		true,  "if( false, false, true )",
+		false, "if( false, false, false )",
+		false, "if( true, false, false )",
+	};
+	
 	public ExpressionEvaluationTest() {
 		super();
 	}
@@ -120,5 +129,9 @@ public class ExpressionEvaluationTest extends TestCase
 	
 	public void testEvalVariousLogicExpressions() throws Exception {
 		testExpressions( logicTests );
+	}
+	
+	public void testConditionalExpression() throws Exception {
+		testExpressions( conditionalTests );
 	}
 }

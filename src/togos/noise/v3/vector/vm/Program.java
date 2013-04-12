@@ -1,5 +1,6 @@
 package togos.noise.v3.vector.vm;
 
+import java.io.PrintStream;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 
@@ -51,30 +52,66 @@ public class Program
 			}
 			run( program.runInstructions, vectorSize );
 		}
+
+		public void dumpData(PrintStream ps) {
+			for( int i=0; i<booleanVectors.length; ++i ) {
+				ps.printf("  %-10s % 6d :", "boolean", i);
+				for( int j=0; j<maxVectorSize; ++j ) {
+					ps.printf(" "+(booleanVectors[i][j] ? '1' : '0'));
+				}
+				ps.println();
+			}
+			if( booleanVectors.length > 0 ) ps.println();
+			
+			for( int i=0; i<integerVectors.length; ++i ) {
+				ps.printf("  %-10s % 6d :", "integer", i);
+				for( int j=0; j<maxVectorSize; ++j ) {
+					ps.printf(" % 4d", integerVectors[i][j]);
+				}
+				ps.println();
+			}
+			if( integerVectors.length > 0 ) ps.println();
+			
+			for( int i=0; i<doubleVectors.length; ++i ) {
+				ps.printf("  %-10s % 6d :", "double", i);
+				for( int j=0; j<maxVectorSize; ++j ) {
+					ps.printf(" % 8.4f", doubleVectors[i][j]);
+				}
+				ps.println();
+			}
+		}
 	}
 	
 	public abstract static class RegisterBankID<T> {
 		public final boolean isConstant;
 		public final Class<T> valueType;
 		public final int number;
+		public final String abbreviation;
 		
 		private RegisterBankID( boolean isConstant, Class<T> valueType ) {
 			this.isConstant = isConstant;
 			this.valueType = valueType;
 			
+			char arenaChar = isConstant ? 'C' : 'V';
 			int arenaNumber = isConstant ? 0 : 1;
+			char typeChar;
 			int typeNumber;
 			if( valueType == Void.class ) {
+				typeChar = '_';
 				typeNumber = 0;
 			} else if( valueType == Boolean.class ) {
+				typeChar = 'B';
 				typeNumber = 1;
 			} else if( valueType == Integer.class ) {
+				typeChar = 'I';
 				typeNumber = 2;
 			} else if( valueType == Double.class ) {
+				typeChar = 'D';
 				typeNumber = 3;
 			} else {
 				throw new RuntimeException("Unsupported value type: "+valueType);
 			}
+			this.abbreviation = arenaChar + "" + typeChar;
 			this.number = (arenaNumber << 4) | typeNumber;
 		}
 		
@@ -118,8 +155,23 @@ public class Program
 			this.number = number;
 		}
 		
-		@Override
-		public int compareTo(RegisterID<?> other) {
+		public String toString() {
+			return bankId.abbreviation+number;
+		}
+		
+		@Override public int hashCode() {
+			return bankId.number | (number << 16);
+		}
+		
+		public boolean equals(RegisterID<?> o) {
+			return number == o.number && bankId.number == o.bankId.number;
+		}
+		
+		@Override public boolean equals( Object o ) {
+			return o instanceof RegisterID && equals((RegisterID<?>)o);
+		}
+		
+		@Override public int compareTo(RegisterID<?> other) {
 			return bankId.number < other.bankId.number ? -1 : bankId.number > other.bankId.number ? 1 :
 				number < other.number ? -1 : number > other.number ? 1 : 0;
 		}
@@ -154,6 +206,7 @@ public class Program
 		V2RT extends RegisterBankID<?>,
 		V3RT extends RegisterBankID<?>
 	> {
+		public String getName();
 		public void apply( Program.Instance pi, Instruction<DestRT,V1RT,V2RT,V3RT> inst, int vectorSize );
 	}
 	
@@ -165,7 +218,7 @@ public class Program
 	 */
 	public final Instruction<RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>>[] initInstructions;
 	public final Instruction<RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>>[] runInstructions;
-	public final int[] intConstants;
+	public final int[] integerConstants;
 	public final double[] doubleConstants;
 	public final int booleanVectorCount, integerVectorCount, doubleVectorCount;
 	
@@ -179,7 +232,7 @@ public class Program
 	) {
 		this.initInstructions = initInstructions;
 		this.runInstructions = runInstructions;
-		this.intConstants = intConstants;
+		this.integerConstants = intConstants;
 		this.doubleConstants = doubleConstants;
 		this.booleanVectorCount = booleanVectorCount;
 		this.doubleVectorCount = doubleVectorCount;
@@ -194,5 +247,36 @@ public class Program
 			instances.set(new SoftReference<Instance>(inst));
 		}
 		return inst;
+	}
+	
+	protected static String formatRegister( RegisterID<?> r ) {
+		return r == RegisterID.NONE ? "" : r.toString();
+	}
+	
+	protected static String formatInstruction( Instruction<?,?,?,?> i ) {
+		return String.format("  %-30s  %6s  %6s  %6s  %6s",
+			i.op.getName(),
+			formatRegister(i.dest), formatRegister(i.v1),
+			formatRegister(i.v2), formatRegister(i.v3)
+		);
+	}
+		
+	public void dump( PrintStream ps ) {
+		for( int i=0; i<integerConstants.length; ++i ) {
+			ps.printf("%-16s % 3d  % 11d\n", "integer-constant", i, integerConstants[i]);
+		}
+		if( integerConstants.length > 0 ) ps.println();
+		
+		for( int i=0; i<doubleConstants.length; ++i ) {
+			ps.printf("%-16s % 3d  % 24.12f\n", "double-constant", i, doubleConstants[i]);
+		}
+		if( doubleConstants.length > 0 ) ps.println();
+		
+		ps.println("init:");
+		for( Instruction<?,?,?,?> i : initInstructions ) ps.println( formatInstruction(i) );
+		
+		ps.println();
+		ps.println("run:");
+		for( Instruction<?,?,?,?> i : runInstructions ) ps.println( formatInstruction(i) );
 	}
 }
