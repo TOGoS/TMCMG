@@ -7,8 +7,11 @@ import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.BVar;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.DConst;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.DVar;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.IConst;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.IVar;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 import togos.noise.v3.vector.vm.ProgramBuilder;
 
@@ -45,23 +48,24 @@ public class ExpressionVectorProgramCompiler
 	protected Map<String, RegisterID<?>> expressionResultRegisters = new HashMap<String, RegisterID<?>>();
 	protected Map<TypeTranslationKey, RegisterID<?>> translatedExpressionResultRegisters = new HashMap<TypeTranslationKey, RegisterID<?>>(); 
 	
-	protected RegisterID<?> createVariableRegister( Class<?> type ) {
-		if( type == Boolean.class ) {
-			return pb.newBVar();
-		} else if( type == Integer.class ) {
-			return pb.newIVar();
-		} else if( type == Double.class ) {
-			return pb.newDVar();
+	@SuppressWarnings("unchecked")
+	protected <T extends RegisterBankID<?>> RegisterID<T> createVariableRegister( T bank ) {
+		if( bank == BVar.INSTANCE ) {
+			return (RegisterID<T>)pb.newBVar();
+		} else if( bank == IVar.INSTANCE ) {
+			return (RegisterID<T>)pb.newIVar();
+		} else if( bank == DVar.INSTANCE ) {
+			return (RegisterID<T>)pb.newDVar();
 		} else {
-			throw new RuntimeException( "Cannot create vector register for type: '"+type.getName()+"'");
+			throw new RuntimeException( "Cannot create vector register for bank: '"+bank+"'");
 		}
 	}
 	
-	public RegisterID<?> declareVariable( String name, Class<?> type ) {
+	public <T extends RegisterBankID<?>> RegisterID<T> declareVariable( String name, T bank ) {
 		if( variableRegisters.containsKey(name) ) {
 			throw new RuntimeException( "Cannot redeclare variable: '"+name+"'" );
 		}
-		RegisterID<?> reg = createVariableRegister( type );
+		RegisterID<T> reg = createVariableRegister( bank );
 		variableRegisters.put(name, reg);
 		return reg;
 	}

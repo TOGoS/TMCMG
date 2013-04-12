@@ -10,6 +10,9 @@ import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.structure.Expression;
 import togos.noise.v3.vector.vm.Program;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.BVar;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.DVar;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.IVar;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 
 public class ExpressionVectorProgramCompilerTest extends TestCase
@@ -49,9 +52,9 @@ public class ExpressionVectorProgramCompilerTest extends TestCase
 	
 	public void assertFunctionResult( boolean expected, String body, boolean a, boolean b, boolean c ) throws Exception {
 		ExpressionVectorProgramCompiler compiler = new ExpressionVectorProgramCompiler();
-		compiler.declareVariable("a", Boolean.class);
-		compiler.declareVariable("b", Boolean.class);
-		compiler.declareVariable("c", Boolean.class);
+		compiler.declareVariable("a", BVar.INSTANCE);
+		compiler.declareVariable("b", BVar.INSTANCE);
+		compiler.declareVariable("c", BVar.INSTANCE);
 		RegisterID<?> resultRegister = compiler.compile( parse(body).bind(CONTEXT), Boolean.class );
 		assertEquals( RegisterBankID.BVar.INSTANCE, resultRegister.bankId );
 		Program p = compiler.pb.toProgram();
@@ -65,9 +68,9 @@ public class ExpressionVectorProgramCompilerTest extends TestCase
 	
 	public void assertFunctionResult( int expected, String body, int i, int j, int k ) throws Exception {
 		ExpressionVectorProgramCompiler compiler = new ExpressionVectorProgramCompiler();
-		compiler.declareVariable("i", Integer.class);
-		compiler.declareVariable("j", Integer.class);
-		compiler.declareVariable("k", Integer.class);
+		compiler.declareVariable("i", IVar.INSTANCE);
+		compiler.declareVariable("j", IVar.INSTANCE);
+		compiler.declareVariable("k", IVar.INSTANCE);
 		RegisterID<?> resultRegister = compiler.compile( parse(body).bind(CONTEXT),Integer.class );
 		assertEquals( RegisterBankID.IVar.INSTANCE, resultRegister.bankId );
 		Program p = compiler.pb.toProgram();
@@ -81,9 +84,9 @@ public class ExpressionVectorProgramCompilerTest extends TestCase
 	
 	public void assertFunctionResult( double expected, String body, double x, double y, double z ) throws Exception {
 		ExpressionVectorProgramCompiler compiler = new ExpressionVectorProgramCompiler();
-		compiler.declareVariable("x", Double.class);
-		compiler.declareVariable("y", Double.class);
-		compiler.declareVariable("z", Double.class);
+		compiler.declareVariable("x", DVar.INSTANCE);
+		compiler.declareVariable("y", DVar.INSTANCE);
+		compiler.declareVariable("z", DVar.INSTANCE);
 		RegisterID<?> resultRegister = compiler.compile( parse(body).bind(CONTEXT), Double.class );
 		assertEquals( RegisterBankID.DVar.INSTANCE, resultRegister.bankId );
 		Program p = compiler.pb.toProgram();

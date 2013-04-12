@@ -99,8 +99,8 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 			return value.toString();
 		} else if( value instanceof String ) {
 			return quote((String)value);
-		} else if( value instanceof NativeFunction ) {
-			return "native-function("+quote(((NativeFunction)value).getName())+")";
+		//} else if( value instanceof NativeFunction ) {
+		//	return "native-function("+quote(((NativeFunction)value).getName())+")";
 		} else {
 			throw new RuntimeException("Don't know how to convert "+value.getClass()+" to string");
 		}

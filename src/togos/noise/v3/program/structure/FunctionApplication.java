@@ -46,7 +46,16 @@ public class FunctionApplication extends Expression<Object>
             }
 			
 			@Override public String toSource() throws CompileError {
-				return functionBinding.toSource() + "(" + boundArgumentList.toSource() + ")";
+				if( functionBinding.isConstant() ) {
+					try {
+						return functionBinding.getValue().apply( boundArgumentList ).toSource();
+					} catch( Exception e ) {
+						// "Error while flatteing function call for stringification"
+						throw new CompileError(e, sLoc);
+					}
+				} else {
+					throw new CompileError("Cannot 'toSource' function application because function is not constant", sLoc);
+				}
 			}
 			
 			@Override public RegisterID<?> toVectorProgram(

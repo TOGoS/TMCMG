@@ -1,8 +1,10 @@
 package togos.noise.v3.vector.vm;
 
 import java.io.PrintStream;
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
+
+import togos.noise.v3.vector.util.HasMaxVectorSize;
+import togos.noise.v3.vector.util.SoftThreadLocalVectorBuffer;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.IVar;
 
 public class Program
 {
@@ -10,7 +12,7 @@ public class Program
 	 * An instance of a program (a program + all its variables)
 	 * that may be run in a single thread at a time.
 	 */
-	public static class Instance {
+	public static class Instance implements HasMaxVectorSize {
 		public final Program program;
 		public final boolean[][] booleanVectors;
 		public final int[][] integerVectors;
@@ -26,6 +28,8 @@ public class Program
 			this.maxVectorSize = maxVectorSize;
 		}
 		
+		public int getMaxVectorSize() { return maxVectorSize; }
+		
 		public void setDVar( int varId, double[] data, int vectorSize ) {
 			assert varId < doubleVectors.length;
 			assert vectorSize < maxVectorSize;
@@ -37,6 +41,9 @@ public class Program
 		
 		public double[] getDVar( int varId ) {
 			return doubleVectors[varId];
+		}
+		public int[] getIVector( RegisterID<IVar> reg ) {
+			return integerVectors[reg.number];
 		}
 		
 		protected void run( Instruction<RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>>[] instructions, int vectorSize ) {
@@ -222,7 +229,11 @@ public class Program
 	public final double[] doubleConstants;
 	public final int booleanVectorCount, integerVectorCount, doubleVectorCount;
 	
-	protected ThreadLocal<Reference<Instance>> instances = new ThreadLocal<Reference<Instance>>();
+	protected SoftThreadLocalVectorBuffer<Instance> instanceVar = new SoftThreadLocalVectorBuffer<Instance>() {
+		public Instance initialValue( int vectorSize ) {
+			return new Instance( Program.this, vectorSize );
+		}
+	};
 	
 	public Program(
 		Instruction<RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>,RegisterBankID<?>>[] initInstructions,
@@ -240,13 +251,7 @@ public class Program
 	}
 	
 	public Instance getInstance( int maxVectorSize ) {
-		Reference<Instance> ref = instances.get();
-		Instance inst = ref == null ? null : ref.get();
-		if( inst == null || inst.maxVectorSize < maxVectorSize ) {
-			inst = new Instance( this, maxVectorSize );
-			instances.set(new SoftReference<Instance>(inst));
-		}
-		return inst;
+		return instanceVar.get( maxVectorSize );
 	}
 	
 	protected static String formatRegister( RegisterID<?> r ) {

@@ -32,9 +32,9 @@ public class BoundArgumentList
 	
 	public final List<BoundArgument<?>> arguments = new ArrayList<BoundArgument<?>>();
 	
-	public BoundArgumentList( SourceLocation fcLoc, SourceLocation sLoc ) {
-		this.callLocation = fcLoc;
-		this.argListLocation = sLoc;
+	public BoundArgumentList( SourceLocation callLocation, SourceLocation argListLocation ) {
+		this.callLocation = callLocation;
+		this.argListLocation = argListLocation;
 	}
 	
 	public <V> void add( String name, Binding<V> value, SourceLocation sLoc ) {

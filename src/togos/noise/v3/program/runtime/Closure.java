@@ -7,6 +7,7 @@ import java.util.Map;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
+import togos.noise.v3.parser.Parser;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.structure.FunctionDefinition;
@@ -131,4 +132,10 @@ public class Closure<V> implements Function<V>
 	public String toString() {
 		return "Closure of "+function;
 	}
+	
+	/*
+	public String toSource() {
+		return "closure("+Parser.quote(context.toString()) + "; " + function + ")";
+	}
+	*/
 }

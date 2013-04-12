@@ -24,6 +24,10 @@ public abstract class Binding<V>
 		return new Binding.Constant<V>( v, (Class<? extends V>)v.getClass(), sLoc );
 	}
 	
+	public static <T> Variable<T> variable( String name, Class<T> valueType ) {
+		return new Variable<T>( name, valueType );
+	}
+	
 	public static <T> Binding<T> memoize(Binding<T> binding) {
 		return new Binding.Memoizing<T>( binding, binding.sLoc );
 	}
@@ -68,12 +72,12 @@ public abstract class Binding<V>
 	////
 	
 	public static class Variable<V> extends Binding<V> {
-		public final String variableId;
-		protected final Class<? extends V> type;
+		public final String variableName;
+		public final Class<? extends V> valueType;
 		public Variable( String variableId, Class<? extends V> type ) {
 			super( BaseSourceLocation.NONE );
-			this.variableId = variableId;
-			this.type = type;
+			this.variableName = variableId;
+			this.valueType = type;
 		}
 		
 		@Override public boolean isConstant() {
@@ -81,19 +85,19 @@ public abstract class Binding<V>
 		}
 		
 		@Override public V getValue() {
-			throw new RuntimeException("Cannot getValue "+variableId+"; it is a variable");
+			throw new RuntimeException("Cannot getValue "+variableName+"; it is a variable");
 		}
 		
 		@Override public Class<? extends V> getValueType() {
-			return type;
+			return valueType;
 		}
 		
 		@Override public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
-			return compiler.getVariableRegister(variableId);
+			return compiler.getVariableRegister(variableName);
 		}
 		
 		@Override public String toSource() {
-			return "variable('"+variableId+"')";
+			return "variable('"+variableName+"')";
 		}
 	}
 	

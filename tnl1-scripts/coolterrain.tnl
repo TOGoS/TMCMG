@@ -1,0 +1,19 @@
+
+continent = ridge( -1, 1, fractal( 16, 128, 1, 2, 1, -1, simplex ) );
+mountain-height = ridge( continent * 72, continent * 104, fractal( 4, 16, 8, 4, 4, -8, simplex ) );
+ground-height = max( 24, mountain-height ); 
+
+layered-terrain(
+	layer( materials.water, 0, 48 ),
+
+	layer( materials.stone, 0, ground-height ),
+	layer( materials.dirt, ground-height, ground-height + 3 ),
+	layer( if( simplex > ((y - 4) / 12), materials.bedrock, materials.none ), 0, 16 ),
+	
+	# Post-processors
+	grassifier,
+	#tree-populator( tree-types.pine, fractal( 3, 100, 0.003, 2, 2, 3, simplex * 2 ), 4 ),
+	#tree-populator( tree-types.round, fractal( 3, 50, 0.003, 2, 2, -3, simplex * 2 ), 5 ),
+	lighter,
+	#flag-populated,
+)

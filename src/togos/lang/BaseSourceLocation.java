@@ -3,7 +3,10 @@ package togos.lang;
 
 public class BaseSourceLocation implements SourceLocation
 {
-	public static final BaseSourceLocation NONE = new BaseSourceLocation("(no source)",0,0);
+	public static final BaseSourceLocation fake( String description ) {
+		return new BaseSourceLocation("("+description+")",0,0);
+	}
+	public static final BaseSourceLocation NONE = fake("no source");
 	
 	protected String sourceFilename;
 	protected int sourceLineNumber, sourceColumnNumber;

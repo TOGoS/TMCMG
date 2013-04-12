@@ -11,7 +11,7 @@ lower-top  = 74 + fractal(5,6,1,2,-2,0,basis);
 
 layered-terrain(
 	# Ocean, in case you're into that kind of thing
-	layer( materials.water, 0, 56 ),
+	layer( materials.water, 0, 64 ),
 	layer( materials.sand,  0, 48 + fractal(3,8,4,4,2,5,basis) ),
 	layer( materials.dirt,  0, 40 + fractal(3,8,4,4,2,4,basis) ),
 	layer( materials.stone, 0, 32 + fractal(3,8,4,4,2,3,basis) ),
