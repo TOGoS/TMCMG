@@ -39,7 +39,7 @@ public class ProgramTest extends TestCase
 		ProgramBuilder pb = new ProgramBuilder();
 		RegisterID<RegisterBankID.DVar> c100 = pb.getVariable( 100.0 );
 		RegisterID<RegisterBankID.DVar> c200 = pb.getVariable( 200.0 );
-		RegisterID<RegisterBankID.DVar> added = pb.dd_d( Program.ADD, c100, c200 );
+		RegisterID<RegisterBankID.DVar> added = pb.dd_d( Operators.ADD, c100, c200 );
 		Program p = pb.toProgram();
 		assertEquals( 2, p.doubleConstants.length );
 		assertEquals( 2, p.initInstructions.length ); // 2 constant loads
@@ -78,10 +78,10 @@ public class ProgramTest extends TestCase
 		// Duplicate values should share a register
 		assertEquals( four.number, fourB.number );
 		
-		RegisterID<RegisterBankID.DVar> threePlusFour = pb.dd_d( Program.ADD, three, four );
-		RegisterID<RegisterBankID.DVar> twoTimesSeven = pb.dd_d( Program.MULTIPLY, two, threePlusFour );
-		RegisterID<RegisterBankID.DVar> fourteenDividedByFour = pb.dd_d( Program.DIVIDE, twoTimesSeven, fourB );
-		RegisterID<RegisterBankID.DVar> oneMinusThreeAndAHalf = pb.dd_d( Program.SUBTRACT, one, fourteenDividedByFour );
+		RegisterID<RegisterBankID.DVar> threePlusFour = pb.dd_d( Operators.ADD, three, four );
+		RegisterID<RegisterBankID.DVar> twoTimesSeven = pb.dd_d( Operators.MULTIPLY, two, threePlusFour );
+		RegisterID<RegisterBankID.DVar> fourteenDividedByFour = pb.dd_d( Operators.DIVIDE, twoTimesSeven, fourB );
+		RegisterID<RegisterBankID.DVar> oneMinusThreeAndAHalf = pb.dd_d( Operators.SUBTRACT, one, fourteenDividedByFour );
 		
 		assertProgramResults( -2.5, pb.toProgram(), oneMinusThreeAndAHalf );
 	}
@@ -96,7 +96,7 @@ public class ProgramTest extends TestCase
 		// Duplicate values should share a register
 		assertEquals( four.number, fourB.number );
 		
-		RegisterID<RegisterBankID.IVar> oneBOrFour = pb.ii_i( Program.BITWISE_OR, one, four );
+		RegisterID<RegisterBankID.IVar> oneBOrFour = pb.ii_i( Operators.BITWISE_OR, one, four );
 		
 		assertProgramResults( 1 | 4, pb.toProgram(), oneBOrFour );
 	}

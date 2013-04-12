@@ -15,8 +15,8 @@ public class ProgramBuilder
 {
 	static final RegisterID<RegisterBankID.None> R_NONE = RegisterID.NONE;
 	
-	ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>> initInstructions = new ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>>();
-	ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>> runInstructions = new ArrayList<Instruction<? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID,? extends RegisterBankID>>();
+	ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>> initInstructions = new ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>>();
+	ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>> runInstructions = new ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>>();
 	/** Maps constant value to its register ID */
 	TreeMap<Integer,RegisterID<RegisterBankID.IConst>> intConstRegisters = new TreeMap<Integer,RegisterID<RegisterBankID.IConst>>();
 	TreeMap<Double,RegisterID<RegisterBankID.DConst>> doubleConstRegisters = new TreeMap<Double,RegisterID<RegisterBankID.DConst>>();
@@ -66,7 +66,7 @@ public class ProgramBuilder
 		}
 		RegisterID<RegisterBankID.IVar> vReg = newIVar();
 		intConstVars.put( cReg, vReg );
-		initInstructions.add( new Instruction<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>( Program.LOAD_INT_CONST, vReg, cReg, R_NONE, R_NONE ));
+		initInstructions.add( new Instruction<RegisterBankID.IVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>( Operators.LOAD_INT_CONST, vReg, cReg, R_NONE, R_NONE ));
 		return vReg;
 	}
 	
@@ -78,7 +78,7 @@ public class ProgramBuilder
 		}
 		RegisterID<RegisterBankID.DVar> vReg = newDVar();
 		doubleConstVars.put( cReg, vReg );
-		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>( Program.LOAD_DOUBLE_CONST, vReg, cReg, R_NONE, R_NONE ));
+		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.DConst,RegisterBankID.None,RegisterBankID.None>( Operators.LOAD_DOUBLE_CONST, vReg, cReg, R_NONE, R_NONE ));
 		return vReg;
 	}
 	
@@ -88,13 +88,18 @@ public class ProgramBuilder
 		}
 		RegisterID<RegisterBankID.DVar> vReg = newDVar();
 		intAsDoubleConstVars.put( cReg, vReg );
-		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>( Program.LOAD_INT_CONST_AS_DOUBLE, vReg, cReg, R_NONE, R_NONE ));
+		initInstructions.add( new Instruction<RegisterBankID.DVar,RegisterBankID.IConst,RegisterBankID.None,RegisterBankID.None>( Operators.LOAD_INT_CONST_AS_DOUBLE, vReg, cReg, R_NONE, R_NONE ));
 		return vReg;
 	}
 	
 	public RegisterID<RegisterBankID.BVar> dd_b( Operator<RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None> op, RegisterID<RegisterBankID.DVar> r1, RegisterID<RegisterBankID.DVar> r2 ) {
 		RegisterID<RegisterBankID.BVar> newReg = newBVar();
 		runInstructions.add( new Instruction<RegisterBankID.BVar,RegisterBankID.DVar,RegisterBankID.DVar,RegisterBankID.None>(op, newReg, r1, r2, R_NONE) );
+		return newReg;
+	}
+	public RegisterID<RegisterBankID.BVar> bb_b( Operator<RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.None> op, RegisterID<RegisterBankID.BVar> r1, RegisterID<RegisterBankID.BVar> r2 ) {
+		RegisterID<RegisterBankID.BVar> newReg = newBVar();
+		runInstructions.add( new Instruction<RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.BVar,RegisterBankID.None>(op, newReg, r1, r2, R_NONE) );
 		return newReg;
 	}
 	public RegisterID<RegisterBankID.IVar> ii_i( Operator<RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.IVar,RegisterBankID.None> op, RegisterID<RegisterBankID.IVar> r1, RegisterID<RegisterBankID.IVar> r2 ) {
@@ -154,7 +159,7 @@ public class ProgramBuilder
 			if( reg.bankId.isConstant ) {
 				return getIntAsDoubleVariable( (RegisterID<RegisterBankID.IConst>)reg );
 			} else {
-				return i_d( Program.INT_TO_DOUBLE, (RegisterID<RegisterBankID.IVar>)reg );
+				return i_d( Operators.INT_TO_DOUBLE, (RegisterID<RegisterBankID.IVar>)reg );
 			}
 		} else {
 			throw new UnvectorizableError("Cannot write vector program to translate from "+reg.bankId.valueType+" to "+targetType, sLoc);

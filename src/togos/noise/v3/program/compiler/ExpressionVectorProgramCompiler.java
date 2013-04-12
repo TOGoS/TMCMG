@@ -6,6 +6,7 @@ import java.util.Map;
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
+import togos.noise.v3.vector.vm.Program.RegisterBankID;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 import togos.noise.v3.vector.vm.ProgramBuilder;
 
@@ -77,6 +78,16 @@ public class ExpressionVectorProgramCompiler
 		}
 		assert reg != null;
 		return reg;
+	}
+
+	public <T extends RegisterBankID<?>> RegisterID<T> compile( Binding<?> b, T targetRegisterBank ) throws CompileError {
+		TypeTranslationKey key = new TypeTranslationKey( b.toSource(), targetRegisterBank.valueType );
+		RegisterID<?> reg = translatedExpressionResultRegisters.get(key);
+		if( reg != null ) return (RegisterID<T>)reg;
+		
+		reg = pb.translate( compile( b ), targetRegisterBank.valueType, b.sLoc );
+		translatedExpressionResultRegisters.put(key, reg);
+		return (RegisterID<T>)reg;
 	}
 	
 	public RegisterID<?> compile( Binding<?> b, Class<?> targetType ) throws CompileError {

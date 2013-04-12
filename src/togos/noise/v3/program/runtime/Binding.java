@@ -227,8 +227,8 @@ public abstract class Binding<V>
 	}
 	
 	/**
-	 * Wraps another binding so that its isConstant, getValue, and getValueType
-	 * fields will only ever need to be called once.
+	 * Wraps another binding so that its isConstant, getValue, toSource, and getValueType
+	 * methods will only ever need to be called once.
 	 * @author stevens
 	 *
 	 * @param <T>
@@ -237,7 +237,7 @@ public abstract class Binding<V>
 		protected EvaluationState isConstantState = EvaluationState.UNEVALUATED;
 		protected EvaluationState valueState      = EvaluationState.UNEVALUATED;
 		protected EvaluationState valueTypeState  = EvaluationState.UNEVALUATED;
-		protected EvaluationState toSourceState = EvaluationState.UNEVALUATED;
+		protected EvaluationState toSourceState   = EvaluationState.UNEVALUATED;
 		
 		protected CompileError isConstantError;
 		protected Exception valueError;

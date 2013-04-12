@@ -5,11 +5,25 @@ import togos.lang.CompileError;
 import togos.noise.function.D5_2Perlin;
 import togos.noise.function.SimplexNoise;
 import togos.noise.v3.parser.Parser;
+import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
+import togos.noise.v3.vector.function.LFunctionDaDaDa_Da;
+import togos.noise.v3.vector.vm.Operators;
+import togos.noise.v3.vector.vm.Operators.OperatorBaBa_Ba;
+import togos.noise.v3.vector.vm.Operators.OperatorIaIa_Ia;
+import togos.noise.v3.vector.vm.Program;
+import togos.noise.v3.vector.vm.Program.Instance;
+import togos.noise.v3.vector.vm.Program.Instruction;
+import togos.noise.v3.vector.vm.Program.Operator;
+import togos.noise.v3.vector.vm.Program.RegisterBankID;
+import togos.noise.v3.vector.vm.Program.RegisterID;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.DVar;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.IVar;
+import togos.noise.v3.vector.vm.Program.RegisterBankID.None;
 
 /**
  * TODO: If this is specific to v3.program evaluation, move to that package.
@@ -48,6 +62,8 @@ public class MathFunctions
 		}
 		
 		public Class<? extends R> getReturnType() { return returnType; }
+		
+		protected abstract RegisterID<?> toVectorProgram( final Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler ) throws CompileError;
 		
         public Binding<R> apply( final BoundArgumentList input ) throws CompileError {
 			for( BoundArgument<?> arg : input.arguments ) {
@@ -98,6 +114,10 @@ public class MathFunctions
 				public String toSource() throws CompileError {
 					return getName() + "(" + input.toSource() + ")";
 				}
+				
+				public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
+					return BuiltinFunction.this.toVectorProgram( argumentBindings, compiler );
+				}
 			});
         }
 	}
@@ -117,6 +137,16 @@ public class MathFunctions
 		}
 	}
 	
+	static abstract class FunctionBB_B extends BooleanInputFunction<Boolean> {
+		public FunctionBB_B() { super(Boolean.class); }
+
+		protected abstract Operator<RegisterBankID.BVar, RegisterBankID.BVar, RegisterBankID.BVar, RegisterBankID.None> getOperator();
+
+		protected RegisterID<RegisterBankID.BVar> toVectorProgram(Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
+			return compiler.pb.bb_b( getOperator(), compiler.compile(argumentBindings[0], RegisterBankID.BVar.INSTANCE), compiler.compile(argumentBindings[1], RegisterBankID.BVar.INSTANCE));
+		};
+	}
+	
 	static abstract class NumberInputFunction<R> extends BuiltinFunction<R> {
 		abstract R apply( double a, double b );
 		
@@ -131,19 +161,55 @@ public class MathFunctions
 			return apply( ((Number)args[0]).doubleValue(), ((Number)args[1]).doubleValue() );
 		}
 	}
+	
+	static abstract class FunctionII_I extends NumberInputFunction<Integer> {
+		public FunctionII_I() { 	super(Integer.class); }
+		
+		protected abstract Operator<RegisterBankID.IVar, RegisterBankID.IVar, RegisterBankID.IVar, RegisterBankID.None> getOperator();
+		
+		protected Program.RegisterID<RegisterBankID.IVar> toVectorProgram( Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
+			return compiler.pb.ii_i( getOperator(), compiler.compile(argumentBindings[0], RegisterBankID.IVar.INSTANCE), compiler.compile(argumentBindings[1], RegisterBankID.IVar.INSTANCE));		
+		};
+	}
 
-	static abstract class NoiseFunction extends BuiltinFunction<Number> {
+	static abstract class FunctionDDD_D extends BuiltinFunction<Number> {
 		abstract double apply( double a, double b, double c );
 		
 		protected static final Class<?>[] ARG_TYPES = { Number.class, Number.class, Number.class };
 		protected static final Object[] ARG_DEFAULTS = { null, null, null };
 
-		public NoiseFunction() {
+		public FunctionDDD_D() {
 			super(Number.class, ARG_TYPES, ARG_DEFAULTS);
 		}
 		
 		protected Double apply( Object[] args ) {
 			return apply( ((Number)args[0]).doubleValue(), ((Number)args[1]).doubleValue(), ((Number)args[2]).doubleValue() );
+		}
+		
+		protected abstract Operator<RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.DVar> getOperator();
+		
+		protected RegisterID<RegisterBankID.DVar> toVectorProgram(Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
+			return compiler.pb.ddd_d( getOperator(),
+				compiler.compile(argumentBindings[0], RegisterBankID.DVar.INSTANCE),
+				compiler.compile(argumentBindings[1], RegisterBankID.DVar.INSTANCE),
+				compiler.compile(argumentBindings[2], RegisterBankID.DVar.INSTANCE)
+			);
+		};
+	}
+	
+	static abstract class NoiseFunction extends FunctionDDD_D {
+		protected abstract LFunctionDaDaDa_Da getLFunction();
+		
+		protected Operator<DVar, DVar, DVar, DVar> getOperator() {
+			return new Operator<DVar, DVar, DVar, DVar>() {
+				@Override public void apply(Instance pi, Instruction<DVar, DVar, DVar, DVar> inst, int vectorSize) {
+					double[] x = pi.doubleVectors[inst.v1.number];
+					double[] y = pi.doubleVectors[inst.v2.number];
+					double[] z = pi.doubleVectors[inst.v3.number];
+					double[] dest = pi.doubleVectors[inst.dest.number];
+					getLFunction().apply( vectorSize, x, y, z, dest  );
+				}
+			};
 		}
 	}
 	
@@ -164,17 +230,20 @@ public class MathFunctions
 	}
 	
 	static {
-		BooleanInputFunction<Boolean> logicalOr = new BooleanInputFunction<Boolean>( Boolean.class ) {
+		FunctionBB_B logicalOr = new FunctionBB_B() {
 			@Override public String getName() { return "or"; }
-			@Override Boolean apply( boolean a, boolean b ) { return a || b; }
+			@Override protected Boolean apply( boolean a, boolean b ) { return a || b; }
+			@Override protected Operators.OperatorBaBa_Ba getOperator() { return Operators.LOGICAL_OR; }
 		};
-		BooleanInputFunction<Boolean> logicalXor = new BooleanInputFunction<Boolean>( Boolean.class ) {
+		FunctionBB_B logicalXor = new FunctionBB_B() {
 			@Override public String getName() { return "xor"; }
-			@Override Boolean apply( boolean a, boolean b ) { return (a && !b) || (b && !a); }
+			@Override protected Boolean apply( boolean a, boolean b ) { return (a && !b) || (b && !a); }
+			@Override protected Operators.OperatorBaBa_Ba getOperator() { return Operators.LOGICAL_XOR; }
 		};
-		BooleanInputFunction<Boolean> logicalAnd = new BooleanInputFunction<Boolean>( Boolean.class ) {
+		FunctionBB_B logicalAnd = new FunctionBB_B() {
 			@Override public String getName() { return "and"; }
 			@Override Boolean apply( boolean a, boolean b ) { return a && b; }
+			@Override protected Operators.OperatorBaBa_Ba getOperator() { return Operators.LOGICAL_AND; }
 		};
 		
 		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
@@ -186,32 +255,24 @@ public class MathFunctions
 				}
 			};
 			
-			@Override
-			double apply(double a, double b, double c) {
+			@Override double apply(double a, double b, double c) {
 				return simplex.get().apply((float)a, (float)b, (float)c);
+			}
+			
+			@Override protected LFunctionDaDaDa_Da getLFunction() {
+				return simplex.get();
 			}
 		}) );
 		
-		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
-			@Override public String getName() { return "simplex"; }
-			
-			ThreadLocal<SimplexNoise> simplex = new ThreadLocal<SimplexNoise>() {
-				@Override public SimplexNoise initialValue() {
-					return new SimplexNoise();
-				}
-			};
-			
-			@Override
-			double apply(double a, double b, double c) {
-				return simplex.get().apply((float)a, (float)b, (float)c);
-			}
-		}) );
 		CONTEXT.put("perlin", builtinBinding(new NoiseFunction() {
 			@Override public String getName() { return "perlin"; }
 			
-			@Override
-			double apply(double a, double b, double c) {
+			@Override double apply(double a, double b, double c) {
 				return D5_2Perlin.instance.get(a, b, c);
+			}
+			
+			@Override protected LFunctionDaDaDa_Da getLFunction() {
+				return D5_2Perlin.instance;
 			}
 		}) );
 		
@@ -274,64 +335,69 @@ public class MathFunctions
 		CONTEXT.put("xor", builtinBinding(logicalXor));
 		CONTEXT.put("or",  builtinBinding(logicalOr));
 		
-		CONTEXT.put("<<", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
+		CONTEXT.put("<<", builtinBinding(new FunctionII_I() {
 			@Override public String getName() { return "<<"; }
-			@Override Long apply( double a, double b ) { return (long)a << (long)b; }
+			@Override protected Integer apply( double a, double b ) { return (int)a << (int)b; }
+			@Override protected Operators.OperatorIaIa_Ia getOperator() { return Operators.BITSHIFT_RIGHT; }
 		}));
-		CONTEXT.put(">>", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
+		CONTEXT.put(">>", builtinBinding(new FunctionII_I() {
 			@Override public String getName() { return "<<"; }
-			@Override Long apply( double a, double b ) { return (long)a >> (long)b; }
+			@Override protected Integer apply( double a, double b ) { return (int)a >> (int)b; }
+			@Override protected Operators.OperatorIaIa_Ia getOperator() { return Operators.BITSHIFT_LEFT; }
+		}));
+		CONTEXT.put("|", builtinBinding(new FunctionII_I() {
+			@Override public String getName() { return "|"; }
+			@Override protected Integer apply( double a, double b ) { return (int)a | (int)b; }
+			@Override protected Operators.OperatorIaIa_Ia getOperator() { return Operators.BITWISE_OR; }
+		}));
+		CONTEXT.put("&", builtinBinding(new FunctionII_I() {
+			@Override public String getName() { return "&"; }
+			@Override protected Integer apply( double a, double b ) { return (int)a & (int)b; }
+			@Override protected Operators.OperatorIaIa_Ia getOperator() { return Operators.BITWISE_AND; }
+		}));
+		CONTEXT.put("^", builtinBinding(new FunctionII_I() {
+			@Override public String getName() { return "^"; }
+			@Override protected Integer apply( double a, double b ) { return (int)a ^ (int)b; }
+			@Override protected Operators.OperatorIaIa_Ia getOperator() { return Operators.BITWISE_XOR; }
 		}));
 		
-		CONTEXT.put("|", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override public String getName() { return "|"; }
-			@Override Long apply( double a, double b ) { return (long)a | (long)b; }
-		}));
-		CONTEXT.put("&", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override public String getName() { return "&"; }
-			@Override Long apply( double a, double b ) { return (long)a & (long)b; }
-		}));
-		CONTEXT.put("^", builtinBinding(new NumberInputFunction<Long>( Long.class ) {
-			@Override public String getName() { return "^"; }
-			@Override Long apply( double a, double b ) { return (long)a ^ (long)b; }
-		}));
-		CONTEXT.put(">", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
+		CONTEXT.put(">", builtinBinding(new FunctionDD_B() {
 			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a > b; }
 		}));
-		CONTEXT.put(">=", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
+		CONTEXT.put(">=", builtinBinding(new FunctionDD_B() {
 			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a >= b; }
 		}));
-		CONTEXT.put("==", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
+		CONTEXT.put("==", builtinBinding(new FunctionDD_B() {
 			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a == b; }
 		}));
-		CONTEXT.put("<=", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
+		CONTEXT.put("<=", builtinBinding(new FunctionDD_B() {
 			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a <= b; }
 		}));
-		CONTEXT.put("<", builtinBinding(new NumberInputFunction<Boolean>( Boolean.class ) {
+		CONTEXT.put("<", builtinBinding(new FunctionDD_B() {
 			@Override public String getName() { return "+"; }
 			@Override Boolean apply( double a, double b ) { return a < b; }
 		}));
-		CONTEXT.put("+", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
+		CONTEXT.put("+", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "+"; }
 			@Override Double apply( double a, double b ) { return a + b; }
 		}));
-		CONTEXT.put("-", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
+		CONTEXT.put("-", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "-"; }
 			@Override Double apply( double a, double b ) { return a - b; }
 		}));
-		CONTEXT.put("*", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
+		CONTEXT.put("*", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return a * b; }
 		}));
-		CONTEXT.put("/", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
+		CONTEXT.put("/", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "/"; }
 			@Override Double apply( double a, double b ) { return a / b; }
 		}));
-		CONTEXT.put("**", builtinBinding(new NumberInputFunction<Double>( Double.class ) {
+		CONTEXT.put("**", builtinBinding(new FunctionDD_D() {
 			@Override public String getName() { return "*"; }
 			@Override Double apply( double a, double b ) { return Math.pow(a, b); }
 		}));
