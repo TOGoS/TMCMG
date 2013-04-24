@@ -1,0 +1,23 @@
+air     =  0;
+stone   =  1;
+dirt    =  3;
+bedrock =  7;
+water   =  8;
+sand    = 12;
+
+max(a,b) = if(a > b, a, b);
+min(a,b) = if(a < b, a, b);
+
+# list(...) creates a list of things, and
+# a list of layers can be supplied as an argument to layered-terrain.
+# It will be treated the same as all of the contained layers.
+flooded-cave-layer( floor, ceiling ) = list(
+	layer( air  , (x,z) -> max(63, floor(x,z)), ceiling ),
+	layer( water, floor, (x,z) -> min(63, ceiling(x,z)) )
+);
+
+layered-terrain(
+	layer( stone, 0, 96 ),
+	flooded-cave-layer( (x,z) -> 64 + 48 * simplex(x / 64, 0, z / 64), (x,z) -> 64 + 48 * simplex(z / 96, x / 192, 0) ), 
+	layer( bedrock, 0, 1 )
+)
