@@ -7,7 +7,12 @@ import java.util.List;
  * Simple read-only linked list.
  */
 public class LinkedListNode<V> implements Iterable<V> {
-	public static final LinkedListNode<?> EMPTY = new LinkedListNode<Object>(); 
+	public static final LinkedListNode<?> EMPTY = new LinkedListNode<Object>();
+	
+	@SuppressWarnings("unchecked")
+	public static final <T> LinkedListNode<T> empty() {
+		return (LinkedListNode<T>)EMPTY;
+	}
 	
 	public final int length; 
 	public final V head;

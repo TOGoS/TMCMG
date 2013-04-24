@@ -2,6 +2,7 @@ package togos.noise.v3.program.runtime;
 
 import junit.framework.TestCase;
 import togos.lang.BaseSourceLocation;
+import togos.noise.v3.functions.ListFunctions;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ProgramTreeBuilder;
@@ -11,6 +12,11 @@ public class ExpressionEvaluationTest extends TestCase
 {
 	static BaseSourceLocation TEST_LOC = new BaseSourceLocation("test script", 1, 1);
 	static ProgramTreeBuilder ptb = new ProgramTreeBuilder();
+	static Context CONTEXT = new Context();
+	static {
+		CONTEXT.putAll(MathFunctions.CONTEXT);
+		CONTEXT.putAll(ListFunctions.CONTEXT);
+	}
 	
 	static final long bigNum = (long)Integer.MAX_VALUE+1;
 	
@@ -53,7 +59,7 @@ public class ExpressionEvaluationTest extends TestCase
 	}
 	
 	protected Object eval( String source ) throws Exception {
-		return parse(source).bind(MathFunctions.CONTEXT).getValue();
+		return parse(source).bind(CONTEXT).getValue();
 	}
 
 	public void testEvaluateIntegerConstant() throws Exception {
@@ -133,5 +139,15 @@ public class ExpressionEvaluationTest extends TestCase
 	
 	public void testConditionalExpression() throws Exception {
 		testExpressions( conditionalTests );
+	}
+	
+	public void testListLiteral() throws Exception {
+		Object obj = eval("list(1, 2, 3)");
+		assertTrue( obj instanceof LinkedListNode );
+		LinkedListNode<Number> list = (LinkedListNode<Number>)obj; 
+		assertEquals( 3, list.length );
+		assertEquals( Long.valueOf(1), list.head );
+		assertEquals( Long.valueOf(2), list.tail.head );
+		assertEquals( Long.valueOf(3), list.tail.tail.head );
 	}
 }
