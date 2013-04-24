@@ -155,6 +155,9 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 		
 		@Override
         public void apply( int xzCount, double[] x, double[] z, int yCount, double[] y, int[] data ) {
+			assert xzCount >= 0;
+			assert yCount >= 0;
+			
 			final Buf buf = getBuf( yCount );
 			final TerrainBuffer tBuf = (buf.terrainBuffer = ltf.apply( xzCount, x, z, buf.terrainBuffer ));
 			
@@ -174,9 +177,12 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 						buf.colX[j] = buf.colZ[j] = 0;
 						buf.colY[j] = rFloor + j;
 					}
-					layer.blockTypeFunction.apply( layerHeight, buf.colX, buf.colY, buf.colZ, buf.colData);
-					for( int j=0, h=rFloor; h<rCeil; ++h, ++j ) {
-						if( buf.colData[j] != -1 ) data[i*yCount+h] = buf.colData[j];
+					if( layerHeight > 0 ) {
+						// More importantly >= 0.  But as long as we're checking, skip zero-height columns.
+						layer.blockTypeFunction.apply( layerHeight, buf.colX, buf.colY, buf.colZ, buf.colData);
+						for( int j=0, h=rFloor; h<rCeil; ++h, ++j ) {
+							if( buf.colData[j] != -1 ) data[i*yCount+h] = buf.colData[j];
+						}
 					}
 				}
 			}
