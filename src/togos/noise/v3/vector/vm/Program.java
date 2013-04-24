@@ -32,7 +32,7 @@ public class Program
 		
 		public void setDVar( int varId, double[] data, int vectorSize ) {
 			assert varId < doubleVectors.length;
-			assert vectorSize < maxVectorSize;
+			assert vectorSize <= maxVectorSize;
 			assert data.length >= vectorSize;
 			for( int i = vectorSize-1; i >= 0; --i ) {
 				doubleVectors[varId][i] = data[i];
