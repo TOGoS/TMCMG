@@ -1,9 +1,9 @@
-air     =  0;
-stone   =  1;
-dirt    =  3;
-bedrock =  7;
-water   =  8;
-sand    = 12;
+air     = material( 0);
+stone   = material( 1);
+dirt    = material( 3);
+bedrock = material( 7);
+water   = material( 8);
+sand    = material(12);
 
 max(a,b) = if(a > b, a, b);
 min(a,b) = if(a < b, a, b);
