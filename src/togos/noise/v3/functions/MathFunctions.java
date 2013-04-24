@@ -75,7 +75,7 @@ public class MathFunctions
 			}
 			final Binding<?>[] argumentBindings = new Binding[argumentTypes.length];
 			for( int i=0; i<argumentTypes.length; ++i ) {
-				if( input.arguments.size() < i ) {
+				if( input.arguments.size() <= i ) {
 					if( argumentDefaults[i] == null ) {
 						throw new CompileError("Argument "+(i+1)+" required but not given for "+getName(), input.callLocation );
 					} else {
