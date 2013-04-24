@@ -79,6 +79,7 @@ public class ProgramTreeBuilder
 				if( !(namedArgNode.n1 instanceof TextNode) ) {
 					throw new ParseError( "Named argument key must be a symbol, but got a "+namedArgNode.n1.getClass(), namedArgNode.n1);
 				}
+				name = ((TextNode)namedArgNode.n1).text;
 				defaultValue = parseExpression(namedArgNode.n2);
 			} else if( argNode instanceof TextNode ) {
 				name = ((TextNode)argNode).text;
