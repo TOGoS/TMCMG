@@ -2,6 +2,8 @@ package togos.minecraft.mapgen;
 
 import java.io.File;
 
+import togos.lang.BaseSourceLocation;
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
@@ -14,6 +16,25 @@ import junit.framework.TestCase;
  */
 public class ScriptTest extends TestCase
 {
+	protected static int intValue( Object o ) {
+		return ((Number)o).intValue();
+	}
+	
+	public void testMaterialFunction() throws Exception {
+		int[] materials = new int[] {
+			0, 0,
+			5, 5,
+			123, 4,
+			123, 0xF,
+			0xFFF, 8,
+			0xFFF, 0xF
+		};
+		
+		for( int i=0; i<materials.length; i += 2 ) {
+			assertEquals( Materials.encodeMaterial(materials[i], materials[i+1]), intValue(ScriptUtil.eval("material("+materials[i]+", "+materials[i+1]+")", ScriptUtil.STD_CONTEXT, BaseSourceLocation.NONE)) );
+		}
+	}
+	
 	public void testAllTheScripts() throws Exception {
 		File scriptDir = new File("tnl3-scripts");
 		if( !scriptDir.exists() ) {

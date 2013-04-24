@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.ScriptError;
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
@@ -276,10 +277,10 @@ public class GeneratorDefinitionFunctions
 	public static final Context CONTEXT = new Context();
 	static {
 		try {
-	        CONTEXT.put("material", ScriptUtil.bind("(id, data @ 0) -> (id & 0xFFF) | ((data & 0xF) << 12)", MathFunctions.CONTEXT, BUILTIN_LOC) );
-        } catch( ScriptError e ) {
-        	throw new RuntimeException("Error compiling built-in function", e);
-        }
+			CONTEXT.put("material", ScriptUtil.bind(Materials.MATERIAL_FUNCTION_TNL, MathFunctions.CONTEXT, BUILTIN_LOC) );
+		} catch( ScriptError e ) {
+			throw new RuntimeException("Error compiling built-in function", e);
+		}
 		CONTEXT.put("layer", builtinBinding(new Function<LayerDefinition>() {
 			@Override
             public Binding<LayerDefinition> apply( BoundArgumentList input ) throws CompileError {

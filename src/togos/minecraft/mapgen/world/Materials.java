@@ -11,10 +11,30 @@ import java.util.HashMap;
 
 import togos.noise.v3.vector.function.LFunctionIa_Ia;
 
-// TODO: Remove this entirely; use TMCMR-style text files to define colors
-// and some way to import aliases into TNL scripts.
 public class Materials
 {
+	public static final int BLOCK_ID_MASK  = 0xFFF;
+	public static final int BLOCK_ID_SHIFT = 0;
+	public static final int BLOCK_DATA_MASK  = 0xF;
+	public static final int BLOCK_DATA_SHIFT = 12;
+	
+	public static final String MATERIAL_FUNCTION_TNL =
+		"(id, data @ 0) -> " +
+		"((id   & "+BLOCK_ID_MASK+  ") << "+BLOCK_ID_SHIFT   + ") | " +
+		"((data & "+BLOCK_DATA_MASK+") << "+BLOCK_DATA_SHIFT + ")";
+	
+	
+	public static int encodeMaterial( int id, int data ) {
+		return
+			((id   & BLOCK_ID_MASK  ) << BLOCK_ID_SHIFT  ) |
+			((data & BLOCK_DATA_MASK) << BLOCK_DATA_SHIFT);
+	}
+	
+	//// Old hardcoded material info ////
+	
+	// TODO: Remove this stuff.  Use TMCMR-style text files to define colors
+	// and some way to import aliases into TNL scripts.
+	
 	static final int BLOCK_TYPE_MASK = 0xFF;
 	static final int BLOCK_TYPE_COUNT = 256;
 	
