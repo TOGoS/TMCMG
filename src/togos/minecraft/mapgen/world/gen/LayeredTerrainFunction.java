@@ -1,6 +1,7 @@
 package togos.minecraft.mapgen.world.gen;
 
 import togos.noise.v3.vector.function.LFunctionDaDaDa_Ia;
+import togos.noise.v3.vector.util.HasMaxVectorSize;
 
 public interface LayeredTerrainFunction
 {
@@ -17,7 +18,7 @@ public interface LayeredTerrainFunction
 		}
 	}
 	
-	static class TerrainBuffer {
+	static class TerrainBuffer implements HasMaxVectorSize {
 		/**
 		 * Returns a terrain buffer with at least the specified number of
 		 * samples and layers.  If the provided buffer is non-null and large
@@ -50,6 +51,10 @@ public interface LayeredTerrainFunction
 				layerData[i] = new LayerBuffer(maxVectorSize);
 			}
 			biomeData = new int[maxVectorSize];
+		}
+		
+		@Override public int getMaxVectorSize() {
+			return maxVectorSize;
 		}
 	}
 	

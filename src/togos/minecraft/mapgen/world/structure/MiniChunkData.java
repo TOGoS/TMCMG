@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import togos.minecraft.mapgen.world.ChunkUtil;
+import togos.minecraft.mapgen.world.Materials;
 
 public class MiniChunkData
 {
@@ -69,7 +70,10 @@ public class MiniChunkData
 		setBlockData( x, y, z, blockData );
 	}
 	
-	public void setBlock( int x, int y, int z, byte blockNum ) {
-		setBlock( x, y, z, blockNum, (byte)0 );
+	public void setBlock( int x, int y, int z, int material ) {
+		setBlock( x, y, z,
+			(short)((material >> Materials.BLOCK_ID_SHIFT) & Materials.BLOCK_ID_MASK),
+			(byte)((material >> Materials.BLOCK_DATA_SHIFT) & Materials.BLOCK_DATA_MASK)
+		);
 	}
 }

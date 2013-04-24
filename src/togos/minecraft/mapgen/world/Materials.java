@@ -13,6 +13,8 @@ import togos.noise.v3.vector.function.LFunctionIa_Ia;
 
 public class Materials
 {
+	public static final int NONE = -1;
+	
 	public static final int BLOCK_ID_MASK  = 0xFFF;
 	public static final int BLOCK_ID_SHIFT = 0;
 	public static final int BLOCK_DATA_MASK  = 0xF;
