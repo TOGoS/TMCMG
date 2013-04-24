@@ -49,6 +49,8 @@ public class FunctionApplication extends Expression<Object>
 				if( functionBinding.isConstant() ) {
 					try {
 						return functionBinding.getValue().apply( boundArgumentList ).toSource();
+					} catch( CompileError e ) {
+						throw e;
 					} catch( Exception e ) {
 						// "Error while flatteing function call for stringification"
 						throw new CompileError(e, sLoc);
