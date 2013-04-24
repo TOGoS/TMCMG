@@ -165,6 +165,7 @@ public class GeneratorDefinitionFunctions
 			
 			return new LFunctionDaDaDa_Ia() {
 				@Override public void apply( int vectorSize, double[] x, double[] y, double[] z, int[] dest ) {
+					assert vectorSize >= 0;
 					Instance instance = p.getInstance( vectorSize );
 					instance.setDVar( xReg.number, x, vectorSize );
 					instance.setDVar( yReg.number, y, vectorSize );
@@ -306,6 +307,14 @@ public class GeneratorDefinitionFunctions
 						wgd.biomeFunction = toFunc( arg.value, Number.class );
 					} else if( "".equals(arg.name) && v instanceof LayerDefinition ) {
 						wgd.layerDefs.add( (LayerDefinition)v );
+					} else if( "".equals(arg.name) && v instanceof Iterable ) {
+						for( Object o : (Iterable<?>)v ) {
+							if( o instanceof LayerDefinition ) {
+								wgd.layerDefs.add( (LayerDefinition)o );
+							} else {
+								throw new CompileError("Don't know how to handle item in world generator list argument: "+o, arg.sLoc);
+							}
+						}
 					} else {
 						String argName = arg.name.length() == 0 ? " " : " '"+arg.name+"' "; 
 						throw new CompileError("Don't know how to handle"+argName+"argument with value: "+v, arg.sLoc);
