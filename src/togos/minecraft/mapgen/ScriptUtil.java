@@ -8,6 +8,7 @@ import togos.lang.BaseSourceLocation;
 import togos.lang.RuntimeError;
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
+import togos.noise.v3.functions.ListFunctions;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ProgramTreeBuilder;
@@ -20,6 +21,7 @@ public class ScriptUtil
 	static final Context STD_CONTEXT = new Context();
 	static {
 		STD_CONTEXT.putAll(MathFunctions.CONTEXT);
+		STD_CONTEXT.putAll(ListFunctions.CONTEXT);
 		STD_CONTEXT.putAll(GeneratorDefinitionFunctions.CONTEXT);
 	}
 	
