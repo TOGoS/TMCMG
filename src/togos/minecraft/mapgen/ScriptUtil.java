@@ -6,6 +6,7 @@ import java.io.Reader;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.RuntimeError;
+import togos.lang.ScriptError;
 import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.noise.v3.functions.ListFunctions;
@@ -13,6 +14,7 @@ import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ProgramTreeBuilder;
 import togos.noise.v3.parser.ast.ASTNode;
+import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.structure.Expression;
 
@@ -45,5 +47,20 @@ public class ScriptUtil
 		} finally {
 			r.close();
 		}
+	}
+	
+	public static Binding<?> bind( String tnl, Context ctx, SourceLocation sLoc ) throws ScriptError {
+		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
+		try {
+	        return ptb.parseExpression(Parser.parse(tnl, sLoc)).bind(ctx);
+		} catch( ScriptError e ) {
+			throw e;
+        } catch( Exception e ) {
+	        throw new RuntimeException(e);
+        }
+	}
+	
+	public static Object eval( String tnl, Context ctx, SourceLocation sLoc ) throws Exception {
+		return bind(tnl, ctx, sLoc).getValue();
 	}
 }
