@@ -11,7 +11,7 @@ public class StringSplitTest
 	protected static final String toSplit5 = toSplit4 + "+" + toSplit4 + "+" + toSplit4 + "+" + toSplit4;
 	protected static final byte[] toSplit6 = toSplit5.getBytes();
 	
-	class Spliterator implements Iterator {
+	class Spliterator implements Iterator<String> {
 		final char delim;
 		final String s;
 		final int len;
@@ -32,7 +32,7 @@ public class StringSplitTest
 			return index < len;
 		}
 		
-		public final Object next() {
+		public final String next() {
 			int end = s.indexOf( delim, index );
 			if( end == -1 ) end = len;
 			String r = s.substring(index,end);
@@ -67,10 +67,10 @@ public class StringSplitTest
 		return res;
 	}
 	
-	protected final List fastSplitToList( final char delim, final String s ) {
+	protected final List<String> fastSplitToList( final char delim, final String s ) {
 		final int len = s.length();
 		
-		ArrayList splut = new ArrayList();
+		ArrayList<String> splut = new ArrayList<String>();
 		for( int begin = 0; begin < len; ) {
 			int end = s.indexOf(delim,begin);
 			if( end == -1 ) end = len;
