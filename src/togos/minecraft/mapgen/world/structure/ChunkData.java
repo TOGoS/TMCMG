@@ -71,6 +71,12 @@ public class ChunkData extends MiniChunkData
 		lightHeightData[x*depth+z] = (byte)(height);
 	}
 	
+	//// biome ////
+	
+	public void setBiome( int x, int z, byte b ) {
+		biomeData[x*depth+z] = b;
+    }
+	
 	//// Saving/loading ////
 	
 	static class Section {

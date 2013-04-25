@@ -8,7 +8,6 @@ import togos.lang.ScriptError;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
-import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.TerrainBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v3.functions.MathFunctions;
@@ -20,7 +19,6 @@ import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.runtime.Function;
 import togos.noise.v3.vector.function.LFunctionDaDaDa_Ia;
 import togos.noise.v3.vector.function.LFunctionDaDa_Da;
-import togos.noise.v3.vector.util.HasMaxVectorSize;
 import togos.noise.v3.vector.util.SoftThreadLocalVectorBuffer;
 import togos.noise.v3.vector.vm.Program;
 import togos.noise.v3.vector.vm.Program.Instance;
@@ -124,7 +122,7 @@ public class GeneratorDefinitionFunctions
 		                	FunctionAdapterDaDa_Da ceilingHeightFunction = new FunctionAdapterDaDa_Da( layerDefs.get(i).ceilingHeight );
 		                	floorHeightFunction.apply( vectorSize, x, z, buffer.layerData[i].floorHeight );
 		                	ceilingHeightFunction.apply( vectorSize, x, z, buffer.layerData[i].ceilingHeight );
-		                	buffer.layerData[i].blockTypeFunction = new FunctionAdapterDaDaDa_Ia( layerDefs.get(i).blockType );
+		                	buffer.layerData[i].materialFunction = new FunctionAdapterDaDaDa_Ia( layerDefs.get(i).blockType );
 		                }
 		                return buffer;
 					} catch( Exception e ) {
@@ -136,34 +134,10 @@ public class GeneratorDefinitionFunctions
 		
 		@Override
         public ChunkMunger getChunkMunger() {
-			final int maxColumnHeight = ChunkData.NORMAL_CHUNK_HEIGHT;
-			
 			return new ChunkMunger() {
-				class ChunkMungeScratch implements HasMaxVectorSize {
-					public final int vectorSize;
-					public final double[] x;
-					public final double[] z;
-					public final double[] floor;
-					public final double[] ceiling;
-					public final TerrainBuffer terrainBuffer;
-					public final double[] columnX = new double[maxColumnHeight];
-					public final double[] columnY = new double[maxColumnHeight];
-					public final double[] columnZ = new double[maxColumnHeight];
-					public final int[] columnMaterial = new int[maxColumnHeight];
-					public ChunkMungeScratch( int vectorSize ) {
-						this.vectorSize = vectorSize;
-						this.terrainBuffer = TerrainBuffer.getInstance( null, vectorSize, layerDefs.size() );
-						this.x = new double[vectorSize];
-						this.z = new double[vectorSize];
-						this.floor = new double[vectorSize];
-						this.ceiling = new double[vectorSize];
-					}
-					public int getMaxVectorSize() { return vectorSize; }
-				}
-				
-				SoftThreadLocalVectorBuffer<ChunkMungeScratch> terrainBufferCache = new SoftThreadLocalVectorBuffer<ChunkMungeScratch>() {
+				SoftThreadLocalVectorBuffer<ChunkMungeScratch> scratchCache = new SoftThreadLocalVectorBuffer<ChunkMungeScratch>() {
 					public ChunkMungeScratch initialValue( int vectorSize ) {
-						return new ChunkMungeScratch(vectorSize);
+						return new ChunkMungeScratch(vectorSize, ChunkData.NORMAL_CHUNK_HEIGHT, layerDefs.size());
 					}
 				};
 				
@@ -171,13 +145,8 @@ public class GeneratorDefinitionFunctions
                 public void mungeChunk( ChunkData cd ) {
 					try {
 						final int vectorSize = cd.width * cd.depth;
-						final ChunkMungeScratch scratch = terrainBufferCache.get(vectorSize);
-						for( int i=0, z=0; z<cd.depth; ++z ) {
-							for( int x=0; x<cd.width; ++x, ++i ) {
-								scratch.x[i] = cd.posX + x + 0.5;
-								scratch.z[i] = cd.posZ + z + 0.5;
-							}
-						}
+						final ChunkMungeScratch scratch = scratchCache.get(vectorSize);
+						scratch.initXZRect( cd.posX, cd.posZ, cd.width, cd.depth );
 		                for( int i=vectorSize-1; i>=0; --i ) {
 		                	cd.biomeData[i] = (byte)applyFunction( biomeFunction, scratch.x[i], scratch.z[i] ).intValue();
 		                }
@@ -188,34 +157,15 @@ public class GeneratorDefinitionFunctions
 		                	floorHeightFunction.apply( vectorSize, scratch.x, scratch.z, scratch.terrainBuffer.layerData[l].floorHeight );
 		                	ceilingHeightFunction.apply( vectorSize, scratch.x, scratch.z, scratch.terrainBuffer.layerData[l].ceilingHeight );
 		                	// TODO: move slightly less outside
-		                	scratch.terrainBuffer.layerData[l].blockTypeFunction = new FunctionAdapterDaDaDa_Ia( layerDefs.get(l).blockType );
+		                	scratch.terrainBuffer.layerData[l].materialFunction = new FunctionAdapterDaDaDa_Ia( layerDefs.get(l).blockType );
 		                	
 		                	floorHeightFunction.apply( vectorSize, scratch.x, scratch.z, scratch.floor );
 		                	ceilingHeightFunction.apply( vectorSize, scratch.x, scratch.z, scratch.ceiling );
 		                	
-							for( int i=0, z=0; z<cd.depth; ++z ) {
-								for( int x=0; x<cd.width; ++x, ++i ) {
-									int rFloor = (int)Math.round(scratch.floor[i]);
-									int rCeiling = (int)Math.round(scratch.ceiling[i]);
-									rFloor = rFloor < 0 ? 0 : rFloor;
-									rCeiling = rCeiling > maxColumnHeight ? maxColumnHeight : rCeiling;
-									int columnHeight = rCeiling - rFloor;
-									if( columnHeight <= 0 ) continue;
-									
-									for( int j=0, y=rFloor; y<rCeiling; ++y, ++j ) {
-										scratch.columnX[j] = scratch.x[i];
-										scratch.columnY[j] = y + 0.5;
-										scratch.columnZ[j] = scratch.z[i];
-									}
-									scratch.terrainBuffer.layerData[l].blockTypeFunction.apply(
-										columnHeight, scratch.columnX, scratch.columnY, scratch.columnZ, scratch.columnMaterial
-									);
-									for( int j=0, y=rFloor; y<rCeiling; ++y, ++j ) {
-										if( scratch.columnMaterial[j] != Materials.NONE ) {
-											cd.setBlock( x, y, z, scratch.columnMaterial[j] );
-										}
-									}
-								}
+							for( int i=0, z=0; z<cd.depth; ++z ) for( int x=0; x<cd.width; ++x, ++i ) {
+								scratch.generateAndWriteColumn( scratch.terrainBuffer.layerData[l].materialFunction,
+									(int)Math.round(scratch.floor[i]), (int)Math.round(scratch.ceiling[i]),
+									cd, x, z );
 							}
 		                }
 					} catch( Exception e ) {
@@ -330,7 +280,7 @@ public class GeneratorDefinitionFunctions
 					instance.setDVar( zRegister.number, z, vectorSize );
 					instance.run( vectorSize );
 					for( int i=0; i<layers.length; ++i ) {
-						buffer.layerData[i].blockTypeFunction = layers[i].typeFunction;
+						buffer.layerData[i].materialFunction = layers[i].typeFunction;
 						copy( vectorSize, instance.getDVar(layers[i].floorHeightRegister.number), buffer.layerData[i].floorHeight );
 						copy( vectorSize, instance.getDVar(layers[i].ceilingHeightRegister.number), buffer.layerData[i].ceilingHeight );
 					}
@@ -340,11 +290,47 @@ public class GeneratorDefinitionFunctions
 		}
 		
 		@Override public ChunkMunger getChunkMunger() {
-			// TODO Auto-generated method stub
-			return null;
+			return new ChunkMunger() {
+				SoftThreadLocalVectorBuffer<ChunkMungeScratch> scratchCache = new SoftThreadLocalVectorBuffer<ChunkMungeScratch>() {
+					public ChunkMungeScratch initialValue( int vectorSize ) {
+						return new ChunkMungeScratch(vectorSize, ChunkData.NORMAL_CHUNK_HEIGHT, layers.length);
+					}
+				};
+				
+				@Override
+                public void mungeChunk( ChunkData cd ) {
+					int vectorSize = cd.width * cd.depth;
+					
+					ChunkMungeScratch scratch = scratchCache.get(vectorSize);
+					scratch.initXZRect( cd.posX, cd.posZ, cd.width, cd.depth );
+					
+					Instance instance = layerHeightProgram.getInstance(vectorSize);
+					instance.setDVar( xRegister.number, scratch.x, vectorSize );
+					instance.setDVar( zRegister.number, scratch.z, vectorSize );
+					instance.run( vectorSize );
+					
+					// TODO: Leaving to go to Lubos's birthday party.
+					// This probably isn't actually done, yet.
+					
+					final int[] biomeData = instance.integerVectors[biomeIdRegister.number];
+					for( int i=0, z=0; z<cd.depth; ++z ) {
+						for( int x=0; x<cd.depth; ++x, ++i ) {
+							cd.setBiome( x, z, (byte)biomeData[i] );
+						}
+					}
+					
+					for( int l=0; l<layers.length; ++l ) {
+						VectorLayer vl = layers[l];
+						for( int i=0, z=0; z<cd.depth; ++z ) for( int x=0; x<cd.width; ++x, ++i ) {
+							scratch.generateAndWriteColumn( vl.typeFunction,
+								(int)Math.round(instance.doubleVectors[vl.floorHeightRegister.number][i]),
+								(int)Math.round(instance.doubleVectors[vl.ceilingHeightRegister.number][i]),
+								cd, x, z );
+						}
+					}
+                }
+			};
 		}
-		
-		
 	}
 	
 	static class LayerDefinition

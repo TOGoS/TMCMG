@@ -179,7 +179,7 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 					}
 					if( layerHeight > 0 ) {
 						// More importantly >= 0.  But as long as we're checking, skip zero-height columns.
-						layer.blockTypeFunction.apply( layerHeight, buf.colX, buf.colY, buf.colZ, buf.colData);
+						layer.materialFunction.apply( layerHeight, buf.colX, buf.colY, buf.colZ, buf.colData);
 						for( int j=0, h=rFloor; h<rCeil; ++h, ++j ) {
 							if( buf.colData[j] != -1 ) data[i*yCount+h] = buf.colData[j];
 						}

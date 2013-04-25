@@ -1,7 +1,8 @@
 package togos.minecraft.mapgen;
 
+import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.TerrainBuffer;
-import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.LayerBuffer;
+import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v3.vector.function.LFunctionDaDaDa_Ia;
 import togos.noise.v3.vector.util.HasMaxVectorSize;
 
@@ -63,5 +64,15 @@ class ChunkMungeScratch implements HasMaxVectorSize
 		typeFunction.apply(
 			columnHeight, columnX, columnY, columnZ, columnMaterial
 		);
+    }
+	
+	public void generateAndWriteColumn( LFunctionDaDaDa_Ia typeFunction, int floor, int ceiling, ChunkData cd, int cx, int cz ) {
+		calculateColumnMaterials( typeFunction, floor, ceiling, cd.posX + cx + 0.5, cd.posZ + cz + 0.5 );
+		
+		for( int j=0, y=floor; y<ceiling; ++y, ++j ) {
+			if( columnMaterial[j] != Materials.NONE ) {
+				cd.setBlock( cx, y, cz, columnMaterial[j] );
+			}
+		}
     }
 }

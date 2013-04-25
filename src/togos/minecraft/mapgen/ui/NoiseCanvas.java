@@ -126,7 +126,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 						++subVectorSize;
 					}
 				}
-				lBuf.blockTypeFunction.apply(subVectorSize, buf.tempX, buf.tempY, buf.tempZ, buf.tempType);
+				lBuf.materialFunction.apply(subVectorSize, buf.tempX, buf.tempY, buf.tempZ, buf.tempType);
 				for( int j=subVectorSize-1; j>=0; --j ) {
 					final int i = buf.tempIndex[j];
 					type[i] = buf.tempType[j];

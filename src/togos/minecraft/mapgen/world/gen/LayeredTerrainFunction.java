@@ -8,7 +8,7 @@ public interface LayeredTerrainFunction
 	static class LayerBuffer {
 		public final int maxVectorSize;
 		public final double[] floorHeight, ceilingHeight;
-		public LFunctionDaDaDa_Ia blockTypeFunction;
+		public LFunctionDaDaDa_Ia materialFunction;
 		
 		public LayerBuffer( int maxVectorSize ) {
 			assert maxVectorSize >= 0;
