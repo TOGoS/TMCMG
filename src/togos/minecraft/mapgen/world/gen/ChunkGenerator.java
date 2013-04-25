@@ -34,6 +34,24 @@ public class ChunkGenerator
 	public ChunkData generateChunk( int cx, int cz ) {
 		ChunkData cd = createBlankChunk( cx, cz );
 		cm.mungeChunk(cd);
+		
+		// Crappy attempt at lighting
+		for( int z=0; z<cd.depth; ++z ) for( int x=0; x<cd.width; ++x ) {
+			int lightLevel = 15;
+			int y;
+			for( y=cd.height-1; y>=0 && lightLevel >=0; --y ) {
+				cd.setSkyLight( x, y, z, lightLevel );
+				switch( cd.getBlockId(x,y,z) ) {
+				case 0: break;
+				case 9: case 0x12:
+					--lightLevel; break;
+				default:
+					lightLevel = 0;
+				}
+			}
+			cd.setLightHeight( x, z, y );
+		}
+		
 		return cd;
 	}
 }

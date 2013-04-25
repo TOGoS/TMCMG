@@ -4,6 +4,8 @@ dirt    = material( 3);
 bedrock = material( 7);
 water   = material( 8);
 sand    = material(12);
+glowstone = material(89);
+birch   = material(17,2);
 
 max(a,b) = if(a > b, a, b);
 min(a,b) = if(a < b, a, b);
@@ -16,8 +18,12 @@ flooded-cave-layer( floor, ceiling ) = list(
 	layer( water, floor, (x,z) -> min(63, ceiling(x,z)) )
 );
 
+cave-ceiling = (x,z) -> 64 + 48 * simplex(z / 96, x / 192, 0);
+
 layered-terrain(
 	layer( stone, 0, 96 ),
-	flooded-cave-layer( (x,z) -> 64 + 48 * simplex(x / 64, 0, z / 64), (x,z) -> 64 + 48 * simplex(z / 96, x / 192, 0) ), 
+	flooded-cave-layer( (x,z) -> 64 + 48 * simplex(x / 64, 0, z / 64), cave-ceiling ),
+	layer( glowstone, cave-ceiling, (x,z) -> cave-ceiling(x,z) + simplex(x,0,z) * 3 ),
+	layer( (x,y,z) -> if( simplex(x * 3.1, y * 3.1, z * 3.1) > 0,  birch, sand ), 96, 97 ), 
 	layer( bedrock, 0, 1 )
 )
