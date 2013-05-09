@@ -18,12 +18,14 @@ flooded-cave-layer( floor, ceiling ) = list(
 	layer( water, floor, (x,z) -> min(63, ceiling(x,z)) )
 );
 
-cave-ceiling = (x,z) -> 64 + 48 * simplex(z / 96, x / 192, 0);
+cave-ceiling(x,z) = 64 + 48 * simplex(z / 96, x / 192, 0);
+
+ground-height(x,z) = 96 + simplex(x / 150, 0, z / 150) * 150;
 
 layered-terrain(
-	layer( stone, 0, 96 ),
+	layer( stone, 0, ground-height ),
+	layer( (x,y,z) -> if( simplex(x * 3.1, y * 3.1, z * 3.1) > 0,  birch, sand ), ground-height, (x,z) -> ground-height(x,z) + 1 ), 
 	flooded-cave-layer( (x,z) -> 64 + 48 * simplex(x / 64, 0, z / 64), cave-ceiling ),
 	layer( glowstone, cave-ceiling, (x,z) -> cave-ceiling(x,z) + simplex(x,0,z) * 3 ),
-	layer( (x,y,z) -> if( simplex(x * 3.1, y * 3.1, z * 3.1) > 0,  birch, sand ), 96, 97 ), 
 	layer( bedrock, 0, 1 )
 )
