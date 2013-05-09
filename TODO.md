@@ -5,24 +5,11 @@
 - Attempt to compile recursive functions (e.g. 'fractal') throws
   'circular definition' errors.
 
-## High-priority features
+## Desireable features
 - Custom block color map (copy from TMCMR)
-- Implement biome capability using v1 engine for sixfootwaves
-- Finish v3 engine
-- auto-detect script type somehow
-  (file extension?  '# TNLv3' comment?  Catch compile errors and retry?)
-- v1 tree -> v3 program compiler?
-- Fix 'too many open files' error when writing lots of regions
-
-## Would be nice (or considered so at some point)
-- Make grassifier grass appear in overhead preview
-  - Maybe list postprocessors together with layers
-  - General refactoring if LayerTerrainGenerator may be in order 
-- Make sure all the if( conditions )' outputs get cached in layer-caves.tpl, because it's slow.
-  - toString shows they do get cache() wrappers... 
-- Add % operator (should act logically with negative numbers)
-- Postprocess functions to make liquids (and maybe sand and gravel) not be in
-  quite so unrealistic positions
+- Output chunks one region at a time, closing region files when
+  done to fix 'too many open files' error when writing lots of regions
+- Re-implement grassifier; show in preview somehow.
 - 'center on player' button in Export Chunks window
 
 ## Won't do
