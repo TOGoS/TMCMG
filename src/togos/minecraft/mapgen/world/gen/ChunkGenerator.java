@@ -40,14 +40,22 @@ public class ChunkGenerator
 			int lightLevel = 15;
 			int y;
 			for( y=cd.height-1; y>=0 && lightLevel >=0; --y ) {
-				cd.setSkyLight( x, y, z, lightLevel );
 				switch( cd.getBlockId(x,y,z) ) {
-				case 0: break;
-				case 9: case 0x12:
-					--lightLevel; break;
+				case 0:
+					break;
+				case 0x14: // Glass
+				case 0x4F: // Ice
+				case 0x09: // Water
+				case 0x12: // Leaves
+					--lightLevel;
+					break;
 				default:
 					lightLevel = 0;
 				}
+				// It is important to set the light for the empty spaces, not for
+				// the solid blocks bordering them.  Otherwise Minecraft gets confused
+				// and underground lighting is all goofy and dumb looking. 
+				cd.setSkyLight( x, y, z, lightLevel );
 			}
 			cd.setLightHeight( x, z, y );
 		}

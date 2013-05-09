@@ -67,8 +67,21 @@ public class ChunkData extends MiniChunkData
 		ChunkUtil.putNybble(blockLightData, blockIndex(x,y,z), value);
 	}
 	
+	/*
+	 * http://www.minecraftwiki.net/wiki/Chunk_format says:
+	 *  
+	 *  HeightMap: 1024 bytes(256 TAG_Int) of heightmap data. 16 x 16. Each byte
+	 *  records the lowest level in each column where the light from the sky is
+	 *  at full strength. Speeds computing of the SkyLight. Note: This array's
+	 *  indexes are ordered ZX whereas the other array indexes are ordered XZ or YZX
+	 */
+	
+	protected int lightHeightIndex( int x, int z ) {
+		return z*width+x;
+	}
+	
 	public void setLightHeight( int x, int z, int height ) {
-		lightHeightData[x*depth+z] = (byte)(height);
+		lightHeightData[lightHeightIndex(x,z)] = (byte)(height);
 	}
 	
 	//// biome ////
