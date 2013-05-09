@@ -142,6 +142,9 @@ public class ProgramTreeBuilder
 		for( ASTNode bp : blockParts ) {
 			if( bp instanceof InfixNode && "=".equals(((InfixNode)bp).operator) ) {
 				Definition def = parseDefinition( (InfixNode)bp );
+				if( definitions.containsKey(def.name) ) {
+					throw new ParseError("Multiple definitions for '"+def.name+"'", bp);
+				}
 				definitions.put(def.name, parseExpression(def.value));
 			} else {
 				if( blockValueNode != null ) {
