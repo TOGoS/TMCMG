@@ -42,8 +42,7 @@ TOGoS Noise Language (TNL) is the language for defining terrain
 generation functions.  TNL files contain any number of named expression
 definitions and one non-named expression that will be used when generating
 terrain.  Expressions can refer to named expressions defined earlier using
-their name.  See scripts/example.tnl for an example script using many
-different predefined and user-defined functions.
+their name.  The tnl3-scripts/ directory contains some example scripts.
 
 TNL has been updated from v1 to v3, and there are significant (but
 manageable) differences between them.  Older scripts will need to
@@ -52,23 +51,23 @@ See TNL3-CHANGES for details.
 
 ### General syntax
 
-  <word1> = <definition1>;
-  <word2> = <definition2>;
-  <expression>
+    word1 = definition1;
+    word2 = definition2;
+    expression
 
 e.g.  the following program evaluates to '100'
 
-  radsauce = 42;
-  gallsauce = 58;
-  radsauce + gallsauce
+    radsauce = 42;
+    gallsauce = 58;
+    radsauce + gallsauce
 
 You can define named functions like so:
 
-  big-simplex(x,y,z) = simplex(x / 100, y / 100, z / 100) * 100; 
+    big-simplex(x,y,z) = simplex(x / 100, y / 100, z / 100) * 100; 
   
 Or inline using the '->' operator, like so:
 
-  (x,y,z) -> simplex(x / 100, y / 100, z / 100) * 100
+    (x,y,z) -> simplex(x / 100, y / 100, z / 100) * 100
 
 ### Pre-defined infix operators
 
@@ -92,12 +91,12 @@ Or inline using the '->' operator, like so:
     0 when false.  Can be used with if(...) or in arithmetic
     expressions.  Can be written using infix notation.
     
-      == equal            ;  3 == 3
-      != not equal        ;  1 != 2
-      >  greater          ;  5 >  4
-      <  less             ; -3 < -2
-      >= greater or equal ;  1 >= 1
-      <= less or equal    ;  1 <= 3
+    == equal            ;  3 == 3
+    != not equal        ;  1 != 2
+    >  greater          ;  5 >  4
+    <  less             ; -3 < -2
+    >= greater or equal ;  1 >= 1
+    <= less or equal    ;  1 <= 3
 
 ### Pre-defined functions
 
@@ -158,7 +157,7 @@ layer( <material-id>, <floor-height-function>, <ceiling-height-function> )
 
 If it doesn't work, e-mail bug reports and complaints to
 
-  togos zero zero at gee male daught com.
+    togos zero zero at gee male daught com.
 
 You may also use the ticketing system on GitHub to request
 features or add them yourself: http://github.com/TOGoS/TMCMG/
