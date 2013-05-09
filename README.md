@@ -82,9 +82,9 @@ Or inline using the '->' operator, like so:
     standard precedence rules apply.  e.g.  the following 3
     expressions are equivalent:
     
-      a - b + c * d / e
-      a - (b + ((c * d) / e)) 
-      -( a, +(b, /( *(c, d), e)))
+    a - b + c * d / e
+    a - (b + ((c * d) / e)) 
+    -( a, +(b, /( *(c, d), e)))
 
 ==, !=, >, <, >=, <=
   - Compare value of <expr1> and <expr2>; returns 1 when true,
