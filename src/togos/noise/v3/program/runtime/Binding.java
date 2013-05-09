@@ -366,6 +366,10 @@ public abstract class Binding<V>
 				throw new RuntimeException("Invalid state: "+isConstantState);
 			}
 		}
+		
+		public String toString() {
+			return super.toString() + "(" + delegate.toString() + ")";
+		}
 	}
 	
 	////

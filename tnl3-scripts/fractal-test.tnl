@@ -1,0 +1,23 @@
+fractal( iterations, initial-hscale, initial-vscale, hscale-factor, vscale-factor, dz, basis ) =
+	# Ignore dz for now since I forgot how it works
+	# TODO: fix to use dz
+	(x,y,z) -> if(
+		iterations == 0, 0,
+		initial-vscale * basis(
+			x / initial-hscale,
+			y / initial-hscale,
+			z / initial-hscale
+		) + fractal(
+			iterations - 1,
+			initial-hscale * hscale-factor,
+			initial-vscale * vscale-factor,
+			hscale-factor, vscale-factor,
+			dz, basis
+		)( x, y, z )
+	);
+
+layered-terrain(
+	layer( 1, 0, (x,z) -> fractal( 2, 100, 100, 2, 2, 1, simplex )(x,0,z) ) 
+)
+
+# togos.lang.CompileError: Circular definition encountered at tnl3-scripts/fractal-test.tnl:11,16

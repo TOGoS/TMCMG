@@ -1,4 +1,11 @@
-== To-do ==
+# TODO
+
+## Bugs
+- Source location being unhelpfully reported as 1,1, for some errors  
+- Attempt to compile recursive functions (e.g. 'fractal') throws
+  'circular definition' errors.
+
+## High-priority features
 - Custom block color map (copy from TMCMR)
 - Implement biome capability using v1 engine for sixfootwaves
 - Finish v3 engine
@@ -7,7 +14,7 @@
 - v1 tree -> v3 program compiler?
 - Fix 'too many open files' error when writing lots of regions
 
-== Would be nice ==
+## Would be nice (or considered so at some point)
 - Make grassifier grass appear in overhead preview
   - Maybe list postprocessors together with layers
   - General refactoring if LayerTerrainGenerator may be in order 
@@ -18,7 +25,7 @@
   quite so unrealistic positions
 - 'center on player' button in Export Chunks window
 
-== Won't do ==
+## Won't do
 * New procedural object populators
   (but allowing populations of user-defined objects may be a good idea)
 * Implicit currying in TNL
@@ -26,7 +33,7 @@
 * 'Drop' trees and other objects into chunks rather than relying on the ground function
   - Won't work for trees!
 
-== Done ==
+## Done
 * Add function to make selecting based on input easier
   See 'if'
 * Add if function (should support if(cond1, then1, cond2, then2, cond3, then3, else) syntax)

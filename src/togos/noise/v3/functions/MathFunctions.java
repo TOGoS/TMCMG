@@ -2,6 +2,7 @@ package togos.noise.v3.functions;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
+import togos.lang.RuntimeError;
 import togos.noise.MathUtil;
 import togos.noise.function.D5_2Perlin;
 import togos.noise.function.SimplexNoise;
@@ -104,6 +105,12 @@ public class MathFunctions
 					Object[] arguments = new Object[argumentBindings.length];
 					for( int i=0; i<arguments.length; ++i ) {
 						arguments[i] = argumentBindings[i].getValue();
+						if( arguments[i] == null ) {
+							throw new RuntimeError("Argument evaluated to null", argumentBindings[i].sLoc);
+						}
+						if( !argumentTypes[i].isAssignableFrom(arguments[i].getClass()) ) {
+							throw new RuntimeError("Expected a "+argumentTypes[i]+" but got a "+arguments[i].getClass()+" ("+argumentBindings[i]+")", argumentBindings[i].sLoc);
+						}
 					}
 					return apply( arguments );
                 }

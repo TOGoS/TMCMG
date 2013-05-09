@@ -1,0 +1,1231 @@
+min(x,y) = if(x < y, x, y);
+
+materials.none    = -1;
+materials.air     = material(0x00);
+materials.stone   = material(0x01);
+materials.grass   = material(0x02);
+materials.dirt    = material(0x03);
+materials.bedrock = material(0x07);
+materials.water   = material(0x09);
+materials.lava    = material(0x0B);
+materials.sand    = material(0x0C);
+materials.gravel  = material(0x0D);
+
+ridge(v, min, max) = (
+	diff = max - min;
+	if( diff == 0,
+		min,
+		(
+			v = min + min % (diff * 2);
+			if( v > max, max - (v - max), v )
+		)
+	)
+);
+
+fractal( iterations, initial-hscale, initial-vscale, hscale-factor, vscale-factor, dz, basis ) =
+	# Ignore dz for now since I forgot how it works
+	# TODO: fix to use dz
+	(x,y,z) -> if(
+		iterations == 0, 0,
+		initial-vscale * basis(
+			x / initial-hscale,
+			y / initial-hscale,
+			z / initial-hscale
+		) + fractal(
+			iterations - 1,
+			initial-hscale * hscale-factor,
+			initial-vscale * vscale-factor,
+			hscale-factor, vscale-factor,
+			dz, basis
+		)( x, y, z )
+	);
+
+
+
+
+##for Best Performance
+##delete any regions in output chunks, seems to be a bit faster
+##export using a clean start
+##let it finish drawing window before export or resize window to nothing.
+##
+##Runs really fast under Java 7 64 bit however it runs out of memory at 4gb
+##and stalls until java forces a huge clean (~2gb) and then grabs more mem
+##Forcing java to clean mem more often negates performance gains
+##Best way to avoid is generate small portions at a time,
+##existing chunks in regions won't be deleted they can be overwrote however.
+
+##despite anvil format height is still capped at 128 like default minecraft. Fixed if run personal version.
+
+##To Do
+##Fix ore extursions; they are growing out of the surface
+##Find out why plants aren't being properly saved
+##Tweaked -- Too many emeralds and little gold, not sure if a problem.
+##Tweaked -- When find ores they are much too dense, tone it down.
+
+##Difficult -- Separate ore veins so types don't genereate side by side
+##Add in biome indicators? - best way is to turn them on and off, i.e.
+##export map once with biome indicators, then export again w/o
+##open biome verson in biomepainter and copy it to second map
+##Minecraft really only has: Forest, Desert, Plains, Swamp, Jungle, Tagia, Tundra, Extreme Hills
+
+
+seedx = 116.00225;				#large ones seem to lead to lines forming in the terrain, not noticed in biome
+seedz = 0;				#because seedx is simply added, they can be used to position map
+chunksx = 96;
+chunksz = 96;
+xstart = 10208;
+zstart = 14656;
+#mapwidth = (chunks * 16);
+disturber(x,y,z) = 3 + simplex(x * 8.1, y, z * 8.4) * 2;
+
+
+
+############################################################################################################################################
+# Continental Shelf
+############################################################################################################################################
+stonetype = materials.stone;
+base = 64; 				#Base height, all other features are added to this, raised from 32 to 40 so slimes don't spawn
+continentheight = 24; 	# sets limit on height of base terrain, when noise generates large values lowering this will create more ridges
+## Continental base
+## 32 is good for small rolling hills... like normal minecraft
+## 64 is well in between
+## 128 is good for steppes
+continentscale = 64;	# scale of noise, a bigger value generates smoother continents, a small scale with a low height should make lots of ridges
+
+
+#### continent = cache( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x + seedx,y,seedz + z * -1))) );
+# For some reason -(z) != (z * -1)
+ct(x,z) = simplex(x + seedx, y, (z + seedz * -1));
+continent = ( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,ct)) );
+
+#meant to add variety to stone and ores
+#uses the minimum value of cont_letter and complex_cont when generating so can create extrusions but won't mess with terrain shape
+
+#overwrites stonetype
+stonetypeb = 4; #cobblestone #material(98, 2);#cracked stone brick -dungeon tiles
+baseb = 32; 				#Base height, all other features are added to this, raised from 32 to 40 so slimes don't spawn
+continentheightb = 24; 	# sets limit on height of base terrain, when noise generates large values lowering this will create more ridges
+continentscaleb = 32;	# scale of noise, a bigger value generates smoother continents, a small scale with a low height should make lots of ridges
+continentbhscale = 1.35; #multiplier for height scale, similar to mountians
+cbt = translate-in ( seedx, 0, seedz, simplex(x,y,(z * -1)));
+#### continentb = baseb + continentbhscale * ( ridge(0,continentheightb,fractal(3,continentscaleb,16,25,8,0,simplex(x + seedx,y,seedz + z * -1))) );
+continentb = baseb + continentbhscale * ( ridge(0,continentheightb,fractal(3,continentscaleb,16,25,8,0,cbt)) );
+
+#overwrites stonetype and stonetypeb
+stonetypec = 121;#endstone -looks like a darker stone
+basec = 16; 				#Base height, all other features are added to this, raised from 32 to 40 so slimes don't spawn
+continentheightc = 24; 	# sets limit on height of continent, when noise generates large values lowering this will create more ridges
+continentscalec = 32;	# scale of noise, a bigger value generates smoother continents, a small scale with a low height should make lots of ridges
+continentchscale = 2.3; #multiplier for height scale, similar to mountians
+cct = translate-in ( seedx, 0, seedz, simplex(x,y,(z * -1)));
+#### continentc = basec +  2.3 * ( ridge(0,continentheightc,fractal(3,continentscalec,16,25,8,0,simplex(x + seedx,y ,seedz + z * -1))) );
+continentc = basec +  2.3 * ( ridge(0,continentheightc,fractal(3,continentscalec,16,25,8,0,cct)) );
+
+############################################################################################################################################
+# Ocean
+############################################################################################################################################
+##Essentially an inversion of continent that subtracts to create oceans
+oceantype = materials.water;
+sealevel = 64; 				#Base height, all other features are added to this, raised from 32 to 40 so slimes don't spawn
+seatrigger = 20;	#Ocean noise function has to be greater than this, affects size and density of oceans
+maxcliff = 6;		#Won't place ocean when cliffs higher than this will be generated
+seadepth = 8;		#How much to multiply complex_cont by to generate seadepth
+
+## Continental base
+## 32 is good for small rolling hills... like normal minecraft
+## 64 is well in between
+## 128 is good for steppes
+oceanscale = 128;	# scale of noise, a bigger value generates smoother continents, a small scale with a low height should make lots of ridges
+oceanridge = 24; 	# Sets maximum value of ocean noise, affects ocean size and distrobution
+oceanx = 25115;
+oceany = 15435;
+
+#### continent = cache( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x + seedx,y,seedz + z * -1))) );
+# For some reason -(z) != (z * -1)
+ot = translate-in ( oceanx, 0, oceany, simplex(x,y,(z * -1)));
+ocean = ( ridge(0,oceanridge,fractal(3,oceanscale,16,25,8,0,ot)) );
+
+############################################################################################################################################
+# Climate
+############################################################################################################################################
+
+treeline = 96;			#dirt-grass stops here, affects trees because they need dirt to spawn
+snowline = 108;			#snow is placed above this altitude
+
+#Desert Variables 
+desertseeda = 321.25; 
+desertseedb = -484.03525; 
+
+desertridge = 48;
+desertscale = 128;
+
+desert = 3.75;					# biome has to be greater than this to generate deserts
+
+desertrock = 24;#sandstone
+desertrockb = 82;#clay			#used for continentb
+desertrockc = 87;#Netherrack -looks like marble		#used for continentc
+desertcover = materials.sand;
+
+#Noise
+biomet = translate-in ( desertseeda, 0, desertseedb, simplex() );
+#### biome = (ridge(0,desertridge,fractal(3,desertscale,12,24,8,0,simplex(desertseeda + x,y,z - desertseedb))) / 12); ##0-4 range
+biome = (ridge(0,desertridge,fractal(3,desertscale,12,24,8,0, biomet)) / 12); ##0-4 range
+
+############################################################################################################################################
+# Mountians
+############################################################################################################################################
+
+#Notes on use of mountians
+# Mountains are continent multiplied by scale.
+#	~ slope of continent directly affects mountain slopes, the faster cont. changes the steeper And narrower the mountains
+#	~ mountscale gives multiplier for cont. slope, a muliplier of two gives twice the slope
+#	~ Max height of mount will be (CONTINENTHEIGHT - mountbase) * scale so (32-12) * 6 -> 120 added to base so 40 + 120 = 160
+ 
+mountbase = 10; 				# at what height do mountians start
+mountscale = 2;		# continent noise is muliplied by this 
+#Using for foothills
+mountbase_low = 8; # at what height do foothills start
+mountscale_low = 1.5;
+#Using for rockies
+mountbase_sharp = 14; #29.25; # at what height do rockies start
+mountscale_sharp = 3.5; #2 was orginal
+
+##An attempt at removing the flat ridgelines normaly generated
+##May need to be adjusted when change continent scale
+bump = fractal( 1, 32, 8, 1, 1, 1, simplex(x, y ,z ) * 4) * -1;
+
+mountians = if (
+	continent > mountbase,
+	mountbase + (((continent - mountbase) * mountscale ))  - 3,
+	#ridge(0,mountheight, (continent - mountbase) * mountscale ) ,
+	0
+);
+
+mountians_low = if (
+	continent > mountbase_low,
+	mountbase_low + ((continent - mountbase_low) * mountscale_low)  - 3,
+	0
+);
+
+mountians_sharp = if (
+	continent > mountbase_sharp,
+	bump + (mountbase_sharp + ((continent - mountbase_sharp) * mountscale_sharp)),
+	0
+);
+
+
+############################################################################################################################################
+# Badlands
+############################################################################################################################################
+
+#Badlands Variables
+badlandsmin = 3.75; 	#badland noise has to be higher than this to form
+badlandseeda = -34;
+badlandseedb = -3;
+badlandsmaterial = 110; #mycelium
+
+badlandst = translate-in ( badlandseeda, 0, badlandseedb, simplex( (x * -1), y, (z * -1) ));
+#### badlands = fractal(1,256,16,32,2,6,simplex(badlandseeda + x * -1,y, badlandseedb + z * -1));
+badlands = fractal(1,256,16,32,2,6,badlandst);
+
+############################################################################################################################################
+# Volcanoes
+############################################################################################################################################
+
+#Volcano Variables
+#volcanoseed = -68.25;
+volcanoseed = 154.25;
+volcanomaterial = 48;
+volcanosurfacematerial = 48; #Mossy cobblestone
+volcanosurfacedepth = 4; 
+
+lavaheight = 0; 		#lava noise function has to be higher than this for a volcano to form
+groundheight = 2.0; 	#continent has to be higher than this to make a volcano; if close to river hieght but not real close it genreates odd cliffs
+cone = 200; 			#controls cone depth, greater is less depth
+lavaaltitude = 90; 		#how high the lava comes, also if cones are not empty below this then no lava
+volcanoscale = 32; 		#scale of lava noise
+vocanoehscale = 2.2; 	#height scale 
+
+#Volcano Functions
+lavat = translate-in ( 0, 0, 0, simplex( (x * -1), y, z ));
+lava = ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x * -1,y,z))) / 16;
+#### lava = ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,lavat)) / 16;
+volta = translate-in ( volcanoseed, 0, 0.75, simplex( (x * -1),y,z));
+# 1 / 512 = 0.001953125
+voltb = scale-in ( 0.001953125, 1, 0.001953125, simplex());
+volcano_outcroping = if (
+	(lava > lavaheight) and (continent > groundheight),
+	#### continent + (16 - ridge(0,32,fractal(3,volcanoscale,16,25,8,0,simplex(volcanoseed + x * -1,y,z)))) * (simplex(x / 512, y, z / 512) * 16) * vocanoehscale, 
+	continent + (16 - ridge(0,32,fractal(3,volcanoscale,16,25,8,0,volta))) * (voltb * 16) * vocanoehscale, 
+	0
+);
+
+############################################################################################################################################
+# Rivers
+############################################################################################################################################
+
+#River Variables
+riveraltitude = base + 1; #the top of the river, everything below is water
+riverbeddepth = 2; #how deep into the continent the river bed penetrates; note water is deducted from this space
+riverdepth = 1; #How deep into the continent the river penetrates; subtracted from riverbed volume
+waterdepth = 0; #unneeded NOT TRUE -> needed in case river "climbs" banks and is two levels
+
+#Beach Variables -- relies on some river variables
+beachdist = 0.275; #how far the beach extends from the river
+maxmuddist = 0.27; #how far the mud extends from the river, overrides beach
+minmuddist = 0.05; #prevents mud from overwhelming water b/c of rounding errors
+#Beach noise is 0-2 in range; gravel is default
+sandybeach = 1.4; #anything over this will be sand
+claybeach = 0.7; #anything below this will be clay
+mudmaterial = 88; #Soul sand 82; #clay
+
+#River Functions
+sand = ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x,y,z))) / 16;
+############################################################################################################################################
+# Ores
+############################################################################################################################################
+#Minerals Variables
+#18 ores in five ore classes are placed orea, oreb, orec, orev, and orel, each with three possible types of actual ore and one desert ore
+#orenoise is compared to start and end to set bounds on where can occur
+#geology noise then selects between individual ores of each class 
+#ore generates the actual veins of ore for it's class
+#Another way to view it is, continet types control vertical variance and geo controls horizontal variance
+
+#Currently tied to continenta,b,c, and volcanic functions
+#So selection grid looks like this, with rightmost overwriting
+#		continent  contintentb  continentc  volcano  lava
+#  geo<		orea1		 oreb1		 orec1	  orev1  orel1
+# >geo<		orea2		 oreb2		 orec2	  orev2  orel2
+# >geo		orea3		 oreb3		 orec3	  orev3  orel3
+# desert	oread		 orebd		 orecd      n/a    n/a
+#balance between continental and volcanic noises determines relative abundance between columns
+#desert overrides geo selection
+
+#Remember volumetric noise is slow
+
+#geology control, affects all ore classes
+geoheight = 16;
+geoscale = 32;
+geot = translate-in ( 0, 0, seedx, simplex(x * -1,y,z ));
+#### geology = cache( ridge(0,geoheight,fractal(3,geoscale,16,25,8,0,simplex(x * -1,y,z + seedx))) );
+geology = ( ridge(0,geoheight,fractal(3,geoscale,16,25,8,0,simplex(x * -1,y,z + seedx))) );
+
+######### Ore Class A #########
+#Places ores where ever continent noise is between oreastart and oreaend;
+geoa1 = 4;					#sets dividing line between ore types, when geology is less than this orea is placed
+geoa2 = 8;					#sets dividing line between ore types, when geology is more than this orec is placed
+oreanoise = complex_cont;		#uses contintent not complex_cont so can be used with mountain min altitudes
+oreastart = 0; 				#continent has to return above this for ore placement 
+oreaend = 128;				#continent has to return below this for ore placement; uses 128 because using different continent functions rather than mountinans to set ores
+oreaamount = 10; 			#controls density of veins, lower values increase number of veins
+oreafade = 96; 				#Controls how ore density fades with altitude, greater is more ore, hard to control
+orea1 = materials.gravel;#materials.coal-ore; 
+orea2 = materials.coal-ore;#materials.iron-ore;
+orea3 = materials.iron-ore;#21; #Bluestone
+oread = materials.coal-ore;
+
+orea1amount = 1; 			# orea noise has to be less than this to place this ore, greater values give thicker veins
+orea2amount = 1.5; 			# orea noise has to be less than this to place this ore
+orea3amount = 1; 			# orea noise has to be less than this to place this ore
+oreadamount = 1; 			# orea noise has to be less than this to place this ore
+#controls how broken veins are in each axis
+# greater values makes veins thinner, less connected and more fractured
+oreax = 4;
+oreay = 4;
+oreaz = -4;
+oreat = translate-in ( seedx, 0, seedz, scale-in ( oreax, oreay, oreaz, simplex()) );
+orea = ridge(0,oreaamount,fractal(5,2,2,16,12,0,simplex( oreax * x + seedx,y * oreay,seedz + z * oreax))) + (y / oreafade);
+#### orea = ridge(0,oreaamount,fractal(5,2,2,16,12,0,oreat )) + (y / oreafade);
+
+######### Ore Class B #########
+#Places ores where ever continent noise is between orebstart and orebend, allows changing of ores for mountains
+geob1 = 6;					#sets dividing line between ore types
+geob2 = 12;					#sets dividing line between ore types
+orebnoise = continentb;		#
+orebstart = 0; 				#orebnoise has to return above this for ore placement
+orebend = complex_cont;				#orebnoise has to return below this for ore placement
+orebamount = 10; 			#controls density of veins, lower values increase number of veins
+orebfade = 96; 				#Controls how ore density fades with altitude, greater is more ore
+oreb1 = 21; #Bluestone#materials.redstone-ore;
+oreb2 = materials.redstone-ore;#materials.gold-ore;
+oreb3 = materials.coal-ore;#29;#emerald
+orebd = materials.water;
+
+oreb1amount = 1.5; 			# oreb has to be less than this to place this ore
+oreb2amount = 1.5;			# oreb has to be less than this to place this ore
+oreb3amount = 1.5; 			# oreb has to be less than this to place this ore
+orebdamount = 1.5; 			# oreb has to be less than this to place this ore
+
+orebx = 6;
+oreby = 4;
+orebz = -6;
+orebt = translate-in ( seedx, 0, seedz, scale-in ( orebx, oreby, orebz, simplex( x, y, z)) );
+oreb = ridge(0,orebamount,fractal(5,2,2,16,12,0,simplex( orebx * x + seedx,y * oreby,seedz + z * orebz))) + (y / orebfade);
+#### oreb = ridge(0,orebamount,fractal(5,2,2,16,12,0,orebt)) + (y / orebfade);
+
+######### Ore Class C #########
+#Places ores where ever continent noise is cetween orecstart and orecend, allows changing of ores for mountains
+geoc1 = 6;					#sets dividing line between ore types
+geoc2 = 12;					#sets dividing line between ore types
+orecnoise = continentc;
+orecstart = 0; 				#orecnoise has to return above this for ore placement; NOTE: uses contintent not complex_cont so can be used with mountain min altitudes
+orecend = complex_cont;				#orecnoise has to return below this for ore placement
+orecamount = 10; 			#controls density of veins, lower values increase numcer of veins
+orecfade = 96; 				#controls how ore density fades with altitude, greater is more ore
+orec1 = materials.iron-ore;#materials.gold-ore;
+orec2 = materials.gold-ore;#153;#quartz
+orec3 = 129;#emerald#materials.diamond-ore;
+orecd = 153;#quartz
+
+orec1amount = 1.5; 			# orec has to be less than this to place this ore
+orec2amount = 1.5;			# orec has to be less than this to place this ore
+orec3amount = 1.5; 			# orec has to be less than this to place this ore
+orecdamount = 1.125; 			# orec has to be less than this to place this ore
+
+orecx = 4;
+orecy = 4;
+orecz = -4;
+orect = translate-in ( seedx, 0, seedz, scale-in ( orecx, orecy, orecz, simplex() ) );
+orec = ridge(0,orecamount,fractal(5,2,2,16,12,0,simplex( orecx * x + seedx,y * orecy,seedz + z * orecz))) + (y / orecfade);
+#### orec = ridge(0,orecamount,fractal(5,2,2,16,12,0,orect)) + (y / orecfade);
+
+
+######### Ore Class V #########
+#Places ores where ever volcano noise is between orevstart and orevend; this includes areas below the surface
+geov1 = 6;					#sets dividing line between ore types
+geov2 = 12;					#sets dividing line between ore types
+orevstart = 0; 				#Ores are placed whenever volcano noise is greater than this
+orevend = 128; 				#Noise has to be less than this to be placed
+orevamount = 10; 			#Noise has to be less than this for ore to be placed; also sets range for ore selection
+orevfade = 132; 				#Controls how ore density fades with altitude, greater is more ore
+orev1 = materials.gold-ore;#materials.iron-ore;	#materials.gold-ore;
+orev2 = materials.redstone-ore;#129;#emerald		#materials.redstone-ore;
+orev3 = materials.iron-ore;#153;#quartz 		#21; #Bluestone 89; #glowstone
+
+orev1amount = 1; # noise has to be less than this to place this ore
+orev2amount = 1; # noise has to be less than this to place this ore
+orev3amount = 1; # noise has to be less than this to place this ore
+orevx = 2;
+orevy = 2;
+orevz = -2;
+
+orevt = translate-in (seedx, 0, seedz, scale-in( orevx, orevy, orevz, simplex()));
+orev = ridge(0,orevamount,fractal(5,2,2,16,12,0,simplex( orevx * x + seedx,y * orevy,seedz + z * orevz))) + (y / orevfade);
+#### orev = ridge(0,orevamount,fractal(5,2,2,16,12,0, orevt )) + (y / orevfade);
+
+######### Ore Class L #########
+#Places ores only if lava was placed; bulk of these will actually be below the lava
+geol1 = 4;					#sets dividing line between ore types
+geol2 = 8;					#sets dividing line between ore types
+oreladjust = 50; #How much higher past the lava the ores extend
+orelamount = 10; #Noise has to be less than this for ore to be placed; also sets range for ore selection
+orelfade = y; #Controls how ore density fades with altitude, greater is more ore
+orel1 = materials.diamond-ore;
+orel2 = 89; #glowstone#materials.gold-ore;
+orel3 = materials.lava;#
+#Because if statement exits on first true orea2 only places if (noise < orev1amount) AND (noise > orev2amount), likewise for orev3
+orel1amount = 2.25; # noise has to be less than this to place this ore
+orel2amount = 2.5; # noise has to be less than this to place this ore
+orel3amount = 2.5; # noise has to be less than this to place this ore
+
+orelx = 2;
+orely = 2;
+orelz = -2;
+
+orel = ridge(0,orelamount,fractal(5,2,2,16,12,0,simplex( orelx * x + seedx,y * orely,seedz + z * orelz))) + (y / orelfade);
+
+
+#### complex_cont = base + cache(max(  continent, mountians, mountians_low, mountians_sharp));
+complex_cont = base + (max(  continent, mountians, mountians_low, mountians_sharp));
+
+############################################################################################################################################
+# Vegitation
+############################################################################################################################################
+#Comment out coresbonding layers to disable plant(s)
+#and reallow flag-populated
+
+#plants are a noise function that must be greater than density to be placed
+#they must also have the appropriate rain & temp values
+lowdensity = 3.55;
+meddensity = 3.4;
+hidensity = 3.25;
+
+## Tempature and humidity vary from 0 to 4, but effective range may be smaller
+## They are genreated in wavy bands along one axis, perturbed by climatevar
+## The amount of variance is controled by climatemult
+#three divisions of rainfall, must be less than to generate that plant
+raingrass = 3.75;
+raintree = 2.75;
+#three temperature divisions
+cold = 0.85;	#colder than is pine trees, warmer is oak trees
+temperate = 1; #warmer is birch trees
+warm = 2.75; #warmer is jungle trees
+# gradient scale -controls the size of the bands
+raingrad = 256;
+tempgrad = 512;
+
+#Adjusts weight of perturbation, keep between 0 an 1
+rainmult = 1;
+tempmult = 1;
+#climatescale contols the size of the perturbation
+climatescale = 256;
+climateseeda = 345; 
+climateseedb = -7648;
+
+plantseeda = 123;
+plantseedb = 465;
+plantseedc = 789;
+plantseedd = 465;
+plantseede = 789;
+plantseedaa = 423;
+plantseedba = 665;
+plantseedca = 1789;
+plantseedda = 265;
+plantseedea = 989;
+
+
+plantsa = 3 + simplex(plantseeda + x * 8.1, y, z * 8.4) * 2;
+plantsb = 3 + simplex(plantseedb + x * 8.1, y, z * 8.4) * 2;
+plantsc = 3 + simplex(plantseedc + x * 8.1, y, z * 8.4) * 2;
+plantsd = 3 + simplex(plantseedd + x * 8.1, y, z * 8.4) * 2;
+plantse = 3 + simplex(plantseede + x * 8.1, y, z * 8.4) * 2;
+plantsaa = 3 + simplex(plantseeda - x * 8.1, y, z * 8.4) * 2;
+plantsba = 3 + simplex(plantseedb - x * 8.1, y, z * 8.4) * 2;
+plantsca = 3 + simplex(plantseedc - x * 8.1, y, z * 8.4) * 2;
+plantsda = 3 + simplex(plantseedd - x * 8.1, y, z * 8.4) * 2;
+plantsea = 3 + simplex(plantseede - x * 8.1, y, z * 8.4) * 2;
+
+#### pta = translate-in ( plantseeda, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptb = translate-in ( plantseedb, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptc = translate-in ( plantseedc, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptd = translate-in ( plantseedd, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### pte = translate-in ( plantseede, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptaa = translate-in ( plantseedaa, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptba = translate-in ( plantseedba, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptca = translate-in ( plantseedca, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptda = translate-in ( plantseedda, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### ptea = translate-in ( plantseedea, 0 ,0, scale-in( 8.1, 1, 8.4, simplex ()));
+#### plantsa = 3 + pta * 2;
+#### plantsb = 3 + ptb * 2;
+#### plantsc = 3 + ptc * 2;
+#### plantsd = 3 + ptd * 2;
+#### plantse = 3 + pte * 2;
+#### plantsaa = 3 + ptaa * 2;
+#### plantsba = 3 + ptba * 2;
+#### plantsca = 3 + ptca * 2;
+#### plantsda = 3 + ptda * 2;
+#### plantsea = 3 + ptea * 2;
+
+
+climatet = translate-in ( climateseeda, 0, climateseedb, simplex( (x * -1),y,z ));
+climatevar = (ridge(0,1,fractal(3,climatescale,12,24,8,0,simplex(climateseeda - x,y,z - climateseedb))) ); 
+climatevar2 = (ridge(0,2,fractal(3,climatescale,12,24,8,0,simplex(climateseedb + z,y, x - climateseeda)))  );
+climatevar3 = (ridge(0,2,fractal(3,climatescale,12,24,8,0,simplex(climateseedb - z,y, x + climateseeda)))  );
+#### climatevar = (ridge(0,climateridge,fractal(3,climatescale,12,24,8,0,climatet)) / 12); ##0-4 range
+rain1 = climatevar + ridge ( 0, raingrad, z ) / raingrad; #should generate a gradiant of 0-1 on the z axis;
+rain2 = climatevar2; # - ridge ( 0, raingrad, x  ) / raingrad; #should generate a gradiant of 0-1 on the z axis;
+temp1 = climatevar + ridge ( 0, tempgrad, x - zstart ) / tempgrad; #should generate a gradiant of 0-1 on the z axis
+temp2 = climatevar3; #climatevar2 - ridge ( 0, tempgrad, z - xstart ) / tempgrad; #should generate a gradiant of 0-1 on the z axis
+temp = ((temp1 * (2 - tempmult)) + (temp2 * tempmult));
+rain = ((rain1 * (2 - rainmult)) + (rain2 * rainmult));
+
+#Plant Definitions
+#### oak = materials.water;
+#### pine = materials.snow;
+#### birch = materials.dirt;# material( 6, 2);
+#### jungle = materials.lava;
+#12 + is insta grow -makes tree growth counter full
+oak = material( 6, 12 + 0);
+pine = material( 6, 12 + 1);
+birch = material( 6, 12 + 2);
+jungle = material( 6, 12 + 3);
+grass = material( 31, 1);
+fern = material( 31, 2);
+deadshrub = 32;
+cacti = 81;
+reed = 83;
+farm = 60;
+pumpkin = 86;
+melon = 103;
+bean = 127;
+beantree = material( 17, 3);
+
+test = layered-terrain(
+
+##Continental base
+layer (
+		stonetype,
+	0, 
+	if ( biome <= desert,
+		complex_cont,
+		-1
+	)
+),
+layer (
+		stonetypeb,
+	0, 
+	if ( biome <= desert,
+		min (continentb, complex_cont),
+		-1
+	)
+),
+layer (
+		stonetypec,
+	0, 
+	if ( biome <= desert,
+		min (continentc, complex_cont),
+		-1
+	)
+),
+layer (
+	desertrock, #Sandstone
+	0, 
+	if ( biome > desert,
+		complex_cont,
+		-1
+	)
+),
+layer (
+	desertrockb, #Sandstone
+	0, 
+	if ( biome > desert,
+		continentb,
+		-1
+	)
+),
+layer (
+	desertrockc, #Sandstone
+	0, 
+	if ( biome > desert,
+		continentc,
+		-1
+	)
+),
+
+##Minerals
+layer (
+	if (
+		if ( biome > desert,
+			if ( orea < oreadamount, oread, materials.none ),
+			if (
+				geology < geoa1,
+					if ( orea < orea1amount, orea1, materials.none ),
+				(geology > geoa1) and (geology < geoa2), 
+					if ( orea < orea2amount, orea2, materials.none ),
+				geology > geoa2, 
+					if ( orea < orea3amount, orea3, materials.none ),
+				materials.none
+			)
+		)
+	),
+	if ((oreanoise > oreastart) and (oreanoise < oreaend), 0, -1),
+	if ((oreanoise > oreastart) and (oreanoise < oreaend), oreanoise - 2, -1)
+),
+layer (
+	if (
+		if ( biome > desert,
+			if ( oreb < orebdamount, orebd, materials.none ),
+			if (
+				geology < geoa1,
+					if ( oreb < oreb1amount, oreb1, materials.none ),
+				(geology > geoa1) and (geology < geoa2), 
+					if ( oreb < oreb2amount, oreb2, materials.none ),
+				geology > geoa2, 
+					if ( oreb < oreb3amount, oreb3, materials.none ),
+				materials.none
+			)
+		)
+	),
+	if ((orebnoise > orebstart) and (orebnoise < orebend), 0, -1),
+	if ((orebnoise > orebstart) and (orebnoise < orebend), orebnoise - 2, -1)
+),
+layer (
+	if (
+		if ( biome > desert,
+			if ( orec < orecdamount, orecd, materials.none ),
+			if (
+				geology < geoa1,
+					if ( orec < orec1amount, orec1, materials.none ),
+				(geology > geoa1) and (geology < geoa2), 
+					if ( orec < orec2amount, orec2, materials.none ),
+				geology > geoa2, 
+					if ( orec < orec3amount, orec3, materials.none ),
+				materials.none
+			)
+		)
+	),
+	if ((orecnoise > orecstart) and (orecnoise < orecend), 0, -1),
+	if ((orecnoise > orecstart) and (orecnoise < orecend), orecnoise - 2, -1)
+),
+
+#Surface
+layer (
+	materials.dirt,
+	if ( (complex_cont < treeline) and (biome <= desert), complex_cont - 4 - disturber, -1), 
+	if ( (complex_cont < treeline) and (biome <= desert), complex_cont, -1)
+),
+layer (
+	materials.grass,
+	if ( (complex_cont < treeline) and (biome <= desert), complex_cont - 1, -1), 
+	if ( (complex_cont < treeline) and (biome <= desert), complex_cont, -1)
+),
+layer (
+	desertcover,
+	##changed from treeline to snowline because map didn't have any real deserts...
+	if ( (complex_cont < snowline) and (biome > desert), complex_cont - 4 - disturber, -1), 
+	if ( (complex_cont < snowline) and (biome > desert), complex_cont, -1)
+),
+layer (
+	78, #Snow
+	if ((complex_cont > snowline), complex_cont, -1),
+	if ((complex_cont > snowline), complex_cont + 1, -1)
+),
+#### ##Biome overlay
+#### ##Suggested turn off geology and vegitation for this
+#### ##sand = desert, badlands and ocean shouldn't need to be handled here
+#### ##Minecraft really only has: Forest, Desert, Plains, Swamp, 
+#### ##Jungle, Tagia, Tundra, Extreme Hills
+#### ##want to use block id's that won't conflict with normal surfaces, like stones
+#### ##but still look appx correct in painter
+#### layer (
+	#### if (
+		#### (rain < raintree), ##forested
+			#### if (
+				#### ##Tagia
+				#### temp < cold, 80,
+				#### ##Jungle
+				#### temp > warm, 17,
+				#### ##Oak/Birch -default
+				#### 5,
+				
+			#### ),
+		#### (rain >= raingrass), ##arid - fairly rare biome as desert already exists
+			#### if (
+				#### temp < cold, 155,
+				#### temp > warm, 41,
+				#### ##Deafult
+				#### 45,
+			#### ),
+		#### ##else is plains
+		#### if (
+				#### #tundra
+				#### temp < cold, 79,
+				#### #Savannah
+				#### temp > warm, 133,
+				#### ##Grassland default
+				#### 18,
+				
+			#### ),
+
+	#### ),
+	#### if ( (complex_cont < treeline) and (biome <= desert), complex_cont - 1, -1), 
+	#### if ( (complex_cont < treeline) and (biome <= desert), complex_cont, -1),
+#### ),
+#### layer (
+	#### sand,
+	#### if ( (complex_cont < treeline) and (biome > desert), complex_cont - 4 - disturber, -1), 
+	#### if ( (complex_cont < treeline) and (biome > desert), complex_cont, -1),
+#### ),
+
+##Rivers
+layer (
+	if (sand < claybeach, 82, sand > sandybeach, materials.sand, materials.gravel),
+	if ( (complex_cont < riveraltitude + beachdist), complex_cont - riverbeddepth, -1), 
+	if ( (complex_cont < riveraltitude + beachdist), complex_cont, -1)
+),
+
+layer (
+	mudmaterial,
+	if ( (complex_cont < riveraltitude + maxmuddist), complex_cont - riverbeddepth, -1), 
+	if ( (complex_cont < riveraltitude + minmuddist), complex_cont, -1)
+),
+layer (
+	materials.water,
+	if ( (complex_cont < riveraltitude + waterdepth), complex_cont - riverdepth, -1), 
+	if ( (complex_cont < riveraltitude + waterdepth), riveraltitude + waterdepth, -1)
+),
+
+##Volcanoes
+layer(
+	volcanomaterial,
+	0,
+	volcano_outcroping - volcanosurfacedepth
+),
+layer(
+	volcanosurfacematerial,
+	volcano_outcroping - volcanosurfacedepth,
+	volcano_outcroping
+),
+layer (
+	if (
+		geology < geov1,
+			if (
+				orev < orev1amount, orev1, 
+				materials.none
+				),
+		(geology > geov1) and (geology < geov2), 
+			if ( 
+				orev < orev2amount, orev2,
+				materials.none
+				),
+		geology > geov2, 
+			if ( 
+				orev < orev3amount, orev3,
+				materials.none
+				),
+		materials.none
+		),
+		if ((volcano_outcroping > orevstart) and (volcano_outcroping < orevend), 0, -1),
+		if ((volcano_outcroping > orevstart) and (volcano_outcroping < orevend), volcano_outcroping - 3, -1)
+),
+layer (
+	if (
+		geology < geol1,
+			if (
+				orel < orel1amount, orel1, 
+				materials.none
+				),
+		(geology > geol1) and (geology < geol2), 
+			if ( 
+				orel < orel2amount, orel2,
+				materials.none
+				),
+		geology > geol2, 
+			if ( 
+				orel < orel3amount, orel3,
+				materials.none
+				),
+		materials.none
+			
+		),
+		if ((lavaaltitude + oreladjust > cone - volcano_outcroping), 0, -1),
+		if ((lavaaltitude + oreladjust > cone - volcano_outcroping), volcano_outcroping - 3, -1)
+),
+
+
+layer (
+	materials.air,
+	cone - volcano_outcroping,
+	volcano_outcroping
+),
+layer (
+	materials.lava,
+	cone - volcano_outcroping,
+	lavaaltitude
+),
+
+#Vegitation
+#Example from code: layer( material( 6, 2 ), 0, 64),
+layer (
+	38, #flowers
+	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsea > lowdensity)), complex_cont, -1),
+	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsea > lowdensity)), complex_cont + 1, -1)
+),
+layer (
+	37, #flowers
+	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsaa > lowdensity)), complex_cont, -1),
+	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsaa > lowdensity)), complex_cont + 1, -1)
+),
+layer (
+	melon, 
+	if (( (rain > raingrass) and (plantsb > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain > raingrass) and (plantsb > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	pumpkin, 
+	if (( (rain > raintree) and (plantsca > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain > raintree) and (plantsca > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	grass, 
+	if (( (rain < raingrass) and (plantsb > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain < raingrass) and (plantsb > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	fern, 
+	if (( (rain < raintree) and (temp > warm) and (plantsda > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain < raintree) and (temp > warm) and (plantsda > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	cacti, 
+	if (((complex_cont < treeline) and (biome > desert) and (plantsa > lowdensity)), complex_cont, -1),
+	if (((complex_cont < treeline) and (biome > desert) and (plantsa > lowdensity)), complex_cont + 1, -1)
+),
+layer (
+	deadshrub, 
+	if (((complex_cont < treeline) and (biome > desert) and (plantsb > lowdensity)), complex_cont, -1),
+	if (((complex_cont < treeline) and (biome > desert) and (plantsb > lowdensity)), complex_cont + 1, -1)
+),
+layer (
+	pine, 
+	if (( (rain < raintree) and (temp < cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain < raintree) and (temp < cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	oak, 
+	if (( (rain < (raintree)) and (temp > cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain < (raintree)) and (temp > cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	birch, 
+	if (( (rain < (raintree )) and (temp > temperate) and (plantse > meddensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain < (raintree )) and (temp > temperate) and (plantse > meddensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+layer (
+	jungle, 
+	if (( (rain < raintree) and (temp > warm) and (plantse > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
+	if (( (rain < raintree) and (temp > warm) and (plantse > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+),
+
+
+#erase vegitation
+layer (
+	material(0,0),
+	if ( (complex_cont < riveraltitude + beachdist), complex_cont, -1), 
+	if ( (complex_cont < riveraltitude + beachdist), complex_cont + 1, -1)
+),
+layer (
+	if ((sand < claybeach) and (complex_cont < riveraltitude + beachdist), reed, materials.air), 
+	if (( (plantse > meddensity) ), complex_cont, -1),
+	if (( (plantse > meddensity) ), complex_cont + 1, -1)
+),
+layer (
+	materials.air, #mushroom land
+	if ( (badlands > badlandsmin) , complex_cont , -1),
+	if ( (badlands > badlandsmin) , complex_cont + 1, -1)
+),
+
+
+#Badlands - needs to be after vegitation or will have stuff growing on it
+layer (
+	badlandsmaterial, #mushroom land
+	if ( (badlands > badlandsmin) , complex_cont - 15, -1),
+	if ( (badlands > badlandsmin) , complex_cont + disturber - 2.5, -1)
+),
+##Ocean
+layer (
+		materials.air,
+		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), 
+			sealevel, 
+			-1), 
+		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), 256, -1)
+),
+layer (
+		materials.water,
+		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), 
+			sealevel - (complex_cont - sealevel) * seadepth, 
+			-1
+			), 
+		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), sealevel , -1)
+),
+
+##grid lines
+#region grid
+#### layer (
+	#### materials.bedrock,
+	#### 0,
+	#### if ( 
+		#### ridge( 0,256, x - 256) > 240, 
+		#### 127,		
+		#### -1
+		#### ),
+#### ),
+#### layer (
+	#### materials.bedrock,
+	#### 0,
+	#### if ( 
+		#### ridge( 0,256, z - 256) > 240,
+		#### 127,		
+		#### -1
+		#### ),
+#### ),
+#chunk grid
+#### layer (
+	#### materials.bedrock,
+	#### 0,
+	#### if ( 
+		#### ridge( 0,1, (x / 16)) == 1, 
+		#### 127,
+		#### ridge( 0,1, ((x + 16) / 16)) == 1,
+		#### 127,		
+		#### -1
+		#### ),
+#### ),
+#### layer (
+	#### materials.bedrock,
+	#### 0,
+	#### if ( 
+		#### ridge( 0,1, (z / 16)) == 1, 
+		#### 127,
+		#### ridge( 0,1, ((z + 16) / 16)) == 1,
+		#### 127,		
+		#### -1
+		#### ),
+#### ),
+#Target area
+layer (
+	materials.bedrock,
+	0,
+	(x,z) -> if ( 
+		(x >= (xstart * 16) ) and (x <= ((xstart + 1) * 16) ), 
+		127,
+		(x <= ((chunksx + xstart) * 16) ) and (x >= ((chunksx + xstart - 1) * 16) ),
+		127,		
+		-1
+		)
+),
+layer (
+	materials.bedrock,
+	0,
+	(x,z) -> if ( 
+		(z >= (zstart * 16) ) and (z <= ((zstart + 1) * 16) ), 
+		127,
+		(z <= ((chunksz + zstart) * 16) ) and (z >= ((chunksz + zstart - 1) * 16) ),
+		127,		
+		-1
+		)
+),
+#Bottom of the world
+layer( materials.bedrock, 0, 1)
+# lighter,
+# flag-populated
+);
+
+test
+
+############################################################################################################################################
+# Alternate Equations
+############################################################################################################################################
+#Continents	
+	#good results too but turns rivers into lakes and reduces mountain chains
+	#continent = ( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x + seedx,y,z * -1))) + ridge(0,32,fractal(3,128,16,25,8,0,simplex(x * -1,y,z + seedx))) ) / 4;
+
+#Mountains
+	#continent + ridge(0,mountheight, continent * mountscale ),
+	#cool with lots of noise, really savage badlands. 
+	#continent + ridge(0,mountheight, continent * mountscale ) + disturber * 2,
+	#Works good but very rangey, ie mountinads in a long string or ridge, slow
+	#continent + ridge(0,mountheight, ((((continent / steepness) * (continent / steepness)) / ranges) - mountdeduct)),
+	#Worked okay
+	#continent + ridge(0,48, ((((continent / 2) * (continent / 2)) / 6))),
+	#was in roickies section
+	#base + (((continent / 1.2) * (continent / 2)) / 6) + disturber * 1.2,
+
+#### #works with geology noise from minerals to allow different stone types, ugly
+#### #would be better to use the vocanic system
+#### stonetypea = 49;
+#### stonetypeb = materials.stone;
+#### stonetypec = 48;
+#### transitiona = 1;			#less than this value generates type a
+#### transitionb = 15;			#more than this value generates type c
+
+
+#### ############################################################################################################################################
+#### # Ores
+#### ############################################################################################################################################
+#### #Minerals Variables
+#### ##Only use a few because volumetric noise is slow; noise is scattered pattern
+#### geology = cache( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x * -1,y,z + seedx))) );
+
+#### #Places ores where ever continent noise is between oreastart and oreaend;
+#### geoa1 = 8;					#sets dividing line between ore types
+#### geoa2 = 16;					#sets dividing line between ore types
+#### oreastart = 0; 				#continent has to return above this for ore placement; NOTE: uses contintent not complex_cont so can be used with mountain min altitudes
+#### oreaend = mountbase;		#contintnent has to return below this for ore placement
+#### oreaamount = 8; 			#Noise has to be less than this for ore to be placed; also sets range for ore selection unless negative numbers are used
+#### oreafade = 32; 				#Controls how ore density fades with altitude, greater is more ore
+#### orea1 = 21; #Bluestone 
+#### orea2 = materials.iron-ore;
+#### orea3 = materials.coal-ore;
+#### #Because if statement exits on first true orea2 only places if (noise < orea1amount) AND (noise > orea2amount), likewise for orea3
+#### #the higher the orea1amount the quicker the orea1 will fade with altitude
+#### orea1amount = 5; 			# noise has to be greater than this to place this ore
+#### orea2amount = 5; 			# noise has to be greater than this to place this ore
+#### orea3amount = 3; 			# noise has to be greater than this to place this ore
+
+#### #Places ores whereever continent noise is between orebstart and orebend;
+#### geob1 = 28;					#sets dividing line between ore types
+#### geob2 = 32;					#sets dividing line between ore types
+#### orebstart = mountbase; 		#continent has to return above this for ore placement; NOTE: uses contintent not complex_cont so can be used with mountain min altitudes
+#### orebend = 128;				#contintnet has to return below this for ore placement
+#### orebamount = 8; 			#Noise has to be less than this for ore to be placed; also sets range for ore selection
+#### orebfade = 64; 				#Controls how ore density fades with altitude, greater is more ore
+#### oreb1 = materials.redstone-ore;
+#### oreb2 = materials.iron-ore;
+#### oreb3 = materials.coal-ore;
+#### #Because if statement exits on first true oreb2 only places if (noise < oreb1amount) AND (noise > oreb2amount), likewise for oreb3
+#### oreb1amount = 0; 			# noise has to be greater than this to place this ore
+#### oreb2amount = -1;			# noise has to be greater than this to place this ore
+#### oreb3amount = -2; 			# noise has to be greater than this to place this ore
+
+#### #Volcano ores
+#### #Places ores whereever volcano noise is between orevstart and orevend; this includes areas below the surface
+#### geov1 = 16;					#sets dividing line between ore types
+#### geov2 = 32;					#sets dividing line between ore types
+#### orevstart = 0; 				#Ores are placed whenever volcano noise is greater than this
+#### orevend = 128; 				#Noise has to be less than this to be placed
+#### orevamount = 8; 			#Noise has to be less than this for ore to be placed; also sets range for ore selection
+#### orevfade = 32; 				#Controls how ore density fades with altitude, greater is more ore
+#### orev1 = materials.gold-ore;	#materials.gold-ore;
+#### orev2 = 129;#emerald		#materials.redstone-ore;
+#### orev3 = 153;#quartz 		#21; #Bluestone 89; #glowstone
+#### #Because if statement exits on first true orea2 only places if (noise < orev1amount) AND (noise > orev2amount), likewise for orev3
+#### orev1amount = 4; # noise has to be greater than this to place this ore
+#### orev2amount = 2; # noise has to be greater than this to place this ore
+#### orev3amount = 1; # noise has to be greater than this to place this ore
+
+#### #Lava ores
+#### #Places ores only if lava was placed; bulk of these will actually be below the lava
+#### geol1 = 20;					#sets dividing line between ore types
+#### geol2 = 24;					#sets dividing line between ore types
+#### oreladjust = 10; #How much higher past the lava the ores extend
+#### orelamount = 8; #Noise has to be less than this for ore to be placed; also sets range for ore selection
+#### orelfade = 128; #Controls how ore density fades with altitude, greater is more ore
+#### orel1 = materials.diamond-ore;
+#### orel2 = 87; #Netherrack#materials.gold-ore;
+#### orel3 = 89; #glowstone
+#### #Because if statement exits on first true orea2 only places if (noise < orev1amount) AND (noise > orev2amount), likewise for orev3
+#### orel1amount = 4; # noise has to be greater than this to place this ore
+#### orel2amount = 2; # noise has to be greater than this to place this ore
+#### orel3amount = 2; # noise has to be greater than this to place this ore
+
+#### #Noise Functions
+#### orea = ((oreaamount - ridge(0,32,fractal(3,0.25,8,8,4,6,simplex(x,y,z)))) - (y / oreafade));
+#### oreb = ((orebamount - ridge(0,32,fractal(3,0.25,8,8,4,6,simplex(x * -1,y,z * -1)))) - (y / orebfade));
+#### orev = ((orevamount - ridge(0,32,fractal(3,0.25,8,8,4,6,simplex(x * -1,y,z)))) - (y / orevfade));
+#### orel = ((orelamount - ridge(0,32,fractal(3,0.25,8,8,4,6,simplex(x,y,z * -1)))) - (y / orelfade));
+
+
+#### layer (
+	#### materials.stone,
+	#### 0, 
+	#### if ( biome <= desert,
+		#### complex_cont,
+		#### -1,
+	#### ),
+#### ),
+#### layer (
+	#### 24, #Sandstone
+	#### 0, 
+	#### if ( biome > desert,
+		#### complex_cont,
+		#### -1,
+	#### ),
+#### ),
+#### #### geology > 16, orea1,
+		#### #### geology < 16, oreb1,
+
+#### ##Minerals
+#### layer (
+	#### if (
+		#### geology < geoa1,
+			#### if (
+				#### orea > orea1amount, orea1, 
+				#### materials.none
+				#### ),
+		#### (geology > geoa1) and (geology < geoa2), 
+			#### if ( 
+				#### orea > orea2amount, orea2,
+				#### materials.none
+				#### ),
+		#### geology > geoa2, 
+			#### if ( 
+				#### orea > orea3amount, orea3,
+				#### materials.none
+				#### ),
+		#### materials.none
+			
+		#### ),
+		#### if ((continent > oreastart) and (continent < oreaend), 0, -1),
+		#### if ((continent > oreastart) and (continent < oreaend), complex_cont - 2, -1),
+#### ),
+
+#### layer (
+	#### if (
+		#### geology < geob1,
+			#### if (
+				#### oreb > oreb1amount, oreb1, 
+				#### materials.none
+				#### ),
+		#### (geology > geob1) and (geology < geob2), 
+			#### if ( 
+				#### oreb > oreb2amount, oreb2,
+				#### materials.none
+				#### ),
+		#### geology > geob2, 
+			#### if ( 
+				#### oreb > oreb3amount, oreb3,
+				#### materials.none
+				#### ),
+		#### materials.none
+			
+		#### ),
+		#### if ((continent > orebstart) and (continent < orebend), 0, -1),
+		#### if ((continent > orebstart) and (continent < orebend), complex_cont - 2, -1),
+#### ),
+
+#### layer (
+	#### if (
+		#### geology < geob1,
+			#### if (
+				#### oreb < oreb1amount, oreb1, 
+				#### materials.none
+				#### ),
+		#### (geology > geob1) and (geology < geob2), 
+			#### if ( 
+				#### oreb < oreb2amount, oreb2,
+				#### materials.none
+				#### ),
+		#### geology > geob2, 
+			#### if ( 
+				#### oreb < oreb3amount, oreb3,
+				#### materials.none
+				#### ),
+		#### materials.none
+			
+		#### ),
+		#### if ((orebnoise > orebstart) and (orebnoise < orebend), 0, -1),
+		#### if ((orebnoise > orebstart) and (orebnoise < orebend), orebnoise - 2, -1),
+#### ),
+
+#### layer (
+	#### if (
+		#### geology < geoc1,
+			#### if (
+				#### orec < orec1amount, orec1, 
+				#### materials.none
+				#### ),
+		#### (geology > geoc1) and (geology < geoc2), 
+			#### if ( 
+				#### orec < orec2amount, orec2,
+				#### materials.none
+				#### ),
+		#### geology > geoc2, 
+			#### if ( 
+				#### orec < orec3amount, orec3,
+				#### materials.none
+				#### ),
+		#### materials.none
+			
+		#### ),
+		#### if ((orecnoise > orecstart) and (orecnoise < orecend), 0, -1),
+		#### if ((orecnoise > orecstart) and (orecnoise < orecend), orecnoise - 2, -1),
+#### ),
+
+#### An expirement to see if could reduce memory usage, however means only one plant can be selected 
+#### so no mixed forests and didn't notice an effect on memory
+
+#### layer (
+	#### material ( 6,
+		#### if (
+			#### (rain < raintree) and (temp < cold) and (plantsd > hidensity), 1,
+			#### (rain < (raintree + 0.2)) and (temp > cold) and (plantsd > hidensity), 0,
+			#### (rain < (raintree )) and (temp > temperate) and (plantse > meddensity), 2,
+			#### (rain < raintree) and (temp > warm) and (plantse > hidensity), 3,
+			#### 0
+			#### ),
+		#### ),
+			
+	#### complex_cont + 1,
+	#### -1,
+#### ),
