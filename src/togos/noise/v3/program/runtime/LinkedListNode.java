@@ -1,5 +1,6 @@
 package togos.noise.v3.program.runtime;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,6 +58,13 @@ public class LinkedListNode<V> implements Iterable<V> {
 			tail = new LinkedListNode<V>( values.get(i), tail );
 		}
 		return tail;
+	}
+	
+	public List<V> toList() {
+		ArrayList<V> list = new ArrayList<V>(length);
+		LinkedListNode<? extends V> n = this;
+		while( n.length > 0 ) { list.add(n.head); n = n.tail; }
+		return list;
 	}
 	
 	////

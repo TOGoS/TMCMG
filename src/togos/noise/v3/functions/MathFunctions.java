@@ -1,11 +1,15 @@
 package togos.noise.v3.functions;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.RuntimeError;
 import togos.noise.MathUtil;
 import togos.noise.function.D5_2Perlin;
 import togos.noise.function.SimplexNoise;
+import togos.noise.v3.BindingError;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.Binding;
@@ -86,22 +90,20 @@ public class MathFunctions
 					argumentBindings[i] = input.arguments.get(i).value;
 					if( argumentBindings[i].getValueType() != null ) {
 						if( !argumentTypes[i].isAssignableFrom(argumentBindings[i].getValueType()) ) {
-							throw new CompileError( argumentTypes[i]+" required but argument would return "+argumentBindings[i].getValueType(), argumentBindings[i].sLoc );
+							throw new BindingError( argumentTypes[i]+" required but argument would return "+argumentBindings[i].getValueType(), argumentBindings[i] );
 						}
 					}
 				}
 			}
 			return Binding.memoize(new Binding<R>( input.callLocation ) {
-				@Override
-                public boolean isConstant() throws CompileError {
+				@Override public boolean isConstant() throws CompileError {
 					for( int i=0; i<argumentBindings.length; ++i ) {
 						if( !argumentBindings[i].isConstant() ) return false;
 					}
 					return true; 
                 }
 				
-				@Override
-                public R getValue() throws Exception {
+				@Override public R getValue() throws Exception {
 					Object[] arguments = new Object[argumentBindings.length];
 					for( int i=0; i<arguments.length; ++i ) {
 						arguments[i] = argumentBindings[i].getValue();
@@ -115,10 +117,13 @@ public class MathFunctions
 					return apply( arguments );
                 }
 				
-				@Override
-                public Class<? extends R> getValueType() {
+				@Override public Class<? extends R> getValueType() {
 	                return returnType;
                 }
+				
+				@Override public Collection<Binding<?>> getDirectDependencies() {
+					return Arrays.asList(argumentBindings);
+		        }
 				
 				public String toSource() throws CompileError {
 					return getName() + "(" + input.toSource() + ")";
@@ -348,6 +353,10 @@ public class MathFunctions
 					@Override public Class<? extends Object> getValueType() throws CompileError {
 	                    return null;
                     }
+					
+					@Override public Collection<Binding<?>> getDirectDependencies() {
+						return input.getArgumentBindings();
+					}
 					
 					@Override public String toSource() throws CompileError {
 						return "if(" + input.toSource() + ")";

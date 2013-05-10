@@ -1,5 +1,7 @@
 package togos.noise.v3.functions;
 
+import java.util.Collection;
+
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.noise.v3.program.runtime.Binding;
@@ -39,6 +41,10 @@ public class ListFunctions
 					}
 					return list;
 				}
+				
+				@Override public Collection<Binding<?>> getDirectDependencies() {
+	                return _bindings.toList();
+                }
 				
 				@Override public boolean isConstant() throws CompileError {
 					for( Binding<?> b : _bindings ) {

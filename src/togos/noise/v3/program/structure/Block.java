@@ -20,8 +20,7 @@ public class Block<V> extends Expression<V>
 	
 	protected static <T> Binding.Deferred<T> defer( final Expression<? extends T> expr, final Context ctx, SourceLocation sLoc ) {
 		return new Binding.Deferred<T>( sLoc ) {
-			@Override
-			protected Binding<? extends T> generateDelegate() throws CompileError {
+			@Override protected Binding<? extends T> generateDelegate() throws CompileError {
 				return expr.bind(ctx);
 			}
 		};

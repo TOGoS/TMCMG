@@ -1,5 +1,10 @@
 package togos.noise.v3.program.runtime;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.RuntimeError;
@@ -15,6 +20,16 @@ import togos.noise.v3.vector.vm.Program.RegisterID;
 public abstract class Binding<V>
 {
 	enum EvaluationState { UNEVALUATED, EVALUATING, EVALUATED, ERRORED };
+	
+	protected static Collection<Binding<?>> singleBindingList( Binding<?> b ) {
+		ArrayList<Binding<?>> l = new ArrayList<Binding<?>>();
+		l.add(b);
+		return l;
+	}
+	
+	protected static Collection<Binding<?>> emptyBindingList() {
+		return Collections.emptyList();
+	}
 	
 	public static <V> Binding<V> forValue( V v, Class<V> valueType, SourceLocation sLoc ) {
 		return new Binding.Constant<V>( v, valueType, sLoc );
@@ -51,6 +66,10 @@ public abstract class Binding<V>
 				@Override public Class<? extends V> getValueType() {
 	                return targetClass;
                 }
+				
+				@Override public Collection<Binding<?>> getDirectDependencies() {
+					return singleBindingList(b);
+				}
 				
 				@Override public RegisterID<?> toVectorProgram(
 					ExpressionVectorProgramCompiler compiler
@@ -92,6 +111,10 @@ public abstract class Binding<V>
 			return valueType;
 		}
 		
+		@Override public Collection<Binding<?>> getDirectDependencies() {
+			return emptyBindingList();
+        }
+		
 		@Override public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
 			return compiler.getVariableRegister(variableName);
 		}
@@ -123,6 +146,10 @@ public abstract class Binding<V>
 		@Override public Class<? extends V> getValueType() {
 			return type;
 		}
+		
+		@Override public Collection<Binding<?>> getDirectDependencies() {
+			return emptyBindingList();
+        }
 		
 		@Override public String toSource() {
 			return Parser.toLiteral(value);
@@ -158,6 +185,10 @@ public abstract class Binding<V>
 		@Override public Class<? extends V> getValueType() throws CompileError {
 			return delegate.getValueType();
 		}
+		
+		@Override public Collection<Binding<?>> getDirectDependencies() {
+			return singleBindingList(delegate);
+        }
 		
 		@Override public String toSource() throws CompileError {
 			return delegate.toSource();
@@ -220,6 +251,15 @@ public abstract class Binding<V>
 		
 		@Override public Class<? extends V> getValueType() throws CompileError {
 			return getDelegate().getValueType();
+		}
+		
+		@Override public Collection<Binding<?>> getDirectDependencies() {
+			try {
+				return singleBindingList(getDelegate());
+			} catch( CompileError err ) {
+				System.err.println("Error while building dependency list for delegate binding at "+sLoc+"!");
+				return emptyBindingList();
+			}
 		}
 		
 		@Override public String toSource() throws CompileError {
@@ -338,6 +378,10 @@ public abstract class Binding<V>
 			}
 		}
 		
+		@Override public Collection<Binding<?>> getDirectDependencies() {
+			return singleBindingList(delegate);
+        }
+		
 		@Override
 		public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler ) throws CompileError {
 			// Don't memoize because different compilers may be passed in,
@@ -386,6 +430,7 @@ public abstract class Binding<V>
 	public abstract boolean isConstant() throws CompileError;
 	public abstract V getValue() throws Exception;
 	public abstract Class<? extends V> getValueType() throws CompileError;
+	public abstract Collection<Binding<?>> getDirectDependencies();
 	
 	public abstract String toSource() throws CompileError;
 	

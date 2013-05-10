@@ -1,6 +1,7 @@
 package togos.noise.v3.program.runtime;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,21 +48,23 @@ public class Closure<V> implements Function<V>
 			valueBindings.add(value);
         }
 		
-		@Override
-		public RegisterID<?> toVectorProgram(
+		@Override public RegisterID<?> toVectorProgram(
 			ExpressionVectorProgramCompiler compiler
 		) throws CompileError {
 			throw new CompileError("List binding cannot be converted to a vector program", sLoc);
 		}
 		
     	@SuppressWarnings("unchecked")
-        @Override
-        public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {
+        @Override public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {
 			return (Class<? extends LinkedListNode<V>>)LinkedListNode.class;
         }
     	
-		@Override
-		public String toSource() throws CompileError {
+    	@SuppressWarnings({"unchecked", "rawtypes"})
+		@Override public Collection<Binding<?>> getDirectDependencies() {
+			return (Collection<Binding<?>>)(Collection)valueBindings;
+        }
+    	
+		@Override public String toSource() throws CompileError {
 			String s = "";
 			for( int i=0; i<valueBindings.size(); ++i ) {
 				if( i > 0 ) s += ", ";

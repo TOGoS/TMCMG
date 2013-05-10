@@ -1,5 +1,8 @@
 package togos.noise.v3.program.structure;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
@@ -44,6 +47,15 @@ public class FunctionApplication extends Expression<Object>
 			@Override public Class<Object> getValueType() throws CompileError {
 				return null;
             }
+			
+			@Override public Collection<Binding<?>> getDirectDependencies() {
+				ArrayList<Binding<?>> dependencies = new ArrayList<Binding<?>>();
+				dependencies.add(functionBinding);
+				for( BoundArgument<?> bArg : boundArgumentList.arguments ) {
+					dependencies.add( bArg.value );
+				}
+				return dependencies;
+	        }
 			
 			@Override public String toSource() throws CompileError {
 				if( functionBinding.isConstant() ) {

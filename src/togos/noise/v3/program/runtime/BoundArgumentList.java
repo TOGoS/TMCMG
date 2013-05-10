@@ -1,6 +1,7 @@
 package togos.noise.v3.program.runtime;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import togos.lang.CompileError;
@@ -56,4 +57,12 @@ public class BoundArgumentList
 		}
 		return s;
 	}
+
+	public Collection<Binding<?>> getArgumentBindings() {
+		ArrayList<Binding<?>> dependencies = new ArrayList<Binding<?>>();
+		for( BoundArgument<?> bArg : arguments ) {
+			dependencies.add( bArg.value );
+		}
+		return dependencies;
+    }
 }
