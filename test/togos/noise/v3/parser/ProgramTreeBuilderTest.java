@@ -1,12 +1,11 @@
 package togos.noise.v3.parser;
 
-import togos.lang.BaseSourceLocation;
 import togos.noise.v3.program.structure.Expression;
 import togos.noise.v3.program.structure.FunctionApplication;
 
 public class ProgramTreeBuilderTest extends CoolTestCase
 {
-	BaseSourceLocation TEST_LOC = new BaseSourceLocation("test script", 1, 1);
+	static final TokenizerSettings TEST_LOC = TokenizerSettings.forBuiltinFunctions(ProgramTreeBuilderTest.class);
 	
 	protected void assertStringification( String expected, String input ) throws Exception {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
@@ -16,7 +15,7 @@ public class ProgramTreeBuilderTest extends CoolTestCase
 	
 	public void testParseInfix() throws Exception {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
-		Expression<?> b = ptb.parseExpression(Parser.parse("2 + 3", BaseSourceLocation.NONE));
+		Expression<?> b = ptb.parseExpression(Parser.parse("2 + 3", TEST_LOC));
 		assertInstanceOf( FunctionApplication.class, b );
 		assertEquals("+(2, 3)", b.toString());
 	}

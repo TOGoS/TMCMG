@@ -1,6 +1,5 @@
 package togos.noise.v3.parser;
 
-import togos.lang.BaseSourceLocation;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.TextNode;
@@ -8,7 +7,7 @@ import togos.noise.v3.parser.ast.VoidNode;
 
 public class ParserTest extends CoolTestCase
 {
-	BaseSourceLocation TEST_LOC = new BaseSourceLocation("test script", 1, 1);
+	TokenizerSettings TEST_LOC = TokenizerSettings.forBuiltinFunctions(ParserTest.class);
 	
 	public void testVoid() throws Exception {
 		ASTNode n = Parser.parse("", TEST_LOC);

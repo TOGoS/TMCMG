@@ -143,6 +143,7 @@ public class ChunkWriter
 		int boundsZ = 0;
 		int boundsWidth = 1;
 		int boundsDepth = 1;
+		int tnlTabWidth = 8;
 		String worldDir = ".";
 		File scriptFile = null;
 		for( int i=0; i<args.length; ++i ) {
@@ -156,6 +157,8 @@ public class ChunkWriter
 				boundsWidth = Integer.parseInt(args[++i]);
 			} else if( "-depth".equals(args[i]) ) {
 				boundsDepth = Integer.parseInt(args[++i]);
+			} else if( "-tab-width".equals(args[i]) ) {
+				tnlTabWidth = Integer.parseInt(args[++i]);
 			} else if( !args[i].startsWith("-") ) {
 				scriptFile = new File(args[i]);
 			} else if( Util.isHelpArgument(args[i]) ) {
@@ -172,7 +175,7 @@ public class ChunkWriter
 			MinecraftWorldGenerator worldGenerator = null;
 			if( scriptFile != null ) {
 				try {
-					worldGenerator = ScriptUtil.loadWorldGenerator( scriptFile );
+					worldGenerator = ScriptUtil.loadWorldGenerator( scriptFile, tnlTabWidth );
 				} catch( ScriptError e ) {
 					System.err.println(ParseUtil.formatScriptError(e));
 					System.exit(1);

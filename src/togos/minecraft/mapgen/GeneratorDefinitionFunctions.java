@@ -11,6 +11,7 @@ import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v3.functions.MathFunctions;
+import togos.noise.v3.parser.TokenizerSettings;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.compiler.UnvectorizableError;
 import togos.noise.v3.program.runtime.Binding;
@@ -29,7 +30,7 @@ import togos.noise.v3.vector.vm.Program.RegisterID;
 
 public class GeneratorDefinitionFunctions
 {
-	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( GeneratorDefinitionFunctions.class.getName()+".java", 0, 0);
+	static final TokenizerSettings BUILTIN_LOC = TokenizerSettings.forBuiltinFunctions(GeneratorDefinitionFunctions.class);
 	protected static <V> Binding<? extends V> builtinBinding( V v ) {
 		return Binding.forValue( v, BUILTIN_LOC );
 	}

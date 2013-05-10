@@ -6,8 +6,12 @@ import togos.noise.v3.asyncstream.Collector;
 
 public class TokenizerTest extends TestCase
 {
+	protected Tokenizer createTokenizer() {
+		return new Tokenizer( TokenizerSettings.forBuiltinFunctions(TokenizerTest.class) );
+	}
+	
 	public void testTokenizer() throws Exception {
-		Tokenizer t = new Tokenizer();
+		Tokenizer t = createTokenizer();
 		Collector<Token> c = new Collector<Token>();
 		t.pipe(c);
 		t.data("foo(bar, baz, quux);".toCharArray());
@@ -27,7 +31,7 @@ public class TokenizerTest extends TestCase
 	
 	protected void assertTokenization( String expected, String input ) throws Exception {
 		Collector<Token> c = new Collector<Token>();
-		Tokenizer t = new Tokenizer();
+		Tokenizer t = createTokenizer();
 		t.pipe(c);
 		t.data( input.toCharArray() );
 		t.end();
@@ -37,7 +41,7 @@ public class TokenizerTest extends TestCase
 	
 	protected void assertParseError( String input ) throws Exception {
 		try {
-			Tokenizer t = new Tokenizer();
+			Tokenizer t = createTokenizer();
 			t.data( input.toCharArray() );
 			t.end();
 			fail("Parsing <"+input+"> should have caused a ParseError, but did not!");

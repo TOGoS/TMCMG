@@ -25,6 +25,7 @@ import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.LayerBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.gen.NormalShadingGroundColorFunction;
 import togos.noise.v3.parser.ParseUtil;
+import togos.noise.v3.parser.TokenizerSettings;
 import togos.noise.v3.vector.function.LFunctionDaDa_DaIa;
 import togos.service.Service;
 
@@ -353,6 +354,7 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 		boolean normalShading = false;
 		boolean heightShading = false;
 		boolean quantization = false;
+		int tnlTabWidth = TokenizerSettings.DEFAULT_TAB_WIDTH;
 		for( int i=0; i<args.length; ++i ) {
 			if( "-auto-reload".equals(args[i]) ) {
 				autoReload = true;
@@ -362,6 +364,8 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 				heightShading = true;
 			} else if( "-quantize".equals(args[i]) ) {
 				quantization = true;
+			} else if( "-tab-width".equals(args[i]) ) {
+				tnlTabWidth = Integer.parseInt(args[++i]);
 			} else if( !args[i].startsWith("-") ) {
 				scriptFilename = args[i];
 			} else {
@@ -380,10 +384,12 @@ public class NoiseCanvas extends WorldExplorerViewCanvas
 			}
 		};
 		
+		final int _tnlTabWidth = tnlTabWidth;
+		
 		final FileUpdateListener ful = new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					MinecraftWorldGenerator worldGenerator = (MinecraftWorldGenerator)ScriptUtil.loadWorldGenerator( scriptFile );
+					MinecraftWorldGenerator worldGenerator = (MinecraftWorldGenerator)ScriptUtil.loadWorldGenerator( scriptFile, _tnlTabWidth );
 					gul.generatorUpdated( worldGenerator );
 				} catch( ScriptError e ) {
 					System.err.println(ParseUtil.formatScriptError(e));

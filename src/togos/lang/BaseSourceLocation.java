@@ -8,8 +8,8 @@ public class BaseSourceLocation implements SourceLocation
 	}
 	public static final BaseSourceLocation NONE = fake("no source");
 	
-	protected String sourceFilename;
-	protected int sourceLineNumber, sourceColumnNumber;
+	protected final String sourceFilename;
+	protected final int sourceLineNumber, sourceColumnNumber;
 	
 	public BaseSourceLocation( String filename, int lineNumber, int columnNumber ) {
 		this.sourceFilename = filename;

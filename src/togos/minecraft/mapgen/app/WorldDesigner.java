@@ -44,6 +44,7 @@ import togos.minecraft.mapgen.world.Material;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.noise.v3.parser.ParseUtil;
+import togos.noise.v3.parser.TokenizerSettings;
 
 public class WorldDesigner
 {
@@ -210,6 +211,7 @@ public class WorldDesigner
 	ChunkWritingService cws = new ChunkWritingService();
 	ChunkExportWindow chunkExportWindow = new ChunkExportWindow(wdk.sm, cws);
 	
+	int tnlTabWidth = TokenizerSettings.DEFAULT_TAB_WIDTH;
 	ColumnSideCanvas lsc = new ColumnSideCanvas();
 	NoiseCanvas noiseCanvas = new NoiseCanvas();
 	Label statusLabel = new Label();
@@ -234,6 +236,7 @@ public class WorldDesigner
 		"  -fullscreen      ; display maximized with no border\n" +
 		"  -normal-shading  ; enable angle-based terrain shading (slow)\n" +
 		"  -height-shading  ; enable height-based terrain shading)\n"+
+		"  -tab-width <n>   ; how wide to treat tabs in TNL source (for error reporting)\n" +
 		"Other commands:\n" +
 		"  -?, -h           ; print help and exit\n" +
 		"  -dump-materials  ; print material list and exit";
@@ -295,6 +298,8 @@ public class WorldDesigner
 				normalShade = true;
 			} else if( "-height-shading".equals(args[i]) ) {
 				heightShade = true;
+			} else if( "-tab-width".equals(args[i]) ) {
+				tnlTabWidth = Integer.parseInt(args[++i]);
 			} else if( "-perf-log".equals(args[i]) ) {
 				Stat.performanceLoggingEnabled = true;
 			} else if( "-dump-materials".equals(args[i]) ) {
@@ -336,7 +341,7 @@ public class WorldDesigner
 		wdk.setFileUpdateListener(new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile ) );
+					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile, tnlTabWidth ) );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
 					String errText = ParseUtil.formatScriptError(e);

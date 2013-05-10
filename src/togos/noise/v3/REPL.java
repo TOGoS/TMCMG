@@ -37,8 +37,7 @@ public class REPL
 		"take care of such things.  Why should every program have to bake that in?";
 	
 	public static void interactive( String[] args ) throws Exception {
-		Tokenizer t = new Tokenizer();
-		t.setSourceLocation( "REPL input", 1, 1 );
+		Tokenizer t = new Tokenizer( "REPL input", 1, 1, 8 );
 		Parser p = new Parser(true);
 		
 		System.err.println();

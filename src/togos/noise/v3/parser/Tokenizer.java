@@ -43,7 +43,23 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 	protected char[] tokenBuffer = new char[1024];
 	protected int length = 0;
 	protected State state = State.NO_TOKEN;
-	protected int tabWidth = 4;
+	protected final int tabWidth;
+	
+	public Tokenizer( String filename, int line, int col, int tabWidth ) {
+		this.filename = filename;
+		this.lineNumber = line;
+		this.columnNumber = col;
+		this.tabWidth = tabWidth;
+	}
+	
+	public Tokenizer( SourceLocation sLoc, int tabWidth ) {
+		setSourceLocation(sLoc);
+		this.tabWidth = tabWidth;
+	}
+	
+	public Tokenizer( TokenizerSettings settings ) {
+		this( settings, settings.tabWidth );
+	}
 	
 	public void setSourceLocation( String filename ) {
 		setSourceLocation( filename, 1, 1 );
@@ -225,7 +241,7 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
     }
 	
 	public static void main(String[] args) throws Exception {
-		Tokenizer t = new Tokenizer();
+		Tokenizer t = new Tokenizer("(standard input)", 1, 1, 8);
 		t.pipe(new StreamDestination<Token>() {
 			@Override
             public void data( Token value ) throws Exception {

@@ -4,15 +4,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 
-import togos.lang.BaseSourceLocation;
 import togos.lang.RuntimeError;
 import togos.lang.ScriptError;
-import togos.lang.SourceLocation;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.noise.v3.functions.ListFunctions;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ProgramTreeBuilder;
+import togos.noise.v3.parser.TokenizerSettings;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Context;
@@ -27,10 +26,10 @@ public class ScriptUtil
 		STD_CONTEXT.putAll(GeneratorDefinitionFunctions.CONTEXT);
 	}
 	
-	public static MinecraftWorldGenerator loadWorldGenerator( Reader scriptReader, SourceLocation sLoc ) throws Exception {
+	public static MinecraftWorldGenerator loadWorldGenerator( Reader scriptReader, TokenizerSettings tSet ) throws Exception {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
 		
-		ASTNode programAst = Parser.parse( scriptReader, sLoc );
+		ASTNode programAst = Parser.parse( scriptReader, tSet );
 		Expression<?> program = ptb.parseExpression(programAst);
 		Object v = program.bind( STD_CONTEXT ).getValue();
 		if( v instanceof MinecraftWorldGenerator ) {
@@ -40,19 +39,19 @@ public class ScriptUtil
 		}
 	}
 	
-	public static MinecraftWorldGenerator loadWorldGenerator( File scriptFile ) throws Exception {
+	public static MinecraftWorldGenerator loadWorldGenerator( File scriptFile, int tabWidth ) throws Exception {
 		FileReader r = new FileReader(scriptFile);
 		try {
-			return loadWorldGenerator( r, new BaseSourceLocation(scriptFile.getPath(), 1, 1));
+			return loadWorldGenerator( r, new TokenizerSettings(scriptFile.getPath(), 1, 1, tabWidth) );
 		} finally {
 			r.close();
 		}
 	}
 	
-	public static Binding<?> bind( String tnl, Context ctx, SourceLocation sLoc ) throws ScriptError {
+	public static Binding<?> bind( String tnl, Context ctx, TokenizerSettings tSet ) throws ScriptError {
 		ProgramTreeBuilder ptb = new ProgramTreeBuilder();
 		try {
-	        return ptb.parseExpression(Parser.parse(tnl, sLoc)).bind(ctx);
+	        return ptb.parseExpression(Parser.parse(tnl, tSet)).bind(ctx);
 		} catch( ScriptError e ) {
 			throw e;
 		} catch( RuntimeException e ) {
@@ -62,7 +61,7 @@ public class ScriptUtil
         }
 	}
 	
-	public static Object eval( String tnl, Context ctx, SourceLocation sLoc ) throws Exception {
-		return bind(tnl, ctx, sLoc).getValue();
+	public static Object eval( String tnl, Context ctx, TokenizerSettings tSet ) throws Exception {
+		return bind(tnl, ctx, tSet).getValue();
 	}
 }

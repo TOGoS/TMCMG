@@ -7,7 +7,6 @@ import java.util.Map;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
-import togos.noise.v3.parser.Parser;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.structure.FunctionDefinition;

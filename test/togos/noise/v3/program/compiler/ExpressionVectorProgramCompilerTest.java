@@ -1,10 +1,10 @@
 package togos.noise.v3.program.compiler;
 
 import junit.framework.TestCase;
-import togos.lang.BaseSourceLocation;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.parser.ProgramTreeBuilder;
+import togos.noise.v3.parser.TokenizerSettings;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.Context;
 import togos.noise.v3.program.structure.Expression;
@@ -17,7 +17,7 @@ import togos.noise.v3.vector.vm.Program.RegisterID;
 
 public class ExpressionVectorProgramCompilerTest extends TestCase
 {
-	static BaseSourceLocation TEST_LOC = new BaseSourceLocation("test script", 1, 1);
+	static TokenizerSettings TEST_LOC = TokenizerSettings.forBuiltinFunctions(ExpressionVectorProgramCompilerTest.class);
 	static ProgramTreeBuilder ptb = new ProgramTreeBuilder();
 	static Context CONTEXT = new Context();
 	static {

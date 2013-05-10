@@ -13,7 +13,6 @@ import togos.noise.v3.asyncstream.BaseStreamSource;
 import togos.noise.v3.asyncstream.Collector;
 import togos.noise.v3.asyncstream.StreamDestination;
 import togos.noise.v3.asyncstream.StreamUtil;
-import togos.noise.v3.functions.NativeFunction;
 import togos.noise.v3.parser.ast.ASTNode;
 import togos.noise.v3.parser.ast.InfixNode;
 import togos.noise.v3.parser.ast.ParenApplicationNode;
@@ -227,13 +226,13 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		_end();
 	}
 	
-	protected static ASTNode parse( char[] source, Reader reader, SourceLocation sLoc ) throws Exception {
+	protected static ASTNode parse( char[] source, Reader reader, TokenizerSettings tSet ) throws Exception {
 		ArrayList<ASTNode> astNodes = new ArrayList<ASTNode>();
 		Parser parser = new Parser(false);
-		parser.setSourceLocation( sLoc );
+		parser.setSourceLocation( tSet );
 		parser.pipe(new Collector<ASTNode>(astNodes));
-		Tokenizer tokenizer = new Tokenizer();
-		tokenizer.setSourceLocation( sLoc );
+		Tokenizer tokenizer = new Tokenizer(tSet);
+		tokenizer.setSourceLocation( tSet );
 		tokenizer.pipe(parser);
 		
 		if( source != null ) tokenizer.data( source );
@@ -241,18 +240,18 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		tokenizer.end();
 		
 		if( astNodes.size() == 0 ) {
-			return new VoidNode(sLoc);
+			return new VoidNode(tSet);
 		} else {
 			assert astNodes.size() == 1;
 			return astNodes.get(0);
 		}
 	}
 	
-	public static ASTNode parse( Reader reader, SourceLocation sLoc ) throws Exception {
-		return parse( null, reader, sLoc );
+	public static ASTNode parse( Reader reader, TokenizerSettings tSet ) throws Exception {
+		return parse( null, reader, tSet );
 	}
 	
-	public static ASTNode parse( String source, SourceLocation sLoc ) throws Exception {
-		return parse( source.toCharArray(), null, sLoc );
+	public static ASTNode parse( String source, TokenizerSettings tSet ) throws Exception {
+		return parse( source.toCharArray(), null, tSet );
 	}
 }

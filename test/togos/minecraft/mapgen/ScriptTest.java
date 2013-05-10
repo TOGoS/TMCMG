@@ -2,20 +2,22 @@ package togos.minecraft.mapgen;
 
 import java.io.File;
 
-import togos.lang.BaseSourceLocation;
+import junit.framework.TestCase;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
-
-import junit.framework.TestCase;
+import togos.noise.v3.parser.TokenizerSettings;
 
 /**
  * Run all the scripts!
  */
 public class ScriptTest extends TestCase
 {
+	static final int TNL_TAB_WIDTH = 4;
+	static final TokenizerSettings TEST_LOC = new TokenizerSettings(ScriptTest.class.getName(), 0, 0, TNL_TAB_WIDTH);
+	
 	protected static int intValue( Object o ) {
 		return ((Number)o).intValue();
 	}
@@ -31,7 +33,7 @@ public class ScriptTest extends TestCase
 		};
 		
 		for( int i=0; i<materials.length; i += 2 ) {
-			assertEquals( Materials.encodeMaterial(materials[i], materials[i+1]), intValue(ScriptUtil.eval("material("+materials[i]+", "+materials[i+1]+")", ScriptUtil.STD_CONTEXT, BaseSourceLocation.NONE)) );
+			assertEquals( Materials.encodeMaterial(materials[i], materials[i+1]), intValue(ScriptUtil.eval("material("+materials[i]+", "+materials[i+1]+")", ScriptUtil.STD_CONTEXT, TEST_LOC)) );
 		}
 	}
 	
@@ -57,7 +59,7 @@ public class ScriptTest extends TestCase
 			// For now I don't expect that one to work:
 			if( "sixfootwavesworld.tnl".equals(f.getName()) ) continue;
 			
-			MinecraftWorldGenerator mwg = ScriptUtil.loadWorldGenerator(f);
+			MinecraftWorldGenerator mwg = ScriptUtil.loadWorldGenerator(f, TNL_TAB_WIDTH);
 			
 			{
 				LayeredTerrainFunction ltf = mwg.getTerrainFunction();

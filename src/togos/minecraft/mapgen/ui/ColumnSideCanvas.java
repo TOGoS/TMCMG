@@ -27,6 +27,7 @@ import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction.TerrainBuffer;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v3.parser.ParseUtil;
+import togos.noise.v3.parser.TokenizerSettings;
 import togos.noise.v3.vector.function.LFunctionIa_Ia;
 import togos.service.Service;
 
@@ -269,9 +270,12 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 	public static void main( String[] args ) {
 		String scriptFilename = null;
 		boolean autoReload = false;
+		int tnlTabWidth = TokenizerSettings.DEFAULT_TAB_WIDTH;
 		for( int i=0; i<args.length; ++i ) {
 			if( "-auto-reload".equals(args[i]) ) {
 				autoReload = true;
+			} else if( "-tab-width".equals(args[i]) ) {
+				tnlTabWidth = Integer.parseInt(args[++i]);
 			} else if( !args[i].startsWith("-") ) {
 				scriptFilename = args[i];
 			} else {
@@ -290,10 +294,12 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 			}
 		};
 		
+		final int _tnlTabWidth = tnlTabWidth;
+		
 		final FileUpdateListener ful = new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
-					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile ) );
+					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile, _tnlTabWidth ) );
 				} catch( ScriptError e ) {
 					System.err.println(ParseUtil.formatScriptError(e));
 				} catch( FileNotFoundException e ) {
