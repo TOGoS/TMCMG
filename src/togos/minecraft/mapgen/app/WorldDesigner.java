@@ -347,6 +347,8 @@ public class WorldDesigner
 					String errText = e.getMessage();
 					setStatus(true,errText);
 					System.err.println(errText);
+				} catch( RuntimeException e ) {
+					throw e;
 				} catch( Exception e ) {
 					throw new RuntimeException(e);
 				}
@@ -417,14 +419,12 @@ public class WorldDesigner
 	
 	public static void main( String[] args ) {
 		WorldDesigner wd = new WorldDesigner();
+		boolean initializedSuccessfully = false;
 		try {
 			wd.run(args);
-		} catch( RuntimeException e ) {
-			wd.halt();
-			throw e;
-		} catch( Exception e ) {
-			wd.halt();
-			throw new RuntimeException(e);
+			initializedSuccessfully = true;
+		} finally {
+			if( !initializedSuccessfully ) wd.halt();
 		}
 	}
 }

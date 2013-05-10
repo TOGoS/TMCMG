@@ -38,6 +38,8 @@ public class GeneratorDefinitionFunctions
 		Object v;
         try {
 	        v = b.getValue();
+        } catch( CompileError e ) {
+        	throw e;
         } catch( Exception e ) {
         	throw new CompileError(e, b.sLoc);
         }

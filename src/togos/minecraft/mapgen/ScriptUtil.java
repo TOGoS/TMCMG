@@ -55,6 +55,8 @@ public class ScriptUtil
 	        return ptb.parseExpression(Parser.parse(tnl, sLoc)).bind(ctx);
 		} catch( ScriptError e ) {
 			throw e;
+		} catch( RuntimeException e ) {
+			throw e;
         } catch( Exception e ) {
 	        throw new RuntimeException(e);
         }

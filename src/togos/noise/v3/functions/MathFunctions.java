@@ -109,7 +109,7 @@ public class MathFunctions
 							throw new RuntimeError("Argument evaluated to null", argumentBindings[i].sLoc);
 						}
 						if( !argumentTypes[i].isAssignableFrom(arguments[i].getClass()) ) {
-							throw new RuntimeError("Expected a "+argumentTypes[i]+" but got a "+arguments[i].getClass()+" ("+argumentBindings[i]+")", argumentBindings[i].sLoc);
+							throw new RuntimeError("'"+getName()+"' expected a "+argumentTypes[i]+" but got a "+arguments[i].getClass(), argumentBindings[i].sLoc);
 						}
 					}
 					return apply( arguments );
