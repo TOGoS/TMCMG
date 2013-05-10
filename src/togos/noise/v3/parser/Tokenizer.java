@@ -209,7 +209,6 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 	protected void flushToken() throws Exception {
 		if( state.tokenType != null ) {
 			String tokenText = new String(tokenBuffer,0,length);
-			System.err.println(tokenText+" at "+filename+":"+ctLineNumber+","+ctColumnNumber);
 			_data( new Token( state.tokenType, tokenText, filename, ctLineNumber, ctColumnNumber ) );
 		}
 	}
