@@ -200,11 +200,12 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 	}
 	
 	@Override public void data(Token value) throws Exception {
+		setSourceLocation(value);
 		if( block == null ) {
 			block = new SuperToken(null, SuperToken.Type.PAREN_BLOCK, (SourceLocation)value );
 		}
 		if( "(".equals(value.text) ) {
-			block = new SuperToken(block, SuperToken.Type.PAREN_BLOCK, currentLocation);
+			block = new SuperToken(block, SuperToken.Type.PAREN_BLOCK, (SourceLocation)value);
 		} else if( ")".equals(value.text) ) {
 			if( block.parent == null ) {
 				throw new ParseError("Parentheses mismatch; unexpected ')'", value);
