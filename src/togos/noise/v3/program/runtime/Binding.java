@@ -140,11 +140,8 @@ public abstract class Binding<V>
 	 * points to another expression.
 	 */
 	public static class Delegated<V> extends Binding<V> {
-		protected Binding<? extends V> delegate;
+		protected final Binding<? extends V> delegate;
 		
-		public Delegated( SourceLocation sLoc ) {
-			super(sLoc);
-		}
 		public Delegated( Binding<? extends V> delegate, SourceLocation sLoc ) {
 			super(sLoc);
 			this.delegate = delegate;

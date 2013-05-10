@@ -19,7 +19,7 @@ public class SymbolReference extends Expression<Object>
 		if( !context.containsKey(symbol) ) {
 			throw new CompileError( "Symbol '"+symbol+"' is undefined", sLoc );
 		}
-		return context.get(symbol);
+		return new Binding.Delegated<Object>( context.get(symbol), sLoc );
     }
 	
 	@Override public String toString() {
