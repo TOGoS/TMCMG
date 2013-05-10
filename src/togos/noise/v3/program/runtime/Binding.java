@@ -165,6 +165,12 @@ public abstract class Binding<V>
 		@Override public String toSource() throws CompileError {
 			return delegate.toSource();
 		}
+		
+		@Override public RegisterID<?> toVectorProgram(
+			ExpressionVectorProgramCompiler compiler
+		) throws CompileError {
+			return delegate.toVectorProgram(compiler);
+		}
 	}
 	
 	/**
