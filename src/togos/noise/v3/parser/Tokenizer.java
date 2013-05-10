@@ -38,9 +38,12 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 	
 	public String filename = "unknown source";
 	public int lineNumber = 1, columnNumber = 1;
+	/** Location of first character of current token */
+	protected int ctLineNumber, ctColumnNumber;
 	protected char[] tokenBuffer = new char[1024];
 	protected int length = 0;
 	protected State state = State.NO_TOKEN;
+	protected int tabWidth = 4;
 	
 	public void setSourceLocation( String filename ) {
 		setSourceLocation( filename, 1, 1 );
@@ -115,7 +118,7 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 		case SINGLE_QUOTED_STRING:
 			switch( c ) {
 			case '\'':
-				flushToken( State.WORD_BOUNDARY );
+				newToken( State.WORD_BOUNDARY );
 				break;
 			case '\\':
 				state = State.SINGLE_QUOTED_STRING_ESCAPE;
@@ -127,7 +130,7 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 		case DOUBLE_QUOTED_STRING:
 			switch( c ) {
 			case '"':
-				flushToken( State.WORD_BOUNDARY );
+				newToken( State.WORD_BOUNDARY );
 				break;
 			case '\\':
 				state = State.DOUBLE_QUOTED_STRING_ESCAPE;
@@ -143,13 +146,12 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 			if( isQuote(c) ) {
 				throw new ParseError("No quotes allowed here; add some whitespace!", getSourceLocation());
 			} else if( isSymbol(c) ) {
-				flushToken( State.SYMBOL );
-				tokenBuffer[length++] = c;
-				flushToken( State.NO_TOKEN );
+				newToken( State.SYMBOL, c );
+				newToken( State.NO_TOKEN );
 			} else if( isWhitespace(c) ) {
-				flushToken( State.NO_TOKEN );
+				newToken( State.NO_TOKEN );
 			} else if( isComment(c) ) {
-				flushToken( State.LINE_COMMENT );
+				newToken( State.LINE_COMMENT );
 			} else {
 				tokenBuffer[length++] = c;
 			}
@@ -163,27 +165,27 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 			if( c == '#' ) {
 				state = State.LINE_COMMENT;
 			} else if( c == '"' ) {
-				state = State.DOUBLE_QUOTED_STRING;
+				newToken( State.DOUBLE_QUOTED_STRING );
 			} else if( c == '\'' ) {
-				state = State.SINGLE_QUOTED_STRING;
+				newToken( State.SINGLE_QUOTED_STRING );
 			} else if( isSymbol(c) ) {
-				state = State.SYMBOL;
-				tokenBuffer[length++] = c;
-				flushToken( State.NO_TOKEN );
+				newToken( State.SYMBOL, c );
+				newToken( State.NO_TOKEN );
 			} else if( isComment(c) ) {
-				flushToken( State.LINE_COMMENT );
+				newToken( State.LINE_COMMENT );
 			} else if( isWhitespace(c) ) {
 				state = State.NO_TOKEN;
 			} else {
-				state = State.BAREWORD;
-				tokenBuffer[length++] = c;
+				newToken( State.BAREWORD, c );
 			}
 			break;
 		default:
 			throw new ParseError("Invalid tokenizer state: "+state, getSourceLocation());
 		}
 		
-		if( c == '\n' ) {
+		if( c == '\t' ) {
+			columnNumber += tabWidth;
+		} else if( c == '\n' ) {
 			lineNumber += 1;
 			columnNumber = 1;
 		} else {
@@ -191,12 +193,25 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 		}
 	}
 	
-	protected void flushToken( State newState ) throws Exception {
-		if( state.tokenType != null ) {
-			_data( new Token( state.tokenType, new String(tokenBuffer,0,length), filename, lineNumber, columnNumber ) );
-		}
+	protected void newToken( State newState, char firstChar ) throws Exception {
+		newToken( newState );
+		tokenBuffer[length++] = firstChar;
+	}
+	
+	protected void newToken( State newState ) throws Exception {
+		flushToken();
 		state = newState;
 		length = 0;
+		ctLineNumber = lineNumber;
+		ctColumnNumber = columnNumber;
+	}
+	
+	protected void flushToken() throws Exception {
+		if( state.tokenType != null ) {
+			String tokenText = new String(tokenBuffer,0,length);
+			System.err.println(tokenText+" at "+filename+":"+ctLineNumber+","+ctColumnNumber);
+			_data( new Token( state.tokenType, tokenText, filename, ctLineNumber, ctColumnNumber ) );
+		}
 	}
 	
 	@Override
@@ -206,7 +221,7 @@ public class Tokenizer extends BaseStreamSource<Token> implements StreamDestinat
 	
 	@Override
     public void end() throws Exception {
-		flushToken( State.NO_TOKEN );
+		newToken( State.NO_TOKEN );
 		_end();
     }
 	
