@@ -1,4 +1,5 @@
 min(x,y) = if(x < y, x, y);
+max(x,y) = if(x > y, x, y);
 
 materials.none    = -1;
 materials.air     = material(0x00);
@@ -96,7 +97,7 @@ continentscale = 64;	# scale of noise, a bigger value generates smoother contine
 #### continent = cache( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x + seedx,y,seedz + z * -1))) );
 # For some reason -(z) != (z * -1)
 ct(x,z) = simplex(x + seedx, y, (z + seedz * -1));
-continent = ( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,ct)) );
+continent(x,z) = ridge(0, continentheight, fractal(3,continentscale,16,25,8,0,ct)(x,0,z) );
 
 #meant to add variety to stone and ores
 #uses the minimum value of cont_letter and complex_cont when generating so can create extrusions but won't mess with terrain shape
@@ -142,8 +143,10 @@ oceany = 15435;
 
 #### continent = cache( ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x + seedx,y,seedz + z * -1))) );
 # For some reason -(z) != (z * -1)
-ot = translate-in ( oceanx, 0, oceany, simplex(x,y,(z * -1)));
-ocean = ( ridge(0,oceanridge,fractal(3,oceanscale,16,25,8,0,ot)) );
+# That's because there's no unary '-' operator.
+# -(z) actually means subtract nothing from z.  :P
+ot(x,y,z) = simplex(x + oceanx, y, (z + oceany) * -1);
+ocean(x,z) = ridge(0, oceanridge, fractal(3,oceanscale,16,25,8,0,ot)(x,0,z) );
 
 ############################################################################################################################################
 # Climate
@@ -167,9 +170,9 @@ desertrockc = 87;#Netherrack -looks like marble		#used for continentc
 desertcover = materials.sand;
 
 #Noise
-biomet = translate-in ( desertseeda, 0, desertseedb, simplex() );
+biomet(x,z) = simplex(x + desertseeda, 0, z + desertseedb);
 #### biome = (ridge(0,desertridge,fractal(3,desertscale,12,24,8,0,simplex(desertseeda + x,y,z - desertseedb))) / 12); ##0-4 range
-biome = (ridge(0,desertridge,fractal(3,desertscale,12,24,8,0, biomet)) / 12); ##0-4 range
+biome(x,z) = ridge(0, desertridge, fractal(3,desertscale,12,24,8,0, biomet)(x,0,z)) / 12; ##0-4 range
 
 ############################################################################################################################################
 # Mountians
@@ -194,20 +197,20 @@ mountscale_sharp = 3.5; #2 was orginal
 ##May need to be adjusted when change continent scale
 bump = fractal( 1, 32, 8, 1, 1, 1, simplex(x, y ,z ) * 4) * -1;
 
-mountians = if (
+mountians = if(
 	continent > mountbase,
 	mountbase + (((continent - mountbase) * mountscale ))  - 3,
 	#ridge(0,mountheight, (continent - mountbase) * mountscale ) ,
 	0
 );
 
-mountians_low = if (
+mountians_low = if(
 	continent > mountbase_low,
 	mountbase_low + ((continent - mountbase_low) * mountscale_low)  - 3,
 	0
 );
 
-mountians_sharp = if (
+mountians_sharp = if(
 	continent > mountbase_sharp,
 	bump + (mountbase_sharp + ((continent - mountbase_sharp) * mountscale_sharp)),
 	0
@@ -248,13 +251,13 @@ vocanoehscale = 2.2; 	#height scale
 
 #Volcano Functions
 lavat = translate-in ( 0, 0, 0, simplex( (x * -1), y, z ));
-lava = ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x * -1,y,z))) / 16;
+lava(x,z) = ridge(0, continentheight, fractal(3, continentscale, 16, 25, 8, 0, simplex)(x * -1,y,z)) / 16;
 #### lava = ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,lavat)) / 16;
 volta = translate-in ( volcanoseed, 0, 0.75, simplex( (x * -1),y,z));
 # 1 / 512 = 0.001953125
 voltb = scale-in ( 0.001953125, 1, 0.001953125, simplex());
-volcano_outcroping = if (
-	(lava > lavaheight) and (continent > groundheight),
+volcano_outcroping(x,z) = if(
+	(lava(x,z) > lavaheight) and (continent > groundheight),
 	#### continent + (16 - ridge(0,32,fractal(3,volcanoscale,16,25,8,0,simplex(volcanoseed + x * -1,y,z)))) * (simplex(x / 512, y, z / 512) * 16) * vocanoehscale, 
 	continent + (16 - ridge(0,32,fractal(3,volcanoscale,16,25,8,0,volta))) * (voltb * 16) * vocanoehscale, 
 	0
@@ -280,7 +283,7 @@ claybeach = 0.7; #anything below this will be clay
 mudmaterial = 88; #Soul sand 82; #clay
 
 #River Functions
-sand = ridge(0,continentheight,fractal(3,continentscale,16,25,8,0,simplex(x,y,z))) / 16;
+sand(x,y,z) = ridge(0, continentheight, fractal(3, continentscale, 16, 25, 8, 0, simplex)(x,y,z)) / 16;
 ############################################################################################################################################
 # Ores
 ############################################################################################################################################
@@ -308,7 +311,7 @@ geoheight = 16;
 geoscale = 32;
 geot = translate-in ( 0, 0, seedx, simplex(x * -1,y,z ));
 #### geology = cache( ridge(0,geoheight,fractal(3,geoscale,16,25,8,0,simplex(x * -1,y,z + seedx))) );
-geology = ( ridge(0,geoheight,fractal(3,geoscale,16,25,8,0,simplex(x * -1,y,z + seedx))) );
+geology(x,y,z) = ridge(0, geoheight, fractal(3, geoscale, 16, 25, 8, 0, simplex)(x * -1,y,z + seedx));
 
 ######### Ore Class A #########
 #Places ores where ever continent noise is between oreastart and oreaend;
@@ -423,7 +426,7 @@ orelfade = y; #Controls how ore density fades with altitude, greater is more ore
 orel1 = materials.diamond-ore;
 orel2 = 89; #glowstone#materials.gold-ore;
 orel3 = materials.lava;#
-#Because if statement exits on first true orea2 only places if (noise < orev1amount) AND (noise > orev2amount), likewise for orev3
+#Because if statement exits on first true orea2 only places if(noise < orev1amount) AND (noise > orev2amount), likewise for orev3
 orel1amount = 2.25; # noise has to be less than this to place this ore
 orel2amount = 2.5; # noise has to be less than this to place this ore
 orel3amount = 2.5; # noise has to be less than this to place this ore
@@ -435,8 +438,8 @@ orelz = -2;
 orel = ridge(0,orelamount,fractal(5,2,2,16,12,0,simplex( orelx * x + seedx,y * orely,seedz + z * orelz))) + (y / orelfade);
 
 
-#### complex_cont = base + cache(max(  continent, mountians, mountians_low, mountians_sharp));
-complex_cont = base + (max(  continent, mountians, mountians_low, mountians_sharp));
+#### complex_cont = base + max(continent, mountians, mountians_low, mountians_sharp);
+complex_cont(x,z) = base + max(max(continent(x,z), mountians), max(mountians_low, mountians_sharp));
 
 ############################################################################################################################################
 # Vegitation
@@ -553,132 +556,126 @@ beantree = material( 17, 3);
 test = layered-terrain(
 
 ##Continental base
-layer (
+layer(
 		stonetype,
 	0, 
-	if ( biome <= desert,
-		complex_cont,
+	(x,z) -> if( biome(x,z) <= desert,
+		complex_cont(x,z),
 		-1
 	)
 ),
-layer (
+layer(
 		stonetypeb,
 	0, 
-	if ( biome <= desert,
-		min (continentb, complex_cont),
+	(x,z) -> if( biome(x,z) <= desert,
+		min (continentb, complex_cont(x,z)),
 		-1
 	)
 ),
-layer (
+layer(
 		stonetypec,
 	0, 
-	if ( biome <= desert,
-		min (continentc, complex_cont),
+	(x,z) -> if( biome(x,z) <= desert,
+		min (continentc, complex_cont(x,z)),
 		-1
 	)
 ),
-layer (
+layer(
 	desertrock, #Sandstone
 	0, 
-	if ( biome > desert,
-		complex_cont,
+	(x,z) -> if( biome(x,z) > desert,
+		complex_cont(x,z),
 		-1
 	)
 ),
-layer (
+layer(
 	desertrockb, #Sandstone
 	0, 
-	if ( biome > desert,
+	(x,z) -> if( biome(x,z) > desert,
 		continentb,
 		-1
 	)
 ),
-layer (
+layer(
 	desertrockc, #Sandstone
 	0, 
-	if ( biome > desert,
+	(x,z) -> if( biome(x,z) > desert,
 		continentc,
 		-1
 	)
 ),
 
 ##Minerals
-layer (
-	if (
-		if ( biome > desert,
-			if ( orea < oreadamount, oread, materials.none ),
-			if (
-				geology < geoa1,
-					if ( orea < orea1amount, orea1, materials.none ),
-				(geology > geoa1) and (geology < geoa2), 
-					if ( orea < orea2amount, orea2, materials.none ),
-				geology > geoa2, 
-					if ( orea < orea3amount, orea3, materials.none ),
-				materials.none
-			)
+layer(
+	(x,y,z) -> if( biome(x,0,z) > desert,
+		if( orea < oreadamount, oread, materials.none ),
+		if(
+			geology < geoa1,
+				if( orea < orea1amount, orea1, materials.none ),
+			(geology > geoa1) and (geology < geoa2), 
+				if( orea < orea2amount, orea2, materials.none ),
+			geology > geoa2, 
+				if( orea < orea3amount, orea3, materials.none ),
+			materials.none
 		)
 	),
-	if ((oreanoise > oreastart) and (oreanoise < oreaend), 0, -1),
-	if ((oreanoise > oreastart) and (oreanoise < oreaend), oreanoise - 2, -1)
+	(x,z) -> if((oreanoise > oreastart) and (oreanoise < oreaend), 0, -1),
+	(x,z) -> if((oreanoise > oreastart) and (oreanoise < oreaend), oreanoise - 2, -1)
 ),
-layer (
-	if (
-		if ( biome > desert,
-			if ( oreb < orebdamount, orebd, materials.none ),
-			if (
-				geology < geoa1,
-					if ( oreb < oreb1amount, oreb1, materials.none ),
-				(geology > geoa1) and (geology < geoa2), 
-					if ( oreb < oreb2amount, oreb2, materials.none ),
-				geology > geoa2, 
-					if ( oreb < oreb3amount, oreb3, materials.none ),
-				materials.none
-			)
+layer(
+	(x,y,z) -> if( biome > desert,
+		if( oreb < orebdamount, orebd, materials.none ),
+		if(
+			geology < geoa1,
+				if( oreb < oreb1amount, oreb1, materials.none ),
+			(geology > geoa1) and (geology < geoa2), 
+				if( oreb < oreb2amount, oreb2, materials.none ),
+			geology > geoa2, 
+				if( oreb < oreb3amount, oreb3, materials.none ),
+			materials.none
 		)
 	),
-	if ((orebnoise > orebstart) and (orebnoise < orebend), 0, -1),
-	if ((orebnoise > orebstart) and (orebnoise < orebend), orebnoise - 2, -1)
+	(x,z) -> if((orebnoise > orebstart) and (orebnoise < orebend), 0, -1),
+	(x,z) -> if((orebnoise > orebstart) and (orebnoise < orebend), orebnoise - 2, -1)
 ),
-layer (
-	if (
-		if ( biome > desert,
-			if ( orec < orecdamount, orecd, materials.none ),
-			if (
-				geology < geoa1,
-					if ( orec < orec1amount, orec1, materials.none ),
-				(geology > geoa1) and (geology < geoa2), 
-					if ( orec < orec2amount, orec2, materials.none ),
-				geology > geoa2, 
-					if ( orec < orec3amount, orec3, materials.none ),
-				materials.none
-			)
+layer(
+	(x,y,z) -> if( biome > desert,
+		if( orec < orecdamount, orecd, materials.none ),
+		if(
+			geology < geoa1,
+				if( orec < orec1amount, orec1, materials.none ),
+			(geology > geoa1) and (geology < geoa2), 
+				if( orec < orec2amount, orec2, materials.none ),
+			geology > geoa2, 
+				if( orec < orec3amount, orec3, materials.none ),
+			materials.none
 		)
 	),
-	if ((orecnoise > orecstart) and (orecnoise < orecend), 0, -1),
-	if ((orecnoise > orecstart) and (orecnoise < orecend), orecnoise - 2, -1)
+	(x,z) -> if((orecnoise > orecstart) and (orecnoise < orecend), 0, -1),
+	(x,z) -> if((orecnoise > orecstart) and (orecnoise < orecend), orecnoise - 2, -1)
 ),
 
 #Surface
-layer (
+layer(
 	materials.dirt,
-	if ( (complex_cont < treeline) and (biome <= desert), complex_cont - 4 - disturber, -1), 
-	if ( (complex_cont < treeline) and (biome <= desert), complex_cont, -1)
+	(x,z) -> if( (complex_cont(x,z) < treeline) and (biome <= desert), complex_cont(x,z) - 4 - disturber, -1), 
+	(x,z) -> if( (complex_cont(x,z) < treeline) and (biome <= desert), complex_cont(x,z), -1)
 ),
-layer (
+layer(
 	materials.grass,
-	if ( (complex_cont < treeline) and (biome <= desert), complex_cont - 1, -1), 
-	if ( (complex_cont < treeline) and (biome <= desert), complex_cont, -1)
+	(x,z) -> if( (complex_cont(x,z) < treeline) and (biome <= desert), complex_cont(x,z) - 1, -1), 
+	(x,z) -> if( (complex_cont(x,z) < treeline) and (biome <= desert), complex_cont(x,z), -1)
 ),
-layer (
+layer(
 	desertcover,
 	##changed from treeline to snowline because map didn't have any real deserts...
-	if ( (complex_cont < snowline) and (biome > desert), complex_cont - 4 - disturber, -1), 
-	if ( (complex_cont < snowline) and (biome > desert), complex_cont, -1)
+	(x,z) -> if( (complex_cont(x,z) < snowline) and (biome > desert), complex_cont(x,z) - 4 - disturber, -1), 
+	(x,z) -> if( (complex_cont(x,z) < snowline) and (biome > desert), complex_cont(x,z), -1)
 ),
-layer (
+layer(
 	78, #Snow
-	if ((complex_cont > snowline), complex_cont, -1),
-	if ((complex_cont > snowline), complex_cont + 1, -1)
+	(x,z) -> if((complex_cont(x,z) > snowline), complex_cont(x,z), -1),
+	(x,z) -> if((complex_cont(x,z) > snowline), complex_cont(x,z) + 1, -1)
 ),
 #### ##Biome overlay
 #### ##Suggested turn off geology and vegitation for this
@@ -687,10 +684,10 @@ layer (
 #### ##Jungle, Tagia, Tundra, Extreme Hills
 #### ##want to use block id's that won't conflict with normal surfaces, like stones
 #### ##but still look appx correct in painter
-#### layer (
-	#### if (
+#### layer(
+	#### if(
 		#### (rain < raintree), ##forested
-			#### if (
+			#### if(
 				#### ##Tagia
 				#### temp < cold, 80,
 				#### ##Jungle
@@ -700,14 +697,14 @@ layer (
 				
 			#### ),
 		#### (rain >= raingrass), ##arid - fairly rare biome as desert already exists
-			#### if (
+			#### if(
 				#### temp < cold, 155,
 				#### temp > warm, 41,
 				#### ##Deafult
 				#### 45,
 			#### ),
 		#### ##else is plains
-		#### if (
+		#### if(
 				#### #tundra
 				#### temp < cold, 79,
 				#### #Savannah
@@ -718,97 +715,97 @@ layer (
 			#### ),
 
 	#### ),
-	#### if ( (complex_cont < treeline) and (biome <= desert), complex_cont - 1, -1), 
-	#### if ( (complex_cont < treeline) and (biome <= desert), complex_cont, -1),
+	#### if( (complex_cont(x,z) < treeline) and (biome <= desert), complex_cont(x,z) - 1, -1), 
+	#### if( (complex_cont(x,z) < treeline) and (biome <= desert), complex_cont(x,z), -1),
 #### ),
-#### layer (
+#### layer(
 	#### sand,
-	#### if ( (complex_cont < treeline) and (biome > desert), complex_cont - 4 - disturber, -1), 
-	#### if ( (complex_cont < treeline) and (biome > desert), complex_cont, -1),
+	#### if( (complex_cont(x,z) < treeline) and (biome > desert), complex_cont(x,z) - 4 - disturber, -1), 
+	#### if( (complex_cont(x,z) < treeline) and (biome > desert), complex_cont(x,z), -1),
 #### ),
 
 ##Rivers
-layer (
-	if (sand < claybeach, 82, sand > sandybeach, materials.sand, materials.gravel),
-	if ( (complex_cont < riveraltitude + beachdist), complex_cont - riverbeddepth, -1), 
-	if ( (complex_cont < riveraltitude + beachdist), complex_cont, -1)
+layer(
+	(x,y,z) -> if(sand < claybeach, 82, sand > sandybeach, materials.sand, materials.gravel),
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + beachdist), complex_cont(x,z) - riverbeddepth, -1), 
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + beachdist), complex_cont(x,z), -1)
 ),
 
-layer (
+layer(
 	mudmaterial,
-	if ( (complex_cont < riveraltitude + maxmuddist), complex_cont - riverbeddepth, -1), 
-	if ( (complex_cont < riveraltitude + minmuddist), complex_cont, -1)
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + maxmuddist), complex_cont(x,z) - riverbeddepth, -1), 
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + minmuddist), complex_cont(x,z), -1)
 ),
-layer (
+layer(
 	materials.water,
-	if ( (complex_cont < riveraltitude + waterdepth), complex_cont - riverdepth, -1), 
-	if ( (complex_cont < riveraltitude + waterdepth), riveraltitude + waterdepth, -1)
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + waterdepth), complex_cont(x,z) - riverdepth, -1), 
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + waterdepth), riveraltitude + waterdepth, -1)
 ),
 
 ##Volcanoes
 layer(
 	volcanomaterial,
 	0,
-	volcano_outcroping - volcanosurfacedepth
+	(x,z) -> volcano_outcroping(x,z) - volcanosurfacedepth(x,z)
 ),
 layer(
 	volcanosurfacematerial,
-	volcano_outcroping - volcanosurfacedepth,
+	(x,z) -> volcano_outcroping(x,z) - volcanosurfacedepth(x,z),
 	volcano_outcroping
 ),
-layer (
-	if (
+layer(
+	if(
 		geology < geov1,
-			if (
+			if(
 				orev < orev1amount, orev1, 
 				materials.none
 				),
 		(geology > geov1) and (geology < geov2), 
-			if ( 
+			if( 
 				orev < orev2amount, orev2,
 				materials.none
 				),
 		geology > geov2, 
-			if ( 
+			if( 
 				orev < orev3amount, orev3,
 				materials.none
 				),
 		materials.none
 		),
-		if ((volcano_outcroping > orevstart) and (volcano_outcroping < orevend), 0, -1),
-		if ((volcano_outcroping > orevstart) and (volcano_outcroping < orevend), volcano_outcroping - 3, -1)
+		if((volcano_outcroping > orevstart) and (volcano_outcroping < orevend), 0, -1),
+		if((volcano_outcroping > orevstart) and (volcano_outcroping < orevend), volcano_outcroping - 3, -1)
 ),
-layer (
-	if (
+layer(
+	if(
 		geology < geol1,
-			if (
+			if(
 				orel < orel1amount, orel1, 
 				materials.none
 				),
 		(geology > geol1) and (geology < geol2), 
-			if ( 
+			if( 
 				orel < orel2amount, orel2,
 				materials.none
 				),
 		geology > geol2, 
-			if ( 
+			if( 
 				orel < orel3amount, orel3,
 				materials.none
 				),
 		materials.none
 			
 		),
-		if ((lavaaltitude + oreladjust > cone - volcano_outcroping), 0, -1),
-		if ((lavaaltitude + oreladjust > cone - volcano_outcroping), volcano_outcroping - 3, -1)
+		if((lavaaltitude + oreladjust > cone - volcano_outcroping), 0, -1),
+		if((lavaaltitude + oreladjust > cone - volcano_outcroping), volcano_outcroping - 3, -1)
 ),
 
 
-layer (
+layer(
 	materials.air,
 	cone - volcano_outcroping,
 	volcano_outcroping
 ),
-layer (
+layer(
 	materials.lava,
 	cone - volcano_outcroping,
 	lavaaltitude
@@ -816,134 +813,134 @@ layer (
 
 #Vegitation
 #Example from code: layer( material( 6, 2 ), 0, 64),
-layer (
+layer(
 	38, #flowers
-	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsea > lowdensity)), complex_cont, -1),
-	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsea > lowdensity)), complex_cont + 1, -1)
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (rain < raingrass) and (biome <= desert) and (plantsea > lowdensity)), complex_cont(x,z), -1),
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (rain < raingrass) and (biome <= desert) and (plantsea > lowdensity)), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	37, #flowers
-	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsaa > lowdensity)), complex_cont, -1),
-	if (((complex_cont < treeline) and (rain < raingrass) and (biome <= desert) and (plantsaa > lowdensity)), complex_cont + 1, -1)
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (rain < raingrass) and (biome <= desert) and (plantsaa > lowdensity)), complex_cont(x,z), -1),
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (rain < raingrass) and (biome <= desert) and (plantsaa > lowdensity)), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	melon, 
-	if (( (rain > raingrass) and (plantsb > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain > raingrass) and (plantsb > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain > raingrass) and (plantsb > lowdensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain > raingrass) and (plantsb > lowdensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	pumpkin, 
-	if (( (rain > raintree) and (plantsca > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain > raintree) and (plantsca > lowdensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain > raintree) and (plantsca > lowdensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain > raintree) and (plantsca > lowdensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	grass, 
-	if (( (rain < raingrass) and (plantsb > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain < raingrass) and (plantsb > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain < raingrass) and (plantsb > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain < raingrass) and (plantsb > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	fern, 
-	if (( (rain < raintree) and (temp > warm) and (plantsda > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain < raintree) and (temp > warm) and (plantsda > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain < raintree) and (temp > warm) and (plantsda > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain < raintree) and (temp > warm) and (plantsda > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	cacti, 
-	if (((complex_cont < treeline) and (biome > desert) and (plantsa > lowdensity)), complex_cont, -1),
-	if (((complex_cont < treeline) and (biome > desert) and (plantsa > lowdensity)), complex_cont + 1, -1)
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (biome > desert) and (plantsa > lowdensity)), complex_cont(x,z), -1),
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (biome > desert) and (plantsa > lowdensity)), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	deadshrub, 
-	if (((complex_cont < treeline) and (biome > desert) and (plantsb > lowdensity)), complex_cont, -1),
-	if (((complex_cont < treeline) and (biome > desert) and (plantsb > lowdensity)), complex_cont + 1, -1)
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (biome > desert) and (plantsb > lowdensity)), complex_cont(x,z), -1),
+	(x,z) -> if(((complex_cont(x,z) < treeline) and (biome > desert) and (plantsb > lowdensity)), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	pine, 
-	if (( (rain < raintree) and (temp < cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain < raintree) and (temp < cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain < raintree) and (temp < cold) and (plantsd > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain < raintree) and (temp < cold) and (plantsd > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	oak, 
-	if (( (rain < (raintree)) and (temp > cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain < (raintree)) and (temp > cold) and (plantsd > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain < (raintree)) and (temp > cold) and (plantsd > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain < (raintree)) and (temp > cold) and (plantsd > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	birch, 
-	if (( (rain < (raintree )) and (temp > temperate) and (plantse > meddensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain < (raintree )) and (temp > temperate) and (plantse > meddensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain < (raintree )) and (temp > temperate) and (plantse > meddensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain < (raintree )) and (temp > temperate) and (plantse > meddensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	jungle, 
-	if (( (rain < raintree) and (temp > warm) and (plantse > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont, -1),
-	if (( (rain < raintree) and (temp > warm) and (plantse > hidensity) and (complex_cont < treeline) and (biome <= desert) ), complex_cont + 1, -1)
+	(x,z) -> if(( (rain < raintree) and (temp > warm) and (plantse > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (rain < raintree) and (temp > warm) and (plantse > hidensity) and (complex_cont(x,z) < treeline) and (biome <= desert) ), complex_cont(x,z) + 1, -1)
 ),
 
 
 #erase vegitation
-layer (
+layer(
 	material(0,0),
-	if ( (complex_cont < riveraltitude + beachdist), complex_cont, -1), 
-	if ( (complex_cont < riveraltitude + beachdist), complex_cont + 1, -1)
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + beachdist), complex_cont(x,z), -1), 
+	(x,z) -> if( (complex_cont(x,z) < riveraltitude + beachdist), complex_cont(x,z) + 1, -1)
 ),
-layer (
-	if ((sand < claybeach) and (complex_cont < riveraltitude + beachdist), reed, materials.air), 
-	if (( (plantse > meddensity) ), complex_cont, -1),
-	if (( (plantse > meddensity) ), complex_cont + 1, -1)
+layer(
+	(x,y,z) -> if((sand < claybeach) and (complex_cont(x,z) < riveraltitude + beachdist), reed, materials.air), 
+	(x,z) -> if(( (plantse > meddensity) ), complex_cont(x,z), -1),
+	(x,z) -> if(( (plantse > meddensity) ), complex_cont(x,z) + 1, -1)
 ),
-layer (
+layer(
 	materials.air, #mushroom land
-	if ( (badlands > badlandsmin) , complex_cont , -1),
-	if ( (badlands > badlandsmin) , complex_cont + 1, -1)
+	(x,z) -> if( (badlands > badlandsmin) , complex_cont(x,z) , -1),
+	(x,z) -> if( (badlands > badlandsmin) , complex_cont(x,z) + 1, -1)
 ),
 
 
 #Badlands - needs to be after vegitation or will have stuff growing on it
-layer (
+layer(
 	badlandsmaterial, #mushroom land
-	if ( (badlands > badlandsmin) , complex_cont - 15, -1),
-	if ( (badlands > badlandsmin) , complex_cont + disturber - 2.5, -1)
+	(x,z) -> if( (badlands > badlandsmin) , complex_cont(x,z) - 15, -1),
+	(x,z) -> if( (badlands > badlandsmin) , complex_cont(x,z) + disturber - 2.5, -1)
 ),
 ##Ocean
-layer (
-		materials.air,
-		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), 
-			sealevel, 
-			-1), 
-		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), 256, -1)
+layer(
+	materials.air,
+	(x,z) -> if((ocean > seatrigger) and ((complex_cont(x,z) - sealevel) < maxcliff), 
+		sealevel, 
+		-1), 
+	(x,z) -> if((ocean > seatrigger) and ((complex_cont(x,z) - sealevel) < maxcliff), 256, -1)
 ),
-layer (
-		materials.water,
-		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), 
-			sealevel - (complex_cont - sealevel) * seadepth, 
-			-1
-			), 
-		if((ocean > seatrigger) and ((complex_cont - sealevel) < maxcliff), sealevel , -1)
+layer(
+	materials.water,
+	(x,z) -> if((ocean > seatrigger) and ((complex_cont(x,z) - sealevel) < maxcliff), 
+		sealevel - (complex_cont(x,z) - sealevel) * seadepth, 
+		-1
+		), 
+	(x,z) -> if((ocean > seatrigger) and ((complex_cont(x,z) - sealevel) < maxcliff), sealevel , -1)
 ),
 
 ##grid lines
 #region grid
-#### layer (
+#### layer(
 	#### materials.bedrock,
 	#### 0,
-	#### if ( 
+	#### if( 
 		#### ridge( 0,256, x - 256) > 240, 
 		#### 127,		
 		#### -1
 		#### ),
 #### ),
-#### layer (
+#### layer(
 	#### materials.bedrock,
 	#### 0,
-	#### if ( 
+	#### if( 
 		#### ridge( 0,256, z - 256) > 240,
 		#### 127,		
 		#### -1
 		#### ),
 #### ),
 #chunk grid
-#### layer (
+#### layer(
 	#### materials.bedrock,
 	#### 0,
-	#### if ( 
+	#### if( 
 		#### ridge( 0,1, (x / 16)) == 1, 
 		#### 127,
 		#### ridge( 0,1, ((x + 16) / 16)) == 1,
@@ -951,10 +948,10 @@ layer (
 		#### -1
 		#### ),
 #### ),
-#### layer (
+#### layer(
 	#### materials.bedrock,
 	#### 0,
-	#### if ( 
+	#### if( 
 		#### ridge( 0,1, (z / 16)) == 1, 
 		#### 127,
 		#### ridge( 0,1, ((z + 16) / 16)) == 1,
@@ -963,10 +960,10 @@ layer (
 		#### ),
 #### ),
 #Target area
-layer (
+layer(
 	materials.bedrock,
 	0,
-	(x,z) -> if ( 
+	(x,z) -> if( 
 		(x >= (xstart * 16) ) and (x <= ((xstart + 1) * 16) ), 
 		127,
 		(x <= ((chunksx + xstart) * 16) ) and (x >= ((chunksx + xstart - 1) * 16) ),
@@ -974,10 +971,10 @@ layer (
 		-1
 		)
 ),
-layer (
+layer(
 	materials.bedrock,
 	0,
-	(x,z) -> if ( 
+	(x,z) -> if( 
 		(z >= (zstart * 16) ) and (z <= ((zstart + 1) * 16) ), 
 		127,
 		(z <= ((chunksz + zstart) * 16) ) and (z >= ((chunksz + zstart - 1) * 16) ),
@@ -1037,7 +1034,7 @@ test
 #### orea1 = 21; #Bluestone 
 #### orea2 = materials.iron-ore;
 #### orea3 = materials.coal-ore;
-#### #Because if statement exits on first true orea2 only places if (noise < orea1amount) AND (noise > orea2amount), likewise for orea3
+#### #Because if statement exits on first true orea2 only places if(noise < orea1amount) AND (noise > orea2amount), likewise for orea3
 #### #the higher the orea1amount the quicker the orea1 will fade with altitude
 #### orea1amount = 5; 			# noise has to be greater than this to place this ore
 #### orea2amount = 5; 			# noise has to be greater than this to place this ore
@@ -1053,7 +1050,7 @@ test
 #### oreb1 = materials.redstone-ore;
 #### oreb2 = materials.iron-ore;
 #### oreb3 = materials.coal-ore;
-#### #Because if statement exits on first true oreb2 only places if (noise < oreb1amount) AND (noise > oreb2amount), likewise for oreb3
+#### #Because if statement exits on first true oreb2 only places if(noise < oreb1amount) AND (noise > oreb2amount), likewise for oreb3
 #### oreb1amount = 0; 			# noise has to be greater than this to place this ore
 #### oreb2amount = -1;			# noise has to be greater than this to place this ore
 #### oreb3amount = -2; 			# noise has to be greater than this to place this ore
@@ -1069,7 +1066,7 @@ test
 #### orev1 = materials.gold-ore;	#materials.gold-ore;
 #### orev2 = 129;#emerald		#materials.redstone-ore;
 #### orev3 = 153;#quartz 		#21; #Bluestone 89; #glowstone
-#### #Because if statement exits on first true orea2 only places if (noise < orev1amount) AND (noise > orev2amount), likewise for orev3
+#### #Because if statement exits on first true orea2 only places if(noise < orev1amount) AND (noise > orev2amount), likewise for orev3
 #### orev1amount = 4; # noise has to be greater than this to place this ore
 #### orev2amount = 2; # noise has to be greater than this to place this ore
 #### orev3amount = 1; # noise has to be greater than this to place this ore
@@ -1084,7 +1081,7 @@ test
 #### orel1 = materials.diamond-ore;
 #### orel2 = 87; #Netherrack#materials.gold-ore;
 #### orel3 = 89; #glowstone
-#### #Because if statement exits on first true orea2 only places if (noise < orev1amount) AND (noise > orev2amount), likewise for orev3
+#### #Because if statement exits on first true orea2 only places if(noise < orev1amount) AND (noise > orev2amount), likewise for orev3
 #### orel1amount = 4; # noise has to be greater than this to place this ore
 #### orel2amount = 2; # noise has to be greater than this to place this ore
 #### orel3amount = 2; # noise has to be greater than this to place this ore
@@ -1096,18 +1093,18 @@ test
 #### orel = ((orelamount - ridge(0,32,fractal(3,0.25,8,8,4,6,simplex(x,y,z * -1)))) - (y / orelfade));
 
 
-#### layer (
+#### layer(
 	#### materials.stone,
 	#### 0, 
-	#### if ( biome <= desert,
+	#### if( biome <= desert,
 		#### complex_cont,
 		#### -1,
 	#### ),
 #### ),
-#### layer (
+#### layer(
 	#### 24, #Sandstone
 	#### 0, 
-	#### if ( biome > desert,
+	#### if( biome > desert,
 		#### complex_cont,
 		#### -1,
 	#### ),
@@ -1116,108 +1113,108 @@ test
 		#### #### geology < 16, oreb1,
 
 #### ##Minerals
-#### layer (
-	#### if (
+#### layer(
+	#### if(
 		#### geology < geoa1,
-			#### if (
+			#### if(
 				#### orea > orea1amount, orea1, 
 				#### materials.none
 				#### ),
 		#### (geology > geoa1) and (geology < geoa2), 
-			#### if ( 
+			#### if( 
 				#### orea > orea2amount, orea2,
 				#### materials.none
 				#### ),
 		#### geology > geoa2, 
-			#### if ( 
+			#### if( 
 				#### orea > orea3amount, orea3,
 				#### materials.none
 				#### ),
 		#### materials.none
 			
 		#### ),
-		#### if ((continent > oreastart) and (continent < oreaend), 0, -1),
-		#### if ((continent > oreastart) and (continent < oreaend), complex_cont - 2, -1),
+		#### if((continent > oreastart) and (continent < oreaend), 0, -1),
+		#### if((continent > oreastart) and (continent < oreaend), complex_cont - 2, -1),
 #### ),
 
-#### layer (
-	#### if (
+#### layer(
+	#### if(
 		#### geology < geob1,
-			#### if (
+			#### if(
 				#### oreb > oreb1amount, oreb1, 
 				#### materials.none
 				#### ),
 		#### (geology > geob1) and (geology < geob2), 
-			#### if ( 
+			#### if( 
 				#### oreb > oreb2amount, oreb2,
 				#### materials.none
 				#### ),
 		#### geology > geob2, 
-			#### if ( 
+			#### if( 
 				#### oreb > oreb3amount, oreb3,
 				#### materials.none
 				#### ),
 		#### materials.none
 			
 		#### ),
-		#### if ((continent > orebstart) and (continent < orebend), 0, -1),
-		#### if ((continent > orebstart) and (continent < orebend), complex_cont - 2, -1),
+		#### if((continent > orebstart) and (continent < orebend), 0, -1),
+		#### if((continent > orebstart) and (continent < orebend), complex_cont - 2, -1),
 #### ),
 
-#### layer (
-	#### if (
+#### layer(
+	#### if(
 		#### geology < geob1,
-			#### if (
+			#### if(
 				#### oreb < oreb1amount, oreb1, 
 				#### materials.none
 				#### ),
 		#### (geology > geob1) and (geology < geob2), 
-			#### if ( 
+			#### if( 
 				#### oreb < oreb2amount, oreb2,
 				#### materials.none
 				#### ),
 		#### geology > geob2, 
-			#### if ( 
+			#### if( 
 				#### oreb < oreb3amount, oreb3,
 				#### materials.none
 				#### ),
 		#### materials.none
 			
 		#### ),
-		#### if ((orebnoise > orebstart) and (orebnoise < orebend), 0, -1),
-		#### if ((orebnoise > orebstart) and (orebnoise < orebend), orebnoise - 2, -1),
+		#### if((orebnoise > orebstart) and (orebnoise < orebend), 0, -1),
+		#### if((orebnoise > orebstart) and (orebnoise < orebend), orebnoise - 2, -1),
 #### ),
 
-#### layer (
-	#### if (
+#### layer(
+	#### if(
 		#### geology < geoc1,
-			#### if (
+			#### if(
 				#### orec < orec1amount, orec1, 
 				#### materials.none
 				#### ),
 		#### (geology > geoc1) and (geology < geoc2), 
-			#### if ( 
+			#### if( 
 				#### orec < orec2amount, orec2,
 				#### materials.none
 				#### ),
 		#### geology > geoc2, 
-			#### if ( 
+			#### if( 
 				#### orec < orec3amount, orec3,
 				#### materials.none
 				#### ),
 		#### materials.none
 			
 		#### ),
-		#### if ((orecnoise > orecstart) and (orecnoise < orecend), 0, -1),
-		#### if ((orecnoise > orecstart) and (orecnoise < orecend), orecnoise - 2, -1),
+		#### if((orecnoise > orecstart) and (orecnoise < orecend), 0, -1),
+		#### if((orecnoise > orecstart) and (orecnoise < orecend), orecnoise - 2, -1),
 #### ),
 
 #### An expirement to see if could reduce memory usage, however means only one plant can be selected 
 #### so no mixed forests and didn't notice an effect on memory
 
-#### layer (
-	#### material ( 6,
-		#### if (
+#### layer(
+	#### material( 6,
+		#### if(
 			#### (rain < raintree) and (temp < cold) and (plantsd > hidensity), 1,
 			#### (rain < (raintree + 0.2)) and (temp > cold) and (plantsd > hidensity), 0,
 			#### (rain < (raintree )) and (temp > temperate) and (plantse > meddensity), 2,
