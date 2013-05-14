@@ -18,6 +18,8 @@ only base terrain--no chunk-based objects such as trees or grass will
 appear in the preview.  The number next to "MPP" near tht bottom
 indicates Meters Per Pixel.
 
+
+
 ### Export Chunks
 
 This window pops up when you select Export Chunks under the File menu.
@@ -36,6 +38,8 @@ WARNING: THIS WILL OVERWRITE ANY EXISTING TERRAIN/BUILDINGS/OBJECTS
 IN THE AREA, so either back up your data before generating, or only generate
 on maps that have nothing you want to keep.
 
+
+
 ## TOGoS Noise Language
 
 TOGoS Noise Language (TNL) is the language for defining terrain
@@ -48,6 +52,8 @@ TNL has been updated from v1 to v3, and there are significant (but
 manageable) differences between them.  Older scripts will need to
 be updated in order to work with new versions of TMCMG.
 See TNL3-CHANGES for details.
+
+
 
 ### General syntax
 
@@ -69,12 +75,18 @@ Or inline using the '->' operator, like so:
 
     (x,y,z) -> simplex(x / 100, y / 100, z / 100) * 100
 
+
+
 ### Pre-defined infix operators
 
 (these are all regular functions in disguise) 
 
-->
+_parameters_ -> _value_
   - define a function.
+    e.g.
+        x -> sin(x) + cos(x)
+    or
+        (x,y,z) -> (x * x + y * y + z * z) ** 0.5
 
 +, -, *, /, **
   - add, subtract, multiply, divide, and power.
@@ -82,21 +94,21 @@ Or inline using the '->' operator, like so:
     standard precedence rules apply.  e.g.  the following 3
     expressions are equivalent:
     
-    a - b + c * d / e
-    a - (b + ((c * d) / e)) 
-    -( a, +(b, /( *(c, d), e)))
+        a - b + c * d / e
+        a - (b + ((c * d) / e))
+        -( a, +(b, /( *(c, d), e)))
 
 ==, !=, >, <, >=, <=
-  - Compare value of <expr1> and <expr2>; returns 1 when true,
-    0 when false.  Can be used with if(...) or in arithmetic
-    expressions.  Can be written using infix notation.
+  - Compare value of 2 expressions.
     
-    == equal            ;  3 == 3
-    != not equal        ;  1 != 2
-    >  greater          ;  5 >  4
-    <  less             ; -3 < -2
-    >= greater or equal ;  1 >= 1
-    <= less or equal    ;  1 <= 3
+        == equal            ;  3 == 3
+        != not equal        ;  1 != 2
+        >  greater          ;  5 >  4
+        <  less             ; -3 < -2
+        >= greater or equal ;  1 >= 1
+        <= less or equal    ;  1 <= 3
+
+
 
 ### Pre-defined functions
 
@@ -152,6 +164,8 @@ layer( <material-id>, <floor-height-function>, <ceiling-height-function> )
   - floor-height and ceiling-height must be constant numbers or
     2-argument functions giving the layer's floor and ceiling heights
     for a given x, z coordinate in the world.
+
+
 
 ## Contact
 
