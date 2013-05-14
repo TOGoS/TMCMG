@@ -127,7 +127,16 @@ public class ExpressionVectorProgramCompiler
 	}
 	
 	public <T extends RegisterBankID<?>> RegisterID<T> compile( Binding<?> b, T targetRegisterBank ) throws CompileError {
-		return (RegisterID<T>)compile( b, targetRegisterBank.valueType );
+		RegisterID<?> reg = compile( b, targetRegisterBank.valueType );
+		if( reg.bankId != targetRegisterBank ) {
+			// TODO: Is it really expected or are we being optimistic?
+			// maybe this would be the place to force it to be (or except if they're incompatible).
+			throw new RuntimeException("Binding compiled to unexpected register bank "+reg.bankId+" (expected "+targetRegisterBank+")");
+		} else {
+			@SuppressWarnings("unchecked")
+			RegisterID<T> res = (RegisterID<T>)reg;
+			return res;
+		}
 	}
 	
 	public RegisterID<?> compile( Binding<?> b, Class<?> targetType ) throws CompileError {
