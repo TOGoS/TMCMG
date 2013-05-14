@@ -393,7 +393,7 @@ public abstract class Binding<V>
 		public String toSource() throws CompileError {
 			switch( toSourceState ) {
 			case UNEVALUATED:
-				isConstantState = EvaluationState.EVALUATING;
+				toSourceState = EvaluationState.EVALUATING;
 				try {
 					source = delegate.toSource();
 					toSourceState = EvaluationState.EVALUATED;

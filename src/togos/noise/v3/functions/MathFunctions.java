@@ -1,5 +1,6 @@
 package togos.noise.v3.functions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -324,18 +325,24 @@ public class MathFunctions
 							int i = 0;
 							while( i <= input.arguments.size()-2 ) {
 								Binding<? extends Boolean> condition = Binding.cast(input.arguments.get(i).value, Boolean.class);
-								if( condition.isConstant() && condition.getValue().booleanValue() ) {
-									Binding<?> value = input.arguments.get(i+1).value;
-									return value.isConstant();
+								if( condition.isConstant() ) {
+									if( condition.getValue().booleanValue() ) {
+										Binding<?> value = input.arguments.get(i+1).value;
+										return value.isConstant();
+									} else {
+										// Value will never be used, so skip to the next!
+										i += 2;
+									}
+								} else {
+									return false;
 								}
-								i += 2;
 							}
+							return input.arguments.get(i).value.isConstant();
 						} catch( CompileError e ) {
 							throw e;
 						} catch( Exception e ) {
 							throw new RuntimeException( e );
 						}
-						return false;
                     }
 					
 					@Override public Object getValue() throws Exception {
@@ -366,14 +373,50 @@ public class MathFunctions
 					public RegisterID<?> toVectorProgram( ExpressionVectorProgramCompiler compiler) throws CompileError {
 						final ProgramBuilder pb = compiler.pb;
 						
-						int i = input.arguments.size()-1;
-						RegisterID<?> onFalseRegister = compiler.compile( input.arguments.get(i).value );
+						// TODO: Factor this crap out into another function
+						ArrayList<Binding<?>> simplified = new ArrayList<Binding<?>>();
+						int i=0;
+						simplify: {
+							while( i <= input.arguments.size()-2 ) {
+								Binding<? extends Boolean> condition = Binding.cast(input.arguments.get(i).value, Boolean.class);
+								Binding<?> value = input.arguments.get(i+1).value;
+								if( condition.isConstant() ) {
+									boolean alwaysSatisfied;
+									try {
+										alwaysSatisfied = condition.getValue().booleanValue();
+									} catch( CompileError e ) {
+										throw e;
+									} catch( Exception e ) {
+										throw new RuntimeException(e);
+									}
+									if( alwaysSatisfied ) {
+										// Then quit here and don't bother with the rest of the list!
+										simplified.add(value);
+										break simplify;
+									} else {
+										// Then skip this pair!
+									}
+								} else {
+									simplified.add(condition);
+									simplified.add(value);
+								}
+								i += 2;
+							}
+							assert i == input.arguments.size()-1;
+							simplified.add(input.arguments.get(i).value);
+						}
+						
+						
+						
+						i = simplified.size()-1;
+						RegisterID<?> onFalseRegister = compiler.compile( simplified.get(i) );
 						i -= 2;
 						while( i >= 0 ) {
 							assert i % 2 == 0;
-							Binding<? extends Boolean> condition = Binding.cast(input.arguments.get(i).value, Boolean.class);
+							Binding<? extends Boolean> condition = Binding.cast(simplified.get(i), Boolean.class);
+							
 							RegisterID<BVar> conditionRegister = (RegisterID<BVar>)pb.translate(condition.toVectorProgram(compiler), Boolean.class, condition.sLoc);
-							RegisterID<?> onTrueRegister = compiler.compile(input.arguments.get(i+1).value);
+							RegisterID<?> onTrueRegister = compiler.compile(simplified.get(i+1));
 							onFalseRegister = pb.select(conditionRegister, onFalseRegister, onTrueRegister, condition.sLoc);
 							i -= 2;
 						}

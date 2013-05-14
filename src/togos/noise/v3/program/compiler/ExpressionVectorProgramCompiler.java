@@ -86,6 +86,20 @@ public class ExpressionVectorProgramCompiler
 		}
 	}
 	
+	protected RegisterID<?> _compile( Binding<?> b ) throws CompileError {
+		if( b.isConstant() ) {
+			try {
+				return compileConstant(b.getValue(), b.sLoc);
+			} catch( CompileError e ) {
+				throw e;
+			} catch( Exception e ) {
+				throw new CompileError("Error while evaluating supposedly constant expression", b.sLoc);
+			}
+		} else {
+			return b.toVectorProgram(this);
+		}
+	}
+	
 	public RegisterID<?> toVector( RegisterID<?> reg ) {
 		if( !reg.bankId.isConstant ) return reg;
 		
@@ -106,14 +120,23 @@ public class ExpressionVectorProgramCompiler
 		String key = b.toSource();
 		RegisterID<?> reg = expressionResultRegisters.get(key);
 		if( reg == null ) {
-			expressionResultRegisters.put(key, reg = toVector(b.toVectorProgram(this)));
+			expressionResultRegisters.put(key, reg = toVector(_compile(b)));
 		}
 		assert reg != null;
 		return reg;
 	}
 	
 	public <T extends RegisterBankID<?>> RegisterID<T> compile( Binding<?> b, T targetRegisterBank ) throws CompileError {
-		return (RegisterID<T>)compile( b, targetRegisterBank.valueType );
+		RegisterID<?> reg = compile( b, targetRegisterBank.valueType );
+		if( reg.bankId != targetRegisterBank ) {
+			// TODO: Is it really expected or are we being optimistic?
+			// maybe this would be the place to force it to be (or except if they're incompatible).
+			throw new RuntimeException("Binding compiled to unexpected register bank "+reg.bankId+" (expected "+targetRegisterBank+")");
+		} else {
+			@SuppressWarnings("unchecked")
+			RegisterID<T> res = (RegisterID<T>)reg;
+			return res;
+		}
 	}
 	
 	public RegisterID<?> compile( Binding<?> b, Class<?> targetType ) throws CompileError {
