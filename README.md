@@ -82,10 +82,12 @@ Or inline using the '->' operator, like so:
 (these are all regular functions in disguise) 
 
 _parameters_ -> _value_
-  - define a function.
-    e.g.
+  - define a function. e.g.
+    
         x -> sin(x) + cos(x)
+    
     or
+    
         (x,y,z) -> (x * x + y * y + z * z) ** 0.5
 
 +, -, *, /, **
@@ -112,12 +114,12 @@ _parameters_ -> _value_
 
 ### Pre-defined functions
 
-sin( <expr> ) - sine
-cos( <expr> ) - cosine
-atan( <expr> ) - arctangent
-sqrt( <expr> ) - square root
+    sin( _expr_ ) - sine
+    cos( _expr_ ) - cosine
+    atan( _expr_ ) - arctangent
+    sqrt( _expr_ ) - square root
 
-perlin( <x>, <y>, <z> )
+perlin( _x_, _y_, _z_ )
   - A function for generating smooth noise closely based on Ken Perlin's
     Improved 3D noise function.  The range of this function is -1 to +1
     and output is 0 at integer coordinates, so for example to create
@@ -129,7 +131,7 @@ perlin( <x>, <y>, <z> )
     base.
   - See http://en.wikipedia.org/wiki/Perlin_noise
 
-simplex( <x>, <y>, <z> )
+simplex( _x_, _y_, _z_ )
   - A bit like perlin noise, but based on a triangular grid, so in
     theory is somewhat faster and has less noticable directional artifacts.
   - The implementation used by TMCMG seems to have lower average amplitude
@@ -137,9 +139,9 @@ simplex( <x>, <y>, <z> )
     a similar effect.
   - See http://en.wikipedia.org/wiki/Simplex_noise
 
-if( <cond1>, <res1>, <cond2>, <res2>, ..., <default> )
-  - Where the result of <cond1> is true, result is determined <res1>, etc.
-  - If no listed conditions are true, result is determined by <default>
+if( _cond1_, _res1_, _cond2_, _res2_, ..., _default_ )
+  - Where the result of _cond1_ is true, result is determined _res1_, etc.
+  - If no listed conditions are true, result is determined by _default_
 
 ### World Definition Functions
 
@@ -147,7 +149,7 @@ To define a Minecraft world generator, your program needs to define
 a layered-terrain object that provides material types and floor and
 ceiling-heights for a number of 'layers'. 
 
-layered-terrain( <layer1>, <layer2>, ... )
+layered-terrain( _layer1_, _layer2_, ... )
   - defines a world generator that generates terrain based on a list
     of ground material layers and chunk processors.
   - when layers of material overlap, later layers' materials override
@@ -156,7 +158,7 @@ layered-terrain( <layer1>, <layer2>, ... )
     and the second layer is bedrock from 0 to 1, the bedrock will
     replace the water in the bottommost block at that point.
 
-layer( <material-id>, <floor-height-function>, <ceiling-height-function> )
+layer( _material-id_, _floor-height-function_, _ceiling-height-function_ )
   - define a material layer for use with layered-terrain
   - material-id is a constant integer or a 3-argument function
     representing the material to be placed at each point in space
