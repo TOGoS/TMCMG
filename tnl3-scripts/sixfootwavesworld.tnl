@@ -1,6 +1,17 @@
+#### Handy functions ####
 
 min(a,b) = (a,b) -> if(a < b, a, b);
 max(a,b) = (a,b) -> if(a > b, a, b);
+
+ridge( min, max, v ) = (
+	diff = max - min;
+	u = v - min;
+	w = u % (2 * (max - min));
+	if( diff == 0, min,
+		w < diff, min + w,
+		max + diff - w 
+	)
+);
 
 materials.none    = -1;
 materials.air     = material(0x00);
@@ -17,19 +28,6 @@ materials.iron-ore = material(15);
 materials.gold-ore = material(14);
 materials.redstone-ore = material(73);
 materials.diamond-ore = material(56);
-
-
-
-ridge( mn, mx, v) = (
-	#diff = mx - mn;
-	if( mx - mn == 0,
-		mn,
-		(
-			v = mn + mn % ((mx - mn) * 2);
-			if( v > mx, mx - (v - mx), v )
-		)
-	)
-);
 
 fractal2D( i, h, v, dh, dv, dz, x, z) = (
 	 if(
@@ -983,7 +981,7 @@ layer(
 	materials.bedrock,
 	0,
 	(x,z) -> if( 
-		ridge( 0,256, z - 256) > 240,
+		ridge( 0, 256, z - 256) > 240,
 		127,		
 		-1
 		)
