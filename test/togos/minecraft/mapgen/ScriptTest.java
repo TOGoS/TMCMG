@@ -56,21 +56,22 @@ public class ScriptTest extends TestCase
 		
 		int testedScriptCount = 0;
 		for( File f : scriptDir.listFiles() ) {
-			// For now I don't expect that one to work:
-			if( "sixfootwavesworld.tnl".equals(f.getName()) ) continue;
-			
-			MinecraftWorldGenerator mwg = ScriptUtil.loadWorldGenerator(f, TNL_TAB_WIDTH);
-			
-			{
-				LayeredTerrainFunction ltf = mwg.getTerrainFunction();
-				assertNotNull( "Terrain function is null!", ltf );
-				tb = ltf.apply( vectorSize, xBuf, zBuf, tb );
-			}
-			
-			{
-				ChunkMunger cm = mwg.getChunkMunger();
-				assertNotNull( "Chunk munger is null!", cm );
-				cm.mungeChunk(cd);
+			try {
+				MinecraftWorldGenerator mwg = ScriptUtil.loadWorldGenerator(f, TNL_TAB_WIDTH);
+				
+				{
+					LayeredTerrainFunction ltf = mwg.getTerrainFunction();
+					assertNotNull( "Terrain function is null!", ltf );
+					tb = ltf.apply( vectorSize, xBuf, zBuf, tb );
+				}
+				
+				{
+					ChunkMunger cm = mwg.getChunkMunger();
+					assertNotNull( "Chunk munger is null!", cm );
+					cm.mungeChunk(cd);
+				}
+			} catch( Throwable e ) {
+				throw new RuntimeException("Exception while interpreting "+f, e); 
 			}
 			
 			++testedScriptCount;

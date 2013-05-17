@@ -26,7 +26,7 @@ public class BoundArgumentList
 
 		public String toSource() throws CompileError {
 			String s = (name.length() > 0) ? name + " @ " : "";
-			s += value.toSource();
+			s += value.getCalculationId();
 			return s;
 		}
 	}

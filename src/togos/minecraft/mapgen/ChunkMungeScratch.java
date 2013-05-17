@@ -45,13 +45,18 @@ class ChunkMungeScratch implements HasMaxVectorSize
 		}
 	}
 	
+	protected int clampHeight( int h ) {
+		return h < 0 ? 0 : h > columnVectorSize ? columnVectorSize : h;
+	}
+	
 	/**
 	 * Calculate values for typeFunction at x, y, z for y in [floor,ceiling) + 0.5
 	 * into the first (ceiling-floor) slots in columnMaterial
 	 */
 	public void calculateColumnMaterials( LFunctionDaDaDa_Ia typeFunction, int floor, int ceiling, double x, double z ) {
-		floor = floor < 0 ? 0 : floor;
-		ceiling = ceiling > columnVectorSize ? columnVectorSize : ceiling;
+		floor = clampHeight(floor);
+		ceiling = clampHeight(ceiling);
+		
 		int columnHeight = ceiling - floor;
 		if( columnHeight <= 0 ) return;
 		
@@ -67,6 +72,9 @@ class ChunkMungeScratch implements HasMaxVectorSize
     }
 	
 	public void generateAndWriteColumn( LFunctionDaDaDa_Ia typeFunction, int floor, int ceiling, ChunkData cd, int cx, int cz ) {
+		floor = clampHeight(floor);
+		ceiling = clampHeight(ceiling);
+		
 		calculateColumnMaterials( typeFunction, floor, ceiling, cd.posX + cx + 0.5, cd.posZ + cz + 0.5 );
 		
 		for( int j=0, y=floor; y<ceiling; ++y, ++j ) {

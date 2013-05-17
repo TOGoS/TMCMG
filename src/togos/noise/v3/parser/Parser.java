@@ -93,13 +93,11 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		return "\"" + escape(s) + "\"";
 	}
 	
-	public static String toLiteral( Object value ) {
+	public static String toLiteral( Object value )  {
 		if( value instanceof Number ) {
 			return value.toString();
 		} else if( value instanceof String ) {
 			return quote((String)value);
-		//} else if( value instanceof NativeFunction ) {
-		//	return "native-function("+quote(((NativeFunction)value).getName())+")";
 		} else {
 			throw new RuntimeException("Don't know how to convert "+value.getClass()+" to string");
 		}

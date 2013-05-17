@@ -16,7 +16,9 @@ public class ListFunctions
 	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( ListFunctions.class.getName()+".java", 0, 0);
 	public static final Context CONTEXT = new Context();
 	
-	public static final Function<LinkedListNode<Object>> CREATE_LIST = new Function<LinkedListNode<Object>>() {
+	public static final Function<LinkedListNode<Object>> CREATE_LIST = new BuiltinFunction<LinkedListNode<Object>>() {
+		@Override public String getName() { return "list"; }
+		
 		@Override public Binding<LinkedListNode<Object>> apply(BoundArgumentList args) throws CompileError {
 			LinkedListNode<Binding<?>> bindings = LinkedListNode.empty();
 			for( BoundArgument<?> arg : args.arguments ) {
@@ -53,11 +55,11 @@ public class ListFunctions
 					return true;
 				}
 				
-				@Override public String toSource() throws CompileError {
+				@Override public String getCalculationId() throws CompileError {
 					String items = "";
 					for( Binding<?> b : _bindings ) {
 						if( items.length() > 0 ) items += ", ";
-						items += b.toSource();
+						items += b.getCalculationId();
 					}
 					return "list(" + items + ")";
 				}

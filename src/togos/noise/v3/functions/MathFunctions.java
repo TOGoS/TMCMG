@@ -11,7 +11,6 @@ import togos.noise.MathUtil;
 import togos.noise.function.D5_2Perlin;
 import togos.noise.function.SimplexNoise;
 import togos.noise.v3.BindingError;
-import togos.noise.v3.parser.Parser;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.program.runtime.BoundArgumentList;
@@ -31,19 +30,12 @@ import togos.noise.v3.vector.vm.Program.RegisterBankID.DVar;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 import togos.noise.v3.vector.vm.ProgramBuilder;
 
-/**
- * TODO: If this is specific to v3.program evaluation, move to that package.
- * Otherwise need to make sure constant names indicate which stage of parsing/program evaluation
- * they are applicable to.
- */
 public class MathFunctions
 {
 	static final BaseSourceLocation BUILTIN_LOC = new BaseSourceLocation( MathFunctions.class.getName()+".java", 0, 0);
 	public static final Context CONTEXT = new Context();
 	
-	static interface BuiltinFunction<R> extends Function<R>, NativeFunction {}
-	
-	static abstract class FixedArgumentBuiltinFunction<R> implements BuiltinFunction<R> {
+	static abstract class FixedArgumentBuiltinFunction<R> extends BuiltinFunction<R> {
 		protected final Class<? extends R> returnType;
 		protected final Class<?>[] argumentTypes;
 		protected final Object[] argumentDefaults;
@@ -65,14 +57,10 @@ public class MathFunctions
 		public abstract String getName();
 		abstract R apply( Object[] arguments );
 		
-		public String toString() {
-			return "native-function("+Parser.quote(getName())+")";
-		}
-		
 		public Class<? extends R> getReturnType() { return returnType; }
 		
 		protected abstract RegisterID<?> toVectorProgram( final Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler ) throws CompileError;
-		
+				
         public Binding<R> apply( final BoundArgumentList input ) throws CompileError {
 			for( BoundArgument<?> arg : input.arguments ) {
 				if( !arg.name.isEmpty() ) {
@@ -126,7 +114,7 @@ public class MathFunctions
 					return Arrays.asList(argumentBindings);
 		        }
 				
-				public String toSource() throws CompileError {
+				public String getCalculationId() throws CompileError {
 					return getName() + "(" + input.toSource() + ")";
 				}
 				
@@ -249,15 +237,19 @@ public class MathFunctions
 	}
 	
 	public static class ConstantBindingFunction<V> implements Function<V> {
-		Binding<? extends V> v;
+		final Binding<? extends V> v;
 		
 		public ConstantBindingFunction( Binding<? extends V> v ) {
 			this.v = v;
 		}
-
+		
 		@Override public Binding<? extends V> apply( BoundArgumentList input ) {
 			return v;
         }
+		
+		public String getCalculationId() throws CompileError {
+			return v.getCalculationId();
+		}
 	}
 	
 	protected static <V> Binding<? extends V> builtinBinding( V v ) {
@@ -365,7 +357,7 @@ public class MathFunctions
 						return input.getArgumentBindings();
 					}
 					
-					@Override public String toSource() throws CompileError {
+					@Override public String getCalculationId() throws CompileError {
 						return "if(" + input.toSource() + ")";
 					}
 					

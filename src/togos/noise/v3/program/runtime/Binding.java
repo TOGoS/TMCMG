@@ -1,7 +1,6 @@
 package togos.noise.v3.program.runtime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -9,6 +8,7 @@ import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.RuntimeError;
 import togos.lang.SourceLocation;
+import togos.noise.v3.CompileUtil;
 import togos.noise.v3.parser.Parser;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.compiler.UnvectorizableError;
@@ -77,8 +77,8 @@ public abstract class Binding<V>
 					return compiler.compile(b);
 				}
 				
-				@Override public String toSource() throws CompileError {
-					return "cast("+b.toSource()+", '"+targetClass.getName()+"'";
+				@Override public String getCalculationId() throws CompileError {
+					return "cast("+b.getCalculationId()+", '"+targetClass.getName()+"'";
 				}
 			});
 		} else if( targetClass.isAssignableFrom(b.getValueType()) ) {
@@ -119,7 +119,7 @@ public abstract class Binding<V>
 			return compiler.getVariableRegister(variableName);
 		}
 		
-		@Override public String toSource() {
+		@Override public String getCalculationId() {
 			return "variable('"+variableName+"')";
 		}
 	}
@@ -151,8 +151,12 @@ public abstract class Binding<V>
 			return emptyBindingList();
         }
 		
-		@Override public String toSource() {
-			return Parser.toLiteral(value);
+		@Override public String getCalculationId() throws CompileError {
+			if( value instanceof Function ) {
+				return ((Function<?>)value).getCalculationId();
+			} else {
+				return Parser.toLiteral(value);
+			}
 		}
 		
 		@Override public RegisterID<?> toVectorProgram(
@@ -190,8 +194,8 @@ public abstract class Binding<V>
 			return singleBindingList(delegate);
         }
 		
-		@Override public String toSource() throws CompileError {
-			return delegate.toSource();
+		@Override public String getCalculationId() throws CompileError {
+			return delegate.getCalculationId();
 		}
 		
 		@Override public RegisterID<?> toVectorProgram(
@@ -262,8 +266,8 @@ public abstract class Binding<V>
 			}
 		}
 		
-		@Override public String toSource() throws CompileError {
-			return getDelegate().toSource();
+		@Override public String getCalculationId() throws CompileError {
+			return getDelegate().getCalculationId();
 		}
 		
 		@Override public RegisterID<?> toVectorProgram(
@@ -389,29 +393,14 @@ public abstract class Binding<V>
 			return compiler.compile(delegate);
 		}
 		
+		String calculationId = null;
+		
 		@Override
-		public String toSource() throws CompileError {
-			switch( toSourceState ) {
-			case UNEVALUATED:
-				toSourceState = EvaluationState.EVALUATING;
-				try {
-					source = delegate.toSource();
-					toSourceState = EvaluationState.EVALUATED;
-				} catch( CompileError e ) {
-					toSourceState = EvaluationState.ERRORED;
-					toSourceError = e;
-					throw e;
-				}
-				return source;
-			case EVALUATING:
-				throw new CompileError( "Circular definition encountered", sLoc );
-			case EVALUATED:
-				return source;
-			case ERRORED:
-				throw toSourceError;
-			default:
-				throw new RuntimeException("Invalid state: "+isConstantState);
-			}
+		public String getCalculationId() throws CompileError {
+			if( calculationId != null ) return calculationId;
+			calculationId = CompileUtil.uniqueCalculationId("recursively-defined-thing");
+			calculationId = delegate.getCalculationId();
+			return calculationId;
 		}
 		
 		public String toString() {
@@ -432,7 +421,7 @@ public abstract class Binding<V>
 	public abstract Class<? extends V> getValueType() throws CompileError;
 	public abstract Collection<Binding<?>> getDirectDependencies();
 	
-	public abstract String toSource() throws CompileError;
+	public abstract String getCalculationId() throws CompileError;
 	
 	public RegisterID<?> toVectorProgram(
 		ExpressionVectorProgramCompiler compiler

@@ -57,10 +57,11 @@ public class FunctionApplication extends Expression<Object>
 				return dependencies;
 	        }
 			
-			@Override public String toSource() throws CompileError {
+			@Override public String getCalculationId() throws CompileError {
+				/*
 				if( functionBinding.isConstant() ) {
 					try {
-						return functionBinding.getValue().apply( boundArgumentList ).toSource();
+						return functionBinding.getValue().apply( boundArgumentList ).getCalculationId();
 					} catch( CompileError e ) {
 						throw e;
 					} catch( Exception e ) {
@@ -68,8 +69,9 @@ public class FunctionApplication extends Expression<Object>
 						throw new CompileError(e, sLoc);
 					}
 				} else {
-					throw new CompileError("Cannot 'toSource' function application because function is not constant", sLoc);
-				}
+				*/
+				return functionBinding.getCalculationId() + "(" + boundArgumentList.toSource() + ")";
+				//}
 			}
 			
 			@Override public RegisterID<?> toVectorProgram(

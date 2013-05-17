@@ -8,6 +8,7 @@ import java.util.Map;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
+import togos.noise.v3.CompileUtil;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
 import togos.noise.v3.program.runtime.BoundArgumentList.BoundArgument;
 import togos.noise.v3.program.structure.FunctionDefinition;
@@ -64,11 +65,11 @@ public class Closure<V> implements Function<V>
 			return (Collection<Binding<?>>)(Collection)valueBindings;
         }
     	
-		@Override public String toSource() throws CompileError {
+		@Override public String getCalculationId() throws CompileError {
 			String s = "";
 			for( int i=0; i<valueBindings.size(); ++i ) {
 				if( i > 0 ) s += ", ";
-				s += valueBindings.get(i).toSource();
+				s += valueBindings.get(i).getCalculationId();
 			}
 			return "list("+s+")";
 		}
@@ -131,13 +132,11 @@ public class Closure<V> implements Function<V>
 		return function.definition.bind(newContext);
 	}
 	
-	public String toString() {
-		return "Closure of "+function;
-	}
+	protected String calculationId = null;
 	
-	/*
-	public String toSource() {
-		return "closure("+Parser.quote(context.toString()) + "; " + function + ")";
+	public synchronized String getCalculationId() {
+		if( calculationId != null ) return calculationId;
+		calculationId = CompileUtil.uniqueCalculationId("closure");
+		return calculationId;
 	}
-	*/
 }

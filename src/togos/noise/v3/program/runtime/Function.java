@@ -11,4 +11,10 @@ public interface Function<V>
 	 * calculated immediately in this method.
 	 */
 	public Binding<? extends V> apply( BoundArgumentList args ) throws CompileError;
+	
+	/**
+	 * Return a string that uniquely identifies
+	 * this function or functions with identical behavior.
+	 */
+	public String getCalculationId() throws CompileError;
 }

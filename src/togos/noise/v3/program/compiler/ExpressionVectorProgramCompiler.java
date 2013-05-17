@@ -117,7 +117,7 @@ public class ExpressionVectorProgramCompiler
 	//// The following will only return vector/variable registers ////
 	
 	public RegisterID<?> compile( Binding<?> b ) throws CompileError {
-		String key = b.toSource();
+		String key = b.getCalculationId();
 		RegisterID<?> reg = expressionResultRegisters.get(key);
 		if( reg == null ) {
 			expressionResultRegisters.put(key, reg = toVector(_compile(b)));
@@ -140,7 +140,7 @@ public class ExpressionVectorProgramCompiler
 	}
 	
 	public RegisterID<?> compile( Binding<?> b, Class<?> targetType ) throws CompileError {
-		TypeTranslationKey key = new TypeTranslationKey( b.toSource(), targetType);
+		TypeTranslationKey key = new TypeTranslationKey( b.getCalculationId(), targetType);
 		RegisterID<?> reg = translatedExpressionResultRegisters.get(key);
 		if( reg != null ) return reg;
 		

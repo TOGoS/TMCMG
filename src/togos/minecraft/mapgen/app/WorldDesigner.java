@@ -241,7 +241,7 @@ public class WorldDesigner
 		"  -?, -h           ; print help and exit\n" +
 		"  -dump-materials  ; print material list and exit";
 	
-	protected void setStatus( boolean isError, String text ) {
+	protected synchronized void setStatus( boolean isError, String text ) {
 		statusLabel.setForeground(isError ? Color.PINK : Color.GREEN);
 		statusLabel.setText(text.replace("\n", "   "));
 	}
@@ -341,6 +341,8 @@ public class WorldDesigner
 		wdk.setFileUpdateListener(new FileUpdateListener() {
 			public void fileUpdated( File scriptFile ) {
 				try {
+					setStatus(false, "Compiling "+scriptFile+"...");
+
 					gul.generatorUpdated( ScriptUtil.loadWorldGenerator( scriptFile, tnlTabWidth ) );
 					updatePositionStatus();
 				} catch( ScriptError e ) {
@@ -377,7 +379,7 @@ public class WorldDesigner
 		noiseCanvas.setPreferredSize(new Dimension(640,384));
 		noiseCanvas.normalShadingEnabled = normalShade;
 		noiseCanvas.heightShadingEnabled = heightShade;
-
+		
 		statusLabel.setBackground(Color.BLACK);
 		statusLabel.setForeground(Color.PINK);
 		statusLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE,statusLabel.getPreferredSize().height));

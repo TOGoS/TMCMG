@@ -10,6 +10,7 @@ import togos.minecraft.mapgen.world.gen.ChunkMunger;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
 import togos.minecraft.mapgen.world.structure.ChunkData;
+import togos.noise.v3.functions.BuiltinFunction;
 import togos.noise.v3.functions.MathFunctions;
 import togos.noise.v3.parser.TokenizerSettings;
 import togos.noise.v3.program.compiler.ExpressionVectorProgramCompiler;
@@ -360,7 +361,9 @@ public class GeneratorDefinitionFunctions
 		} catch( ScriptError e ) {
 			throw new RuntimeException("Error compiling built-in function", e);
 		}
-		CONTEXT.put("layer", builtinBinding(new Function<LayerDefinition>() {
+		CONTEXT.put("layer", builtinBinding(new BuiltinFunction<LayerDefinition>() {
+			@Override public String getName() { return "layer"; }
+			
 			@Override
             public Binding<LayerDefinition> apply( BoundArgumentList input ) throws CompileError {
 				if( input.arguments.size() != 3 ) throw new CompileError(
@@ -376,7 +379,9 @@ public class GeneratorDefinitionFunctions
 				), LayerDefinition.class, input.callLocation );
             }
 		}));
-		CONTEXT.put("layered-terrain", builtinBinding(new Function<MinecraftWorldGenerator>() {
+		CONTEXT.put("layered-terrain", builtinBinding(new BuiltinFunction<MinecraftWorldGenerator>() {
+			@Override public String getName() { return "layered-terrain"; }
+			
 			@Override
             public Binding<MinecraftWorldGenerator> apply( BoundArgumentList input ) throws CompileError {
 				WorldGeneratorDefinition wgd = new WorldGeneratorDefinition();
