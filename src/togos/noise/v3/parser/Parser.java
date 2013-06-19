@@ -150,11 +150,35 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 			return readFunctionApplication( buildAstNode( tokens.get(offset++) ) );
 		}
 		
+		/**
+		 * Return true for tokens that should always be treated
+		 * as infix operators, even if they're in a funny place. 
+		 */
+		protected boolean isInfixOnly(Token t) {
+			return t.type == Token.Type.SYMBOL && ";".equals(t.text);
+		}
+		
+		protected boolean isInfixOnly(SuperToken t) {
+			return t.type == SuperToken.Type.ATOM && isInfixOnly(t.token);
+		}
+
+		
 		public ASTNode read( int minPrecedence ) throws ParseError {
-			assert offset < tokens.size();
-			ASTNode v = readAtomic();
+			assert offset <= tokens.size();
+			
+			ASTNode v;
+			if( offset == tokens.size() || isInfixOnly(tokens.get(offset)) ) {
+				v = new VoidNode(tokens.get(0).token);
+			} else {
+				v = readAtomic();
+			}
+			
 			while( offset < tokens.size() ) {
-				if( tokens.size() - offset == 1 ) throw new ParseError("Infix operator '"+tokens.get(offset)+"' at end of block", tokens.get(offset).sLoc );
+				if( tokens.size() - offset == 1 ) {
+					if( !isInfixOnly(tokens.get(offset)) ) {
+						throw new ParseError("Infix operator '"+tokens.get(offset)+"' at end of block", tokens.get(offset).sLoc );
+					}
+				}
 				
 				Token operator = tokens.get(offset++).token;
 				assert operator != null;

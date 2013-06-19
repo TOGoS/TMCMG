@@ -11,7 +11,7 @@ public class TextNode extends ASTNode
 		
 		public static Type fromTokenType( Token.Type tt ) throws RuntimeException {
 			switch( tt ) {
-			case BAREWORD: return BAREWORD;
+			case BAREWORD: case SYMBOL: return BAREWORD;
 			case DOUBLE_QUOTED_STRING: return DOUBLE_QUOTED;
 			case SINGLE_QUOTED_STRING: return SINGLE_QUOTED;
 			default: throw new RuntimeException("Don't know how to convert token type '"+tt+"' to text node type");
