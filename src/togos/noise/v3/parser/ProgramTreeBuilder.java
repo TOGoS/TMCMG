@@ -1,5 +1,6 @@
 package togos.noise.v3.parser;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -161,26 +162,47 @@ public class ProgramTreeBuilder
 	
 	protected static final Pattern hexIntegerPattern = Pattern.compile("([+-])?0x([\\da-fA-F]+)");
 	protected static final Pattern binIntegerPattern = Pattern.compile("([+-])?0b([10]+)");
-	protected static final Pattern integerPattern = Pattern.compile("[+-]?(\\d+)");
+	protected static final Pattern decIntegerPattern = Pattern.compile("([+-])?(\\d+)");
 	protected static final Pattern numberPattern = Pattern.compile("[+-]?(\\d*\\.\\d+)");
 	
-	private static int sign( String s ) {
-		if( s == null || s.length() == 0 ) return 1;
-		if( "-".equals(s) ) return -1;
-		if( "+".equals(s) ) return +1;
+	private static boolean isNegativeSign( String s ) {
+		if( s == null || s.length() == 0 ) return false;
+		if( "-".equals(s) ) return true;
+		if( "+".equals(s) ) return false;
 		throw new RuntimeException("Invalid sign: '"+s+"'" );
+	}
+	
+	static final BigInteger MAX_INT = BigInteger.valueOf(Integer.MAX_VALUE);
+	static final BigInteger MIN_INT = BigInteger.valueOf(Integer.MIN_VALUE);
+	static final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
+	static final BigInteger MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
+	
+	protected static boolean fitsBetween( BigInteger v, BigInteger min, BigInteger max ) {
+		return v.compareTo(min) >= 0 && v.compareTo(max) <= 0;
+	}
+	
+	protected static Constant<?> parseIntegerConstant( String i, int radix, boolean negate, SourceLocation sLoc ) {
+		BigInteger bi = new BigInteger(i, radix);
+		if( negate ) bi = bi.negate();
+		if( fitsBetween(bi, MIN_INT, MAX_INT) ) {
+			return Constant.forValue( bi.intValue(), Integer.class, sLoc );
+		} else if( fitsBetween(bi, MIN_LONG, MAX_LONG) ) {
+			return Constant.forValue( bi.longValue(), Long.class, sLoc );
+		} else {
+			return Constant.forValue( bi.doubleValue(), Double.class, sLoc );
+		}
 	}
 	
 	private static Expression<?> parseSymbol( TextNode ast ) {
 		Matcher m;
-		if( integerPattern.matcher(ast.text).matches() ) {
-			return Constant.forValue( Long.valueOf(ast.text), Long.class, ast );
+		if( (m = decIntegerPattern.matcher(ast.text)).matches() ) {
+			return parseIntegerConstant(m.group(2), 10, isNegativeSign(m.group(1)), ast );
 		} else if( numberPattern.matcher(ast.text).matches() ) {
 			return Constant.forValue( Double.valueOf(ast.text), Double.class, ast );
 		} else if( (m = hexIntegerPattern.matcher(ast.text)).matches() ) {
-			return Constant.forValue( sign(m.group(1)) * Long.valueOf(m.group(2), 16), Long.class, ast );
+			return parseIntegerConstant(m.group(2), 16, isNegativeSign(m.group(1)), ast);
 		} else if( (m = binIntegerPattern.matcher(ast.text)).matches() ) {
-			return Constant.forValue( sign(m.group(1)) * Long.valueOf(m.group(2), 2), Long.class, ast );
+			return parseIntegerConstant(m.group(2), 2, isNegativeSign(m.group(1)), ast);
 		} else {
 			return new SymbolReference( ast.text, ast );
 		}

@@ -78,8 +78,10 @@ public class ExpressionVectorProgramCompiler
 	
 	public RegisterID<?> compileConstant( Object value, SourceLocation sLoc ) throws CompileError {
 		if( value instanceof Number && ((Number)value).doubleValue() == ((Number)value).intValue() ) {
+			// Treat any constant that fits in an int as an int;
+			// it can always be expanded to a double later
 			return pb.getConstant( ((Number)value).intValue() );
-		} else if( value instanceof Double || value instanceof Float ) {
+		} else if( value instanceof Number ) {
 			return pb.getConstant( ((Number)value).doubleValue() );
 		} else {
 			throw new UnvectorizableError("Cannot compile constant of class "+value.getClass()+" to vector program", sLoc);
