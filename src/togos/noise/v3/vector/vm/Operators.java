@@ -5,6 +5,7 @@ import togos.noise.v3.vector.function.LFunctionBaBa_Ba;
 import togos.noise.v3.vector.function.LFunctionBaDaDa_Da;
 import togos.noise.v3.vector.function.LFunctionDaDa_Ba;
 import togos.noise.v3.vector.function.LFunctionDaDa_Da;
+import togos.noise.v3.vector.function.LFunctionDa_Da;
 import togos.noise.v3.vector.function.LFunctionIaIa_Ia;
 import togos.noise.v3.vector.vm.Program.Instance;
 import togos.noise.v3.vector.vm.Program.Instruction;
@@ -77,6 +78,18 @@ public class Operators
 			);
 		}
 	}
+
+	public static abstract class OperatorDa_Da extends AbstractOperator<DVar,DVar,None,None> implements LFunctionDa_Da {
+		public OperatorDa_Da( String name ) { super(name); }
+		
+		public void apply( Program.Instance pi, Instruction<DVar,DVar,None,None> inst, int vectorSize ) {
+			apply(
+				vectorSize,
+				pi.doubleVectors[inst.v1.number],
+				pi.doubleVectors[inst.dest.number]
+			);
+		}
+	}
 	
 	public static abstract class OperatorDaDa_Da extends AbstractOperator<DVar,DVar,DVar,None> implements LFunctionDaDa_Da {
 		public OperatorDaDa_Da( String name ) { super(name); }
@@ -89,6 +102,7 @@ public class Operators
 			);
 		}
 	}
+	
 	public static final OperatorDaDa_Da FLOORED_DIVISION_MODULUS = new OperatorDaDa_Da("floored-division-mod") {
 		public void apply( int vectorSize, double[] num, double[] den, double[] dest ) {
 			for( int i = vectorSize-1; i >= 0; --i ) {

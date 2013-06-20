@@ -20,6 +20,7 @@ import togos.noise.v3.program.runtime.Function;
 import togos.noise.v3.vector.function.LFunctionDaDaDa_Da;
 import togos.noise.v3.vector.vm.Operators;
 import togos.noise.v3.vector.vm.Operators.AbstractOperator;
+import togos.noise.v3.vector.vm.Operators.OperatorDa_Da;
 import togos.noise.v3.vector.vm.Program;
 import togos.noise.v3.vector.vm.Program.Instance;
 import togos.noise.v3.vector.vm.Program.Instruction;
@@ -150,13 +151,13 @@ public class MathFunctions
 		};
 	}
 	
-	static abstract class NumberInputFunction<R> extends FixedArgumentBuiltinFunction<R> {
+	static abstract class BinaryNumberInputFunction<R> extends FixedArgumentBuiltinFunction<R> {
 		abstract R apply( double a, double b );
 		
 		protected static final Class<?>[] ARG_TYPES = { Number.class, Number.class };
 		protected static final Object[] ARG_DEFAULTS = { null, null };
 
-		public NumberInputFunction( Class<? extends R> returnType ) {
+		public BinaryNumberInputFunction( Class<? extends R> returnType ) {
 			super(returnType, ARG_TYPES, ARG_DEFAULTS);
 		}
 		
@@ -165,7 +166,23 @@ public class MathFunctions
 		}
 	}
 	
-	static abstract class FunctionII_I extends NumberInputFunction<Integer> {
+	static abstract class UnaryNumberInputFunction<R> extends FixedArgumentBuiltinFunction<R> {
+		abstract R apply( double a );
+		
+		protected static final Class<?>[] ARG_TYPES = { Number.class };
+		protected static final Object[] ARG_DEFAULTS = { null };
+
+		public UnaryNumberInputFunction( Class<? extends R> returnType ) {
+			super(returnType, ARG_TYPES, ARG_DEFAULTS);
+		}
+		
+		protected R apply( Object[] args ) {
+			return apply( ((Number)args[0]).doubleValue() );
+		}
+	}
+
+	
+	static abstract class FunctionII_I extends BinaryNumberInputFunction<Integer> {
 		public FunctionII_I() { super(Integer.class); }
 		
 		protected abstract Operator<RegisterBankID.IVar, RegisterBankID.IVar, RegisterBankID.IVar, RegisterBankID.None> getOperator();
@@ -175,7 +192,7 @@ public class MathFunctions
 		};
 	}
 
-	static abstract class FunctionDD_B extends NumberInputFunction<Boolean> {
+	static abstract class FunctionDD_B extends BinaryNumberInputFunction<Boolean> {
 		public FunctionDD_B() { super(Boolean.class); }
 		
 		protected abstract Operator<RegisterBankID.BVar, RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.None> getOperator();
@@ -185,7 +202,32 @@ public class MathFunctions
 		};
 	}
 	
-	static abstract class FunctionDD_D extends NumberInputFunction<Double> {
+	static abstract class FunctionD_D extends UnaryNumberInputFunction<Double> {
+		public FunctionD_D() { super(Double.class); }
+		
+		protected abstract double _apply( double a );
+		
+		protected OperatorDa_Da getOperator() {
+			return new Operators.OperatorDa_Da(getName()) {
+				@Override public void apply( int vectorSize, double[] x, double[] dest ) {
+					for( int i=vectorSize=1; i>=0; --i ) {
+						dest[i] = _apply(x[i]);
+					}
+                }
+				
+			};
+		}
+		
+		public Double apply(double a) {
+			return Double.valueOf(a);
+		}
+		
+		protected Program.RegisterID<RegisterBankID.DVar> toVectorProgram( Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
+			return compiler.pb.d_d( getOperator(), compiler.compile(argumentBindings[0], RegisterBankID.DVar.INSTANCE) );		
+		};
+	}
+	
+	static abstract class FunctionDD_D extends BinaryNumberInputFunction<Double> {
 		public FunctionDD_D() { super(Double.class); }
 		
 		protected abstract Operator<RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.DVar, RegisterBankID.None> getOperator();
@@ -290,6 +332,14 @@ public class MathFunctions
 				return simplex.get();
 			}
 		}) );
+		
+		CONTEXT.put("sin", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "sin"; }
+
+			@Override public double _apply( double a ) {
+				return Math.sin(a);
+            }
+		}));
 		
 		CONTEXT.put("perlin", builtinBinding(new NoiseFunction() {
 			@Override public String getName() { return "perlin"; }

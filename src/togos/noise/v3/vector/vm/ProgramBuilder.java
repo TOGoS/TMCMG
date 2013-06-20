@@ -122,6 +122,11 @@ public class ProgramBuilder
 		runInstructions.add( new Instruction<DVar,IVar,None,None>(op, newReg, r1, R_NONE, R_NONE) );
 		return newReg;
 	}
+	public RegisterID<DVar> d_d( Operator<DVar,DVar,None,None> op, RegisterID<DVar> r1 ) {
+		RegisterID<DVar> newReg = newDVar();
+		runInstructions.add( new Instruction<DVar,DVar,None,None>(op, newReg, r1, R_NONE, R_NONE) );
+		return newReg;
+	}
 	public RegisterID<DVar> dd_d( Operator<DVar,DVar,DVar,None> op, RegisterID<DVar> r1, RegisterID<DVar> r2 ) {
 		RegisterID<DVar> newReg = newDVar();
 		runInstructions.add( new Instruction<DVar,DVar,DVar,None>(op, newReg, r1, r2, R_NONE) );
