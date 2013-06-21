@@ -210,7 +210,7 @@ public class MathFunctions
 		protected OperatorDa_Da getOperator() {
 			return new Operators.OperatorDa_Da(getName()) {
 				@Override public void apply( int vectorSize, double[] x, double[] dest ) {
-					for( int i=vectorSize=1; i>=0; --i ) {
+					for( int i=vectorSize-1; i>=0; --i ) {
 						dest[i] = _apply(x[i]);
 					}
                 }
