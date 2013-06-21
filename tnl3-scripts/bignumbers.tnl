@@ -1,0 +1,4 @@
+layered-terrain(
+	layer( 8, 0, 2147483648 ),
+	layer( 1, 0, (x,z) -> 64 + x + z )
+)

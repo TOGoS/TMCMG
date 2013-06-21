@@ -1,0 +1,10 @@
+;; # Extra semicolons should be ignored
+; ;
+layered-terrain(
+	layer( 8, 0, 64 ),
+	layer( 1, 0, (x,z) -> 64 + x + z )
+)
+
+;;
+; ; # Ignore them down here, too.
+;

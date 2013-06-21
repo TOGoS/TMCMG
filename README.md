@@ -115,9 +115,12 @@ _parameters_ -> _value_
 ### Pre-defined functions
 
     sin( _expr_ ) - sine
+    asin( _expr_ ) - inverse sine
     cos( _expr_ ) - cosine
+    acos( _expr_ ) - inverse cosine
+    tan( _expr_ ) - tangent
     atan( _expr_ ) - arctangent
-    sqrt( _expr_ ) - square root
+    sqrt( _expr_ ) - square root (mathematically equivalent to _expr_ * 0.5)
 
 perlin( _x_, _y_, _z_ )
   - A function for generating smooth noise closely based on Ken Perlin's

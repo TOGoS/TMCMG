@@ -1,0 +1,26 @@
+# Demonstrate some math functions
+
+tundra = 12;
+taiga-hills = 19;
+
+dist(x0,y0,x1,y1) = (
+	dx = x1 - x0;
+	dy = y1 - y0;
+	sqrt( dx * dx + dy * dy )
+);
+
+cone-height(x,z) = 80 - dist(x,z, -256,-1024) / 64;
+
+layered-terrain(
+	layer( material(8), 0, 63 ),
+	
+	layer( material(12), 0, (x,z) -> cone-height(x,z) ),
+	layer( material(2), 64, (x,z) -> cone-height(x,z) ),
+	layer( material(3), 0, (x,z) -> cone-height(x,z) - 1 ),
+	
+	layer( material(1), 0, (x,z) -> 63 +
+		sin(x / 12) * 12 + cos(z / 12) * 12 +
+		tan(x / 4096) * 50 + atan(z / 1024) * 50
+	),
+	biome @ taiga-hills 
+)

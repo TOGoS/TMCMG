@@ -1,9 +1,5 @@
 # TODO
 
-## Bugs
-- Attempt to compile recursive functions (e.g. 'fractal') throws
-  'circular definition' errors.
-
 ## Desireable features
 - Custom block color map (copy from TMCMR)
 - Output chunks one region at a time, closing region files when
@@ -20,6 +16,8 @@
   - Won't work for trees!
 
 ## Done
+* Fixed: Attempt to compile recursive functions (e.g. 'fractal') throws
+  'circular definition' errors.
 * Fixed (some cases, anyway): Source location being unhelpfully reported
   as 1,1, for some errors  
 * Add function to make selecting based on input easier

@@ -62,7 +62,7 @@ public class MathFunctions
 		
 		protected abstract RegisterID<?> toVectorProgram( final Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler ) throws CompileError;
 				
-        public Binding<R> apply( final BoundArgumentList input ) throws CompileError {
+		public Binding<R> apply( final BoundArgumentList input ) throws CompileError {
 			for( BoundArgument<?> arg : input.arguments ) {
 				if( !arg.name.isEmpty() ) {
 					throw new CompileError("+ takes no named arguments, but was given '"+arg.name+"'", arg.value.sLoc);
@@ -91,7 +91,7 @@ public class MathFunctions
 						if( !argumentBindings[i].isConstant() ) return false;
 					}
 					return true; 
-                }
+				}
 				
 				@Override public R getValue() throws Exception {
 					Object[] arguments = new Object[argumentBindings.length];
@@ -105,15 +105,15 @@ public class MathFunctions
 						}
 					}
 					return apply( arguments );
-                }
+				}
 				
 				@Override public Class<? extends R> getValueType() {
-	                return returnType;
-                }
+					return returnType;
+				}
 				
 				@Override public Collection<Binding<?>> getDirectDependencies() {
 					return Arrays.asList(argumentBindings);
-		        }
+				}
 				
 				public String getCalculationId() throws CompileError {
 					return getName() + "(" + input.toSource() + ")";
@@ -123,7 +123,7 @@ public class MathFunctions
 					return FixedArgumentBuiltinFunction.this.toVectorProgram( argumentBindings, compiler );
 				}
 			});
-        }
+		}
 	}
 	
 	static abstract class BooleanInputFunction<R> extends FixedArgumentBuiltinFunction<R> {
@@ -213,7 +213,7 @@ public class MathFunctions
 					for( int i=vectorSize-1; i>=0; --i ) {
 						dest[i] = _apply(x[i]);
 					}
-                }
+				}
 				
 			};
 		}
@@ -287,7 +287,7 @@ public class MathFunctions
 		
 		@Override public Binding<? extends V> apply( BoundArgumentList input ) {
 			return v;
-        }
+		}
 		
 		public String getCalculationId() throws CompileError {
 			return v.getCalculationId();
@@ -299,6 +299,8 @@ public class MathFunctions
 	}
 	
 	static {
+		//// Logic
+		
 		FunctionBB_B logicalOr = new FunctionBB_B() {
 			@Override public String getName() { return "or"; }
 			@Override protected Boolean apply( boolean a, boolean b ) { return a || b; }
@@ -315,6 +317,74 @@ public class MathFunctions
 			@Override protected Operators.OperatorBaBa_Ba getOperator() { return Operators.LOGICAL_AND; }
 		};
 		
+		//// Single-argument functions
+		
+		CONTEXT.put("sin", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "sin"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.sin(a);
+			}
+		}));
+		CONTEXT.put("asin", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "asin"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.asin(a);
+			}
+		}));
+		CONTEXT.put("cos", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "cos"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.cos(a);
+			}
+		}));
+		CONTEXT.put("acos", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "acos"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.acos(a);
+			}
+		}));
+		CONTEXT.put("tan", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "tan"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.tan(a);
+			}
+		}));
+		CONTEXT.put("atan", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "atan"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.atan(a);
+			}
+		}));
+		/** Used commonly enough that I think it makes sense to have its own
+		 * function, even though it's equivalent to a ** 0.5 */
+		CONTEXT.put("sqrt", builtinBinding(new FunctionD_D() {
+			@Override public String getName() { return "sqrt"; }
+			
+			@Override public double _apply( double a ) {
+				return Math.sqrt(a);
+			}
+		}));
+
+		//// Noise
+		
+		CONTEXT.put("perlin", builtinBinding(new NoiseFunction() {
+			@Override public String getName() { return "perlin"; }
+			
+			@Override double apply(double a, double b, double c) {
+				return D5_2Perlin.instance.get(a, b, c);
+			}
+			
+			@Override protected LFunctionDaDaDa_Da getLFunction() {
+				return D5_2Perlin.instance;
+			}
+		}) );
+		
 		CONTEXT.put("simplex", builtinBinding(new NoiseFunction() {
 			@Override public String getName() { return "simplex"; }
 			
@@ -330,26 +400,6 @@ public class MathFunctions
 			
 			@Override protected LFunctionDaDaDa_Da getLFunction() {
 				return simplex.get();
-			}
-		}) );
-		
-		CONTEXT.put("sin", builtinBinding(new FunctionD_D() {
-			@Override public String getName() { return "sin"; }
-
-			@Override public double _apply( double a ) {
-				return Math.sin(a);
-            }
-		}));
-		
-		CONTEXT.put("perlin", builtinBinding(new NoiseFunction() {
-			@Override public String getName() { return "perlin"; }
-			
-			@Override double apply(double a, double b, double c) {
-				return D5_2Perlin.instance.get(a, b, c);
-			}
-			
-			@Override protected LFunctionDaDaDa_Da getLFunction() {
-				return D5_2Perlin.instance;
 			}
 		}) );
 		
@@ -385,7 +435,7 @@ public class MathFunctions
 						} catch( Exception e ) {
 							throw new RuntimeException( e );
 						}
-                    }
+					}
 					
 					@Override public Object getValue() throws Exception {
 						int i = 0;
@@ -397,11 +447,11 @@ public class MathFunctions
 							i += 2;
 						}
 						return input.arguments.get(i).value.getValue();
-                    }
+					}
 					
 					@Override public Class<? extends Object> getValueType() throws CompileError {
-	                    return null;
-                    }
+		 			   return null;
+					}
 					
 					@Override public Collection<Binding<?>> getDirectDependencies() {
 						return input.getArgumentBindings();
