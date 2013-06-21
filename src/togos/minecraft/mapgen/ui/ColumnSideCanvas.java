@@ -175,8 +175,9 @@ public class ColumnSideCanvas extends WorldExplorerViewCanvas
 					if( rCeil > yCount ) rCeil = yCount;
 					int layerHeight = rCeil - rFloor;
 					for( int j=0; j<layerHeight; ++j ) {
-						buf.colX[j] = buf.colZ[j] = 0;
+						buf.colX[j] = x[i];
 						buf.colY[j] = rFloor + j;
+						buf.colZ[j] = z[i];
 					}
 					if( layerHeight > 0 ) {
 						// More importantly >= 0.  But as long as we're checking, skip zero-height columns.
