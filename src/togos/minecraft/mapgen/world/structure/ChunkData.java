@@ -86,8 +86,12 @@ public class ChunkData extends MiniChunkData
 	
 	//// biome ////
 	
+	protected int biomeIndex( int x, int z ) {
+		return z*width+x;
+	}
+	
 	public void setBiome( int x, int z, byte b ) {
-		biomeData[x*depth+z] = b;
+		biomeData[biomeIndex(x,z)] = b;
     }
 	
 	//// Saving/loading ////
