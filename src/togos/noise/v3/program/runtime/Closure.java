@@ -55,15 +55,15 @@ public class Closure<V> implements Function<V>
 			throw new CompileError("List binding cannot be converted to a vector program", sLoc);
 		}
 		
-    	@SuppressWarnings("unchecked")
-        @Override public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {
-			return (Class<? extends LinkedListNode<V>>)LinkedListNode.class;
-        }
+		@SuppressWarnings({"unchecked", "rawtypes"})
+		@Override public Class<? extends LinkedListNode<V>> getValueType() throws CompileError {
+			return (Class<? extends LinkedListNode<V>>)(Class)LinkedListNode.class;
+		}
     	
-    	@SuppressWarnings({"unchecked", "rawtypes"})
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		@Override public Collection<Binding<?>> getDirectDependencies() {
 			return (Collection<Binding<?>>)(Collection)valueBindings;
-        }
+		}
     	
 		@Override public String getCalculationId() throws CompileError {
 			String s = "";
