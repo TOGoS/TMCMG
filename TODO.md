@@ -1,9 +1,18 @@
 # TODO
 
-## Desireable features
-- Custom block color map (copy from TMCMR)
+## Fix bugs
 - Output chunks one region at a time, closing region files when
   done to fix 'too many open files' error when writing lots of regions
+- Compiling large, complicated scripts runs through memory
+  because of all the getCalculationIds.
+
+## Desireable features
+- Re-implement 'mark as populated' post-processor
+- Add way to load textures, e.g.
+  - array = array-from-file( 'heightmap.dat', format.float32 )
+  - raw-texture = texture-from-array( array, 3, 64, 64, 64 );
+  - interpolated-texture = interpolate( texture-data, interpolation.linear )
+- Custom block color map (copy from TMCMR)
 - Re-implement grassifier; show in preview somehow.
 - 'center on player' button in Export Chunks window
 

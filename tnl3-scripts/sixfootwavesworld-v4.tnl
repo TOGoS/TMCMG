@@ -1,0 +1,2117 @@
+
+####Voronoi Presets - need to be converted to new voronoiCell arguments
+#### Very cool mountains and valleys with ridged structure and benches on mountains,
+#### has some ridge artifacts
+#### ((voronoiCell( x, z, 256, 0.70, -8, 3.5) * 1)) * 16 
+				#### + ((voronoiCell( x, z, 128, 0.70, -8, -3.5) * 1) ) * 4
+				#### + ((voronoiCell( x, z, 64, 0.70, -8, 3.5) * 1) ) * 2
+#### Inverse of above function, has a bubbly smooth texture
+#### ((voronoiCell( x, z, 256, 0.70, 8, -3.5) * 1)) * 16 
+				#### + ((voronoiCell( x, z, 128, 0.70, 8, 3.5) * 1) ) * 4
+				#### + ((voronoiCell( x, z, 64, 0.70, 8, -3.5) * 1) ) * 2
+#### Combination of above two, rolling flats and sharp mountains with deep valleys between
+#### abs(((voronoiCell( x, z, 256, 0.70, 8, -3.5) * 1)) * 16 
+				#### + ((voronoiCell( x, z, 128, 0.70, 8, 3.5) * 1) ) * 4
+				#### + ((voronoiCell( x, z, 64, 0.70, 8, -3.5) * 1) ) * 2)
+				
+###########################################################################################################################################				
+#Basic Math Functions
+###########################################################################################################################################				
+				
+floor( a ) = (a - (a % 1));					
+abs( a ) = ( if( a < 0, a * -1,  a) );
+pos( a ) = ( if( a < 0, 0,  a) );
+#Scaled versions of basic noise functions
+perlinS( x,y,z, scale) = perlin( x / scale, y, z / scale);
+simplexS( x,y,z, scale) = simplex( x / scale, y, z / scale);
+				
+###########################################################################################################################################				
+#Random Number Functions
+###########################################################################################################################################	
+#http://www0.cs.ucl.ac.uk/staff/d.jones/GoodPracticeRNG.pdf
+#### /*
+#### Public domain code
+#### for JKISS RNG
+#### */
+#### static unsigned int
+#### x = 123456789,y = 987654321,z = 43219876,c = 6543217; /* Seed variables */
+#### unsigned int JKISS()
+#### {
+#### unsigned long long t;
+#### x = 314527869 * x + 1234567;
+#### y ^= y << 5;
+#### y ^= y >> 7;
+#### y ^= y << 22;
+#### t = 4294584393ULL * z + c;
+#### c = t >> 32;
+#### z = t;
+#### return x + y + z;
+#### }
+
+
+kiss( _x, _z ) = (
+x = 123456789.0 + _x; y = 987654321.0; z = 43219876.0 + _z; c = 6543217.0; #/* Seed variables */
+x1 = 314527869.0 * x + 1234567.0;
+y1 = y ^ (y << 5);
+y2 = y1 ^ (y1 >> 7);
+y3 = y2 ^ (y2 << 22);
+t = 4294584393.0 * z + c;
+#c = t >> 32;
+#z = t;
+floor(x1 + y3 + t) / 2#(2 ** 0)
+);
+			
+
+#glibc LCG for fun because we can, not vecorizable so slooow, 2147483648 is too big for an int
+#lcg( s ) =  ((s * 1103515245 + 12345) % 2147483648 ) >> 4;	#Shift is my addition to eliminate lower order bits which are usually less random
+
+#This is vectorizable but no longer original so who knows about it's quality
+#Normally not calling multiple times from a single seed anyway.
+randBig( s ) = (s * 1103515245 + 12345) % 2147483648.0;		
+
+#Should map into 0-1
+rand( s ) =  randBig(s) / 2147483648.0;							
+rand+-( s ) = (rand(s) - 0.5) * 2;
+#Calls rand i number of times to enure randomness
+randfrac( i, s ) = (
+	v = rand( s );
+	if ( i <= 1, 
+		v,
+		randfrac( i - 1, v) 
+		)
+);
+
+#Primitive Gaussian RNG
+sumrandfrac( i, s ) = (
+	v = rand( s ) * 2 - 1;
+	if ( i <= 1, 
+		v,
+		v + sumrandfrac( i - 1, v) 
+		)
+);
+#should be distributes over -1 to 1, so mean should be 0
+#quality depends on number of iterations, i
+randgauss ( i, s, deviation, mean) = (
+	sumrandfrac(i, s) * deviation + mean
+);
+	
+#Generates a random number for the given x,z pair. 
+#Values aren't gauranteed to be unique but don't display any noticable patterns
+#Borrowed basic algorithm from Minecraft's code 
+randXZBig( x, z ) = (
+	n3 = (x * rand(x) + x) * rand( x * rand(x) + x );
+	n4 = n3 + z + 2147483562;
+	
+	n5 = n4 * rand( n4 );
+	n6 = n5 + x;
+	n7 = n6 * rand( n6 );
+	((n7 + z) % 2147483647)
+);
+#Should map randXZBig into 0-1
+randXZ( x, z ) = (
+	randXZBig( x, z ) / 2147483647.0
+);
+#Should map randXZBig into -1 to 1
+randXZ+-( x, z ) = (
+	((randXZBig( x, z ) / 2147483647.0) - 0.5) * 2
+);
+#Possibly a better implementation for 3 seed rng?
+randXYZBig( x, y, z ) = (
+	randXZBig( randXZBig(x,z), y)	
+);
+#### #Not sure if is truly random over all 3 axis
+#### #y axis seems to display a pattern
+#### randXYZBig( x, y, z ) = (
+	#### n3 = (x * randP(x) + x) * randP( x * randP(x) + x );
+	#### n4 = n3 + z + 2147483562;
+	
+	#### n5 = n4 * randP( n4 );
+	#### n6 = n5 + x;
+	#### n7 = n6 * randP( n6 );
+	
+	#### n8 = (n7 + z) * randP( (n7 + z) );
+	#### n9 = n8 + y;
+	#### n10 = n9 * randP( n9 );
+	#### abs((n10 + y) % 2147483647)
+#### );
+#### #Should map randXZBig into 0-1
+randXYZ( x, y, z ) = (
+	randXYZBig( x, y, z ) / 2147483647
+);
+###########################################################################################################################################				
+#Curving Functions
+###########################################################################################################################################				
+
+#Linear Interpolation or lerp
+#formula as described by wikipedia, probably not the most computer efficent method
+#Compatible with variable distance points
+lerp ( x, p1x, p2x, p1value, p2value ) = (
+	p1value + (p2value - p1value) * (( x - p1x) / (p2x - p1x))
+);
+
+#These are all one dimension bezier curves, so t=y when graphing. As an effect of this they cannot be made to intersect themsleves or loop.
+#http://www.sulaco.co.za/downloads.htm has a useful tool for visualizing Bezier curves or use this:
+#128 * bezierA(x % 256 / 256, 0, .25, .25, .5);
+#Predefined bezier curve
+curve( t ) = ((1 - t ) * (1 - t ) * t * 0.75) + ( t * t * ( 1 - t ) * -0.75) + ( t * t * t);
+#Cubic bezier, i.e. it has two control points
+#Implied "x" is 0 for a and 1 for b, values assigned are the "y" values
+bezier( t, s, a, b, e) = (
+	invt = 1 - t;
+	(invt ** 3) * s + 3 * (invt ** 2) * t * b + 3 * invt * (t ** 2) * a + (t ** 3) * e
+);
+#Cubic bezier with all contol points, implied "x" is 1 for a and 0 for b
+#Because weights are backwards the function has a plateau in the middle that is impossible to produce with bezierA
+bezierR( t, s, a, b, e) = (
+	invt = 1 - t;
+	(invt ** 3) * s + 3 * (invt ** 2) * t * a + 3 * invt * (t ** 2) * b + (t ** 3) * e
+);
+
+###########################################################################################################################################				
+#Noise Functions
+###########################################################################################################################################				
+
+midpoint1D( iter, Hscale, Vscale, Hdelta, Vdelta, v) = (
+	p1 = lcgfrac( 3, floor( v / Hscale)) * Vscale;
+	p2 = lcgfrac( 4, 1 + floor( v / Hscale)) * Vscale;
+	if( iter < 1,
+			(p2 - p1) * ((v % Hscale) / Hscale)   + p1,
+			((p2 - p1) * ((v % Hscale) / Hscale) + p1) + midpoint1D( iter - 1, Hscale * Hdelta, Vscale * Vdelta, Xdelta, Hdelta, v)
+	)
+);
+
+#Not a true midpoint algorithm, really all it does is combine weighted
+#planes of interpolated random numbers on different scales. The
+#values of the previous octave are irrelevent
+#by offsetting one axis every second iteration some of the artifacts are eliminated
+midpoint( iter, Hscale, Vscale, Hdelta, Vdelta, Rscale, q, w) = (
+	x = (floor(q / Hscale)) + if (iter % 2 < 1, 0, 0.5);
+	z = (floor(w / Hscale));# + if (iter % 2 < 1, 0, 0.5);
+	p1 = randXZ(x, z) * Rscale;
+	p2 = randXZ(x + 1, z) * Rscale;
+	p3 = randXZ(x, z + 1) * Rscale;	
+	p4 = randXZ(x + 1, z + 1) * Rscale;
+	#Bilinear interpolation taken from Wikipedia
+	sX = (q % Hscale) / Hscale;
+	sZ = (w % Hscale) / Hscale;
+	v = (p1 * (1 - sX) * (1 - sZ)) + 
+		(p2 * (1 - sZ) * sX) + 
+		(p3 * (1 - sX) * sZ) + 
+		(p4 * sX * sZ);
+	if ( iter <= 1,
+		v * Vscale,
+		(v * Vscale) + midpoint( iter - 1, Hscale * Hdelta, Vscale * Vdelta, Hdelta, Vdelta, Rscale, q, w)
+	)
+
+);
+
+random( q,w, Hscale, Vscale, Rscale) = (
+	x = (floor(q / Hscale));
+	z = (floor(w / Hscale));# + if (iter % 2 < 1, 0, 0.5);
+	p1 = randXZ(x, z) * Rscale;
+	p2 = randXZ(x + 1, z) * Rscale;
+	p3 = randXZ(x, z + 1) * Rscale;	
+	p4 = randXZ(x + 1, z + 1) * Rscale;
+	#Bilinear interpolation taken from Wikipedia
+	sX = (q % Hscale) / Hscale;
+	sZ = (w % Hscale) / Hscale;
+	v = (p1 * (1 - sX) * (1 - sZ)) + 
+		(p2 * (1 - sZ) * sX) + 
+		(p3 * (1 - sX) * sZ) + 
+		(p4 * sX * sZ);
+	v * Vscale
+
+);
+
+midpoint3D( iter, Hscale, Vscale, Hdelta, Vdelta, Rscale, q, e, w) = (
+	x = (floor(q / Hscale)) + if (iter % 2 < 1, 0, 0.5);
+	z = (floor(w / Hscale));# + if (iter % 2 < 1, 0, 0.5);
+	y = (floor(e / Hscale));
+	p1 = randXYZ(x, y, z) * Rscale;
+	p2 = randXYZ(x + 1, y, z) * Rscale;
+	p3 = randXYZ(x, y, z + 1) * Rscale;	
+	p4 = randXYZ(x + 1, y, z + 1) * Rscale;
+	
+	p5 = randXYZ(x, y + 1, z) * Rscale;
+	p6 = randXYZ(x + 1, y + 1, z) * Rscale;
+	p7 = randXYZ(x, y + 1, z + 1) * Rscale;	
+	p8 = randXYZ(x + 1, y + 1, z + 1) * Rscale;
+	
+	#Trilinear interpolation taken from 
+	#http://paulbourke.net/miscellaneous/interpolation/
+	sX = (q % Hscale) / Hscale;
+	sZ = (w % Hscale) / Hscale;
+	sY = (e % Hscale) / Hscale;
+	iX = (1 - sX);
+	iZ = (1 - sZ);
+	iY = (1 - sY);
+	
+	v = (p1 * iX * iY * iZ) + 
+		(p2 * sX * iY * iZ) + 
+		(p5 * iX * sY * iZ) + 
+		(p3 * iX * iY * sZ) +
+		(p4 * sX * iY * sZ) + 
+		(p7 * iX * sY * sZ) + 
+		(p6 * sX * sY * iZ) + 
+		(p8 * sX * sY * sZ);
+		
+	if ( iter <= 1,
+		v * Vscale,
+		(v * Vscale) + midpoint3D( iter - 1, Hscale * Hdelta, Vscale * Vdelta, Hdelta, Vdelta, Rscale, q, e, w)
+	)
+
+);
+
+#Uses an average rather than interpolation
+midpointAvg( iter, Hscale, Vscale, Hdelta, Vdelta, Rscale, q, w) = (
+	x = (floor(q / Hscale)) + if (iter % 2 < 1, 0, 0.5);
+	z = (floor(w / Hscale));# + if (iter % 2 < 1, 0, 0.5);
+	p1 = randXZ(x, z) * Rscale;
+	p2 = randXZ(x + 1, z) * Rscale;
+	p3 = randXZ(x, z + 1) * Rscale;	
+	p4 = randXZ(x + 1, z + 1) * Rscale;
+	v = ( p1 + p2 + p3 + p4) / 4;
+	if ( iter <= 1,
+		v * Vscale,
+		(v * Vscale) + midpoint( iter - 1, Hscale * Hdelta, Vscale * Vdelta, Hdelta, Vdelta, Rscale, q, w)
+	)
+
+);
+
+#### Alternate distance formulas
+#### #Manhattan
+	#### a = abs( u - p1x ) + abs( v - p1z );
+	#### b = abs( u - p2x ) + abs( v - p2z );
+	#### c = abs( u - p3x ) + abs( v - p3z );
+	#### d = abs( u - p4x ) + abs( v - p4z );
+	#### e = abs( u - p5x ) + abs( v - p5z );
+	#### f = abs( u - p6x ) + abs( v - p6z );
+	#### g = abs( u - p7x ) + abs( v - p7z );
+	#### h = abs( u - p8x ) + abs( v - p8z );
+	#### i = abs( u - p0x ) + abs( v - p0z );
+
+#### #Chebyshev distance -not really useful for cells but okay for random
+	#### a = 0 + if(abs( u - p1x ) > abs( v - p1z ), abs( u - p1x ), abs( v - p1z ));
+	#### b = 0 + if(abs( u - p2x ) > abs( v - p2z ), abs( u - p2x ), abs( v - p2z ));
+	#### c = 0 + if(abs( u - p3x ) > abs( v - p3z ), abs( u - p3x ), abs( v - p3z ));
+	#### d = 0 + if(abs( u - p4x ) > abs( v - p4z ), abs( u - p4x ), abs( v - p4z ));
+	#### e = 0 + if(abs( u - p5x ) > abs( v - p5z ), abs( u - p5x ), abs( v - p5z ));
+	#### f = 0 + if(abs( u - p6x ) > abs( v - p6z ), abs( u - p6x ), abs( v - p6z ));
+	#### g = 0 + if(abs( u - p7x ) > abs( v - p7z ), abs( u - p7x ), abs( v - p7z ));
+	#### h = 0 + if(abs( u - p8x ) > abs( v - p8z ), abs( u - p8x ), abs( v - p8z ));
+	#### i = 0 + if(abs( u - p0x ) > abs( v - p0z ), abs( u - p0x ), abs( v - p0z ));
+	
+#### #Minkowski distance - does everything, but a lot of math
+	#### #n = 1 is Manhattan distance, 2 is Euclidean, infinity is Chebyshev
+	#### n = 0.2;
+	#### a =  (abs( u - p1x ) ** n + abs( v - p1z ) ** n) ** (1 / n);
+	#### b =  (abs( u - p2x ) ** n + abs( v - p2z ) ** n) ** (1 / n);
+	#### c =  (abs( u - p3x ) ** n + abs( v - p3z ) ** n) ** (1 / n);
+	#### d =  (abs( u - p4x ) ** n + abs( v - p4z ) ** n) ** (1 / n);
+	#### e =  (abs( u - p5x ) ** n + abs( v - p5z ) ** n) ** (1 / n);
+	#### f =  (abs( u - p6x ) ** n + abs( v - p6z ) ** n) ** (1 / n);
+	#### g =  (abs( u - p7x ) ** n + abs( v - p7z ) ** n) ** (1 / n);
+	#### h =  (abs( u - p8x ) ** n + abs( v - p8z ) ** n) ** (1 / n);
+	#### i =  (abs( u - p0x ) ** n + abs( v - p0z ) ** n) ** (1 / n);
+
+#Contains a bias due to ties in distance always going one way.
+#Returns a random number for the cell the block is in
+#interesting results can be had with returning a number
+#based on  maxDist - dist_1 + dist_2 etc if can find a way to implement
+#Remember that max distance depends on offset
+	
+#Based on points in the center of each region
+#q,w are coords for block; scale is scale of cells, r is multiplier for randomness
+#To yeild a diagram of n values: (voronoiRand() * n) % n
+voronoiRand( q,w, scale, r ) = (
+	x = floor(q / scale) + 0.5;
+	z = floor(w / scale) + 0.5;
+	
+	#Top Row
+	p1x = x - 1 + randXZ(x - 1, z - 1) * r;
+	p1z = z - 1 + randXZ(z - 1, x - 1) * r;
+	
+	p2x = x + randXZ(x, z - 1) * r;
+	p2z = z - 1 + randXZ(z - 1, x) * r;
+	
+	p3x = x + 1 +  randXZ(x + 1, z - 1) * r;
+	p3z = z - 1 + randXZ(z - 1, x + 1) * r;
+	
+	#Middle Row
+	p4x = x - 1 +  randXZ(x - 1, z) * r;
+	p4z = z + randXZ(z, x - 1) * r;
+	
+	p0x = x +  randXZ(x, z ) * r;
+	p0z = z + randXZ(z, x ) * r;
+	
+	p5x = x + 1 +  randXZ(x + 1, z) * r;
+	p5z = z + randXZ(z, x + 1) * r;
+	
+	#Bottom Row
+	p6x = x - 1 + randXZ(x - 1, z + 1) * r;
+	p6z = z + 1 + randXZ(z + 1, x - 1) * r;
+	
+	p7x = x +  randXZ(x, z + 1) * r;
+	p7z = z + 1 + randXZ(z + 1, x ) * r;
+	
+	p8x = x + 1 + randXZ(x + 1, z + 1) * r;
+	p8z = z + 1 + randXZ(z + 1, x + 1) * r;
+	
+	u = q / scale;
+	v = w / scale;
+	#Euclidean distance w/o the root
+	#### a =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2 - .5;
+	#### b =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2 - .5;
+	#### c =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2 - .5;
+	#### d =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2 - .5;
+	#### e =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2 - .5;
+	#### f =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2 - .5;
+	#### g =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2 - .5;
+	#### h =  abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2 - .5;
+	#### i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2 - .5;
+	
+	a =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2;
+	b =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2;
+	c =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2;
+	d =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2;
+	e =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2;
+	f =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2;
+	g =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2;
+	h =  abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2;
+	i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2;
+	if(
+		i <= b && i <= c && i <= d && i <= e && i <= f && i <= g && i <= h && i <= a, randXZ(p0x,p0z),
+		a <= b && a <= c && a <= d && a <= e && a <= f && a <= g && a <= h && a <= i, randXZ(p1x,p1z),
+		b <= a && b <= c && b <= d && b <= e && b <= f && b <= g && b <= h && b <= i, randXZ(p2x,p2z),
+		c <= b && c <= a && c <= d && c <= e && c <= f && c <= g && c <= h && c <= i, randXZ(p3x,p3z),
+		d <= b && d <= c && d <= a && d <= e && d <= f && d <= g && d <= h && d <= i, randXZ(p4x,p4z),
+		e <= b && e <= c && e <= d && e <= a && e <= f && e <= g && e <= h && e <= i, randXZ(p5x,p5z),
+		f <= b && f <= c && f <= d && f <= e && f <= a && f <= g && f <= h && f <= i, randXZ(p6x,p6z),
+		g <= b && g <= c && g <= d && g <= e && g <= f && g <= a && g <= h && g <= i, randXZ(p7x,p7z),
+		h <= b && h <= c && h <= d && h <= e && h <= f && h <= g && h <= a && h <= i, randXZ(p8x,p8z),
+		0
+	)
+
+);
+voronoiRandM( q,w, scale, r ) = (
+	x = floor(q / scale) + 0.5;
+	z = floor(w / scale) + 0.5;
+	
+	#Top Row
+	p1x = x - 1 + randXZ(x - 1, z - 1) * r;
+	p1z = z - 1 + randXZ(z - 1, x - 1) * r;
+	
+	p2x = x + randXZ(x, z - 1) * r;
+	p2z = z - 1 + randXZ(z - 1, x) * r;
+	
+	p3x = x + 1 +  randXZ(x + 1, z - 1) * r;
+	p3z = z - 1 + randXZ(z - 1, x + 1) * r;
+	
+	#Middle Row
+	p4x = x - 1 +  randXZ(x - 1, z) * r;
+	p4z = z + randXZ(z, x - 1) * r;
+	
+	p0x = x +  randXZ(x, z ) * r;
+	p0z = z + randXZ(z, x ) * r;
+	
+	p5x = x + 1 +  randXZ(x + 1, z) * r;
+	p5z = z + randXZ(z, x + 1) * r;
+	
+	#Bottom Row
+	p6x = x - 1 + randXZ(x - 1, z + 1) * r;
+	p6z = z + 1 + randXZ(z + 1, x - 1) * r;
+	
+	p7x = x +  randXZ(x, z + 1) * r;
+	p7z = z + 1 + randXZ(z + 1, x ) * r;
+	
+	p8x = x + 1 + randXZ(x + 1, z + 1) * r;
+	p8z = z + 1 + randXZ(z + 1, x + 1) * r;
+	
+	u = q / scale;
+	v = w / scale;
+	#Manhattan
+	a = abs( u - p1x ) + abs( v - p1z );
+	b = abs( u - p2x ) + abs( v - p2z );
+	c = abs( u - p3x ) + abs( v - p3z );
+	d = abs( u - p4x ) + abs( v - p4z );
+	e = abs( u - p5x ) + abs( v - p5z );
+	f = abs( u - p6x ) + abs( v - p6z );
+	g = abs( u - p7x ) + abs( v - p7z );
+	h = abs( u - p8x ) + abs( v - p8z );
+	i = abs( u - p0x ) + abs( v - p0z );
+			
+	if(
+		i <= b && i <= c && i <= d && i <= e && i <= f && i <= g && i <= h && i <= a, randXZ(p0x,p0z),
+		a <= b && a <= c && a <= d && a <= e && a <= f && a <= g && a <= h && a <= i, randXZ(p1x,p1z),
+		b <= a && b <= c && b <= d && b <= e && b <= f && b <= g && b <= h && b <= i, randXZ(p2x,p2z),
+		c <= b && c <= a && c <= d && c <= e && c <= f && c <= g && c <= h && c <= i, randXZ(p3x,p3z),
+		d <= b && d <= c && d <= a && d <= e && d <= f && d <= g && d <= h && d <= i, randXZ(p4x,p4z),
+		e <= b && e <= c && e <= d && e <= a && e <= f && e <= g && e <= h && e <= i, randXZ(p5x,p5z),
+		f <= b && f <= c && f <= d && f <= e && f <= a && f <= g && f <= h && f <= i, randXZ(p6x,p6z),
+		g <= b && g <= c && g <= d && g <= e && g <= f && g <= a && g <= h && g <= i, randXZ(p7x,p7z),
+		h <= b && h <= c && h <= d && h <= e && h <= f && h <= g && h <= a && h <= i, randXZ(p8x,p8z),
+		0
+	)
+
+);
+#Possibly usefull for plant distributions
+voronoiRandMFuzzy( q,w, scale, r ) = (
+	x = floor(q / scale) + 0.5 + randXZ(q,w) / 1048;
+	z = floor(w / scale) + 0.5 + randXZ(q,w) / 1048;
+	
+	#Top Row
+	p1x = x - 1 + randXZ(x - 1, z - 1) * r;
+	p1z = z - 1 + randXZ(z - 1, x - 1) * r;
+	
+	p2x = x + randXZ(x, z - 1) * r;
+	p2z = z - 1 + randXZ(z - 1, x) * r;
+	
+	p3x = x + 1 +  randXZ(x + 1, z - 1) * r;
+	p3z = z - 1 + randXZ(z - 1, x + 1) * r;
+	
+	#Middle Row
+	p4x = x - 1 +  randXZ(x - 1, z) * r;
+	p4z = z + randXZ(z, x - 1) * r;
+	
+	p0x = x +  randXZ(x, z ) * r;
+	p0z = z + randXZ(z, x ) * r;
+	
+	p5x = x + 1 +  randXZ(x + 1, z) * r;
+	p5z = z + randXZ(z, x + 1) * r;
+	
+	#Bottom Row
+	p6x = x - 1 + randXZ(x - 1, z + 1) * r;
+	p6z = z + 1 + randXZ(z + 1, x - 1) * r;
+	
+	p7x = x +  randXZ(x, z + 1) * r;
+	p7z = z + 1 + randXZ(z + 1, x ) * r;
+	
+	p8x = x + 1 + randXZ(x + 1, z + 1) * r;
+	p8z = z + 1 + randXZ(z + 1, x + 1) * r;
+	
+	u = q / scale;
+	v = w / scale;
+	#Manhattan
+	a = abs( u - p1x ) + abs( v - p1z );
+	b = abs( u - p2x ) + abs( v - p2z );
+	c = abs( u - p3x ) + abs( v - p3z );
+	d = abs( u - p4x ) + abs( v - p4z );
+	e = abs( u - p5x ) + abs( v - p5z );
+	f = abs( u - p6x ) + abs( v - p6z );
+	g = abs( u - p7x ) + abs( v - p7z );
+	h = abs( u - p8x ) + abs( v - p8z );
+	i = abs( u - p0x ) + abs( v - p0z );
+			
+	if(
+		i <= b && i <= c && i <= d && i <= e && i <= f && i <= g && i <= h && i <= a, randXZ(p0x,p0z),
+		a <= b && a <= c && a <= d && a <= e && a <= f && a <= g && a <= h && a <= i, randXZ(p1x,p1z),
+		b <= a && b <= c && b <= d && b <= e && b <= f && b <= g && b <= h && b <= i, randXZ(p2x,p2z),
+		c <= b && c <= a && c <= d && c <= e && c <= f && c <= g && c <= h && c <= i, randXZ(p3x,p3z),
+		d <= b && d <= c && d <= a && d <= e && d <= f && d <= g && d <= h && d <= i, randXZ(p4x,p4z),
+		e <= b && e <= c && e <= d && e <= a && e <= f && e <= g && e <= h && e <= i, randXZ(p5x,p5z),
+		f <= b && f <= c && f <= d && f <= e && f <= a && f <= g && f <= h && f <= i, randXZ(p6x,p6z),
+		g <= b && g <= c && g <= d && g <= e && g <= f && g <= a && g <= h && g <= i, randXZ(p7x,p7z),
+		h <= b && h <= c && h <= d && h <= e && h <= f && h <= g && h <= a && h <= i, randXZ(p8x,p8z),
+		0
+	)
+
+);
+compare8(test, _1, _2, _3, _4, _5, _6, _7, _8 ) = (
+	test <= _1 &&
+	test <= _2 &&
+	test <= _3 &&
+	test <= _4 &&
+	test <= _5 &&
+	test <= _6 &&
+	test <= _7 &&
+	test <= _8 
+);
+	
+compare7(test, _1, _2, _3, _4, _5, _6, _7 ) = (
+	test <= _1 &&
+	test <= _2 &&
+	test <= _3 &&
+	test <= _4 &&
+	test <= _5 &&
+	test <= _6 &&
+	test <= _7 
+);
+compare6(test, _1, _2, _3, _4, _5, _6 ) = (
+	test <= _1 &&
+	test <= _2 &&
+	test <= _3 &&
+	test <= _4 &&
+	test <= _5 &&
+	test <= _6 
+);
+smallestOf8( _1, _2, _3, _4, _5, _6, _7, _8 ) = (
+			if(
+				compare7( _1, _2, _3, _4, _5, _6, _7, _8 ), _1,
+				compare7( _2, _1, _3, _4, _5, _6, _7, _8 ), _2,
+				compare7( _3, _2, _1, _4, _5, _6, _7, _8 ), _3,
+				compare7( _4, _2, _3, _1, _5, _6, _7, _8 ), _4,
+				compare7( _5, _2, _3, _4, _1, _6, _7, _8 ), _5,
+				compare7( _6, _2, _3, _4, _5, _1, _7, _8 ), _6,
+				compare7( _7, _2, _3, _4, _5, _6, _1, _8 ), _7,
+				compare7( _8, _2, _3, _4, _5, _6, _7, _1 ), _8,
+				0
+				)
+);
+smallestOf7( _1, _2, _3, _4, _5, _6, _7 ) = (
+			if(
+				compare6( _1, _2, _3, _4, _5, _6, _7 ), _1,
+				compare6( _2, _1, _3, _4, _5, _6, _7 ), _2,
+				compare6( _3, _2, _1, _4, _5, _6, _7 ), _3,
+				compare6( _4, _2, _3, _1, _5, _6, _7 ), _4,
+				compare6( _5, _2, _3, _4, _1, _6, _7 ), _5,
+				compare6( _6, _2, _3, _4, _5, _1, _7 ), _6,
+				compare6( _7, _2, _3, _4, _5, _6, _1 ), _7,
+				0
+				)
+);
+
+smallest2Of8( _1, _2, _3, _4, _5, _6, _7, _8, w1, w2 ) = (
+			if(
+				compare7( _1, _2, _3, _4, _5, _6, _7, _8 ), _1 * w1 + if( w2 != 0, smallestOf7(_2, _3, _4, _5, _6, _7, _8) * w2, 0),
+				compare7( _2, _1, _3, _4, _5, _6, _7, _8 ), _2 * w1 + if( w2 != 0, smallestOf7(_1, _3, _4, _5, _6, _7, _8) * w2, 0),
+				compare7( _3, _2, _1, _4, _5, _6, _7, _8 ), _3 * w1 + if( w2 != 0, smallestOf7(_1, _2, _4, _5, _6, _7, _8) * w2, 0),
+				compare7( _4, _2, _3, _1, _5, _6, _7, _8 ), _4 * w1 + if( w2 != 0, smallestOf7(_1, _2, _3, _5, _6, _7, _8) * w2, 0),
+				compare7( _5, _2, _3, _4, _1, _6, _7, _8 ), _5 * w1 + if( w2 != 0, smallestOf7(_1, _2, _3, _4, _6, _7, _8) * w2, 0),
+				compare7( _6, _2, _3, _4, _5, _1, _7, _8 ), _6 * w1 + if( w2 != 0, smallestOf7(_1, _2, _3, _4, _5, _7, _8) * w2, 0),
+				compare7( _7, _2, _3, _4, _5, _6, _1, _8 ), _7 * w1 + if( w2 != 0, smallestOf7(_1, _2, _3, _4, _5, _6, _8) * w2, 0),
+				compare7( _8, _2, _3, _4, _5, _6, _7, _1 ), _8 * w1 + if( w2 != 0, smallestOf7(_1, _2, _3, _4, _5, _6, _7) * w2, 0),
+				0
+				)
+);
+
+RandSmallest2Of8( _1, _2, _3, _4, _5, _6, _7, _8 ) = (
+			if(
+				compare7( _1, _2, _3, _4, _5, _6, _7, _8 ), randXZ( _1, smallestOf7(_2, _3, _4, _5, _6, _7, _8) ),
+				compare7( _2, _1, _3, _4, _5, _6, _7, _8 ), randXZ( _2, smallestOf7(_1, _3, _4, _5, _6, _7, _8) ),
+				compare7( _3, _2, _1, _4, _5, _6, _7, _8 ), randXZ( _3, smallestOf7(_1, _2, _4, _5, _6, _7, _8) ),
+				compare7( _4, _2, _3, _1, _5, _6, _7, _8 ), randXZ( _4, smallestOf7(_1, _2, _3, _5, _6, _7, _8) ),
+				compare7( _5, _2, _3, _4, _1, _6, _7, _8 ), randXZ( _5, smallestOf7(_1, _2, _3, _4, _6, _7, _8) ),
+				compare7( _6, _2, _3, _4, _5, _1, _7, _8 ), randXZ( _6, smallestOf7(_1, _2, _3, _4, _5, _7, _8) ),
+				compare7( _7, _2, _3, _4, _5, _6, _1, _8 ), randXZ( _7, smallestOf7(_1, _2, _3, _4, _5, _6, _8) ),
+				compare7( _8, _2, _3, _4, _5, _6, _7, _1 ), randXZ( _8, smallestOf7(_1, _2, _3, _4, _5, _6, _7) ),
+				0
+				)
+);
+
+#Would like a way to generate rand numbers with this but really messy using current functions 
+#because would have to pass all x,y coords for all points
+#When trying to implement alternate grids to randomize, it's important to remember that the algorithm should include
+#all the points in the surrounding sections, otherwise tiling will result. Never got a hex base grid to work w/o tiling.
+voronoiCell( _x,_z, scale, r, add, weight1, weight2, weight3 ) = (
+	x = floor(_x / scale) + 0.5;
+	z = floor(_z / scale) + 0.5;
+	
+	#Top Row
+	p1x = x - 1 + randXZ+-(x - 1, z - 1) * r;
+	#p1z = z - 1 + randXZ+-(z - 1, x - 1) * r;
+	p1z = z - 1 + rand+-(rand+-(rand+-(randXZBig(x - 1, z - 1)))) * r;
+	
+	p2x = x + randXZ+-(x, z - 1) * r;
+	#p2z = z - 1 + randXZ+-(z - 1, x) * r;
+	p2z = z - 1 + rand+-(rand+-(rand+-(randXZBig(x, z - 1)))) * r;
+	
+	p3x = x + 1 +  randXZ+-(x + 1, z - 1) * r;
+	#p3z = z - 1 + randXZ+-(z - 1, x + 1) * r;
+	p3z = z - 1 + rand+-(rand+-(rand+-(randXZBig(x + 1, z - 1)))) * r;
+	
+	#Middle Row
+	p4x = x - 1 +  randXZ+-(x - 1, z) * r;
+	#p4z = z + randXZ+-(z, x - 1) * r;
+	p4z = z + rand+-(rand+-(rand+-(randXZBig(x - 1, z)))) * r;
+	
+	p0x = x + randXZ+-(x, z ) * r;
+	#p0z = z + randXZ+-(z, x ) * r;
+	p0z = z + rand+-(rand+-(rand+-(randXZBig(x, z )))) * r;
+	
+	p5x = x + 1 +  randXZ+-(x + 1, z) * r;
+	#p5z = z + randXZ+-(z, x + 1) * r;
+	p5z = z + rand+-(rand+-(rand+-(randXZBig(x + 1, z)))) * r;
+	
+	#Bottom Row
+	p6x = x - 1 + randXZ+-(x - 1, z + 1) * r;
+	#p6z = z + 1 + randXZ+-(z + 1, x - 1) * r;
+	p6z = z + 1 + rand+-(rand+-(rand+-(randXZBig(x - 1, z + 1)))) * r;
+	
+	p7x = x +  randXZ+-(x, z + 1) * r;
+	#p7z = z + 1 + randXZ+-(z + 1, x ) * r;
+	p7z = z + 1 + rand+-(rand+-(rand+-(randXZBig(x, z + 1)))) * r;
+	
+	p8x = x + 1 + randXZ+-(x + 1, z + 1) * r;
+	#p8z = z + 1 + randXZ+-(z + 1, x + 1) * r;
+	p8z = z + 1 + rand+-(rand+-(rand+-(randXZBig(x + 1, z + 1)))) * r;
+	
+	u = _x / scale;
+	v = _z / scale;
+	#Euclidean distance w/o the root
+	
+	#Expirement with power distance
+	#### n_w =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2 - 0;
+	#### north =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2 - 0;
+	#### n_e =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2 - 0;
+	#### west =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2 - 0;
+	#### east =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2 - 0;
+	#### s_w =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2 - 0;
+	#### south =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2 - 0;
+	#### s_e =  abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2 - 0;	
+	#### i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2 - 0;
+	
+	n_w =  ( u - p1x ) ** 2 + abs( v - p1z ) ** 2;
+	north =  ( u - p2x ) ** 2 + abs( v - p2z ) ** 2;
+	n_e =  ( u - p3x ) ** 2 + abs( v - p3z ) ** 2;
+	west =  ( u - p4x ) ** 2 + abs( v - p4z ) ** 2;
+	east =  ( u - p5x ) ** 2 + abs( v - p5z ) ** 2;
+	s_w =  ( u - p6x ) ** 2 + abs( v - p6z ) ** 2;
+	south =  ( u - p7x ) ** 2 + abs( v - p7z ) ** 2;
+	s_e =  ( u - p8x ) ** 2 + abs( v - p8z ) ** 2;	
+	i =  ( u - p0x ) ** 2 + abs( v - p0z ) ** 2;
+	
+	#because TMCMG bails from if on first true for speed it's important that test against points most likely to be closest first
+	#not actually borne out by tests, came out about the same time for 128x128 map but will use this in case
+	if(
+		compare8(i, north, west, east, south, n_w, n_e, s_w, s_e ),
+			add + (i * weight1 + smallest2Of8( north, west, east, south, n_w, n_e, s_w, s_e, weight2, weight3 )),
+		
+		compare8(north, west, east, south, n_w, i, n_e, s_w, s_e ),
+			add + (north * weight1 + smallest2Of8( west, east, south, n_w, i, n_e, s_w, s_e, weight2, weight3 )),
+		compare8(west, i, north, east, south, n_w, n_e, s_w, s_e ),
+			add + (west * weight1 + smallest2Of8( i, north, east, south, n_w, n_e, s_w, s_e , weight2, weight3 )),
+		compare8(east, i, north, west, south, n_w, n_e, s_w, s_e ),
+			add + (east * weight1 + smallest2Of8( i, north, west, south, n_w, n_e, s_w, s_e, weight2, weight3 )),
+		compare8(south, i, north, west, east, n_w, n_e, s_w, s_e ),
+			add + (south * weight1 + smallest2Of8( i, north, west, east, n_w, n_e, s_w, s_e, weight2, weight3 )),			
+		
+		compare8(n_w, i, north, west, east, south, n_e, s_w, s_e ),
+			add + (n_w * weight1 + smallest2Of8( i, north, west, east, south, n_e, s_w, s_e, weight2, weight3 )),
+		compare8(n_e, i, north, west, east, south, n_w, s_w, s_e ),
+			add + (n_e * weight1 + smallest2Of8( i, north, west, east, south, n_w, s_w, s_e, weight2, weight3 )),
+		compare8(s_w, i, north, west, east, south, n_w, n_e, s_e ),
+			add + (s_w * weight1 + smallest2Of8( i, north, west, east, south, n_w, n_e, s_e, weight2, weight3 )),
+		compare8(s_e, i, north, west, east, south, n_w, n_e, s_w ),
+			add + (s_e * weight1 + smallest2Of8( i, north, west, east, south, n_w, n_e, s_w, weight2, weight3 )),
+		0
+	)
+
+);
+
+voronoiScatter( _x,_z, scale, r, add, weight1, weight2, weight3 ) = (
+	x = floor(_x / scale) + 0.5;
+	z = floor(_z / scale) + 0.5;
+	q = voronoiRand( x,z, scale, r );
+	
+	#Top Row
+	p1x = x + (randXZ(x - q, z - q) - 0.5) * 2 * r;
+	p1z = z + (randXZ(z - q, x - q) - 0.5) * 2 * r;
+	
+	p2x = x + (randXZ(x, z - q) - 0.5) * 2 * r;
+	p2z = z + (randXZ(z - q, x) - 0.5) * 2 * r;
+	
+	p3x = x + (randXZ(x + q, z - q) - 0.5) * 2 * r;
+	p3z = z + (randXZ(z - q, x + q) - 0.5) * 2 * r;
+	
+	#Middle Row
+	p4x = x + (randXZ(x - q, z) - 0.5) * 2 * r;
+	p4z = z + (randXZ(z, x - q) - 0.5) * 2 * r;
+	
+	p0x = x + (randXZ(x, z ) - 0.5) * 2 * r;
+	p0z = z + (randXZ(z, x ) - 0.5) * 2 * r;
+	
+	p5x = x + (randXZ(x + q, z) - 0.5) * 2 * r;
+	p5z = z + (randXZ(z, x + q) - 0.5) * 2 * r;
+	
+	#Bottom Row
+	p6x = x + (randXZ(x - q, z + q) - 0.5) * 2 * r;
+	p6z = z + (randXZ(z + q, x - q) - 0.5) * 2 * r;
+	
+	p7x = x + (randXZ(x, z + q) - 0.5) * 2 * r;
+	p7z = z + (randXZ(z + q, x ) - 0.5) * 2 * r;
+	
+	p8x = x + (randXZ(x + q, z + q) - 0.5) * 2 * r;
+	p8z = z + (randXZ(z + q, x + q) - 0.5) * 2 * r;
+	
+	u = _x / scale;
+	v = _z / scale;
+	#Euclidean distance _z/o the root
+	n_w =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2;
+	north =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2;
+	n_e =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2;
+	west =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2;
+	east =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2;
+	s_w =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2;
+	south =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2;
+	s_e =  abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2;	
+	i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2;
+	
+	#because TMCMG bails from if on first true for speed it's important that test against points most likely to be closest first
+	#not actually borne out by tests, came out about the same time for 128x128 map but will use this in case
+	if(
+		compare8(i, north, west, east, south, n_w, n_e, s_w, s_e ),
+			add + (i * weight1 + smallest2Of8( north, west, east, south, n_w, n_e, s_w, s_e, weight2, weight3 )),
+		
+		compare8(north, west, east, south, n_w, i, n_e, s_w, s_e ),
+			add + (north * weight1 + smallest2Of8( west, east, south, n_w, i, n_e, s_w, s_e, weight2, weight3 )),
+		compare8(west, i, north, east, south, n_w, n_e, s_w, s_e ),
+			add + (west * weight1 + smallest2Of8( i, north, east, south, n_w, n_e, s_w, s_e , weight2, weight3 )),
+		compare8(east, i, north, west, south, n_w, n_e, s_w, s_e ),
+			add + (east * weight1 + smallest2Of8( i, north, west, south, n_w, n_e, s_w, s_e, weight2, weight3 )),
+		compare8(south, i, north, west, east, n_w, n_e, s_w, s_e ),
+			add + (south * weight1 + smallest2Of8( i, north, west, east, n_w, n_e, s_w, s_e, weight2, weight3 )),			
+		
+		compare8(n_w, i, north, west, east, south, n_e, s_w, s_e ),
+			add + (n_w * weight1 + smallest2Of8( i, north, west, east, south, n_e, s_w, s_e, weight2, weight3 )),
+		compare8(n_e, i, north, west, east, south, n_w, s_w, s_e ),
+			add + (n_e * weight1 + smallest2Of8( i, north, west, east, south, n_w, s_w, s_e, weight2, weight3 )),
+		compare8(s_w, i, north, west, east, south, n_w, n_e, s_e ),
+			add + (s_w * weight1 + smallest2Of8( i, north, west, east, south, n_w, n_e, s_e, weight2, weight3 )),
+		compare8(s_e, i, north, west, east, south, n_w, n_e, s_w ),
+			add + (s_e * weight1 + smallest2Of8( i, north, west, east, south, n_w, n_e, s_w, weight2, weight3 )),
+		0
+	)
+
+);
+
+voronoiCellRand( _x,_z, scale, r, add, weight1, weight2, weight3 ) = (
+	x = floor(_x / scale) + 0.5;
+	z = floor(_z / scale) + 0.5;
+	
+	#Top Row
+	p1x = x - 1 + randXZ(x - 1, z - 1) * r;
+	p1z = z - 1 + randXZ(z - 1, x - 1) * r;
+	
+	p2x = x + randXZ(x, z - 1) * r;
+	p2z = z - 1 + randXZ(z - 1, x) * r;
+	
+	p3x = x + 1 +  randXZ(x + 1, z - 1) * r;
+	p3z = z - 1 + randXZ(z - 1, x + 1) * r;
+	
+	#Middle Row
+	p4x = x - 1 +  randXZ(x - 1, z) * r;
+	p4z = z + randXZ(z, x - 1) * r;
+	
+	p0x = x + randXZ(x, z ) * r;
+	p0z = z + randXZ(z, x ) * r;
+	
+	p5x = x + 1 +  randXZ(x + 1, z) * r;
+	p5z = z + randXZ(z, x + 1) * r;
+	
+	#Bottom Row
+	p6x = x - 1 + randXZ(x - 1, z + 1) * r;
+	p6z = z + 1 + randXZ(z + 1, x - 1) * r;
+	
+	p7x = x +  randXZ(x, z + 1) * r;
+	p7z = z + 1 + randXZ(z + 1, x ) * r;
+	
+	p8x = x + 1 + randXZ(x + 1, z + 1) * r;
+	p8z = z + 1 + randXZ(z + 1, x + 1) * r;
+	
+	u = _x / scale;
+	v = _z / scale;
+	#Euclidean distance _z/o the root
+	n_w =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2;
+	north =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2;
+	n_e =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2;
+	west =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2;
+	east =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2;
+	s_w =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2;
+	south =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2;
+	s_e =  abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2;	
+	i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2;
+	
+	#because TMCMG bails from if on first true for speed it's important that test against points most likely to be closest first
+	#not actually borne out by tests, came out about the same time for 128x128 map
+	if(
+		compare8(i, north, west, east, south, n_w, n_e, s_w, s_e ),
+			randXZ( i, RandSmallest2Of8( north, west, east, south, n_w, n_e, s_w, s_e )),
+		
+		compare8(north, west, east, south, n_w, i, n_e, s_w, s_e ),
+			randXZ( north, RandSmallest2Of8( west, east, south, n_w, i, n_e, s_w, s_e )),
+		compare8(west, i, north, east, south, n_w, n_e, s_w, s_e ),
+			randXZ( west, RandSmallest2Of8( i, north, east, south, n_w, n_e, s_w, s_e  )),
+		compare8(east, i, north, west, south, n_w, n_e, s_w, s_e ),
+			randXZ( east, RandSmallest2Of8( i, north, west, south, n_w, n_e, s_w, s_e )),
+		compare8(south, i, north, west, east, n_w, n_e, s_w, s_e ),
+			randXZ( south, RandSmallest2Of8( i, north, west, east, n_w, n_e, s_w, s_e )),			
+		
+		compare8(n_w, i, north, west, east, south, n_e, s_w, s_e ),
+			randXZ( n_w, RandSmallest2Of8( i, north, west, east, south, n_e, s_w, s_e )),
+		compare8(n_e, i, north, west, east, south, n_w, s_w, s_e ),
+			randXZ( n_e, RandSmallest2Of8( i, north, west, east, south, n_w, s_w, s_e )),
+		compare8(s_w, i, north, west, east, south, n_w, n_e, s_e ),
+			randXZ( s_w, RandSmallest2Of8( i, north, west, east, south, n_w, n_e, s_e )),
+		compare8(s_e, i, north, west, east, south, n_w, n_e, s_w ),
+			randXZ( s_e, RandSmallest2Of8( i, north, west, east, south, n_w, n_e, s_w )),
+		0
+	)
+
+);
+voronoiCellM( _x,_z, scale, r, add, weight1, weight2, weight3 ) = (
+	x = floor(_x / scale) + 0.5;
+	z = floor(_z / scale) + 0.5;
+	
+	#Top Row
+	p1x = x - 1 + randXZ(x - 1, z - 1) * r;
+	p1z = z - 1 + randXZ(z - 1, x - 1) * r;
+	
+	p2x = x + randXZ(x, z - 1) * r;
+	p2z = z - 1 + randXZ(z - 1, x) * r;
+	
+	p3x = x + 1 +  randXZ(x + 1, z - 1) * r;
+	p3z = z - 1 + randXZ(z - 1, x + 1) * r;
+	
+	#Middle Row
+	p4x = x - 1 +  randXZ(x - 1, z) * r;
+	p4z = z + randXZ(z, x - 1) * r;
+	
+	p0x = x + randXZ(x, z ) * r;
+	p0z = z + randXZ(z, x ) * r;
+	
+	p5x = x + 1 +  randXZ(x + 1, z) * r;
+	p5z = z + randXZ(z, x + 1) * r;
+	
+	#Bottom Row
+	p6x = x - 1 + randXZ(x - 1, z + 1) * r;
+	p6z = z + 1 + randXZ(z + 1, x - 1) * r;
+	
+	p7x = x +  randXZ(x, z + 1) * r;
+	p7z = z + 1 + randXZ(z + 1, x ) * r;
+	
+	p8x = x + 1 + randXZ(x + 1, z + 1) * r;
+	p8z = z + 1 + randXZ(z + 1, x + 1) * r;
+	
+	u = _x / scale;
+	v = _z / scale;
+
+	#Manhattan
+	a = abs( u - p1x ) + abs( v - p1z );
+	b = abs( u - p2x ) + abs( v - p2z );
+	c = abs( u - p3x ) + abs( v - p3z );
+	d = abs( u - p4x ) + abs( v - p4z );
+	e = abs( u - p5x ) + abs( v - p5z );
+	f = abs( u - p6x ) + abs( v - p6z );
+	g = abs( u - p7x ) + abs( v - p7z );
+	h = abs( u - p8x ) + abs( v - p8z );
+	i = abs( u - p0x ) + abs( v - p0z );
+	
+	if(
+		compare8(i, a, b, c, d, e, f, g, h ),
+		add + (i * weight1 + smallest2Of8( a, b, c, d, e, f, g, h, weight2, weight3 )),
+		compare8(a, i, b, c, d, e, f, g, h ),
+		add + (a * weight1 + smallest2Of8( i, b, c, d, e, f, g, h, weight2, weight3 )),
+		compare8(b, a, i, c, d, e, f, g, h ),
+		add + (b * weight1 + smallest2Of8( a, i, c, d, e, f, g, h, weight2, weight3 )),
+		compare8(c, a, b, i, d, e, f, g, h ),
+		add + (c * weight1 + smallest2Of8( a, i, c, d, e, f, g, h, weight2, weight3 )),
+		compare8(d, a, b, c, i, e, f, g, h ),
+		add + (d * weight1 + smallest2Of8( a, b, c, i, e, f, g, h, weight2, weight3 )),
+		compare8(e, a, b, c, d, i, f, g, h ),
+		add + (e * weight1 + smallest2Of8( a, b, c, d, i, f, g, h, weight2, weight3 )),
+		compare8(f, a, b, c, d, e, i, g, h ),
+		add + (f * weight1 + smallest2Of8( a, b, c, d, e, i, g, h, weight2, weight3 )),
+		compare8(g, a, b, c, d, e, f, i, h ),
+		add + (g * weight1 + smallest2Of8( a, b, c, d, e, f, i, h, weight2, weight3 )),			
+		compare8(h, a, b, c, d, e, f, g, i ),
+		add + (h * weight1 + smallest2Of8( a, b, c, d, e, f, g, i, weight2, weight3 )),
+		0
+	)
+
+);
+
+#fairly slow, esp if used for 3D noise
+voronoiCell3D( _x,_y,_z, scale, r, add, weight1, weight2 ) = (
+	x = floor(_x / scale);
+	y = floor(_y / scale);
+	z = floor(_z / scale);
+	
+	u = _x / scale;
+	v = _z / scale;
+	w = _y / scale;
+	
+	x_off = if( u > 0.75, 1, 0);
+	y_off = if( w > 0.75, 1, 0);
+	z_off = if( v > 0.75, 1, 0);
+	#Disable lattice system and only use cube points
+	corner = 0;#if( (u > 0.75) || (u < 0.25) || (v > 0.75) || (v < 0.25) || (w > 0.75) || (w < 0.25), 1, 0 );
+	
+	#### Two lattice system:
+	#### Use depends on where in box x,y,z is, if it's near a corner then switch to the 2nd lattice 
+	#### .__.     . . 
+	#### |\.|\.    \|
+	#### '\|'\|  .~~o~~.
+	####   '~~'     |\
+	####            ' '
+	
+	#bottom corner - center
+	p0x = if( corner == 0, x + randXYZ(x, y, z ) * r,  x + x_off + randXYZ(x, y, z ) * r);
+	p0z = if( corner == 0, z + randXYZ(z, y, x ) * r,  z + z_off + randXYZ(z, y, x ) * r);
+	p0y = if( corner == 0, y + randXYZ(z, x, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on z axiz
+	p1x = if( corner == 0, x + randXYZ(x, y, z + 1 ) * r,  x + x_off + randXYZ(x, y, z + 1 ) * r);
+	p1z = if( corner == 0, z + 1 + randXYZ(z + 1, y, x ) * r,  z + 1 + z_off + randXYZ(z + 1, y, x ) * r);
+	p1y = if( corner == 0, y + randXYZ(z + 1, x, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on x axis
+	p2x = if( corner == 0, x + 1 + randXYZ(x + 1, y, z ) * r,  x + x_off + randXYZ(x, y, z - 1 ) * r);
+	p2z = if( corner == 0, z + randXYZ(z, y, x + 1 ) * r,  z - 1 + z_off + randXYZ(z - 1, y, x ) * r);
+	p2y = if( corner == 0, y + randXYZ(z, x + 1, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on both axis
+	p3x = if( corner == 0, x + 1 + randXYZ(x + 1, y, z + 1 ) * r,  x - 1 + x_off + randXYZ(x - 1, y, z ) * r);
+	p3z = if( corner == 0, z + 1 + randXYZ(z + 1, y, x + 1 ) * r,  z + z_off + randXYZ(z, y, x - 1 ) * r);
+	p3y = if( corner == 0, y + randXYZ(z + 1, x + 1, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	
+	#next y level
+	#bottom corner - center
+	p4x = if( corner == 0, x + randXYZ(x, y + 1, z ) * r,  x + 1 + x_off + randXYZ(x + 1, y, z ) * r);
+	p4z = if( corner == 0, z + randXYZ(z, y + 1, x ) * r,  z + z_off + randXYZ(z, y, x + 1 ) * r);
+	p4y = if( corner == 0, y  + 1 + randXYZ(z, x, y + 1) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on z axiz
+	p5x = if( corner == 0, x + randXYZ(x, y + 1, z + 1 ) * r,  x + x_off + randXYZ(x, y - 1, z ) * r);
+	p5z = if( corner == 0, z + 1 + randXYZ(z + 1, y + 1, x ) * r,  z + z_off + randXYZ(z, y - 1, x ) * r);
+	p5y = if( corner == 0, y + 1 + randXYZ(z + 1, x, y + 1 ) * r,  y - 1 + y_off + randXYZ(z, x, y - 1 ) * r);
+	#plus one on x axis
+	p6x = if( corner == 0, x + 1 + randXYZ(x + 1, y + 1, z ) * r,  x + x_off + randXYZ(x, y + 1, z ) * r);
+	p6z = if( corner == 0, z + randXYZ(z, y + 1, x + 1 ) * r,  z + z_off + randXYZ(z, y + 1, x ) * r);
+	p6y = if( corner == 0, y + 1 + randXYZ(z, x + 1, y + 1 ) * r,  y + 1 + y_off + randXYZ(z, x, y + 1 ) * r);
+	#plus one on both axis
+	p7x = if( corner == 0, x + 1 + randXYZ(x + 1, y + 1, z + 1 ) * r,  20);
+	p7z = if( corner == 0, z + 1 + randXYZ(z + 1, y + 1, x + 1 ) * r,  20);
+	p7y = if( corner == 0, y + 1 + randXYZ(z + 1, x + 1, y + 1 ) * r,  20);
+	
+	
+	
+	#Euclidean distance w/o the root
+	a =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2 + abs( w - p1y ) ** 2;
+	b =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2 + abs( w - p2y ) ** 2;
+	c =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2 + abs( w - p3y ) ** 2;
+	d =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2 + abs( w - p4y ) ** 2;
+	e =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2 + abs( w - p5y ) ** 2;
+	f =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2 + abs( w - p6y ) ** 2;
+	g =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2 + abs( w - p7y ) ** 2;
+	h =  20000; #abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2;
+	i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2 + abs( w - p0y ) ** 2;
+	
+	if(
+		compare8(i, a, b, c, d, e, f, g, h ),
+		add + i * weight1 + weight2 * smallestOf8( a, b, c, d, e, f, g, h ),
+		compare8(a, i, b, c, d, e, f, g, h ),
+		add + a * weight1 + weight2 * smallestOf8( i, b, c, d, e, f, g, h ),
+		compare8(b, a, i, c, d, e, f, g, h ),
+		add + b * weight1 + weight2 * smallestOf8( a, i, c, d, e, f, g, h ),
+		compare8(c, a, b, i, d, e, f, g, h ),
+		add + c * weight1 + weight2 * smallestOf8( a, i, c, d, e, f, g, h ),
+		compare8(d, a, b, c, i, e, f, g, h ),
+		add + d * weight1 + weight2 * smallestOf8( a, b, c, i, e, f, g, h ),
+		compare8(e, a, b, c, d, i, f, g, h ),
+		add + e * weight1 + weight2 *	smallestOf8( a, b, c, d, i, f, g, h ),
+		compare8(f, a, b, c, d, e, i, g, h ),
+		add + f * weight1 + weight2 * smallestOf8( a, b, c, d, e, i, g, h ),
+		compare8(g, a, b, c, d, e, f, i, h ),
+		add + g * weight1 + weight2 * smallestOf8( a, b, c, d, e, f, i, h ),			
+		compare8(h, a, b, c, d, e, f, g, i ),
+		add + h * weight1 + weight2 * smallestOf8( a, b, c, d, e, f, g, i ),
+		0
+	)
+
+);
+
+voronoiRand3D( _x,_y,_z, scale, r ) = (
+	x = floor(_x / scale);
+	y = floor(_y / scale);
+	z = floor(_z / scale);
+	
+	u = _x / scale;
+	v = _z / scale;
+	w = _y / scale;
+	
+	x_off = if( u > 0.75, 1, 0);
+	y_off = if( w > 0.75, 1, 0);
+	z_off = if( v > 0.75, 1, 0);
+	corner = 0;#if( (u > 0.75) || (u < 0.25) || (v > 0.75) || (v < 0.25) || (w > 0.75) || (w < 0.25), 1, 0 );
+	
+	#### Two lattice system:
+	#### Use depends on where in box x,y,z is, if it's near a corner then switch to the 2nd lattice 
+	#### .__.     . . 
+	#### |\.|\.    \|
+	#### '\|'\|  .~~o~~.
+	####   '~~'     |\
+	####            ' '
+	
+	#bottom corner - center
+	p0x = if( corner == 0, x + randXYZ(x, y, z ) * r,  x + x_off + randXYZ(x, y, z ) * r);
+	p0z = if( corner == 0, z + randXYZ(z, y, x ) * r,  z + z_off + randXYZ(z, y, x ) * r);
+	p0y = if( corner == 0, y + randXYZ(z, x, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on z axiz
+	p1x = if( corner == 0, x + randXYZ(x, y, z + 1 ) * r,  x + x_off + randXYZ(x, y, z + 1 ) * r);
+	p1z = if( corner == 0, z + 1 + randXYZ(z + 1, y, x ) * r,  z + 1 + z_off + randXYZ(z + 1, y, x ) * r);
+	p1y = if( corner == 0, y + randXYZ(z + 1, x, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on x axis
+	p2x = if( corner == 0, x + 1 + randXYZ(x + 1, y, z ) * r,  x + x_off + randXYZ(x, y, z - 1 ) * r);
+	p2z = if( corner == 0, z + randXYZ(z, y, x + 1 ) * r,  z - 1 + z_off + randXYZ(z - 1, y, x ) * r);
+	p2y = if( corner == 0, y + randXYZ(z, x + 1, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on both axis
+	p3x = if( corner == 0, x + 1 + randXYZ(x + 1, y, z + 1 ) * r,  x - 1 + x_off + randXYZ(x - 1, y, z ) * r);
+	p3z = if( corner == 0, z + 1 + randXYZ(z + 1, y, x + 1 ) * r,  z + z_off + randXYZ(z, y, x - 1 ) * r);
+	p3y = if( corner == 0, y + randXYZ(z + 1, x + 1, y ) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	
+	#next y level
+	#bottom corner - center
+	p4x = if( corner == 0, x + randXYZ(x, y + 1, z ) * r,  x + 1 + x_off + randXYZ(x + 1, y, z ) * r);
+	p4z = if( corner == 0, z + randXYZ(z, y + 1, x ) * r,  z + z_off + randXYZ(z, y, x + 1 ) * r);
+	p4y = if( corner == 0, y  + 1 + randXYZ(z, x, y + 1) * r,  y + y_off + randXYZ(z, x, y ) * r);
+	#plus one on z axiz
+	p5x = if( corner == 0, x + randXYZ(x, y + 1, z + 1 ) * r,  x + x_off + randXYZ(x, y - 1, z ) * r);
+	p5z = if( corner == 0, z + 1 + randXYZ(z + 1, y + 1, x ) * r,  z + z_off + randXYZ(z, y - 1, x ) * r);
+	p5y = if( corner == 0, y + 1 + randXYZ(z + 1, x, y + 1 ) * r,  y - 1 + y_off + randXYZ(z, x, y - 1 ) * r);
+	#plus one on x axis
+	p6x = if( corner == 0, x + 1 + randXYZ(x + 1, y + 1, z ) * r,  x + x_off + randXYZ(x, y + 1, z ) * r);
+	p6z = if( corner == 0, z + randXYZ(z, y + 1, x + 1 ) * r,  z + z_off + randXYZ(z, y + 1, x ) * r);
+	p6y = if( corner == 0, y + 1 + randXYZ(z, x + 1, y + 1 ) * r,  y + 1 + y_off + randXYZ(z, x, y + 1 ) * r);
+	#plus one on both axis
+	p7x = if( corner == 0, x + 1 + randXYZ(x + 1, y + 1, z + 1 ) * r,  20);
+	p7z = if( corner == 0, z + 1 + randXYZ(z + 1, y + 1, x + 1 ) * r,  20);
+	p7y = if( corner == 0, y + 1 + randXYZ(z + 1, x + 1, y + 1 ) * r,  20);
+	
+	
+	
+	#Euclidean distance w/o the root
+	a =  abs( u - p1x ) ** 2 + abs( v - p1z ) ** 2 + abs( w - p1y ) ** 2;
+	b =  abs( u - p2x ) ** 2 + abs( v - p2z ) ** 2 + abs( w - p2y ) ** 2;
+	c =  abs( u - p3x ) ** 2 + abs( v - p3z ) ** 2 + abs( w - p3y ) ** 2;
+	d =  abs( u - p4x ) ** 2 + abs( v - p4z ) ** 2 + abs( w - p4y ) ** 2;
+	e =  abs( u - p5x ) ** 2 + abs( v - p5z ) ** 2 + abs( w - p5y ) ** 2;
+	f =  abs( u - p6x ) ** 2 + abs( v - p6z ) ** 2 + abs( w - p6y ) ** 2;
+	g =  abs( u - p7x ) ** 2 + abs( v - p7z ) ** 2 + abs( w - p7y ) ** 2;
+	h =  20000; #abs( u - p8x ) ** 2 + abs( v - p8z ) ** 2;
+	i =  abs( u - p0x ) ** 2 + abs( v - p0z ) ** 2 + abs( w - p0y ) ** 2;
+	
+	if(
+		compare8(i, a, b, c, d, e, f, g, h ), randXYZ(p0x, p0y, p0z),
+		compare8(a, i, b, c, d, e, f, g, h ), randXYZ(p1x, p1y, p1z),
+		compare8(b, a, i, c, d, e, f, g, h ), randXYZ(p2x, p2y, p2z),
+		compare8(c, a, b, i, d, e, f, g, h ), randXYZ(p3x, p3y, p3z),
+		compare8(d, a, b, c, i, e, f, g, h ), randXYZ(p4x, p4y, p4z),
+		compare8(e, a, b, c, d, i, f, g, h ), randXYZ(p5x, p5y, p5z),
+		compare8(f, a, b, c, d, e, i, g, h ), randXYZ(p6x, p6y, p6z),
+		compare8(g, a, b, c, d, e, f, i, h ), randXYZ(p7x, p7y, p7z),			
+		0
+	)
+
+);
+
+voronoiTiles( x,z, scale, randomness, number )  = floor((voronoiRand( x,z, scale, randomness ) * number) % number);
+voronoiTilesM( x,z, scale, randomness, number )  = floor((voronoiRandM( x,z, scale, randomness ) * number) % number);
+
+
+###########################################################################################################################################				
+#Togos Supplied Functions
+###########################################################################################################################################				
+
+#### Handy functions ####
+
+min(a,b) = if(a < b, a, b);
+max(a,b) = if(a > b, a, b);
+
+ridge( min, max, v ) = (
+	diff = max - min;
+	u = (v - min);
+	w = u % (2 * (max - min));
+	if( diff == 0, min,
+		w < diff, min + w,
+		max + diff - w 
+	)
+);
+
+fractal( iterations, input-scale, output-scale, input-scale-factor, output-scale-factor, dy, basis, x,y,z ) =
+	#(x,y,z) -> if(
+	if(
+		iterations == 0, 0,
+		output-scale * basis(
+			x / input-scale,
+			y / input-scale,
+			z / input-scale
+		) + fractal(
+			iterations - 1,
+			input-scale * input-scale-factor,
+			output-scale * output-scale-factor,
+			input-scale-factor, output-scale-factor,
+			dy, basis, x, y + dy, z )
+	);
+
+###########################################################################################################################################				
+#Complex Function Arguments
+#	Should be distributed over -1 to 1, so base mean should be 0. Quality depends on number of iterations
+#randgauss ( iterations, seed, deviation, mean)
+#
+# 	A midpoint based algorithm with bilinear interpolation
+#midpoint( iterations, scale, output_scale, scale_delta, output_delta, randomness_coefficent, x,z )
+#
+# 	Same algorithm using average of points rather than interpolation
+#midpointAvg( iterations, scale, output_scale, scale_delta, output_delta, randomness_coefficent, x,z )
+#
+# 	Voronoi cells are defined using Euclidean distance -M versions use Manhattan, but other distance metrics are in comments
+#
+# 	Voronoi algorithm that returns the same random number for every x,z in a cell
+#voronoiRand( x,z, scale, randomness_coefficent )
+#voronoiRandM( x,z, scale, randomness_coefficent )
+#voronoiRand3D( x,y,z, scale, randomness_coefficent )
+#
+# 	Voronoi based funcion that returns the weighted combination of the two closest points to x,z added to distance_offset
+#voronoiCell( x, z, scale, randomness_coefficent, distance_offset, weight1, weight2, weight3 )
+#voronoiCellM( x, z, scale, randomness_coefficent, distance_offset, weight1, weight2, weight3 )
+#voronoiCell3D( x, y, z, scale, randomness_coefficent, distance_offset, weight1, weight2 )
+#
+#	Performs the basis function iteration times, scaling input and output accordingly. 
+#fractal( iterations, input-scale, output-scale, input-scale-factor, output-scale-factor, y-offset, basis, x,y,z )
+#
+#	Wraps input v from min to max in a /\/\ pattern not a /|/| pattern
+#ridge( min, max, v )
+###########################################################################################################################################				
+
+materials.none    = -1;
+air     		= material(0x00);
+stone   		= material(0x01);
+grass   		= material(0x02);
+dirt    		= material(0x03);
+cobblestone 	= material(4);
+bedrock 		= material(0x07);
+water   		= material(0x09);
+lava    		= material(0x0B);
+sand    		= material(0x0C);
+gravel  		= material(0x0D); 
+coal_o  		= material(16);
+iron_o 	 		= material(15);
+gold_o  		= material(14);
+redstone_o 		= material(73);
+diamond_o 		= material(56);
+lapis_o			= 21;
+sandstone		= 24;
+mossycobble		= 48;
+brick			= 45;
+obsidian 		= 49;
+ice 			= 79;
+snow			= 80;
+clay 			= 82;
+netherrack		= 87;
+soulsand		= 88;
+glowstone		= 89;
+stonebricks		= 98;
+mycelium		= 110;
+netherbrick		= 112;
+endstone		= 121;
+emerald_o		= 129;
+netherquartz	= 153;
+
+#Plants
+#Saplings ready to grow
+oak = material( 6, 12 + 0);
+pine = material( 6, 12 + 1);
+birch = material( 6, 12 + 2);
+jungle = material( 6, 12 + 3);
+fern = material( 31, 2);
+deadshrub = 32;
+cacti = 81;
+reed = 83;
+pumpkin = 86;
+melon = 103;
+bean = 127;
+
+############################################################################################################################################
+# Steppe landform -very versitile
+############################################################################################################################################
+#Base height
+# sets limit on height of base terrain, when noise generates large values lowering this will create more ridges
+## Continental base
+## 32 is good for small rolling hills... like normal minecraft
+## 64 is well in between
+## 128 is good for steppes
+# scale of noise, a bigger value generates smoother continents, a small scale with a low height should make lots of ridges
+
+
+#Notes on use of mountians
+# Mountains are continent multiplied by scale.
+#	~ slope of continent directly affects mountain slopes, the faster cont. changes the steeper And narrower the mountains
+#	~ mountscale gives multiplier for cont. slope, a muliplier of two gives twice the slope
+#	~ Max height of mount will be (CONTINENTHEIGHT - mountbase) * scale so (32-12) * 6 -> 120 added to base so 40 + 120 = 160
+ 
+mountbase = 10; 				# at what height do mountians start
+mountscale = 2;		# continent noise is muliplied by this 
+#Using for foothills
+mountbase_low = 8; # at what height do foothills start
+mountscale_low = 1.5;
+#Using for rockies
+mountbase_sharp = 14; #29.25; # at what height do rockies start
+mountscale_sharp = 3.5; #2 was orginal
+
+##An attempt at removing the flat ridgelines normaly generated
+##May need to be adjusted when change continent scale
+bump(x,y,z) = fractal(1,32,8,1,1,1,simplex,x,y,z) * -1;
+
+mountians(x,z, s, h, seed) = (
+	mountbase + (((continent(x,z, s, h, seed) - mountbase) * mountscale ))  - 3
+);
+
+mountians_low(x,z, s, h, seed) = (
+	mountbase_low + ((continent(x,z, s, h, seed) - mountbase_low) * mountscale_low)  - 3
+);
+
+mountians_sharp(x,z, s, h, seed) = (
+	bump(x,seed,z) + (mountbase_sharp + ((continent(x,z, s, h, seed) - mountbase_sharp) * mountscale_sharp))
+);
+
+continent(x,z, scale, height, seed) = ridge(0, height, fractal(3,scale,16,25,8,0,simplex,x,seed,z) );
+steppe( x,z, base, s1, h1, seed) =  
+						if(
+						(continent(x,z, s1, h1, seed) > mountians(x,z, s1, h1, seed)) && (continent(x,z, s1, h1, seed) > mountians_low(x,z, s1, h1, seed)) && (continent(x,z, s1, h1, seed) > mountians_sharp(x,z, s1, h1, seed)),
+						base + continent(x,z, s1, h1, seed),
+						(mountians(x,z, s1, h1, seed) > continent(x,z, s1, h1, seed)) && (mountians(x,z, s1, h1, seed) > mountians_low(x,z, s1, h1, seed)) && (mountians(x,z, s1, h1, seed) > mountians_sharp(x,z, s1, h1, seed)),
+						base + mountians(x,z, s1, h1, seed),
+						(mountians_low(x,z, s1, h1, seed) > continent(x,z, s1, h1, seed)) && (mountians_low(x,z, s1, h1, seed) > mountians(x,z, s1, h1, seed)) && (mountians_low(x,z, s1, h1, seed) > mountians_sharp(x,z, s1, h1, seed)),
+						base + mountians_low(x,z, s1, h1, seed),
+						(mountians_sharp(x,z, s1, h1, seed) > continent(x,z, s1, h1, seed)) && (mountians_sharp(x,z, s1, h1, seed) > mountians(x,z, s1, h1, seed)) && (mountians_sharp(x,z, s1, h1, seed) > mountians_low(x,z, s1, h1, seed)),
+						base + mountians_sharp(x,z, s1, h1, seed),
+						0) ;
+
+
+############################################################################################################################################
+# Ores
+############################################################################################################################################
+
+#selects between ore1 to ore5 based on the output of a voronoiRand function
+#Can use mulitple instances of the same ore for coarse control of rarity
+
+
+
+select_ore ( x,z, deposit_scale, randomness, ore1, ore2, ore3, ore4, ore4, ore5 ) = (
+	#Not sure if the modulous operation is neccessary
+	deposit = floor((voronoiRand( x,z, deposit_scale, randomness ) * 5) % 5);
+	if(
+		deposit == 0, ore1,
+		deposit == 1, ore2,
+		deposit == 2, ore3,
+		deposit == 3, ore4,
+		deposit == 4, ore5,
+		0
+	)
+);
+
+#Best Ore generation system so far
+#Works very well, blindingly fast. However, all of the same general altitude, maybe a little dense for uncommon ores though
+#Deposit width contols horizontal thickness, needs really small numbers, like 0.005
+#Thickness controls vertical depth of deposits, needs to be large like 32
+veinBottom( x,z, median_altitude, altitude_scale, altitude_range, deposit_scale, deposit_randomness, deposit_width, frequency_scale, thickness, seeda, seedb) = (
+	median_altitude + simplex( x / altitude_scale, seeda, z / altitude_scale) * altitude_range + ((voronoiCell( x, z, deposit_scale, deposit_randomness, deposit_width, -1, 1, 0) + voronoiCell( x, z, deposit_scale / 4, deposit_randomness, deposit_width, -1, 1, 0)) / 2 - simplex(x / frequency_scale,seedb,z / frequency_scale)) * thickness
+);
+veinTop( x,z, median_altitude, altitude_scale, altitude_range, deposit_scale, deposit_randomness, deposit_width, frequency_scale, thickness, seeda, seedb) = (
+	median_altitude + simplex( x / altitude_scale, seeda, z / altitude_scale) * altitude_range + ((voronoiCell( x, z, deposit_scale, deposit_randomness, deposit_width, -1, 1, 0) + voronoiCell( x, z, deposit_scale / 4, deposit_randomness, deposit_width, -1, 1, 0)) / 2 - simplex(x / frequency_scale,seedb - 1,z / frequency_scale)) * (thickness * -1)
+);
+
+
+
+
+#Another awesome pattern, holes punched in paper
+#(x,z) -> 10 + if( voronoiCell( x, z, 32, 0.70, 0.05, 1, 1, 0) * 16  >= 15.125, 120, -1)
+
+
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+# Biomes
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+
+#Constants
+OCEAN = 0;
+PLAINS = 1;
+DESERT = 2;
+E_HILL = 3;
+FOREST = 4;
+TAGIA = 5;
+SWAMP = 6;
+RIVER = 7;
+FRZN_OCEAN = 10;
+FRZN_RIVER = 11;
+ICE_PLAIN = 12;
+ICE_MNT = 13;
+SHROOM = 14;
+SHROOM_SHORE = 15;
+BEACH = 16;
+E_HILL_EDGE = 20;
+JUNGLE = 21;
+
+#Noise functions for climate
+biome_scale = 256;
+temp(x,z) = midpoint(2, 32, 0.1, 0.5, 0.5, 1, z, x) *  2 +  ridge( 0, 1, abs( 512 + z - x ) % 2048 / 1024);
+rain(x,z) = (midpoint( 3, biome_scale , 1, 0.5, 0.5, 1, z, x ) * 1) / 1.75;
+#Replace with surface geology???
+drain(x,z) =  midpoint( 3, biome_scale, 1, 1, 0.75, 0.25, x - 12947561, z - 12348561) / 1.75;
+#Altitude adjustment equations
+alt_temp(x,z) = complex_cont(x,z) / 200;
+
+alt_drain(x,z) =  complex_cont(x,z) / 128;
+
+#Real sensitive, can require some really small values
+#Temperature thresholds
+hot = 0.35;
+cold = -.1;
+#Rainfall thresholds
+wet = 0.3;
+arid = 0.2;
+#Drainage thresholds
+lowdrain = 0.45;
+highdrain = 0.85;
+
+select_biome(x,z) = if( 
+						complex_cont(x,z) < 50,
+						JUNGLE,
+						drain(x,z) + alt_drain(x,z) < lowdrain,
+						if( temp(x,z) - alt_temp(x,z) < cold,
+								if(
+									rain(x,z) < arid, ICE_PLAIN,
+									rain(x,z) > wet, TAGIA,
+									TAGIA #moderate rain
+								),
+							temp(x,z) - alt_temp(x,z) > hot,
+								if(
+									rain(x,z) < arid, PLAINS,
+									rain(x,z) > wet, SWAMP,
+									FOREST #moderate rain
+								),
+							#temperate temperature
+							if(
+									rain(x,z) < arid, PLAINS,
+									rain(x,z) > wet, FOREST,
+									FOREST #moderate rain
+								)
+						),
+						drain(x,z) + alt_drain(x,z) > highdrain,
+						if( 
+							temp(x,z) - alt_temp(x,z) < cold,
+								if(
+									rain(x,z) < arid, ICE_PLAIN,
+									rain(x,z) > wet, ICE_PLAIN,
+									ICE_PLAIN #moderate rain
+								)
+							,
+							temp(x,z) - alt_temp(x,z) > hot,
+								if(
+									rain(x,z) < arid, DESERT,
+									rain(x,z) > wet, PLAINS,
+									JUNGLE #moderate rain
+								)
+							,
+							#temperate temperature
+							if(
+									rain(x,z) < arid, PLAINS,
+									rain(x,z) > wet, FOREST,
+									PLAINS #moderate rain
+								)
+						),
+						#moderate drainage
+						if( 
+							temp(x,z) - alt_temp(x,z) < cold,
+								if(
+									rain(x,z) < arid, ICE_PLAIN,
+									rain(x,z) > wet, TAGIA,
+									TAGIA #moderate rain
+								)
+							,
+							temp(x,z) - alt_temp(x,z) > hot,
+								if(
+									rain(x,z) < arid, DESERT,
+									rain(x,z) > wet, JUNGLE,
+									PLAINS #moderate rain
+								)
+							,
+							#temperate temperature
+							if(
+									rain(x,z) < arid, PLAINS,
+									rain(x,z) > wet, FOREST,
+									FOREST #moderate rain
+								)
+						)
+						
+					);
+					
+select_biome_test(x,z) = if( 
+						drain(x,z) + alt_drain(x,z) < lowdrain,
+						if( temp(x,z) - alt_temp(x,z) < cold,
+								if(
+									rain(x,z) < arid, snow,
+									rain(x,z) > wet, ice,
+									ice #moderate rain
+								),
+							temp(x,z) - alt_temp(x,z) > hot,
+								if(
+									rain(x,z) < arid, grass,
+									rain(x,z) > wet, obsidian,
+									dirt #moderate rain
+								),
+							#temperate temperature
+							if(
+									rain(x,z) < arid, grass,
+									rain(x,z) > wet, dirt,
+									dirt #moderate rain
+								)
+						),
+						drain(x,z) + alt_drain(x,z) > highdrain,
+						if( 
+							temp(x,z) - alt_temp(x,z) < cold,
+								if(
+									rain(x,z) < arid, snow,
+									rain(x,z) > wet, snow,
+									snow #moderate rain
+								)
+							,
+							temp(x,z) - alt_temp(x,z) > hot,
+								if(
+									rain(x,z) < arid, sand,
+									rain(x,z) > wet, grass,
+									lava #moderate rain
+								)
+							,
+							#temperate temperature
+							if(
+									rain(x,z) < arid, grass,
+									rain(x,z) > wet, dirt,
+									grass #moderate rain
+								)
+						),
+						#moderate drainage
+						if( 
+							temp(x,z) - alt_temp(x,z) < cold,
+								if(
+									rain(x,z) < arid, snow,
+									rain(x,z) > wet, ice,
+									ice #moderate rain
+								)
+							,
+							temp(x,z) - alt_temp(x,z) > hot,
+								if(
+									rain(x,z) < arid, sand,
+									rain(x,z) > wet, lava,
+									grass #moderate rain
+								)
+							,
+							#temperate temperature
+							if(
+									rain(x,z) < arid, grass,
+									rain(x,z) > wet, dirt,
+									dirt #moderate rain
+								)
+						)
+						
+					);
+
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+# Volcanics
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+volcano(_x,_z) = (
+				x = _x + xstart;
+				z = _z + zstart;
+				pos(simplexS(x + perlinS(x, 3241, z, 64) * 32,546,z + perlinS(x, 1234, z, 64) * 32, 256)
+				- midpoint(2, 512, 1, 0.5, 0.25, .5, x,z))  
+				* 1024);
+volcano_alt = 110;
+lava_alt = 109;
+lava_river(x,z) = steppe(x,z, 18, 8, 12, 125);
+
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+# Floating Isles above ocean
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+is_floating_isle(x,z) =  complex_cont(x,z) < 50 && is_valley(x,z);
+floating_isle_river(x,z) = steppe(x,z, 180, 8, 12, 234);
+floating_isle_roof(x,z) = if(
+							(voronoiTiles( x + simplex( x, 32, z, 48) * 8,z + simplex( x, 32, z, 48) * 8, 64, 0.5, 6) + 0) > 2, 
+							((voronoiCell(x,z, 64, 0.7, 0, 3, 0, 0) * 6)), -1);
+floating_isle_floor(x,z) = if(
+							(voronoiTiles( x + simplex( x, 32, z, 48) * 8,z + simplex( x, 32, z, 48) * 8, 64, 0.5, 6) + 0) > 2, 
+							sin((voronoiCell(x,z, 16, 0.7, 0, 6, 0, 0) )) * 8, -1);
+
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+#Rivers
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+#River and beach altitudes
+valley_beach = 66;
+valley_river = 65;
+hills_beach = 81.2;
+hills_river = 81;
+steppe_beach = 40.5;
+steppe_river = 40.25;
+
+# Makes use of the awesome list functionality that Togos added.
+#mask_func is passed x and z
+complex_cont_river( river_mat, river_alt, beach_mat, beach_alt, beach_depth, mud_mat, mud_depth, mask_func) = list(
+	#beach
+	layer(
+		beach_mat,
+		(x,z) -> if( complex_cont(x,z) < beach_alt && mask_func(x,z), complex_cont(x,z) - beach_depth, -1),
+		(x,z) -> if( complex_cont(x,z) < beach_alt && mask_func(x,z), complex_cont(x,z), -1)
+	),
+	#river
+	layer(
+		river_mat,
+		(x,z) -> if( complex_cont(x,z) < river_alt && mask_func(x,z), complex_cont(x,z), -1),
+		(x,z) -> if( complex_cont(x,z) < river_alt && mask_func(x,z), river_alt, -1)
+	),
+	#mud
+	layer(
+		mud_mat,
+		(x,z) -> if( complex_cont(x,z) < river_alt && mask_func(x,z), complex_cont(x,z) - mud_depth, -1),
+		(x,z) -> if( complex_cont(x,z) < river_alt && mask_func(x,z), complex_cont(x,z), -1)
+	)
+);
+#river_func and mask_func are passed x and z
+river( river_mat, river_alt, beach_mat, beach_alt, beach_depth, mud_mat, mud_depth, mask_func, river_func) = list(
+	#beach
+	layer(
+		beach_mat,
+		(x,z) -> if( river_func(x,z) < beach_alt && mask_func(x,z), river_func(x,z) - beach_depth, -1),
+		(x,z) -> if( river_func(x,z) < beach_alt && mask_func(x,z), river_func(x,z), -1)
+	),
+	#river
+	layer(
+		river_mat,
+		(x,z) -> if( river_func(x,z) < river_alt && mask_func(x,z), river_func(x,z), -1),
+		(x,z) -> if( river_func(x,z) < river_alt && mask_func(x,z), river_alt, -1)
+	),
+	#mud
+	layer(
+		mud_mat,
+		(x,z) -> if( river_func(x,z) < river_alt && mask_func(x,z), river_func(x,z) - mud_depth, -1),
+		(x,z) -> if( river_func(x,z) < river_alt && mask_func(x,z), river_func(x,z), -1)
+	)
+);
+#fractal( iterations, input-scale, output-scale, input-scale-factor, output-scale-factor, y-offset, basis )
+deep_cave_roof(x,z) = fractal( 3, 128, 64, 0.5, 0.5, 3, simplex, x, 5687, z);
+deep_cave_floor(x,z) = fractal( 3, 128, 64, 0.5, 0.5, 3, simplex, x, 31234, z);
+
+living_cave( air_mat, ground_mat, ground_depth, pool_mat, pool_alt, lights_mat, light_density, roof_mat, roof_depth, altitude, floor_func, roof_func, mask_func) = list(
+	layer(
+		air_mat,
+		(x,z) -> if( mask_func(x,z), altitude - floor_func(x,z), -1),
+		(x,z) -> if( mask_func(x,z), altitude + roof_func(x,z), -1)
+	),
+	#Ground cover
+	layer(
+		ground_mat,
+		(x,z) -> if( mask_func(x,z), altitude - floor_func(x,z) - ground_depth, -1),
+		(x,z) -> if( mask_func(x,z) && (altitude - floor_func(x,z) < altitude + roof_func(x,z)), altitude - floor_func(x,z), -1)
+	),
+	#Pools
+	layer(
+		pool_mat,
+		(x,z) -> if( mask_func(x,z) && altitude - floor_func(x,z) < pool_alt, altitude - floor_func(x,z), -1),
+		(x,z) -> if( mask_func(x,z) && altitude - floor_func(x,z) < pool_alt, pool_alt, -1)
+	),
+	#Lights
+	layer(
+		lights_mat,
+		(x,z) -> if( mask_func(x,z), altitude + roof_func(x,z) - light_density, -1),
+		(x,z) -> if( mask_func(x,z) && (altitude - floor_func(x,z) < altitude + roof_func(x,z)), altitude + roof_func(x,z), -1)
+	),
+	#Roof
+	layer(
+		roof_mat,
+		(x,z) -> if( mask_func(x,z), altitude + roof_func(x,z) - roof_depth, -1),
+		(x,z) -> if( mask_func(x,z) && (altitude - floor_func(x,z) < altitude + roof_func(x,z)), altitude + roof_func(x,z) , -1)
+	)
+);
+##expirement
+
+#Use to position bedrock walls around area to export
+chunksx = 128;
+chunksz = 128;
+xstart_chunk = 0;
+zstart_chunk = 0;
+# Use to move major landform features around in export area
+# Notable exceptions are ores and caves, neither adjust with this
+xstart = 0;	#positive moves left, negative moves right
+zstart = 0; #positive moves down, negative moves up
+
+disturber = 3 + simplex(x * 8.1, y, z * 8.4) * 2;
+scale = 64;
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+#Valley Landform
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+#Scales for valley landform
+s1 = 256;
+s2 = 128;
+s3 = 64;
+
+voronoicont( x,z, multiplier1, multiplier2, multiplier3 ) = 
+					voronoiCell( x, z, s1, 0.50, 2, -8, -0.987, 0) * multiplier1 
+					+ voronoiCell( x, z, s2, 0.50, 2, -8, 6.5, 0) * multiplier2
+					+ voronoiCell( x, z, s3, 0.50, 2, -8, -0.987, 0)  * multiplier3;
+
+valley( x,z) = (
+				60 + 
+				voronoiCell( x + simplexS( x,32,z, 64) * 512,z + simplexS( z,32,x, 64) * 512, 1000, 0.75, 3, -25, -6, 0) * 2 + 
+				if(voronoicont( x,z, 16, 4, 2 ) < 0,
+					abs(voronoicont( x,z, 16, 4, 2 )) * 2,
+					voronoicont( x,z, 32, 8, 4 ) / 3.5
+				));
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #
+#Hills and Steppe landforms
+#### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #				
+
+radius( _x, _z, radius_x, radius_z, blend_radius, perturb_scale, perturb_multiplier, seed ) = (
+		x = _x + xstart + abs(simplexS(_x, seed,_z, perturb_scale)) * perturb_multiplier;
+		z = _z + zstart + abs(simplexS(_x, seed,_z, perturb_scale)) * perturb_multiplier;
+		pow_d = ((radius_x - (x)) ** 2 + (radius_z - (z)) ** 2) ** 0.5;
+		blend_radius - pow_d
+);
+#Generates an ellipse
+radius_e( _x, _z, center_x, center_z, x_width, z_width, blend_radius, perturb_scale, perturb_multiplier, seed ) = (
+		x = _x + xstart + abs(simplexS(_x, seed,_z, perturb_scale)) * perturb_multiplier;
+		z = _z + zstart + abs(simplexS(_x, seed,_z, perturb_scale)) * perturb_multiplier;
+		percent = 1 - ((x - center_x) ** 2 / x_width ** 2) - ((z - center_z) ** 2 / z_width ** 2);
+		percent * blend_radius
+);
+# Mask for hills and steppes
+hills_r(x,z) = radius_e(x, z, 0, 2048, 1300, 950, 1000, 128, 256, 234);
+steppe_r(x,z) = radius_e(x, z, 2024, 1024, 750, 900, 924, 128, 256, 269);
+
+is_hills( _x,_z) =  if( hills_r(_x, _z) > 100, 1,  0) == 1;
+isnot_hills( _x,_z) =  if( hills_r(_x, _z) <= 0, 1,  0) == 1;
+mix_hills( _x,_z) =  if( hills_r(_x, _z) <= 100 && hills_r(_x, _z) > 0, hills_r(_x, _z),  0);
+	
+is_steppe( x,z) =  if( steppe_r(x,z) > 100, 1,  0) == 1;
+isnot_steppe( x,z) = if( steppe_r(x,z) <= 0, 1,  0) == 1;
+mix_steppe( x,z) =  if( steppe_r(x,z) <= 100 && steppe_r(x,z) > 0, steppe_r(x,z),  0);
+is_mix_steppe( x,z) =  steppe_r(x,z) <= 25 && steppe_r(x,z) > 0;
+
+	
+is_valley(x,z) = (isnot_hills(x,z) || mix_hills(x,z) > 0) && (isnot_steppe(x,z) || mix_steppe(x,z) > 0);
+is_valley_mount(x,z) = (isnot_hills(x,z) || mix_hills(x,z) > 0) && (isnot_steppe(x,z) || mix_steppe(x,z) > 0) && voronoicont( x,z, 16, 4, 2 ) < 0;
+is_valley_ocean(x,z) = (isnot_hills(x,z) || mix_hills(x,z) > 0) && (isnot_steppe(x,z) || mix_steppe(x,z) > 0) && complex_cont(x,z) < valley_river;
+#need a separate function for river so can eliminate water walls
+is_valley_river(x,z) = (isnot_hills(x,z) || mix_hills(x,z) > 0) && (isnot_steppe(x,z));
+
+mix(x, z, v, start, range, a, ax, az, b, bx, bz) = (a(ax,az) * ( range - (v - start)) / range) +  (b(bx,bz) *  ( v - start) / range);
+
+steppes(x,z) = steppe(x,z, 40, 128, 24, 0);
+hills(x,z) = steppe(x,z, 80, 32, 24, 0);
+steppe_edge(x,z) = steppes(x,z) + (100 - mix_steppe(x,z)) * .66;
+
+complex_cont(x,z) = (
+						#Can be used for individually positioning landforms 
+					x1 = x + 0 + xstart;
+					z1 = z + 0 + zstart;
+					x_steppe = x + 0 + xstart;
+					z_steppe = z + 0 + zstart;
+					x_hills = x + 0 + xstart;
+					z_hills = z + 0 + zstart;
+					if(
+						#Mix different landforms, artifacts are formed when rivers meet edges 
+						#Really strange stuff happens when steppe and hllls intersect
+						mix_steppe(x,z) > 0 && mix_hills(x,z) > 0, mix(x,z, mix_steppe(x,z), 0, 100, steppes, x_steppe,z_steppe, hills, x_hills,z_hills ),
+						mix_hills(x,z) > 0 && mix_steppe(x,z) <= 0, mix(x,z, mix_hills(x,z), 0, 100, valley, x1, z1, hills, x_hills,z_hills ),
+						mix_steppe(x,z) > 0 && mix_hills(x,z) <= 0, mix(x,z, mix_steppe(x,z), 0, 100, valley, x1, z1, steppe_edge, x_steppe,z_steppe ),
+						
+						
+						is_steppe(x,z), steppes( x_steppe,z_steppe ),
+						is_hills(x,z), hills( x_hills,z_hills ),
+					valley(x1,z1)
+					));
+
+						
+#Mask for terrain generation or islands
+#### layer(
+	#### dirt,
+	#### 1,
+	#### (x,z) -> if ( x > 0,
+		#### #Perturbed veronoiTiles, awesome for masks
+		 #### 120 + (voronoiTiles( x + simplex( x / 48, 32, z / 48) * 256,z + simplex( x / 48, 32, z / 48) * 256, 512, 0.7, 2) + 0) * 24,
+		#### (voronoiTiles( x * -1,z, 128, 0.7, 2) + 0) * 24
+	#### )
+#### ),
+
+#### layer(
+	#### ice,
+	#### 1,
+	#### (x,z) -> if ( x > 0,
+		#### #Perturbed veronoiTiles, awesome for masks, interesting texture too
+		 #### 120 + (voronoiCell( x + simplexS( x,32,z, 64) * 512,z + 512 + simplexS( z,32,x, 64) * 512, 1500, 0.75, 3, -25, -6, 0) + 0) * 64,
+		#### (voronoiTiles( x * -1,z, 128, 0.7, 2) + 0) * 24
+	#### )
+#### ),
+geology_layer_a(x,z) = steppe( x,z, 30, 128, 24, 5768);
+geology_layer_b(x,z) = steppe( x,z, 10, 128, 24, 165);
+geology_layer_c(x,z) = steppe( x,z, 40, 128, 24, 5768);
+
+contintent_limit(x,z) = complex_cont(x,z);
+no_limit(x,z) = 256;
+#true and false don't seem to work 
+# 1 == 1 doesn't work really strange --- bug report
+is_anywhere(x,z) = (x == x);
+
+dirt_depth = 3;
+
+#### #Best Ore generation system so far
+#Works very well, blindingly fast. 
+#Ores are generated on the surface of a large simplex funtion
+#Desnities of a beta 1.7.3 world (the only large empty map on hand for testing) per square block
+# coal 0.61		iron 0.31	redstone 0.11	gold 0.03	diamond	0.01
+
+# In tests yeilded 0.03 blocks per sq block, uses voronoiCells. Angular, lattice like structure
+landform_rare_ore(ore, altitude, seed, seeda, seedb, is_landform, layerlimit, thickness) = layer(
+	ore,
+	(x,z) -> if( is_landform(x,z),
+				if( layerlimit(x,z) > veinBottom( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ),
+					veinBottom( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ) - thickness,
+					-1
+					),
+				-1
+				),
+	(x,z) -> if( is_landform(x,z),
+				if( layerlimit(x,z) > veinTop( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ),
+					veinTop( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ),
+					layerlimit(x,z)
+					),
+				-1
+				)
+	
+);
+rare_ore(ore, altitude, seed, seeda, seedb, layerlimit, thickness) = layer(
+	ore,
+	(x,z) -> if( layerlimit(x,z) > veinBottom( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ),
+					veinBottom( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ) - thickness,
+					-1
+					),
+	(x,z) -> if( layerlimit(x,z) > veinTop( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ),
+					veinTop( x + seed,z, altitude, 256, 32, 64, 0.5, 0.005, 128, 16, seeda, seedb ),
+					layerlimit(x,z)
+					)
+	
+);
+
+# In tests with density 6 yeilded 0.15 blocks per sq block, uses simplex. Ropey structure like rivers only broken up
+# In practice much lower densities exist because of limitations
+# Lower densities inc amount of ore
+simplex_ore(ore, alt, s1, s2, s3, is_landform, layer_limit, density) = layer(
+	ore,
+	(x,z) -> if( is_landform(x,z),
+					if( steppe(x,z, alt, 16, density, s1) - 1 < alt,
+						#if( layer_limit(x,z) > steppe(x,z, alt, 16, density, s1) - simplexS(x,s2,z,32) * 16,
+								steppe(x,z, alt, 16, density, s1) - simplexS(x,s2,z,32) * 16, 
+								#-1),
+						-1),
+				-1),
+	(x,z) -> if( is_landform(x,z),
+				if( steppe(x,z, alt, 16, density, s1) - 1 < alt, 
+					if( layer_limit(x,z) > steppe(x,z, alt, 16, density, s1) + simplexS(x,s3,z,32) * 16, 
+							steppe(x,z, alt, 16, density, s1) + simplexS(x,s3,z,32) * 16, 
+							layer_limit(x,z)
+							),
+					-1), 
+				-1)
+);
+simplex_ore_var(ore, alt, s1, s2, s3, is_landform, layer_limit, density) = layer(
+	ore,
+	(x,z) -> if( is_landform(x,z),
+					if( steppe(x,z, alt(x,z), 16, density, s1) - 1 < alt(x,z),
+						#if( layer_limit(x,z) > steppe(x,z, alt(x,z), 16, density, s1) - simplexS(x,s2,z,32) * 16,
+								steppe(x,z, alt(x,z), 16, density, s1) - simplexS(x,s2,z,32) * 16, 
+								#-1),
+						-1),
+				-1),
+	(x,z) -> if( is_landform(x,z),
+				if( steppe(x,z, alt(x,z), 16, density, s1) - 1 < alt(x,z), 
+					if( layer_limit(x,z) > steppe(x,z, alt(x,z), 16, density, s1) + simplexS(x,s3,z,32) * 16, 
+							steppe(x,z, alt(x,z), 16, density, s1) + simplexS(x,s3,z,32) * 16, 
+							layer_limit(x,z)
+							),
+					-1), 
+				-1)
+);
+test = layered-terrain(
+
+#### #### #### #### #### #### #### #### #### #### #### #### #
+# Valley
+#### #### #### #### #### #### #### #### #### #### #### #### #
+layer(
+	stone,
+	1,
+	(x,z) -> complex_cont(x,z)
+),
+#landform_common_ore(ore, alt, s1, s2, s3, is_landform, layer_limit, density)
+simplex_ore_var(coal_o, (x,z) -> (68 + simplexS(x,132,z, 128) * 64), 4, 23, 86, is_valley, contintent_limit, 2),
+simplex_ore_var(iron_o, (x,z) -> (64 + simplexS(x,32,z, 128) * 64), 234, 23, 74, is_valley, contintent_limit, 3),
+simplex_ore_var(redstone_o, (x,z) -> (60 + simplexS(x,72,z, 128) * 64), 668, 23, 65, is_valley, contintent_limit, 4),
+
+simplex_ore_var(coal_o, (x,z) -> (138 + simplexS(x,132,z, 128) * 128), 4, 23, 54, is_valley_mount, contintent_limit, 2),
+simplex_ore_var(iron_o, (x,z) -> (104 + simplexS(x,34,z, 128) * 128), 234, 23, 54, is_valley_mount, contintent_limit, 3),
+simplex_ore_var(redstone_o, (x,z) -> (128 + simplexS(x,67,z, 128) * 128), 668, 45, 98, is_valley_mount, contintent_limit, 4),
+
+layer(
+	cobblestone,
+	1,
+	(x,z) -> if( is_valley(x,z), if( geology_layer_a(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  geology_layer_a(x,z)), -1)
+),
+simplex_ore_var(redstone_o, (x,z) -> (33 + simplexS(x,132,z, 128) * 64), 46, 23, 86, is_valley, geology_layer_a, 2),
+simplex_ore_var(lapis_o, (x,z) -> (30 + simplexS(x,32,z, 128) * 64), 334, 23, 74, is_valley, geology_layer_a, 3),
+simplex_ore_var(iron_o, (x,z) -> (26 + simplexS(x,72,z, 128) * 64), 748, 23, 65, is_valley, geology_layer_a, 2),
+layer(
+	mossycobble,
+	1,
+	(x,z) -> if( is_valley(x,z), if(geology_layer_b(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  geology_layer_b(x,z)), -1)
+),
+simplex_ore_var(gold_o, (x,z) -> (13 + simplexS(x,132,z, 128) * 64), 654, 23, 86, is_valley, geology_layer_b, 3),
+simplex_ore_var(emerald_o, (x,z) -> (10 + simplexS(x,32,z, 128) * 64), 157, 23, 74, is_valley, geology_layer_b, 3),
+simplex_ore_var(diamond_o, (x,z) -> (6 + simplexS(x,72,z, 128) * 64), 3189, 23, 65, is_valley, geology_layer_b, 6),
+
+#### #### #### #### #### #### #### #### #### #### #### #### #
+#Hills 
+#### #### #### #### #### #### #### #### #### #### #### #### #
+layer(
+	sandstone,
+	1,
+	(x,z) -> if( is_hills(x,z), complex_cont(x,z) - dirt_depth, -1)
+),
+#Taper off 
+layer(	
+	sandstone,
+	1,
+	(x,z) -> if( mix_hills(x,z) != 0,  mix_hills(x,z) / 100 * complex_cont(x,z) - dirt_depth, -1)
+),
+simplex_ore_var(coal_o, (x,z) -> (93 + simplexS(x,132,z, 128) * 72), 654, 23, 86, is_hills, contintent_limit, 2),
+simplex_ore_var(iron_o, (x,z) -> (84 + simplexS(x,32,z, 128) * 72), 157, 23, 74, is_hills, contintent_limit, 2),
+simplex_ore_var(lapis_o, (x,z) -> (70 + simplexS(x,72,z, 128) * 72), 3189, 23, 65, is_hills, contintent_limit, 3),
+
+
+layer(
+	clay,
+	(x,z) -> if( is_hills(x,z), if( steppe( x,z, 80, 128, 24, 5768) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  steppe( x,z, 80, 128, 24, 5768)), -1),
+	(x,z) -> if( is_hills(x,z), if( steppe( x,z, 80.75, 128, 24, 5768) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  steppe( x,z, 80.75, 128, 24, 5768)), -1)
+),
+
+layer(
+	stone,
+	(x,z) -> if( mix_hills(x,z) != 0, if( geology_layer_c(x,z) > complex_cont(x,z) - dirt_depth, (100 - mix_hills(x,z)) / 100 * geology_layer_c(x,z),  (100 - mix_hills(x,z)) / 100 * geology_layer_c(x,z)), 1),
+	(x,z) -> if( is_hills(x,z) || mix_hills(x,z) != 0, if( geology_layer_c(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  geology_layer_c(x,z)), -1)
+),
+simplex_ore_var(redstone_o, (x,z) -> (56 + simplexS(x,56,z, 128) * 64), 36, 16, 86, is_hills, geology_layer_c, 2),
+simplex_ore_var(gold_o, (x,z) -> (44 + simplexS(x,46,z, 128) * 64), 546, 3, 74, is_hills, geology_layer_c, 4),
+simplex_ore_var(emerald_o, (x,z) -> (35 + simplexS(x,73,z, 128) * 64), 175, 54, 65, is_hills, geology_layer_c, 4),
+layer(
+	netherrack,
+	1,
+	(x,z) -> if( is_hills(x,z), if(geology_layer_b(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  geology_layer_b(x,z)), -1)
+),
+#Taper off
+layer(
+	netherrack,
+	1,
+	(x,z) -> if( mix_hills(x,z) != 0, if(geology_layer_b(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  mix_hills(x,z) / 100 * geology_layer_b(x,z)), -1)
+),
+simplex_ore_var(netherquartz, (x,z) -> (23 + simplexS(x,89,z, 128) * 64), 879, 45, 86, is_hills, geology_layer_b, 2),
+simplex_ore_var(glowstone, (x,z) -> (14 + simplexS(x,269,z, 128) * 64), 698, 65, 74, is_hills, geology_layer_b, 3),
+simplex_ore_var(emerald_o, (x,z) -> (7 + simplexS(x,49,z, 128) * 64), 3657, 91, 65, is_hills, geology_layer_b, 3),
+#### #### #### #### #### #### #### #### #### #### #### #### #
+#steppes 
+#### #### #### #### #### #### #### #### #### #### #### #### #
+layer(
+	stone,
+	1,
+	(x,z) -> if( is_steppe(x,z), complex_cont(x,z) - dirt_depth, -1)
+),
+#Taper off 
+layer(	
+	stone,
+	1,
+	(x,z) -> if( mix_steppe(x,z) != 0,  mix_steppe(x,z) / 100 * complex_cont(x,z) - dirt_depth, -1)
+),
+simplex_ore_var(lapis_o, (x,z) -> (56 + simplexS(x,19,z, 128) * 64), 738, 45, 86, is_steppe, contintent_limit, 2),
+simplex_ore_var(iron_o, (x,z) -> (54 + simplexS(x,38,z, 128) * 64), 1236, 65, 74, is_steppe, contintent_limit, 3),
+simplex_ore_var(coal_o, (x,z) -> (47 + simplexS(x,46,z, 128) * 64), 9633, 91, 65, is_steppe, contintent_limit, 2),
+
+layer(
+	mossycobble,
+	(x,z) -> if( mix_steppe(x,z) != 0, if( geology_layer_c(x,z) > complex_cont(x,z) - dirt_depth, (100 - mix_steppe(x,z)) / 100 * geology_layer_c(x,z),  (100 - mix_steppe(x,z)) / 100 * geology_layer_c(x,z)), 1),
+	(x,z) -> if( is_steppe(x,z) || mix_steppe(x,z) != 0, if( geology_layer_c(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  geology_layer_c(x,z)), -1)
+),
+simplex_ore_var(iron_o, (x,z) -> (53 + simplexS(x,72,z, 128) * 64), 3577, 45, 86, is_steppe, geology_layer_c, 2),
+simplex_ore_var(coal_o, (x,z) -> (44 + simplexS(x,36,z, 128) * 64), 6528, 65, 74, is_steppe, geology_layer_c, 2),
+simplex_ore_var(iron_o, (x,z) -> (35 + simplexS(x,78,z, 128) * 64), 1257, 91, 65, is_steppe, geology_layer_c, 3),
+layer(
+	endstone,
+	1,
+	(x,z) -> if( is_steppe(x,z), if(geology_layer_b(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  geology_layer_b(x,z)), -1)
+),
+#Taper off
+layer(
+	endstone,
+	1,
+	(x,z) -> if( mix_steppe(x,z) != 0, if(geology_layer_b(x,z) > complex_cont(x,z) - dirt_depth, complex_cont(x,z) - dirt_depth,  mix_steppe(x,z) / 100 * geology_layer_b(x,z)), -1)
+),
+simplex_ore_var(redstone_o, (x,z) -> (23 + simplexS(x,89,z, 128) * 64), 879, 45, 86, is_steppe, geology_layer_b, 2),
+simplex_ore_var(emerald_o, (x,z) -> (14 + simplexS(x,269,z, 128) * 64), 698, 65, 74, is_steppe, geology_layer_b, 3),
+simplex_ore_var(diamond_o, (x,z) -> (7 + simplexS(x,49,z, 128) * 64), 3657, 91, 65, is_steppe, geology_layer_b, 5),
+
+#Ocean -just one extra layer
+layer(
+	endstone,
+	1,
+	(x,z) -> if( complex_cont(x,z) < valley_river, valley_river - complex_cont(x,z), -1)
+),
+simplex_ore_var(gold_o, (x,z) -> (16 + simplexS(x,89,z, 128) * 32), 879, 45, 86, is_valley_ocean, (x,z) -> valley_river - complex_cont(x,z), 2),
+simplex_ore_var(emerald_o, (x,z) -> (14 + simplexS(x,269,z, 128) * 32), 698, 65, 74, is_valley_ocean, (x,z) -> valley_river - complex_cont(x,z), 3),
+simplex_ore_var(diamond_o, (x,z) -> (7 + simplexS(x,49,z, 128) * 32), 3657, 91, 65, is_valley_ocean, (x,z) -> valley_river - complex_cont(x,z), 3),
+
+#### #### #### #### #### #### #### #### #### #### #### #
+#Valley surface
+# also default surface, other landforms overwrite this when desired
+# do this now so can overwrite any ore extrusions
+#### #### #### #### #### #### #### #### #### #### #### #
+layer(
+	dirt,
+	(x,z) -> complex_cont(x,z) - bump(x,0,z) - dirt_depth,
+	(x,z) -> if ( complex_cont(x,z) < 120, complex_cont(x,z), -1 )
+),
+
+layer(
+	grass,
+	(x,z) -> complex_cont(x,z) - 1,
+	(x,z) -> if ( complex_cont(x,z) < 120, complex_cont(x,z), -1 )
+),
+
+# Desert surface in hills and steppes
+# also default surface, other landforms overwrite this when desired
+layer(
+	sand,
+	(x,z) -> if( (is_hills(x,z) || is_steppe(x,z)) && select_biome(x,z) == DESERT, complex_cont(x,z) - bump(x,0,z) - dirt_depth, -1),
+	(x,z) -> if( (is_hills(x,z) || is_steppe(x,z)) && select_biome(x,z) == DESERT && complex_cont(x,z) < 120, complex_cont(x,z), -1 )
+),
+
+
+#### #### #### #### #### #### #### #### #### #### #### #
+# River/Ocean		
+# Faster to do many layers for each type than to select for each type in a materials if() b/c materials are 3D
+#### #### #### #### #### #### #### #### #### #### #### #
+#Valley rivers
+complex_cont_river( water, valley_river, sand, valley_beach, 1, soulsand, 1, is_valley_river),
+complex_cont_river( water, valley_river, sand, valley_beach, 1, soulsand, 1, is_mix_steppe),
+#### #Hills rivers
+complex_cont_river( water, hills_river, sand, hills_beach, 1, gravel, 1, is_hills),
+#### #Steppes rivers
+complex_cont_river( water, steppe_river, clay, steppe_beach, 1, soulsand, 1, is_steppe),
+#### #Underground magma rivers in steppes
+river( lava, 19.5, lava, 19.5, 1, obsidian, 1, is_steppe, lava_river),
+
+
+
+
+
+#Do ores for this layer here so that are overwritten with next layer
+
+#Caves - only occur in hills
+
+#Using for caves... would also makea good ore system
+#### layer(
+	#### dirt,
+	#### (x,z) -> if( is_hills(x,z) &&  steppe(x,z, 140, 16, 6, 3456) - 1 < 140, steppe(x,z, 140, 16, 6, 3456) - simplexS(x,1234,z,32) * 16, -1),
+	#### (x,z) -> if( is_hills(x,z) &&  steppe(x,z, 140, 16, 6, 3456) - 1 < 140, steppe(x,z, 140, 16, 6, 3456) + simplexS(x,647,z,32) * 16, -1)
+#### ),
+
+#Narrow Caves
+layer(
+	air,
+	(x,z) -> if( is_hills(x,z) && steppe(x,z, 70, 16, 6, 3456) - 0.75 < 70, 68 - 16 * abs(simplexS(x,123,z,16)), -1),
+	(x,z) -> if( is_hills(x,z) && steppe(x,z, 70, 16, 6, 3456) - 0.75 < 70, 70 + 16 * abs(simplexS(x,498,z,16)), -1)
+),
+#Wider caves
+layer(
+	air,
+	(x,z) -> if( is_hills(x,z) && steppe(x,z, 50, 32, 6, 46544) - 1.75 < 170, 53 - 32 * abs(simplexS(x,984,z,32)), -1),
+	(x,z) -> if( is_hills(x,z) &&  steppe(x,z, 50, 32, 6, 46544) - 1.75 < 170, 50 + 32 * abs(simplexS(x,347,z,32)), -1)
+),
+#Deep caves- Underground world inspired by Dwarf Fortress, Mystcraft cave worlds, and Togos mapscript
+living_cave( air, mycelium, 1, water, 12, glowstone, 1.5, obsidian, 1, 24, deep_cave_floor, deep_cave_roof, is_hills),
+
+#Volcanics
+layer(
+	mossycobble,
+	1,
+	(x,z) -> ridge(1, volcano_alt, volcano(x,z))
+),
+layer(
+	lava,
+	(x,z) -> ridge(1, volcano_alt, volcano(x,z)),
+	(x,z) -> if( volcano(x,z) > volcano_alt, lava_alt, -1)
+),
+simplex_ore_var(lava, (x,z) -> (12 + simplexS(x,54,z, 128) * 32), 6877, 45, 86,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 2),
+simplex_ore_var(gold_o, (x,z) -> (16 + simplexS(x,43,z, 128) * 32), 3698, 45, 86,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 2),
+simplex_ore_var(emerald_o, (x,z) -> (14 + simplexS(x,89,z, 128) * 32), 258, 65, 74,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 3),
+simplex_ore_var(diamond_o, (x,z) -> (7 + simplexS(x,13,z, 128) * 32), 768, 91, 65,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 3),
+#Higher ores
+simplex_ore_var(lava, (x,z) -> (53 + simplexS(x,74,z, 128) * 64), 9524, 45, 86,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 2),
+simplex_ore_var(gold_o, (x,z) -> (60 + simplexS(x,46,z, 128) * 64), 2587, 45, 86,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 3),
+simplex_ore_var(emerald_o, (x,z) -> (44 + simplexS(x,91,z, 128) * 64), 4568, 65, 74,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 2),
+simplex_ore_var(diamond_o, (x,z) -> (37 + simplexS(x,67,z, 128) * 64), 1257, 91, 65,(x,z) ->  volcano(x,z) > 0, (x,z) -> ridge(1, volcano_alt, volcano(x,z)), 3),
+
+
+#interesting landform
+#### layer(
+	#### dirt,
+	#### 128,
+	#### (x,z) -> 128 + 128 * bezierR(steppes(x,z) / 176, 0, 1, -.25, 1)
+#### ),
+
+#Floating Islands above the sea
+river( snow, 181.75, ice, 182.75, 1, ice, 1, is_floating_isle, floating_isle_river),
+living_cave( dirt, ice, 3, snow, 181, dirt, 1, grass, 1, 180, floating_isle_floor, floating_isle_roof, is_floating_isle),
+
+
+#### #region grid
+#### layer (
+	#### bedrock,
+	#### 0,
+	#### (x,z) -> if ( 
+		#### ridge( 0,256, x - 256) > 240, 
+		#### 127,		
+		#### -1
+		#### )
+#### ),
+#### layer (
+	#### bedrock,
+	#### 0,
+	#### (x,z) -> if ( 
+		#### ridge( 0,256, z - 256) > 240,
+		#### 127,		
+		#### -1
+		#### )
+#### ),
+layer (
+	bedrock,
+	0,
+	(x,z) ->  if ( 
+		(x >= (xstart_chunk * 16 ) ) and (x <= ((xstart_chunk + 1) * 16) ), 
+		227,
+		(x <= ((chunksx + xstart_chunk) * 16) ) and (x >= ((chunksx + xstart_chunk - 1) * 16) ),
+		227,		
+		-1
+		)
+),
+layer (
+	bedrock,
+	0,
+	(x,z) -> if ( 
+		(z >= (zstart_chunk * 16) ) and (z <= ((zstart_chunk + 1) * 16) ), 
+		227,
+		(z <= ((chunksz + zstart_chunk) * 16) ) and (z >= ((chunksz + zstart_chunk - 1) * 16) ),
+		227,		
+		-1
+		)
+),
+layer( bedrock, 0, 1),
+#Biome testing
+#### layer(
+	#### (x,y,z) -> select_biome_test(x,z),
+	#### 1,
+	#### (x,z) -> complex_cont(x,z)
+#### ),
+biome @ (x,z) -> select_biome(x,z)
+#lighter
+#Not working atm
+#populated
+);
+test

@@ -1,0 +1,7 @@
+if( true, 
+	layered-terrain(
+		layer( 8, 0, (x,z) -> if(false, x, z) ),
+		layer( 1, 0, (x,z) -> 64 + x + z )
+	),
+	0
+);

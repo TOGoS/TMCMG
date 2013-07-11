@@ -93,11 +93,24 @@ public class Parser extends BaseStreamSource<ASTNode> implements StreamDestinati
 		return "\"" + escape(s) + "\"";
 	}
 	
+	/**
+	 * This is (somewhat unfortunately)
+	 * used by the binding system to identify bindings
+	 * for purposes of ignoring duplicates.  Therefore
+	 * it needs to be able to identify any constants that
+	 * might end up being used in a program (ot the code
+	 * that calls it should be changed not to).
+	 *  
+	 * @param value
+	 * @return
+	 */
 	public static String toLiteral( Object value )  {
 		if( value instanceof Number ) {
 			return value.toString();
 		} else if( value instanceof String ) {
 			return quote((String)value);
+		} else if( value instanceof Boolean ) {
+			return value.toString();
 		} else {
 			throw new RuntimeException("Don't know how to convert "+value.getClass()+" to string");
 		}

@@ -1,0 +1,7 @@
+layered-terrain(
+	layer(
+	    (x,y,z) -> if( simplex( x / 128, y / 4, z / 128) > 0.1, 3, 0),
+	    1,
+	    100
+	)
+)
