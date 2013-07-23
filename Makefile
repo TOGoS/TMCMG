@@ -15,5 +15,5 @@ compile:
 	echo 'Main-Class: togos.minecraft.mapgen.app.TMCMG' >>bin/META-INF/MANIFEST.MF
 
 TMCMG.jar: compile
-	rm TMCMG.jar
+	rm -f TMCMG.jar
 	cd bin ; zip -r ../TMCMG.jar . ; cd ..
