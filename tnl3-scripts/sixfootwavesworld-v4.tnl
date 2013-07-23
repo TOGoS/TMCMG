@@ -1823,6 +1823,35 @@ simplex_ore_var(ore, alt, s1, s2, s3, is_landform, layer_limit, density) = layer
 					-1), 
 				-1)
 );
+
+
+grid-layers = list(
+	layer (
+		bedrock,
+		0,
+		(x,z) ->  if ( 
+			(x >= (xstart_chunk * 16 ) ) and (x <= ((xstart_chunk + 1) * 16) ), 
+			227,
+			(x <= ((chunksx + xstart_chunk) * 16) ) and (x >= ((chunksx + xstart_chunk - 1) * 16) ),
+			227,		
+			-1
+			)
+	),
+	layer (
+		bedrock,
+		0,
+		(x,z) -> if ( 
+			(z >= (zstart_chunk * 16) ) and (z <= ((zstart_chunk + 1) * 16) ), 
+			227,
+			(z <= ((chunksz + zstart_chunk) * 16) ) and (z >= ((chunksz + zstart_chunk - 1) * 16) ),
+			227,		
+			-1
+			)
+	)
+);
+
+
+
 test = layered-terrain(
 
 #### #### #### #### #### #### #### #### #### #### #### #### #
@@ -2080,28 +2109,7 @@ living_cave( dirt, ice, 3, snow, 181, dirt, 1, grass, 1, 180, floating_isle_floo
 		#### -1
 		#### )
 #### ),
-layer (
-	bedrock,
-	0,
-	(x,z) ->  if ( 
-		(x >= (xstart_chunk * 16 ) ) and (x <= ((xstart_chunk + 1) * 16) ), 
-		227,
-		(x <= ((chunksx + xstart_chunk) * 16) ) and (x >= ((chunksx + xstart_chunk - 1) * 16) ),
-		227,		
-		-1
-		)
-),
-layer (
-	bedrock,
-	0,
-	(x,z) -> if ( 
-		(z >= (zstart_chunk * 16) ) and (z <= ((zstart_chunk + 1) * 16) ), 
-		227,
-		(z <= ((chunksz + zstart_chunk) * 16) ) and (z >= ((chunksz + zstart_chunk - 1) * 16) ),
-		227,		
-		-1
-		)
-),
+#grid-layers,
 layer( bedrock, 0, 1),
 #Biome testing
 #### layer(
@@ -2109,9 +2117,7 @@ layer( bedrock, 0, 1),
 	#### 1,
 	#### (x,z) -> complex_cont(x,z)
 #### ),
-biome @ (x,z) -> select_biome(x,z)
-#lighter
-#Not working atm
-#populated
+biome @ (x,z) -> select_biome(x,z),
+flag-populated
 );
 test

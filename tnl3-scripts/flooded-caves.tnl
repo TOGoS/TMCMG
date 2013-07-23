@@ -27,5 +27,7 @@ layered-terrain(
 	layer( (x,y,z) -> if( simplex(x * 3.1, y * 3.1, z * 3.1) > 0,  birch, sand ), ground-height, (x,z) -> ground-height(x,z) + 1 ), 
 	flooded-cave-layer( (x,z) -> 64 + 48 * simplex(x / 64, 0, z / 64), cave-ceiling ),
 	layer( glowstone, cave-ceiling, (x,z) -> cave-ceiling(x,z) + simplex(x,0,z) * 3 ),
-	layer( bedrock, 0, 1 )
+	layer( bedrock, 0, 1 ),
+	grassify,
+	flag-populated
 )

@@ -1,14 +1,17 @@
 package togos.minecraft.mapgen;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import togos.lang.BaseSourceLocation;
 import togos.lang.CompileError;
 import togos.lang.ScriptError;
 import togos.minecraft.mapgen.world.Materials;
 import togos.minecraft.mapgen.world.gen.ChunkMunger;
+import togos.minecraft.mapgen.world.gen.Grassifier;
 import togos.minecraft.mapgen.world.gen.LayeredTerrainFunction;
 import togos.minecraft.mapgen.world.gen.MinecraftWorldGenerator;
+import togos.minecraft.mapgen.world.gen.TerrainPopulatedSetter;
 import togos.minecraft.mapgen.world.structure.ChunkData;
 import togos.noise.v3.functions.BuiltinFunction;
 import togos.noise.v3.functions.MathFunctions;
@@ -109,6 +112,7 @@ public class GeneratorDefinitionFunctions
 	{
 		ArrayList<LayerDefinition> layerDefs = new ArrayList<LayerDefinition>();
 		Function<Number> biomeFunction = new MathFunctions.ConstantBindingFunction<Number>( Binding.forValue(-1, BUILTIN_LOC) );
+		List<ChunkMunger> postProcessors = new ArrayList<ChunkMunger>();
 		
 		@Override
         public LayeredTerrainFunction getTerrainFunction() {
@@ -170,6 +174,10 @@ public class GeneratorDefinitionFunctions
 								scratch.generateAndWriteColumn( scratch.terrainBuffer.layerData[l].materialFunction,
 									(int)Math.round(scratch.floor[i]), (int)Math.round(scratch.ceiling[i]),
 									cd, x, z );
+							}
+							
+							for( ChunkMunger pp : postProcessors ) {
+								pp.mungeChunk(cd);
 							}
 		                }
 					} catch( Exception e ) {
@@ -244,7 +252,7 @@ public class GeneratorDefinitionFunctions
 			RegisterID<IVar> biomeReg = vectorize( biomeFunction, xzVariables, compiler, IVar.INSTANCE );
 			
 			Program layerHeightProgram = compiler.pb.toProgram();
-			return new VectorWorldGenerator( layerHeightProgram, vectorLayers, xReg, zReg, biomeReg );
+			return new VectorWorldGenerator( layerHeightProgram, vectorLayers, xReg, zReg, biomeReg, postProcessors );
 		}
 	}
 	
@@ -266,13 +274,19 @@ public class GeneratorDefinitionFunctions
 		final RegisterID<DVar> xRegister;
 		final RegisterID<DVar> zRegister;
 		final RegisterID<IVar> biomeIdRegister;
+		final List<ChunkMunger> postProcessors;
 		
-		public VectorWorldGenerator( Program p, VectorLayer[] layers, RegisterID<DVar> xRegister, RegisterID<DVar> zRegister, RegisterID<IVar> biomeIdRegister ) {
+		public VectorWorldGenerator(
+			Program p, VectorLayer[] layers,
+			RegisterID<DVar> xRegister, RegisterID<DVar> zRegister, RegisterID<IVar> biomeIdRegister,
+			List<ChunkMunger> postProcessors
+		) {
 			this.layerHeightProgram = p;
 			this.layers = layers;
 			this.xRegister = xRegister; 
 			this.zRegister = zRegister;
 			this.biomeIdRegister = biomeIdRegister;
+			this.postProcessors = postProcessors;
 		}
 		
 		@Override public LayeredTerrainFunction getTerrainFunction() {
@@ -331,6 +345,10 @@ public class GeneratorDefinitionFunctions
 								(int)Math.round(instance.doubleVectors[vl.ceilingHeightRegister.number][i]),
 								cd, x, z );
 						}
+					}
+					
+					for( ChunkMunger pp : postProcessors ) {
+						pp.mungeChunk(cd);
 					}
                 }
 			};
@@ -406,6 +424,8 @@ public class GeneratorDefinitionFunctions
 								throw new CompileError("Don't know how to handle item in world generator list argument: "+o, arg.sLoc);
 							}
 						}
+					} else if( "".equals(arg.name) && v instanceof ChunkMunger ) {
+						wgd.postProcessors.add( (ChunkMunger)v );
 					} else {
 						String argName = arg.name.length() == 0 ? " " : " '"+arg.name+"' "; 
 						throw new CompileError("Don't know how to handle"+argName+"argument with value: "+v, arg.sLoc);
@@ -423,5 +443,7 @@ public class GeneratorDefinitionFunctions
 				return Binding.forValue(compiled, MinecraftWorldGenerator.class, input.argListLocation);
             }
 		}));
+		CONTEXT.put("grassify", builtinBinding(Grassifier.instance));
+		CONTEXT.put("flag-populated", builtinBinding(TerrainPopulatedSetter.instance));
 	}
 }

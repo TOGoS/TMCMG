@@ -5,6 +5,10 @@ import togos.minecraft.mapgen.world.structure.ChunkData;
 
 public class Grassifier implements ChunkMunger
 {
+	public static final Grassifier instance = new Grassifier();
+	
+	private Grassifier() { };
+	
 	public void mungeChunk( ChunkData cd ) {
 		for( int z=0; z<cd.depth; ++z ) {
 			for( int x=0; x<cd.width; ++x ) {

@@ -170,6 +170,17 @@ layer( _material-id_, _floor-height-function_, _ceiling-height-function_ )
     2-argument functions giving the layer's floor and ceiling heights
     for a given x, z coordinate in the world.
 
+### World Definition Post-processors
+
+Include these within your layered-terrain(...) after layer definitions.
+
+grassify
+  - add grass to dirt blocks that are directly under the sky
+
+flag-populated
+  - mark chunks as populated so that Minecraft doesn't add its own trees,
+    ores, etc.
+
 
 
 ## Contact
