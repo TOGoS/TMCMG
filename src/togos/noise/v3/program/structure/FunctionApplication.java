@@ -1,7 +1,11 @@
 package togos.noise.v3.program.structure;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.bitpedia.util.Base32;
 
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
@@ -58,20 +62,19 @@ public class FunctionApplication extends Expression<Object>
 	        }
 			
 			@Override public String getCalculationId() throws CompileError {
-				/*
-				if( functionBinding.isConstant() ) {
-					try {
-						return functionBinding.getValue().apply( boundArgumentList ).getCalculationId();
-					} catch( CompileError e ) {
-						throw e;
-					} catch( Exception e ) {
-						// "Error while flatteing function call for stringification"
-						throw new CompileError(e, sLoc);
-					}
-				} else {
-				*/
-				return functionBinding.getCalculationId() + "(" + boundArgumentList.toSource() + ")";
-				//}
+				String subSource = functionBinding.getCalculationId() + "(" + boundArgumentList.toSource() + ")"; 
+				
+				MessageDigest md;
+				try {
+					md = MessageDigest.getInstance("SHA-1");
+				} catch( NoSuchAlgorithmException e ) {
+					System.err.println("Unable to hash experssion pseudo-source to form calculation ID; using pseudo-source itself!");
+					System.err.println("This may use excessive amounts of memory.");
+					e.printStackTrace();
+					return subSource;
+				}
+				md.update( subSource.getBytes() );
+				return Base32.encode(md.digest());
 			}
 			
 			@Override public RegisterID<?> toVectorProgram(
