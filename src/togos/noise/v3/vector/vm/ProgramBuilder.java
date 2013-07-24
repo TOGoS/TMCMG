@@ -101,7 +101,10 @@ public class ProgramBuilder
 		initInstructions.add( new Instruction<DVar,IConst,None,None>( Operators.LOAD_INT_CONST_AS_DOUBLE, vReg, cReg, R_NONE, R_NONE ));
 		return vReg;
 	}
-	
+
+	// TODO: This would be an opportunity for further de-duplication.
+	// Map (op, source registers) to a destination reguster and cache the result.
+	// Would need to create a generic getOpResult( op, r1, r2, r3 ) method.
 	public RegisterID<BVar> dd_b( Operator<BVar,DVar,DVar,None> op, RegisterID<DVar> r1, RegisterID<DVar> r2 ) {
 		RegisterID<BVar> newReg = newBVar();
 		runInstructions.add( new Instruction<BVar,DVar,DVar,None>(op, newReg, r1, r2, R_NONE) );

@@ -76,7 +76,12 @@ public abstract class Binding<V>
 				) throws CompileError {
 					return compiler.compile(b);
 				}
-				
+
+				// Note: Caching based on calculation ID might turn out to
+				// be completely unnecessary if de-duplication is done at the
+				// compilation phase.  It's not obvious to me if doing it here,
+				// also would provide an efficiency boost or slow things down due
+				// to the extra overhead of all these string concatenations.
 				@Override public String getCalculationId() throws CompileError {
 					return "cast("+b.getCalculationId()+", '"+targetClass.getName()+"'";
 				}
