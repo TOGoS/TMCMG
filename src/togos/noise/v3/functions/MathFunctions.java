@@ -141,6 +141,10 @@ public class MathFunctions
 		}
 	}
 	
+	// TODO: Make sure getOperator always returns
+	// the same instance for identical operators
+	// so that uses can be cached!
+	
 	static abstract class FunctionBB_B extends BooleanInputFunction<Boolean> {
 		public FunctionBB_B() { super(Boolean.class); }
 

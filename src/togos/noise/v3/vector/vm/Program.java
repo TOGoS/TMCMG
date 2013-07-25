@@ -206,6 +206,14 @@ public class Program
 			this.v2 = v2;
 			this.v3 = v3;
 		}
+		
+		public static
+			<DestRT extends RegisterBankID<?>, V1RT extends RegisterBankID<?>, V2RT extends RegisterBankID<?>, V3RT extends RegisterBankID<?>>
+		Instruction<DestRT,V1RT,V2RT,V3RT> create(
+			Operator<DestRT,V1RT,V2RT,V3RT> op, RegisterID<DestRT> dest, RegisterID<V1RT> r1, RegisterID<V2RT> r2, RegisterID<V3RT> r3
+		) {
+			return new Instruction<DestRT,V1RT,V2RT,V3RT>( op, dest, r1, r2, r3 );
+		}
 	}
 	
 	public interface Operator<
