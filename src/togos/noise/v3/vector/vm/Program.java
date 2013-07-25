@@ -192,8 +192,9 @@ public class Program
 	> {
 		//// Shortcuts for instantiating instructions of various types */
 		public final Operator<DestRT, V1RT, V2RT, V3RT> op;
-		/** High bits of each are used to indicate flags, low bits to indicate register number */
+		/** Register which will hold result */
 		public final RegisterID<DestRT> dest;
+		/** Input registers; RegisterID.NONE when not used. */
 		public final RegisterID<V1RT> v1;
 		public final RegisterID<V2RT> v2;
 		public final RegisterID<V3RT> v3;
