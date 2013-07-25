@@ -203,6 +203,44 @@ public class Operators
 		}
 	};
 	
+	//// Trigonometry ////
+	
+	public static final OperatorDa_Da SIN = new OperatorDa_Da("sin") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.sin(i1[i]);
+		}
+	};
+	public static final OperatorDa_Da ASIN = new OperatorDa_Da("asin") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.asin(i1[i]);
+		}
+	};
+	public static final OperatorDa_Da COS = new OperatorDa_Da("cos") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.cos(i1[i]);
+		}
+	};
+	public static final OperatorDa_Da ACOS = new OperatorDa_Da("acos") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.acos(i1[i]);
+		}
+	};
+	public static final OperatorDa_Da TAN = new OperatorDa_Da("tan") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.tan(i1[i]);
+		}
+	};
+	public static final OperatorDa_Da ATAN = new OperatorDa_Da("atan") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.atan(i1[i]);
+		}
+	};
+	public static final OperatorDa_Da SQRT = new OperatorDa_Da("sqrt") {
+		public void apply( int vectorSize, double[] i1, double[] dest ) {
+			for( int i = vectorSize-1; i >= 0; --i ) dest[i] = Math.sqrt(i1[i]);
+		}
+	};
+	
 	//// Arithmetic ////
 	
 	public static final OperatorDaDa_Da ADD = new OperatorDaDa_Da("add") {

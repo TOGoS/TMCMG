@@ -209,22 +209,7 @@ public class MathFunctions
 	static abstract class FunctionD_D extends UnaryNumberInputFunction<Double> {
 		public FunctionD_D() { super(Double.class); }
 		
-		protected abstract double _apply( double a );
-		
-		protected OperatorDa_Da getOperator() {
-			return new Operators.OperatorDa_Da(getName()) {
-				@Override public void apply( int vectorSize, double[] x, double[] dest ) {
-					for( int i=vectorSize-1; i>=0; --i ) {
-						dest[i] = _apply(x[i]);
-					}
-				}
-				
-			};
-		}
-		
-		public Double apply(double a) {
-			return Double.valueOf(a);
-		}
+		protected abstract OperatorDa_Da getOperator();
 		
 		protected Program.RegisterID<RegisterBankID.DVar> toVectorProgram( Binding<?>[] argumentBindings, ExpressionVectorProgramCompiler compiler) throws CompileError {
 			return compiler.pb.d_d( getOperator(), compiler.compile(argumentBindings[0], RegisterBankID.DVar.INSTANCE) );		
@@ -325,54 +310,40 @@ public class MathFunctions
 		
 		CONTEXT.put("sin", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "sin"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.sin(a);
-			}
+			@Override public Double apply( double a ) { return Math.sin(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.SIN; }
 		}));
 		CONTEXT.put("asin", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "asin"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.asin(a);
-			}
+			@Override public Double apply( double a ) { return Math.asin(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.ASIN; }
 		}));
 		CONTEXT.put("cos", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "cos"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.cos(a);
-			}
+			@Override public Double apply( double a ) { return Math.cos(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.COS; }
 		}));
 		CONTEXT.put("acos", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "acos"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.acos(a);
-			}
+			@Override public Double apply( double a ) { return Math.acos(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.ACOS; }
 		}));
 		CONTEXT.put("tan", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "tan"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.tan(a);
-			}
+			@Override public Double apply( double a ) { return Math.tan(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.TAN; }
 		}));
 		CONTEXT.put("atan", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "atan"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.atan(a);
-			}
+			@Override public Double apply( double a ) { return Math.atan(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.ATAN; }
 		}));
 		/** Used commonly enough that I think it makes sense to have its own
 		 * function, even though it's equivalent to a ** 0.5 */
 		CONTEXT.put("sqrt", builtinBinding(new FunctionD_D() {
 			@Override public String getName() { return "sqrt"; }
-			
-			@Override public double _apply( double a ) {
-				return Math.sqrt(a);
-			}
+			@Override public Double apply( double a ) { return Math.sqrt(a); }
+			@Override protected OperatorDa_Da getOperator() { return Operators.SQRT; }
 		}));
 
 		//// Noise
