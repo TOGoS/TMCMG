@@ -82,6 +82,11 @@ public abstract class Binding<V>
 				// compilation phase.  It's not obvious to me if doing it here,
 				// also would provide an efficiency boost or slow things down due
 				// to the extra overhead of all these string concatenations.
+				// 2013-07-29: Trying to cache based on Binding identity instead
+				//   of on calculationId makes it crash on large scripts (e.g.
+				//   sixfootwavesworld).  Not sure if this indicates
+				//   that some way of identifying bindings for caching is necessary
+				//   or if this indicates a bug elsewhere.
 				@Override public String getCalculationId() throws CompileError {
 					return "cast("+b.getCalculationId()+", '"+targetClass.getName()+"'";
 				}
