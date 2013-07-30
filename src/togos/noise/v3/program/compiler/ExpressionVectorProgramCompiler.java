@@ -6,6 +6,7 @@ import java.util.Map;
 import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
+import togos.noise.v3.vector.vm.Program;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.DConst;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.IConst;
@@ -45,13 +46,18 @@ public class ExpressionVectorProgramCompiler
 	protected Map<String, RegisterID<?>> expressionResultRegisters = new HashMap<String, RegisterID<?>>();
 	protected Map<TypeTranslationKey, RegisterID<?>> translatedExpressionResultRegisters = new HashMap<TypeTranslationKey, RegisterID<?>>(); 
 	
-	public <T extends RegisterBankID<?>> RegisterID<T> declareVariable( String name, T bank ) {
+	public <T extends RegisterBankID<?>> RegisterID<T> declareInput( String name, T bank ) {
 		if( variableRegisters.containsKey(name) ) {
 			throw new RuntimeException( "Cannot redeclare variable: '"+name+"'" );
 		}
 		RegisterID<T> reg = pb.newVar( bank );
 		variableRegisters.put(name, reg);
 		return reg;
+	}
+	
+	public void declareOutput( RegisterID<?> reg ) {
+		// TODO: Will need to add to a set of registers that are read
+		// at the end of the script and therefore shouldn't be overwritten.
 	}
 	
 	public RegisterID<?> getVariableRegister(String variableId) {
@@ -134,5 +140,11 @@ public class ExpressionVectorProgramCompiler
 		reg = toVector( pb.translate( compile( b ), targetType, b.sLoc ) );
 		translatedExpressionResultRegisters.put(key, reg);
 		return reg;
+	}
+
+	public Program getProgram() {
+		Program p = pb.toProgram();
+		// new RegisterCompactor().compact(p, )
+		return p;
 	}
 }

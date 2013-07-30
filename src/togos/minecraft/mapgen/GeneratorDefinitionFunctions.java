@@ -209,13 +209,14 @@ public class GeneratorDefinitionFunctions
 			Binding.Variable<Double> xVar = Binding.variable("x", Double.class);
 			Binding.Variable<Double> yVar = Binding.variable("y", Double.class);
 			Binding.Variable<Double> zVar = Binding.variable("z", Double.class);
-			final RegisterID<DVar> xReg = compiler.declareVariable("x", DVar.INSTANCE);
-			final RegisterID<DVar> yReg = compiler.declareVariable("y", DVar.INSTANCE);
-			final RegisterID<DVar> zReg = compiler.declareVariable("z", DVar.INSTANCE);
+			final RegisterID<DVar> xReg = compiler.declareInput("x", DVar.INSTANCE);
+			final RegisterID<DVar> yReg = compiler.declareInput("y", DVar.INSTANCE);
+			final RegisterID<DVar> zReg = compiler.declareInput("z", DVar.INSTANCE);
 			@SuppressWarnings("unchecked")
 			Binding.Variable<Double>[] functionArguments = new Binding.Variable[] { xVar, yVar, zVar };
-			final RegisterID<IVar> typeReg = compiler.compile( bind(f, functionArguments), IVar.INSTANCE ); 
-			final Program p = compiler.pb.toProgram();
+			final RegisterID<IVar> typeReg = compiler.compile( bind(f, functionArguments), IVar.INSTANCE );
+			compiler.declareOutput(typeReg);
+			final Program p = compiler.getProgram();
 			
 			return new LFunctionDaDaDa_Ia() {
 				@Override public void apply( int vectorSize, double[] x, double[] y, double[] z, int[] dest ) {
@@ -234,8 +235,8 @@ public class GeneratorDefinitionFunctions
 			ExpressionVectorProgramCompiler compiler = new ExpressionVectorProgramCompiler();
 			Binding.Variable<Double> xVar = Binding.variable("x", Double.class);
 			Binding.Variable<Double> zVar = Binding.variable("z", Double.class);
-			RegisterID<DVar> xReg = compiler.declareVariable("x", DVar.INSTANCE);
-			RegisterID<DVar> zReg = compiler.declareVariable("z", DVar.INSTANCE);
+			RegisterID<DVar> xReg = compiler.declareInput("x", DVar.INSTANCE);
+			RegisterID<DVar> zReg = compiler.declareInput("z", DVar.INSTANCE);
 			@SuppressWarnings("unchecked")
 			Binding.Variable<Double>[] xzVariables = new Binding.Variable[] { xVar, zVar };
 			
@@ -251,7 +252,7 @@ public class GeneratorDefinitionFunctions
 			
 			RegisterID<IVar> biomeReg = vectorize( biomeFunction, xzVariables, compiler, IVar.INSTANCE );
 			
-			Program layerHeightProgram = compiler.pb.toProgram();
+			Program layerHeightProgram = compiler.getProgram();
 			return new VectorWorldGenerator( layerHeightProgram, vectorLayers, xReg, zReg, biomeReg, postProcessors );
 		}
 	}
