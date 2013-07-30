@@ -22,6 +22,8 @@ public class ProgramBuilder
 {
 	static final RegisterID<None> R_NONE = RegisterID.NONE;
 	
+	public static int totalProgramLength = 0; // Used for debugging 
+	
 	ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>> initInstructions = new ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>>();
 	ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>> runInstructions = new ArrayList<Instruction<? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>,? extends RegisterBankID<?>>>();
 	/** Maps constant value to its register ID */
@@ -31,6 +33,7 @@ public class ProgramBuilder
 	TreeMap<RegisterID<IConst>,RegisterID<IVar>> intConstVars = new TreeMap<RegisterID<IConst>,RegisterID<IVar>>();
 	TreeMap<RegisterID<DConst>,RegisterID<DVar>> doubleConstVars = new TreeMap<RegisterID<DConst>,RegisterID<DVar>>();
 	TreeMap<RegisterID<IConst>,RegisterID<DVar>> intAsDoubleConstVars = new TreeMap<RegisterID<IConst>,RegisterID<DVar>>();
+	TreeMap<RegisterID<IVar>,RegisterID<DVar>> intAsDoubleVars = new TreeMap<RegisterID<IVar>,RegisterID<DVar>>();
 	public short nextIntegerVector = 0;
 	public short nextDoubleVector  = 0;
 	public short nextBooleanVector = 0;
@@ -228,10 +231,13 @@ public class ProgramBuilder
 		}
 		
 		/*
+		int programLength = initInstructions.size() + runInstructions.size();
 		System.err.println("ProgramBuilder stats");
 		System.err.println("  Op result cache");
 		System.err.println("    Hits   = "+opResultCacheHits);
 		System.err.println("    Misses = "+opResultCacheMisses);
+		System.err.println("  Program length = "+programLength+" instructions");
+		totalProgramLength += programLength;
 		*/
 		
 		return new Program(
@@ -247,14 +253,22 @@ public class ProgramBuilder
 	{
 		if( reg.bankId.valueType == targetType ) {
 			return reg;
-		} else if( reg.bankId.valueType == Integer.class && targetType == Double.class ) {
-			if( reg.bankId.isConstant ) {
-				return getIntAsDoubleVariable( (RegisterID<IConst>)reg );
-			} else {
-				return i_d( Operators.INT_TO_DOUBLE, (RegisterID<IVar>)reg );
-			}
-		} else {
-			throw new UnvectorizableError("Cannot write vector program to translate from "+reg.bankId.valueType+" to "+targetType, sLoc);
 		}
+		
+		if( reg.bankId.valueType == Integer.class && targetType == Double.class ) {
+			if( reg.bankId.isConstant ) {
+				return getIntAsDoubleVariable( reg.castToBank(IConst.INSTANCE) );
+			}
+			
+			RegisterID<IVar> iVar = reg.castToBank(IVar.INSTANCE);
+			RegisterID<DVar> dVar = intAsDoubleVars.get(iVar);
+			if( dVar == null ) {
+				dVar = i_d( Operators.INT_TO_DOUBLE, iVar );
+				intAsDoubleVars.put( iVar, dVar);
+			}
+			return dVar;
+		}
+		
+		throw new UnvectorizableError("Cannot write vector program to translate from "+reg.bankId.valueType+" to "+targetType, sLoc);
 	}
 }

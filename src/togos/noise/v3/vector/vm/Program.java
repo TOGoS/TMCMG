@@ -150,6 +150,7 @@ public class Program
 	
 	public static final class RegisterID<BankID extends RegisterBankID<?>> implements Comparable<RegisterID<?>> {
 		public static <Bank extends RegisterBankID<?>> RegisterID<Bank> create( Bank bank, short number ) {
+			assert bank != null;
 			return new RegisterID<Bank>( bank, number );
 		}
 		
@@ -181,6 +182,15 @@ public class Program
 		@Override public int compareTo(RegisterID<?> other) {
 			return bankId.number < other.bankId.number ? -1 : bankId.number > other.bankId.number ? 1 :
 				number < other.number ? -1 : number > other.number ? 1 : 0;
+		}
+		
+		public <TargetBankID extends RegisterBankID<?>> RegisterID<TargetBankID> castToBank(TargetBankID bankId) {
+			if( !bankId.equals(this.bankId) ) {
+				throw new RuntimeException("Can't cast register from bank "+this.bankId+" to bank "+bankId);
+			}
+			@SuppressWarnings("unchecked")
+			RegisterID<TargetBankID> casted = (RegisterID<TargetBankID>)this;
+			return casted;
 		}
 	}
 	

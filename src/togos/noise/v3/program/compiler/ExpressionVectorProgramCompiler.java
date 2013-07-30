@@ -7,11 +7,8 @@ import togos.lang.CompileError;
 import togos.lang.SourceLocation;
 import togos.noise.v3.program.runtime.Binding;
 import togos.noise.v3.vector.vm.Program.RegisterBankID;
-import togos.noise.v3.vector.vm.Program.RegisterBankID.BVar;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.DConst;
-import togos.noise.v3.vector.vm.Program.RegisterBankID.DVar;
 import togos.noise.v3.vector.vm.Program.RegisterBankID.IConst;
-import togos.noise.v3.vector.vm.Program.RegisterBankID.IVar;
 import togos.noise.v3.vector.vm.Program.RegisterID;
 import togos.noise.v3.vector.vm.ProgramBuilder;
 
@@ -90,14 +87,15 @@ public class ExpressionVectorProgramCompiler
 	}
 	
 	public RegisterID<?> toVector( RegisterID<?> reg ) {
+		assert reg != null;
 		if( !reg.bankId.isConstant ) return reg;
 		
 		if( reg.bankId.valueType == Boolean.class ) {
 			throw new RuntimeException("Somehow got a constant boolean register!");
 		} else if( reg.bankId.valueType == Integer.class ) {
-			return pb.getIntegerVariable( (RegisterID<IConst>)reg );
+			return pb.getIntegerVariable( reg.castToBank(IConst.INSTANCE) );
 		} else if( reg.bankId.valueType == Double.class ) {
-			return pb.getDoubleVariable( (RegisterID<DConst>)reg );
+			return pb.getDoubleVariable( reg.castToBank(DConst.INSTANCE) );
 		}
 		
 		return null;
