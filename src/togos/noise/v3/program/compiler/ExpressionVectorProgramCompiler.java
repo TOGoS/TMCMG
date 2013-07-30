@@ -48,24 +48,11 @@ public class ExpressionVectorProgramCompiler
 	protected Map<String, RegisterID<?>> expressionResultRegisters = new HashMap<String, RegisterID<?>>();
 	protected Map<TypeTranslationKey, RegisterID<?>> translatedExpressionResultRegisters = new HashMap<TypeTranslationKey, RegisterID<?>>(); 
 	
-	@SuppressWarnings("unchecked")
-	protected <T extends RegisterBankID<?>> RegisterID<T> createVariableRegister( T bank ) {
-		if( bank == BVar.INSTANCE ) {
-			return (RegisterID<T>)pb.newBVar();
-		} else if( bank == IVar.INSTANCE ) {
-			return (RegisterID<T>)pb.newIVar();
-		} else if( bank == DVar.INSTANCE ) {
-			return (RegisterID<T>)pb.newDVar();
-		} else {
-			throw new RuntimeException( "Cannot create vector register for bank: '"+bank+"'");
-		}
-	}
-	
 	public <T extends RegisterBankID<?>> RegisterID<T> declareVariable( String name, T bank ) {
 		if( variableRegisters.containsKey(name) ) {
 			throw new RuntimeException( "Cannot redeclare variable: '"+name+"'" );
 		}
-		RegisterID<T> reg = createVariableRegister( bank );
+		RegisterID<T> reg = pb.newVar( bank );
 		variableRegisters.put(name, reg);
 		return reg;
 	}
