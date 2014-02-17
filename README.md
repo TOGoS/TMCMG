@@ -90,7 +90,8 @@ _parameters_ -> _value_
     
         (x,y,z) -> (x * x + y * y + z * z) ** 0.5
 
-+, -, *, /, **
+```+```, ```-```, ```*```, ```/```, ```**```
+
   - add, subtract, multiply, divide, and power.
     These can be written using infix notation, where
     standard precedence rules apply.  e.g.  the following 3
@@ -100,7 +101,8 @@ _parameters_ -> _value_
         a - (b + ((c * d) / e))
         -( a, +(b, /( *(c, d), e)))
 
-==, !=, >, <, >=, <=
+```==```, ```!=```, ```>```, ```<```, ```>=```, ```<=```
+
   - Compare value of 2 expressions.
     
         == equal            ;  3 == 3
@@ -114,13 +116,13 @@ _parameters_ -> _value_
 
 ### Pre-defined functions
 
-    sin( _expr_ ) - sine
-    asin( _expr_ ) - inverse sine
-    cos( _expr_ ) - cosine
-    acos( _expr_ ) - inverse cosine
-    tan( _expr_ ) - tangent
-    atan( _expr_ ) - arctangent
-    sqrt( _expr_ ) - square root (mathematically equivalent to _expr_ * 0.5)
+  - sin( _expr_ ) - sine
+  - asin( _expr_ ) - inverse sine
+  - cos( _expr_ ) - cosine
+  - acos( _expr_ ) - inverse cosine
+  - tan( _expr_ ) - tangent
+  - atan( _expr_ ) - arctangent
+  - sqrt( _expr_ ) - square root (mathematically equivalent to _expr_ ** 0.5)
 
 perlin( _x_, _y_, _z_ )
   - A function for generating smooth noise closely based on Ken Perlin's
