@@ -1,0 +1,56 @@
+# A relatively simple terrain generator
+# using several octaves of simplex noise, each
+# with inputs transformed by ('weirdy') and output multiplied by ('modulation')
+# lower frequency simplex noise
+
+air     = material( 0);
+stone   = material( 1);
+grass   = material( 2);
+dirt    = material( 3);
+bedrock = material( 7);
+water   = material( 8);
+sand    = material(12);
+glowstone = material(89);
+birch   = material(17,2);
+
+max(a,b) = if(a > b, a, b);
+min(a,b) = if(a < b, a, b);
+
+weirdyScale = 32;
+modulationHScale = 4;
+modulationVScale = 2;
+
+octave1(hScale,vScale,y) = (x,z) -> vScale * simplex(
+	x / hScale,
+	y + 2 * weirdyScale * simplex(x / hScale / weirdyScale, y + 1, z / hScale / weirdyScale),
+	z / hScale
+);
+
+octave(hScale,vScale,y) = (x,z) ->
+	octave1(hScale,vScale,y)(x,z) *
+	modulationVScale * # Really overall v-scale
+	simplex(x / hScale / modulationHScale, y - 1, z / hScale / modulationHScale);
+
+
+ground-basis(y) = (x,z) ->
+	octave(         8,   8,y)(x,z) +
+	octave(        16,  16,y)(x,z) +
+	octave(        32,  32,y)(x,z) +
+	octave(        64,  64,y)(x,z) +
+	octave(       128, 128,y)(x,z) +
+	octave(      1024, 128,y)(x,z) +
+	octave( 16 * 1024, 256,y)(x,z);
+
+surfaceMaterial(x,y,z) =
+	if(
+		y < 65, sand,
+		grass);
+	
+layered-terrain(
+	layer( water, 0, 64 ),
+	layer( surfaceMaterial, 0, (x,z) -> 64 + ground-basis(0)(x,z) ),
+	layer( stone, 0, (x,z) -> 60 + ground-basis(0)(x,z) ),
+	layer( stone, 0, (x,z) -> 48 + ground-basis(1 / 128)(x,z) * 2 ),
+	layer( bedrock, 0, 1 ),
+	grassify
+)
