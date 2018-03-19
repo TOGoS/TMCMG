@@ -6,6 +6,8 @@ height and material functions.  It includes a GUI for previewing
 the generated terrain before exporting it, and can also be run from
 the command-line.
 
+![This is how we edit the generators.  Notepad++ not included.](doc/editing.png)
+
 
 
 ## GUI Notes
