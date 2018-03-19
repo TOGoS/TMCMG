@@ -8,6 +8,13 @@ the command-line.
 
 ![This is how we edit the generators.  Notepad++ not included.](doc/editing.png)
 
+Download the latest JAR file from http://www.nuke24.net/projects/TMCMG/
+
+Terrain generators are [defined in text files](#general-syntax).
+TMCMG does not include a text editor,
+but it does have an 'auto reload' option so that the preview will be updated
+shortly after you save changes from e.g. Notepad++.
+
 
 
 ## GUI Notes
